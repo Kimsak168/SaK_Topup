@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
 const BRAND_NAME = "SakSuuu";
 
-export function CustomerNavbar() {
+export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
   const pathname = usePathname();
 
   const isHomeActive = pathname === "/";
@@ -73,11 +73,12 @@ export function CustomerNavbar() {
           {/* Ghost Gaming Mascot Logo (~70-75px on desktop, proportional 1:1, uncropped) */}
           <div className="relative flex items-center justify-center shrink-0">
             <Image
-              src="/images/logo.png"
-              alt="SakSuuu Ghost Mascot"
+              src={logoUrl || "/images/logo.png"}
+              alt="SakSuuu Logo"
               width={75}
               height={75}
               priority
+              unoptimized={Boolean(logoUrl)}
               className="h-[50px] w-[50px] sm:h-[66px] sm:w-[66px] md:h-[74px] md:w-[74px] object-contain shrink-0 drop-shadow-[0_0_16px_rgba(0,217,255,0.45)] transition-transform duration-300 group-hover:scale-105"
             />
           </div>

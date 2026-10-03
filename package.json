@@ -9,11 +9,13 @@
     "lint": "eslint",
     "admin:setup": "node --env-file=.env.local scripts/manage-admin.mjs",
     "admin:reset": "node --env-file=.env.local scripts/manage-admin.mjs --reset",
-    "admin:init": "node --env-file=.env.local scripts/init-admin.mjs"
+    "admin:init": "node --env-file=.env.local scripts/init-admin.mjs",
+    "images:migrate": "node --env-file=.env.local scripts/migrate-images-to-blob.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
     "@hookform/resolvers": "^5.9.1",
+    "@vercel/blob": "^2.8.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "lucide-react": "^1.49.0",

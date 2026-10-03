@@ -106,8 +106,8 @@ export default function AdminBannersPage() {
       event.target.value = "";
       return;
     }
-    if (file.size === 0 || file.size > 3 * 1024 * 1024) {
-      toast.error("Choose an image up to 3 MB.");
+    if (file.size === 0 || file.size > 25 * 1024 * 1024) {
+      toast.error("Choose an image up to 25 MB.");
       event.target.value = "";
       return;
     }
@@ -124,12 +124,26 @@ export default function AdminBannersPage() {
 
     setIsSaving(true);
     try {
+      let finalImageUrl = form.imageUrl || editingBanner?.imageUrl || "";
+
+      // If a large image (> 4.5MB) is selected, upload directly to Vercel Blob to bypass function limits
+      if (imageFile && imageFile.size > 4.5 * 1024 * 1024) {
+        toast.info("Uploading large banner directly to Vercel Blob...");
+        const { uploadAdminImage } = await import("@/lib/clientBlobUpload");
+        const blobResult = await uploadAdminImage(imageFile, "banners", editingBanner?.imageUrl);
+        finalImageUrl = blobResult.url;
+      }
+
       const payload = new FormData();
       for (const [key, value] of Object.entries(form)) {
         if (key !== "imageUrl") payload.set(key, String(value));
       }
+      if (finalImageUrl) payload.set("imageUrl", finalImageUrl);
       if (editingBanner) payload.set("bannerId", editingBanner.id);
-      if (imageFile) payload.set("image", imageFile);
+      // If smaller than 4.5MB and not directly uploaded, send to server
+      if (imageFile && imageFile.size <= 4.5 * 1024 * 1024) {
+        payload.set("image", imageFile);
+      }
 
       const response = await fetch("/api/admin/banners", {
         method: editingBanner ? "PATCH" : "POST",
@@ -137,7 +151,7 @@ export default function AdminBannersPage() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || "Could not save banner.");
-      toast.success(editingBanner ? "Banner updated" : "Banner uploaded");
+      toast.success(editingBanner ? "Banner updated with Vercel Blob" : "Banner uploaded to Vercel Blob");
       setShowModal(false);
       setImageFile(null);
       setPreviewUrl("");

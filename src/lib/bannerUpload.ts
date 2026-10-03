@@ -77,6 +77,7 @@ export function readBannerFields(body: Record<string, unknown>, creating = false
     targetUrl: 2048,
     ctaText: 80,
     accentColor: 30,
+    imageUrl: 2048,
   };
 
   for (const [key, maxLength] of Object.entries(textFields)) {

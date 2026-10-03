@@ -67,11 +67,25 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
+    const existingSetting = await Setting.findOne({ key: "general" });
+    const oldLogoUrl = existingSetting?.logoUrl;
+
     const updated = await Setting.findOneAndUpdate(
       { key: "general" },
       { $set: updateData },
       { upsert: true, new: true }
     ).lean();
+
+    if (
+      body.logoUrl !== undefined &&
+      oldLogoUrl &&
+      oldLogoUrl !== updateData.logoUrl
+    ) {
+      const { safeDeleteBlobIfOrphaned } = await import("@/lib/services/blobService");
+      await safeDeleteBlobIfOrphaned(oldLogoUrl).catch((err) => {
+        console.warn("[Admin Settings] Error cleaning up replaced logo blob:", err);
+      });
+    }
 
     return NextResponse.json({
       success: true,
