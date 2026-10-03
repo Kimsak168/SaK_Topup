@@ -48,6 +48,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [verifying, setVerifying] = useState(false);
   const [verifiedName, setVerifiedName] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [verifyStatusType, setVerifyStatusType] = useState<"success" | "invalid" | "unsupported" | "unavailable" | null>(null);
   const [showIdGuide, setShowIdGuide] = useState(false);
   const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.jpg");
 
@@ -113,6 +114,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     setVerifying(true);
     setVerifyError(null);
     setVerifiedName(null);
+    setVerifyStatusType(null);
 
     try {
       const res = await fetch("/api/player/verify", {
@@ -130,13 +132,28 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       const data = await res.json();
       if (res.ok && data.success) {
         setVerifiedName(data.playerName || "Verified Player");
+        setVerifyStatusType("success");
         toast.success(`Account verified: ${data.playerName || "Success"}`);
-      } else {
-        setVerifyError(data.message || "Player account not found. Please double check your ID.");
+      } else if (data.isInvalidId) {
+        setVerifyError(data.message || "Player account not found. Please double check your Player ID.");
+        setVerifyStatusType("invalid");
         toast.error(data.message || "Player not found");
+      } else if (data.isSupported === false) {
+        setVerifyError(data.message || "Live nickname verification is not available for this game.");
+        setVerifyStatusType("unsupported");
+        toast.info(data.message || "Live nickname verification is not available for this game.");
+      } else if (data.isUnavailable) {
+        setVerifyError(data.message || "Verification service is busy. You can still proceed if your ID is correct.");
+        setVerifyStatusType("unavailable");
+        toast.warning(data.message || "Verification service is busy.");
+      } else {
+        setVerifyError(data.message || "Player ID could not be validated. Please check your ID.");
+        setVerifyStatusType("invalid");
+        toast.error(data.message || "Player ID could not be validated.");
       }
     } catch {
       setVerifyError("Network error checking player ID. You can still proceed if your ID is correct.");
+      setVerifyStatusType("unavailable");
     } finally {
       setVerifying(false);
     }
@@ -397,6 +414,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     setUserId(e.target.value);
                     setVerifiedName(null);
                     setVerifyError(null);
+                    setVerifyStatusType(null);
                   }}
                   placeholder="Enter Player ID"
                   className="w-full rounded-xl border border-input bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-2 focus:ring-ring/20 transition-all font-mono"
@@ -418,6 +436,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                       setServerId(e.target.value);
                       setVerifiedName(null);
                       setVerifyError(null);
+                      setVerifyStatusType(null);
                     }}
                     placeholder="Enter Zone ID"
                     className="w-full rounded-xl border border-input bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-2 focus:ring-ring/20 transition-all font-mono"
@@ -448,15 +467,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </button>
 
               {verifiedName && (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-success bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
-                  <CheckCircle2 className="h-4 w-4" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg shadow-sm">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                   <span>Verified: {verifiedName}</span>
                 </div>
               )}
 
-              {verifyError && (
+              {verifyError && verifyStatusType === "invalid" && (
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg">
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{verifyError}</span>
+                </div>
+              )}
+
+              {verifyError && (verifyStatusType === "unsupported" || verifyStatusType === "unavailable") && (
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
                   <span>{verifyError}</span>
                 </div>
               )}

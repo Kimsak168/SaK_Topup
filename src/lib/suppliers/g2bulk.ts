@@ -173,23 +173,55 @@ export async function getG2BulkFields(gameCode: string): Promise<G2BulkFieldsInf
   }
 }
 
+export interface G2BulkVerifyResult {
+  success: boolean;
+  playerName?: string;
+  message: string;
+  isInvalidId?: boolean;
+  isSupported?: boolean;
+  isAuthError?: boolean;
+  isUnavailable?: boolean;
+  region?: string;
+}
+
 /**
  * Validate player ID and retrieve username/nickname
  */
 export async function checkG2BulkPlayer(
-  game: string,
+  rawGame: string,
   userId: string,
   serverId?: string
-): Promise<{ success: boolean; playerName?: string; message?: string }> {
-  const apiKey = getApiKey();
+): Promise<G2BulkVerifyResult> {
+  const apiKey = process.env.G2BULK_API_KEY;
+  if (!apiKey) {
+    return {
+      success: false,
+      isAuthError: true,
+      message: "G2BULK_API_KEY is not configured",
+    };
+  }
+
+  // Normalize game code for G2Bulk checkPlayerId endpoint
+  const lowerGame = rawGame.trim().toLowerCase();
+  let game = lowerGame;
+  if (lowerGame.includes("freefire") || lowerGame.includes("ff") || lowerGame === "free-fire") {
+    game = "freefire_sgmy";
+  } else if (lowerGame === "pubg-mobile") {
+    game = "pubgm";
+  } else if (lowerGame === "mobile-legends") {
+    game = "mlbb";
+  }
 
   try {
     const payload: Record<string, string> = {
       game,
-      user_id: userId,
+      user_id: userId.trim(),
+      userid: userId.trim(),
     };
-    if (serverId) {
-      payload.server_id = serverId;
+    if (serverId && serverId.trim()) {
+      payload.server_id = serverId.trim();
+      payload.serverid = serverId.trim();
+      payload.zone_id = serverId.trim();
     }
 
     const response = await fetch(`${BASE_URL}/games/checkPlayerId`, {
@@ -203,13 +235,65 @@ export async function checkG2BulkPlayer(
       cache: "no-store",
     });
 
-    const data = await response.json();
+    if (response.status === 401 || response.status === 403) {
+      return {
+        success: false,
+        isAuthError: true,
+        message: "G2Bulk authentication failed. Please check credentials.",
+      };
+    }
 
-    if (response.ok && (data.success || data.name || data.username || data.player_name)) {
+    if (response.status >= 500) {
+      return {
+        success: false,
+        isUnavailable: true,
+        message: "G2Bulk verification server temporarily unavailable.",
+      };
+    }
+
+    const data = await response.json().catch(() => null);
+    if (!data) {
+      return {
+        success: false,
+        isUnavailable: true,
+        message: "Empty response from G2Bulk verification service.",
+      };
+    }
+
+    // 1. Check if game is explicitly unsupported by G2Bulk checkPlayerId
+    if (
+      response.status === 404 ||
+      (typeof data.message === "string" &&
+        (data.message.toLowerCase().includes("not available") ||
+          data.message.toLowerCase().includes("not support") ||
+          data.message.toLowerCase().includes("unsupported")))
+    ) {
+      return {
+        success: false,
+        isSupported: false,
+        message: "Live nickname check is not available for this game.",
+      };
+    }
+
+    // 2. Extract genuine player name / nickname
+    const candidateName = data.name || data.username || data.nickname || data.player_name;
+    const hasValidName = typeof candidateName === "string" && candidateName.trim() !== "";
+
+    if (hasValidName && data.valid !== "invalid") {
       return {
         success: true,
-        playerName: data.name || data.username || data.player_name || "Verified Player",
-        message: data.message || "Player account confirmed",
+        playerName: candidateName.trim(),
+        message: "Player account confirmed",
+        region: typeof data.region === "string" ? data.region : undefined,
+      };
+    }
+
+    // 3. Determine if G2Bulk explicitly confirmed ID is invalid
+    if (data.valid === "invalid" || (response.status === 400 && data.name === "")) {
+      return {
+        success: false,
+        isInvalidId: true,
+        message: "Player not found. Please double check your Player ID.",
       };
     }
 
@@ -218,9 +302,17 @@ export async function checkG2BulkPlayer(
       message: data.message || data.error || "Player ID could not be validated. Please check your ID and Server ID.",
     };
   } catch (error) {
+    const isTimeout =
+      error instanceof Error &&
+      (error.name === "TimeoutError" || error.message.toLowerCase().includes("timeout"));
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to verify player with G2Bulk API",
+      isUnavailable: true,
+      message: isTimeout
+        ? "G2Bulk verification request timed out. You may proceed if your Player ID is correct."
+        : error instanceof Error
+        ? error.message
+        : "Failed to connect to G2Bulk API",
     };
   }
 }

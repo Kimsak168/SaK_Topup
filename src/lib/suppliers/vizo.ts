@@ -140,23 +140,52 @@ export async function getVizoPackages(gameCode: string): Promise<VizoProduct[]> 
   }
 }
 
+export interface VizoVerifyResult {
+  success: boolean;
+  playerName?: string;
+  message: string;
+  isInvalidId?: boolean;
+  isSupported?: boolean;
+  isAuthError?: boolean;
+  isUnavailable?: boolean;
+  region?: string;
+}
+
 /**
  * Verify player ID and retrieve in-game nickname
+ * Free Fire must use 'freefire_sgmy' on Vizo /player_info/check endpoint
  */
 export async function checkVizoPlayer(
-  game: string,
+  rawGame: string,
   userId: string,
   serverId?: string
-): Promise<{ success: boolean; playerName?: string; message?: string }> {
-  const apiKey = getApiKey();
+): Promise<VizoVerifyResult> {
+  const apiKey = process.env.VIZO_API_KEY;
+  if (!apiKey) {
+    return {
+      success: false,
+      isAuthError: true,
+      message: "VIZO_API_KEY is not configured",
+    };
+  }
+
+  // Normalize game code: Vizo player check only accepts "freefire_sgmy" or "mlbb"
+  const lowerGame = rawGame.trim().toLowerCase();
+  let game = lowerGame;
+  if (lowerGame.includes("freefire") || lowerGame.includes("ff") || lowerGame === "free-fire") {
+    game = "freefire_sgmy";
+  } else if (lowerGame.includes("mlbb") || lowerGame.includes("mobile-legends")) {
+    game = "mlbb";
+  }
 
   try {
     const payload: Record<string, string> = {
       game,
-      user_id: userId,
+      user_id: userId.trim(),
     };
-    if (serverId) {
-      payload.server_id = serverId;
+    if (serverId && serverId.trim()) {
+      payload.server_id = serverId.trim();
+      payload.zone_id = serverId.trim();
     }
 
     const response = await fetch(`${BASE_URL}/api/v1/player_info/check`, {
@@ -170,24 +199,126 @@ export async function checkVizoPlayer(
       cache: "no-store",
     });
 
-    const data = await response.json();
+    if (response.status === 401 || response.status === 403) {
+      return {
+        success: false,
+        isAuthError: true,
+        message: "Vizo API authentication failed. Please check credentials.",
+      };
+    }
 
-    if (response.ok && (data.status === "APPROVED" || data.msg_status === "success" || data.player_name)) {
+    if (response.status >= 500) {
+      return {
+        success: false,
+        isUnavailable: true,
+        message: "Vizo verification server temporarily unavailable.",
+      };
+    }
+
+    const data = await response.json().catch(() => null);
+    if (!data) {
+      return {
+        success: false,
+        isUnavailable: true,
+        message: "Empty response from Vizo verification service.",
+      };
+    }
+
+    // 1. Check if game is unsupported by Vizo check endpoint
+    if (data.detail && typeof data.detail === "string" && data.detail.toLowerCase().includes("unsupported game")) {
+      return {
+        success: false,
+        isSupported: false,
+        message: "Live nickname check is not supported for this game on Vizo.",
+      };
+    }
+
+    // 2. Extract genuine in-game player nickname from direct keys or nested checks dictionary
+    let playerName: string | null = null;
+    let region: string | undefined = undefined;
+
+    if (typeof data.player_name === "string" && data.player_name.trim()) {
+      playerName = data.player_name.trim();
+    } else if (typeof data.name === "string" && data.name.trim()) {
+      playerName = data.name.trim();
+    } else if (typeof data.username === "string" && data.username.trim()) {
+      playerName = data.username.trim();
+    }
+
+    if (typeof data.region === "string" && data.region.trim()) {
+      region = data.region.trim();
+    }
+
+    // Search throughout nested checks dictionary (e.g. checks.first_recharge, checks.double_diamond, checks.less_is_more)
+    if (!playerName && data.checks && typeof data.checks === "object") {
+      for (const check of Object.values(data.checks)) {
+        if (!check || typeof check !== "object") continue;
+        const c = check as Record<string, unknown>;
+        const candidate = c.player_name || c.username || c.name || c.nickname;
+        if (typeof candidate === "string" && candidate.trim() && candidate.toLowerCase() !== "null") {
+          playerName = candidate.trim();
+        }
+        if (!region && typeof c.region === "string" && c.region.trim()) {
+          region = c.region.trim();
+        }
+        if (!region && typeof c.region_code === "string" && c.region_code.trim()) {
+          region = c.region_code.trim();
+        }
+        if (playerName) break;
+      }
+    }
+
+    // If nickname was found, player is confirmed valid!
+    if (playerName) {
       return {
         success: true,
-        playerName: data.player_name || data.name || "Verified Player",
-        message: data.message || "Player verified successfully",
+        playerName,
+        message: "Player account verified successfully",
+        region,
+      };
+    }
+
+    // 3. Determine if the supplier explicitly confirmed the ID is INVALID
+    const isExplicitlyInvalid =
+      data.msg_status === "INVALID_USERID" ||
+      (typeof data.detail === "string" && data.detail.toLowerCase().includes("invalid")) ||
+      (data.checks &&
+        typeof data.checks === "object" &&
+        Object.values(data.checks).some((check) => {
+          if (!check || typeof check !== "object") return false;
+          const c = check as Record<string, unknown>;
+          return (
+            c.msg_status === "INVALID_USERID" ||
+            c.message === "INVALID_USERID" ||
+            c.message === "User not found" ||
+            c.message === "Invalid User ID or Server ID"
+          );
+        }));
+
+    if (isExplicitlyInvalid) {
+      return {
+        success: false,
+        isInvalidId: true,
+        message: "Player not found. Please double check your Player ID.",
       };
     }
 
     return {
       success: false,
-      message: data.detail || data.message || "Player not found. Please double check your Player ID.",
+      message: data.detail || data.message || "Player ID could not be validated. Please check your ID.",
     };
   } catch (error) {
+    const isTimeout =
+      error instanceof Error &&
+      (error.name === "TimeoutError" || error.message.toLowerCase().includes("timeout"));
     return {
       success: false,
-      message: error instanceof Error ? error.message : "Failed to verify player with Vizo API",
+      isUnavailable: true,
+      message: isTimeout
+        ? "Vizo verification request timed out. You may proceed if your Player ID is correct."
+        : error instanceof Error
+        ? error.message
+        : "Failed to connect to Vizo API",
     };
   }
 }
