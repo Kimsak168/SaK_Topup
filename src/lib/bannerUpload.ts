@@ -1,4 +1,4 @@
-const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 4.5 * 1024 * 1024;
 
 export class BannerInputError extends Error {
   constructor(message: string, public status = 400) {
@@ -11,7 +11,7 @@ export async function readBannerImage(file: File) {
     throw new BannerInputError("Choose a banner image.");
   }
   if (file.size > MAX_IMAGE_BYTES) {
-    throw new BannerInputError("Banner images must be 3 MB or smaller.", 413);
+    throw new BannerInputError("Banner images must be 4.5 MB or smaller.", 413);
   }
 
   const imageData = Buffer.from(await file.arrayBuffer());
@@ -40,7 +40,7 @@ export async function readBannerImage(file: File) {
 export async function readBannerRequest(req: Request) {
   // Allow a small amount of multipart overhead in addition to the image.
   if (Number(req.headers.get("content-length")) > MAX_IMAGE_BYTES + 64 * 1024) {
-    throw new BannerInputError("Banner images must be 3 MB or smaller.", 413);
+    throw new BannerInputError("Banner images must be 4.5 MB or smaller.", 413);
   }
 
   try {

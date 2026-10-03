@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file");
-    const folder = String(formData.get("folder") || "branding").toLowerCase() as BlobFolder;
+    const folder = String(formData.get("folder") || "banners").toLowerCase() as BlobFolder;
     const replaceUrl = formData.get("replaceUrl") ? String(formData.get("replaceUrl")).trim() : undefined;
 
     if (!VALID_FOLDERS.includes(folder)) {
