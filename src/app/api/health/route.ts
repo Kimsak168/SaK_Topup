@@ -1,76 +1,75 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
+import { connectDB } from "@/lib/mongodb";
+import { Game } from "@/models/Game";
+import { Banner } from "@/models/Banner";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json(
-      { error: "Not found" },
-      { status: 404 }
-    );
-  }
-
-  const results = {
-    mongodb: "FAILED",
-    vizo: "FAILED",
-    g2bulk: "FAILED",
+  const startTime = Date.now();
+  const report: {
+    status: "ok" | "degraded" | "unhealthy";
+    timestamp: string;
+    responseTimeMs: number;
+    mongodb: {
+      status: "CONNECTED" | "FAILED";
+      database?: string;
+      readyState: number;
+      activeGames?: number;
+      activeBanners?: number;
+      error?: string;
+    };
+    suppliers: {
+      vizo: "CONFIGURED" | "NOT_CONFIGURED";
+      g2bulk: "CONFIGURED" | "NOT_CONFIGURED";
+    };
+  } = {
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    responseTimeMs: 0,
+    mongodb: {
+      status: "FAILED",
+      readyState: 0,
+    },
+    suppliers: {
+      vizo: process.env.VIZO_API_KEY && process.env.VIZO_BASE_URL ? "CONFIGURED" : "NOT_CONFIGURED",
+      g2bulk: process.env.G2BULK_API_KEY && process.env.G2BULK_BASE_URL ? "CONFIGURED" : "NOT_CONFIGURED",
+    },
   };
 
-  // Test MongoDB
   try {
-    if (!process.env.MONGODB_URI) {
-      throw new Error("Missing MongoDB URI");
+    const mongooseInstance = await connectDB();
+    const readyState = mongooseInstance.connection.readyState;
+    report.mongodb.readyState = readyState;
+
+    if (readyState === 1 && mongooseInstance.connection.db) {
+      report.mongodb.status = "CONNECTED";
+      report.mongodb.database = mongooseInstance.connection.db.databaseName;
+
+      // Count active items to verify query functionality
+      const [activeGames, activeBanners] = await Promise.all([
+        Game.countDocuments({ isActive: true }).catch(() => 0),
+        Banner.countDocuments({ isActive: true }).catch(() => 0),
+      ]);
+
+      report.mongodb.activeGames = activeGames;
+      report.mongodb.activeBanners = activeBanners;
+    } else {
+      report.mongodb.status = "FAILED";
+      report.status = "degraded";
     }
-
-    await mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-    });
-
-    results.mongodb = "CONNECTED";
-  } catch {
-    results.mongodb = "FAILED";
+  } catch (err) {
+    report.status = "unhealthy";
+    report.mongodb.status = "FAILED";
+    report.mongodb.error = err instanceof Error ? err.message : "Connection failed";
   }
 
-  // Test Vizo API
-  try {
-    const response = await fetch(
-      `${process.env.VIZO_BASE_URL}/api/v1/reseller/profile`,
-      {
-        headers: {
-          "X-API-Key": process.env.VIZO_API_KEY || "",
-        },
-        signal: AbortSignal.timeout(5000),
-        cache: "no-store",
-      }
-    );
+  report.responseTimeMs = Date.now() - startTime;
 
-    if (response.ok) {
-      results.vizo = "CONNECTED";
-    }
-  } catch {
-    results.vizo = "FAILED";
-  }
-
-  // Test G2Bulk API
-  try {
-    const response = await fetch(
-      `${process.env.G2BULK_BASE_URL}/getMe`,
-      {
-        headers: {
-          "X-API-Key": process.env.G2BULK_API_KEY || "",
-        },
-        signal: AbortSignal.timeout(5000),
-        cache: "no-store",
-      }
-    );
-
-    if (response.ok) {
-      results.g2bulk = "CONNECTED";
-    }
-  } catch {
-    results.g2bulk = "FAILED";
-  }
-
-  return NextResponse.json(results);
+  return NextResponse.json(report, {
+    status: report.status === "unhealthy" ? 503 : 200,
+    headers: {
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+    },
+  });
 }

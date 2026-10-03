@@ -10,59 +10,77 @@ import { getG2BulkCatalogue } from "@/lib/suppliers/g2bulk";
  * Fetch all active games for customer homepage and game list
  * Loads ONLY administrator-enabled games from MongoDB
  */
-export async function getClientGames(category?: string, query?: string): Promise<ClientGame[]> {
+export async function getClientGames(
+  category?: string,
+  query?: string,
+  options?: { timeoutMs?: number; throwOnError?: boolean }
+): Promise<ClientGame[]> {
+  const timeoutMs = options?.timeoutMs ?? 4500;
+  const throwOnError = options?.throwOnError ?? false;
+
   try {
-    await connectDB();
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Database request timed out")), timeoutMs)
+    );
 
-    const filter: Record<string, unknown> = { isActive: true };
-    if (category && category !== "all") {
-      filter.category = { $regex: new RegExp(`^${category}$`, "i") };
-    }
-    if (query && query.trim()) {
-      filter.$or = [
-        { name: { $regex: query.trim(), $options: "i" } },
-        { publisher: { $regex: query.trim(), $options: "i" } },
-        { category: { $regex: query.trim(), $options: "i" } },
-        { supplierGameCode: { $regex: query.trim(), $options: "i" } },
-      ];
-    }
+    const queryPromise = (async () => {
+      await connectDB();
 
-    const games = await Game.find(filter).sort({ isPopular: -1, sortOrder: 1, name: 1 }).lean();
+      const filter: Record<string, unknown> = { isActive: true };
+      if (category && category !== "all") {
+        filter.category = { $regex: new RegExp(`^${category}$`, "i") };
+      }
+      if (query && query.trim()) {
+        filter.$or = [
+          { name: { $regex: query.trim(), $options: "i" } },
+          { publisher: { $regex: query.trim(), $options: "i" } },
+          { category: { $regex: query.trim(), $options: "i" } },
+          { supplierGameCode: { $regex: query.trim(), $options: "i" } },
+        ];
+      }
 
-    return games.map((g) => {
-      // Free Fire must use Vizo exclusively
-      const isFreeFire =
-        g.name.toLowerCase().includes("free fire") ||
-        g.slug.includes("freefire") ||
-        (g.supplierGameCode && g.supplierGameCode.includes("freefire"));
+      const games = await Game.find(filter).sort({ isPopular: -1, sortOrder: 1, name: 1 }).lean();
 
-      const supplier = isFreeFire ? "vizo" : (g.supplier as "vizo" | "g2bulk");
-      const code = isFreeFire ? (g.supplierGameCode || "freefire_global") : (g.supplierGameCode || g.slug);
+      return games.map((g) => {
+        // Free Fire must use Vizo exclusively
+        const isFreeFire =
+          g.name.toLowerCase().includes("free fire") ||
+          g.slug.includes("freefire") ||
+          (g.supplierGameCode && g.supplierGameCode.includes("freefire"));
 
-      return {
-        id: String(g._id),
-        slug: g.slug,
-        name: g.name,
-        code,
-        supplier,
-        path: `/games/${supplier}/${code}`,
-        category: g.category,
-        image: g.customImage || g.image,
-        banner: g.banner,
-        publisher: g.publisher,
-        currencyName: g.currencyName,
-        description: g.description,
-        requiresServer: g.requiresServer,
-        serverLabel: g.serverLabel || "Server ID",
-        userIdLabel: g.userIdLabel || "Player ID",
-        instruction: g.instruction,
-        badge: g.badge,
-        isPopular: g.isPopular,
-        isTrending: g.isTrending,
-      };
-    });
+        const supplier = isFreeFire ? "vizo" : (g.supplier as "vizo" | "g2bulk");
+        const code = isFreeFire ? (g.supplierGameCode || "freefire_global") : (g.supplierGameCode || g.slug);
+
+        return {
+          id: String(g._id),
+          slug: g.slug,
+          name: g.name,
+          code,
+          supplier,
+          path: `/games/${supplier}/${code}`,
+          category: g.category,
+          image: g.customImage || g.image,
+          banner: g.banner,
+          publisher: g.publisher,
+          currencyName: g.currencyName,
+          description: g.description,
+          requiresServer: g.requiresServer,
+          serverLabel: g.serverLabel || "Server ID",
+          userIdLabel: g.userIdLabel || "Player ID",
+          instruction: g.instruction,
+          badge: g.badge,
+          isPopular: g.isPopular,
+          isTrending: g.isTrending,
+        };
+      });
+    })();
+
+    return await Promise.race([queryPromise, timeoutPromise]);
   } catch (err) {
-    console.warn("MongoDB connection fallback in getClientGames:", err);
+    console.error("[GameService] getClientGames error:", err instanceof Error ? err.message : String(err));
+    if (throwOnError) {
+      throw err;
+    }
     return [];
   }
 }

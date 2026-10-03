@@ -6,13 +6,22 @@ import { Setting } from "@/models/Setting";
 
 async function getLogoUrl(): Promise<string | undefined> {
   try {
-    await connectDB();
-    const setting = await Setting.findOne({ key: "general" }).select("logoUrl").lean();
-    return setting?.logoUrl || undefined;
+    const timeoutPromise = new Promise<undefined>((resolve) =>
+      setTimeout(() => resolve(undefined), 600)
+    );
+
+    const fetchLogo = async () => {
+      await connectDB();
+      const setting = await Setting.findOne({ key: "general" }).select("logoUrl").lean();
+      return setting?.logoUrl || undefined;
+    };
+
+    return await Promise.race([fetchLogo(), timeoutPromise]);
   } catch {
     return undefined;
   }
 }
+
 
 export default async function PublicCustomerLayout({
   children,

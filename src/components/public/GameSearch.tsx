@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Search, X, RotateCcw } from "lucide-react";
+import { useState, useMemo, useEffect, useCallback } from "react";
+import { Search, X, RotateCcw, AlertCircle } from "lucide-react";
 import { ClientGame } from "@/types/game";
 import { GameCard } from "./GameCard";
+import { GameGridSkeleton } from "./HomeSkeletons";
 
 interface GameSearchProps {
   initialGames: ClientGame[];
+  initialError?: string | null;
 }
 
 // Strictly check if game is marked popular by administrator
 function isGamePopular(game: ClientGame): boolean {
   return Boolean(game.isPopular);
 }
+
 
 // Aliases mapping for common gaming search shortcuts
 const SEARCH_ALIASES: Record<string, string[]> = {
@@ -31,9 +34,45 @@ const SEARCH_ALIASES: Record<string, string[]> = {
   wr: ["wild rift", "league of legends"],
 };
 
-export function GameSearch({ initialGames }: GameSearchProps) {
+export function GameSearch({ initialGames, initialError }: GameSearchProps) {
+  const [games, setGames] = useState<ClientGame[]>(() => initialGames || []);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [fetchError, setFetchError] = useState<string | null>(initialError || null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
+
+  // Sync when initialGames changes
+  useEffect(() => {
+    if (initialGames && initialGames.length > 0) {
+      setGames(initialGames);
+      setFetchError(null);
+    }
+  }, [initialGames]);
+
+  // Client-side fallback retry mechanism
+  const fetchClientGames = useCallback(async () => {
+    setIsLoading(true);
+    setFetchError(null);
+    try {
+      const res = await fetch("/api/games", {
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Failed to load games");
+      }
+      setGames(data.games || []);
+      if (!data.games || data.games.length === 0) {
+        setFetchError("មិនទាន់មានហ្គេមសកម្មក្នុងប្រព័ន្ធនៅឡើយទេ។");
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "មានបញ្ហាតភ្ជាប់បណ្តាញ";
+      setFetchError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -46,25 +85,25 @@ export function GameSearch({ initialGames }: GameSearchProps) {
   };
 
   // Sort games: Popular games first, then alphabetically
-  const sortedInitialGames = useMemo(() => {
-    return [...initialGames].sort((a, b) => {
+  const sortedGames = useMemo(() => {
+    return [...games].sort((a, b) => {
       const popA = isGamePopular(a) ? 1 : 0;
       const popB = isGamePopular(b) ? 1 : 0;
       if (popA !== popB) return popB - popA; // Popular games first
       return a.name.localeCompare(b.name);
     });
-  }, [initialGames]);
+  }, [games]);
 
   // Filter games based on search query (real-time filtering by name)
   const filteredGames = useMemo(() => {
     const rawQuery = activeQuery.trim().toLowerCase();
-    if (!rawQuery) return sortedInitialGames;
+    if (!rawQuery) return sortedGames;
 
     // Expand search terms with aliases if any
     const aliasTerms = SEARCH_ALIASES[rawQuery] || [];
     const searchTerms = [rawQuery, ...aliasTerms];
 
-    return sortedInitialGames.filter((game) => {
+    return sortedGames.filter((game) => {
       const name = game.name.toLowerCase();
       const slug = (game.slug || "").toLowerCase();
       const publisher = (game.publisher || "").toLowerCase();
@@ -76,7 +115,7 @@ export function GameSearch({ initialGames }: GameSearchProps) {
           publisher.includes(term)
       );
     });
-  }, [activeQuery, sortedInitialGames]);
+  }, [activeQuery, sortedGames]);
 
   return (
     <section id="games" className="w-full min-w-0 space-y-6 scroll-mt-28">
@@ -146,8 +185,28 @@ export function GameSearch({ initialGames }: GameSearchProps) {
         </form>
       </div>
 
-      {/* 3. Games Grid: Exactly 5 cards/row on desktop, 3-4 on tablets, 2 on mobile */}
-      {filteredGames.length > 0 ? (
+      {/* 3. Games Grid or Skeleton / Error / Empty States */}
+      {isLoading ? (
+        <GameGridSkeleton count={10} />
+      ) : fetchError && games.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card/60 px-5 py-12 text-center sm:py-16 shadow-soft">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-500/10 text-primary mb-3">
+            <AlertCircle className="h-6 w-6" />
+          </div>
+          <h3 className="text-base font-bold text-foreground">មិនអាចផ្ទុកទិន្នន័យហ្គេមបានទេ</h3>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground max-w-md break-words">
+            {fetchError}. សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិត ឬចុចប៊ូតុងខាងក្រោមដើម្បីព្យាយាមម្តងទៀត។
+          </p>
+          <button
+            type="button"
+            onClick={fetchClientGames}
+            className="public-button mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-bold text-primary-foreground shadow-md transition-all cursor-pointer active:scale-95"
+          >
+            <RotateCcw className="h-4 w-4" />
+            <span>ព្យាយាមម្តងទៀត (Retry)</span>
+          </button>
+        </div>
+      ) : filteredGames.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
           {filteredGames.map((game) => (
             <GameCard key={game.id || game.slug} game={game} />
@@ -160,18 +219,32 @@ export function GameSearch({ initialGames }: GameSearchProps) {
           </div>
           <h3 className="text-base font-bold text-foreground">រកមិនឃើញហ្គេមទេ</h3>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground max-w-sm break-words">
-            មិនមានលទ្ធផលសម្រាប់ &quot;{activeQuery}&quot;។ សូមព្យាយាមស្វែងរក Free Fire, PUBG Mobile ឬ Mobile Legends។
+            {activeQuery
+              ? `មិនមានលទ្ធផលសម្រាប់ "${activeQuery}"។ សូមព្យាយាមស្វែងរក Free Fire, PUBG Mobile ឬ Mobile Legends។`
+              : "មិនទាន់មានហ្គេមត្រូវបានបើកដំណើរការនៅឡើយទេ។"}
           </p>
-          <button
-            type="button"
-            onClick={handleClear}
-            className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent border border-pink-200 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary hover:text-primary-foreground hover:border-pink-500 transition-all cursor-pointer"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span>សម្អាតការស្វែងរក (Clear)</span>
-          </button>
+          {activeQuery ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-accent border border-pink-200 px-4 py-2.5 text-xs font-bold text-primary hover:bg-primary hover:text-primary-foreground hover:border-pink-500 transition-all cursor-pointer"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>សម្អាតការស្វែងរក (Clear)</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={fetchClientGames}
+              className="public-button mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-bold text-primary-foreground shadow-md transition-all cursor-pointer active:scale-95"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>ផ្ទុកឡើងវិញ (Reload)</span>
+            </button>
+          )}
         </div>
       )}
     </section>
   );
 }
+

@@ -21,22 +21,33 @@ export interface PublicBanner {
  */
 export async function getPublicBanners(): Promise<PublicBanner[]> {
   try {
-    await connectDB();
-    const banners = await Banner.find({ isActive: true })
-      .sort({ sortOrder: 1, createdAt: -1 })
-      .limit(4)
-      .lean();
+    const timeoutPromise = new Promise<PublicBanner[]>((resolve) =>
+      setTimeout(() => {
+        console.warn("[BannerService] Timeout waiting for MongoDB banners");
+        resolve([]);
+      }, 4000)
+    );
 
-    return banners.map((banner) => ({
-      id: String(banner._id),
-      title: banner.title || "",
-      subtitle: banner.subtitle ?? "",
-      badge: banner.badge ?? "",
-      imageUrl: banner.imageUrl,
-      targetUrl: banner.targetUrl ?? "",
-      ctaText: banner.ctaText ?? "",
-      accentColor: banner.accentColor || "pink",
-    }));
+    const fetchBanners = async (): Promise<PublicBanner[]> => {
+      await connectDB();
+      const banners = await Banner.find({ isActive: true })
+        .sort({ sortOrder: 1, createdAt: -1 })
+        .limit(4)
+        .lean();
+
+      return banners.map((banner) => ({
+        id: String(banner._id),
+        title: banner.title || "",
+        subtitle: banner.subtitle ?? "",
+        badge: banner.badge ?? "",
+        imageUrl: banner.imageUrl,
+        targetUrl: banner.targetUrl ?? "",
+        ctaText: banner.ctaText ?? "",
+        accentColor: banner.accentColor || "pink",
+      }));
+    };
+
+    return await Promise.race([fetchBanners(), timeoutPromise]);
   } catch (error) {
     console.warn("Unable to load homepage banners from MongoDB:", error);
     return [];
