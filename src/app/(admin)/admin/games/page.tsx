@@ -18,8 +18,6 @@ import {
   X,
   AlertTriangle,
   Gamepad2,
-  Upload,
-  Image as ImageIcon,
 } from "lucide-react";
 
 interface AdminGame {
@@ -91,31 +89,6 @@ export default function AdminGamesPage() {
     isActive: true,
   });
   const [isSavingGame, setIsSavingGame] = useState(false);
-  const [isUploadingGameImage, setIsUploadingGameImage] = useState(false);
-
-  const handleGameImageSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      toast.error("Please select a PNG, JPG, or WebP image");
-      e.target.value = "";
-      return;
-    }
-
-    try {
-      setIsUploadingGameImage(true);
-      const { uploadAdminImage } = await import("@/lib/clientBlobUpload");
-      const result = await uploadAdminImage(file, "games", editForm.customImage);
-      setEditForm((prev) => ({ ...prev, customImage: result.url }));
-      toast.success("Game picture uploaded to Vercel Blob!");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to upload image");
-    } finally {
-      setIsUploadingGameImage(false);
-      e.target.value = "";
-    }
-  };
 
   // Fetch games from API
   const fetchGames = useCallback(async () => {
@@ -694,55 +667,17 @@ export default function AdminGamesPage() {
                 />
               </div>
 
-              <div className="space-y-2">
+              <div>
                 <label className="block text-slate-400 font-semibold mb-1">
-                  Game Picture (Vercel Blob Storage)
+                  Custom Thumbnail Image URL (Overrides Supplier)
                 </label>
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#080a18] border border-white/10">
-                  <div className="relative h-16 w-16 shrink-0 rounded-xl overflow-hidden bg-slate-900 border border-white/10">
-                    <Image
-                      src={editForm.customImage || editingGame.image || "/images/freefire.jpg"}
-                      alt={editForm.name}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    <div className="text-[11px] text-slate-400 truncate">
-                      {editForm.customImage ? (
-                        <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                          <Check className="h-3 w-3" /> Custom Vercel Blob Active
-                        </span>
-                      ) : (
-                        <span>Default Supplier Picture</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/30 text-pink-300 font-bold text-xs transition">
-                        <Upload className="h-3.5 w-3.5" />
-                        <span>{isUploadingGameImage ? "Uploading..." : "Upload New Picture"}</span>
-                        <input
-                          type="file"
-                          accept="image/png,image/jpeg,image/webp"
-                          disabled={isUploadingGameImage}
-                          onChange={handleGameImageSelected}
-                          className="hidden"
-                        />
-                      </label>
-                      {editForm.customImage && (
-                        <button
-                          type="button"
-                          disabled={isUploadingGameImage}
-                          onClick={() => setEditForm((prev) => ({ ...prev, customImage: "" }))}
-                          className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition"
-                        >
-                          Reset
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <input
+                  type="text"
+                  placeholder="https://... or /images/..."
+                  value={editForm.customImage}
+                  onChange={(e) => setEditForm({ ...editForm, customImage: e.target.value })}
+                  className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none"
+                />
               </div>
 
               <div>

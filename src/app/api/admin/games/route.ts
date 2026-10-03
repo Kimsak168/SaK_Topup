@@ -124,27 +124,10 @@ export async function PATCH(req: NextRequest) {
     if (typeof category === "string") updateFields.category = category.trim();
     if (typeof name === "string") updateFields.name = name.trim();
 
-    const existingGame = await Game.findById(gameId);
-    if (!existingGame) {
-      return NextResponse.json({ success: false, error: "Game not found" }, { status: 404 });
-    }
-    const oldCustomImage = existingGame.customImage;
-
     const updated = await Game.findByIdAndUpdate(gameId, updateFields, { new: true }).lean();
 
     if (!updated) {
       return NextResponse.json({ success: false, error: "Game not found" }, { status: 404 });
-    }
-
-    if (
-      typeof customImage === "string" &&
-      oldCustomImage &&
-      oldCustomImage !== customImage.trim()
-    ) {
-      const { safeDeleteBlobIfOrphaned } = await import("@/lib/services/blobService");
-      await safeDeleteBlobIfOrphaned(oldCustomImage).catch((err) => {
-        console.warn("[Admin Games] Error cleaning up replaced game blob:", err);
-      });
     }
 
     return NextResponse.json({

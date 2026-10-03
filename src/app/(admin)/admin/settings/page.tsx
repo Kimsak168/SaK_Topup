@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
 import { toast } from "sonner";
 import {
   Save,
@@ -14,9 +13,6 @@ import {
   CreditCard,
   Wallet,
   Sparkles,
-  Upload,
-  Trash2,
-  Check,
 } from "lucide-react";
 
 export default function AdminSettingsPage() {
@@ -36,36 +32,6 @@ export default function AdminSettingsPage() {
       "Welcome to SakSuuu Top-Up! Direct wholesale supplier pricing for Free Fire, PUBG Mobile & Mobile Legends.",
     enabledGateways: ["khqr", "aba", "wing", "binance"],
   });
-  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) {
-      toast.error("Please select a PNG, JPG, or WebP image");
-      e.target.value = "";
-      return;
-    }
-
-    try {
-      setIsUploadingLogo(true);
-      const { uploadAdminImage } = await import("@/lib/clientBlobUpload");
-      const result = await uploadAdminImage(file, "branding", form.logoUrl);
-      setForm((prev) => ({ ...prev, logoUrl: result.url }));
-      toast.success("Logo uploaded to Vercel Blob! Click Save Settings to apply.");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to upload logo");
-    } finally {
-      setIsUploadingLogo(false);
-      e.target.value = "";
-    }
-  };
-
-  const handleRemoveLogo = () => {
-    setForm((prev) => ({ ...prev, logoUrl: "" }));
-    toast.info("Logo reset to default mascot. Click Save Settings to apply.");
-  };
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -194,63 +160,6 @@ export default function AdminSettingsPage() {
               placeholder="Notice shown to customers atop the website..."
               className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
             />
-          </div>
-
-          {/* Logo / Branding Image Uploader */}
-          <div className="space-y-2 pt-2 border-t border-white/5">
-            <label className="font-bold text-slate-300 text-xs">
-              Website Logo & Brand Picture (Vercel Blob Storage)
-            </label>
-            <div className="flex items-center gap-4 p-4 rounded-xl bg-[#08091a] border border-white/10">
-              <div className="relative h-16 w-16 shrink-0 rounded-xl overflow-hidden bg-slate-900 border border-white/10 flex items-center justify-center p-1.5">
-                <Image
-                  src={form.logoUrl || "/images/logo.png"}
-                  alt="Store Logo"
-                  width={64}
-                  height={64}
-                  unoptimized
-                  className="object-contain max-h-full max-w-full"
-                />
-              </div>
-
-              <div className="flex-1 min-w-0 space-y-2">
-                <div className="text-xs text-slate-400">
-                  {form.logoUrl ? (
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1.5">
-                      <Check className="h-3.5 w-3.5" /> Custom Vercel Blob Logo Active
-                    </span>
-                  ) : (
-                    <span>Default Ghost Mascot (/images/logo.png)</span>
-                  )}
-                </div>
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-500/20 hover:bg-pink-500/30 border border-pink-500/30 text-pink-300 font-bold text-xs transition">
-                    <Upload className="h-3.5 w-3.5" />
-                    <span>{isUploadingLogo ? "Uploading..." : "Upload New Logo"}</span>
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      disabled={isUploadingLogo}
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                    />
-                  </label>
-
-                  {form.logoUrl && (
-                    <button
-                      type="button"
-                      disabled={isUploadingLogo}
-                      onClick={handleRemoveLogo}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold transition"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      <span>Reset to Default</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 

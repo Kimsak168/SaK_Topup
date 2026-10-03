@@ -303,23 +303,13 @@ export default function AdminPackagesPage() {
 
     try {
       setIsUploadingImage(true);
-      let customImageUrl = urlInput.trim();
-
-      // If selected file is larger than 4.5MB, upload directly to Vercel Blob via client upload
-      if (selectedFile && selectedFile.size > 4.5 * 1024 * 1024) {
-        toast.info("Uploading large package image directly to Vercel Blob...");
-        const { uploadAdminImage } = await import("@/lib/clientBlobUpload");
-        const blobResult = await uploadAdminImage(selectedFile, "packages", imageModalPkg.customImage);
-        customImageUrl = blobResult.url;
-      }
-
       const formData = new FormData();
       formData.append("packageId", imageModalPkg.id);
 
-      if (customImageUrl) {
-        formData.append("customImage", customImageUrl);
-      } else if (selectedFile) {
+      if (selectedFile) {
         formData.append("image", selectedFile);
+      } else if (urlInput.trim()) {
+        formData.append("customImage", urlInput.trim());
       } else if (!previewUrl) {
         // Clearing image
         formData.append("customImage", "");

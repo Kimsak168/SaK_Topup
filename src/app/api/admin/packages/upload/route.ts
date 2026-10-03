@@ -4,11 +4,6 @@ import { connectDB } from "@/lib/mongodb";
 import { GamePackage } from "@/models/GamePackage";
 import { requireAdminAuth } from "@/lib/auth";
 import { readBannerImage } from "@/lib/bannerUpload";
-import {
-  hasBlobToken,
-  uploadToBlob,
-  safeDeleteBlobIfOrphaned,
-} from "@/lib/services/blobService";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -23,7 +18,6 @@ export async function POST(req: NextRequest) {
     let customImageUrl: string | null = null;
     let imageData: Buffer | undefined;
     let imageContentType: string | undefined;
-    let originalFileName = "package.png";
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -31,7 +25,6 @@ export async function POST(req: NextRequest) {
       const file = formData.get("image");
 
       if (file instanceof File && file.size > 0) {
-        originalFileName = file.name;
         const parsed = await readBannerImage(file);
         imageData = parsed.imageData;
         imageContentType = parsed.imageContentType;
@@ -58,36 +51,16 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    const existingPkg = await GamePackage.findById(packageId);
-    if (!existingPkg) {
-      return NextResponse.json(
-        { success: false, error: "Package not found." },
-        { status: 404 }
-      );
-    }
-
-    const oldImageUrl = existingPkg.customImage;
     const updateFields: Record<string, unknown> = {
       updatedAt: new Date(),
     };
 
     if (imageData && imageContentType) {
-      if (hasBlobToken()) {
-        const ext = imageContentType.split("/")[1] || "png";
-        const uploaded = await uploadToBlob({
-          file: imageData,
-          filename: `package-${packageId}.${ext}`,
-          folder: "packages",
-          contentType: imageContentType,
-        });
-        updateFields.customImage = uploaded.url;
-      } else {
-        updateFields.imageData = imageData;
-        updateFields.imageContentType = imageContentType;
-        updateFields.customImage = `/api/packages/${packageId}/image?v=${randomUUID()}`;
-      }
+      updateFields.imageData = imageData;
+      updateFields.imageContentType = imageContentType;
+      updateFields.customImage = `/api/packages/${packageId}/image?v=${randomUUID()}`;
     } else if (customImageUrl !== null) {
-      updateFields.customImage = customImageUrl || null;
+      updateFields.customImage = customImageUrl;
       if (!customImageUrl) {
         updateFields.imageData = null;
         updateFields.imageContentType = null;
@@ -105,14 +78,6 @@ export async function POST(req: NextRequest) {
         { success: false, error: "Package not found." },
         { status: 404 }
       );
-    }
-
-    // Safely delete old blob if replaced or removed
-    const newImageUrl = updateFields.customImage as string | null | undefined;
-    if (oldImageUrl && oldImageUrl !== newImageUrl) {
-      await safeDeleteBlobIfOrphaned(oldImageUrl).catch((err) => {
-        console.warn("[Package Upload] Could not cleanup replaced package blob:", err);
-      });
     }
 
     return NextResponse.json({
