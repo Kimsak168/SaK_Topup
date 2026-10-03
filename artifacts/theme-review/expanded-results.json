@@ -1,0 +1,2400 @@
+{
+  "results": [
+    {
+      "name": "catalogue-populated-desktop",
+      "url": "/theme-review-preview",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ហ្គេមទាំងអស់",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": "233.594px 233.594px 233.609px 233.594px 233.609px",
+      "cards": 6,
+      "cardBackground": "rgb(255, 255, 255)",
+      "games": [
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game"
+      ],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "ស្វែងរកហ្គេម",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": [
+        "SakSuuu Logo"
+      ]
+    },
+    {
+      "name": "game-desktop",
+      "url": "/theme-review-preview",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Mobile Legends",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 6,
+      "inputs": [
+        {
+          "label": "player-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "label": "server-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "catalogue-populated-mobile",
+      "url": "/theme-review-preview",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ហ្គេមទាំងអស់",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": "167px 167px",
+      "cards": 6,
+      "cardBackground": "rgb(255, 255, 255)",
+      "games": [
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game",
+        "/theme-review-preview?view=game"
+      ],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "ស្វែងរកហ្គេម",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "game-mobile",
+      "url": "/theme-review-preview",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Mobile Legends",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 6,
+      "inputs": [
+        {
+          "label": "player-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "label": "server-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "game-tablet",
+      "url": "/theme-review-preview",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Mobile Legends",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 6,
+      "inputs": [
+        {
+          "label": "player-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        },
+        {
+          "label": "server-id",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 84.359375,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 321.4375,
+            "bottom": 101,
+            "left": 84.359375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 424.5,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 504.359375,
+            "bottom": 80,
+            "left": 424.5
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 504.359375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 591.46875,
+            "bottom": 80,
+            "left": 504.359375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 887.625,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 931.625,
+            "bottom": 86,
+            "left": 887.625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "checkout-desktop",
+      "url": "/checkout",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Confirm & Pay",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-results-desktop",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-detail-desktop",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-paid-desktop",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Received & Verified!",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "cancel-desktop",
+      "url": "/payment/cancel",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Cancelled",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "not-found-desktop",
+      "url": "/does-not-exist",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Game Not Found",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [],
+      "images": []
+    },
+    {
+      "name": "success-pending-desktop",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Verifying Payment with ABA/KHQR...",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-pending-desktop",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-failed-desktop",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Not Completed",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-empty-desktop",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 101,
+            "y": 27,
+            "width": 237.078125,
+            "height": 74,
+            "top": 27,
+            "right": 338.078125,
+            "bottom": 101,
+            "left": 101
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 632.515625,
+            "y": 48,
+            "width": 79.859375,
+            "height": 32,
+            "top": 48,
+            "right": 712.375,
+            "bottom": 80,
+            "left": 632.515625
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 712.375,
+            "y": 48,
+            "width": 87.109375,
+            "height": 32,
+            "top": 48,
+            "right": 799.484375,
+            "bottom": 80,
+            "left": 712.375
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 1287,
+            "y": 42,
+            "width": 44,
+            "height": 44,
+            "top": 42,
+            "right": 1331,
+            "bottom": 86,
+            "left": 1287
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "checkout-mobile",
+      "url": "/checkout",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Confirm & Pay",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-results-mobile",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-detail-mobile",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-paid-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Received & Verified!",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "cancel-mobile",
+      "url": "/payment/cancel",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Cancelled",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "not-found-mobile",
+      "url": "/does-not-exist",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Game Not Found",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [],
+      "images": []
+    },
+    {
+      "name": "success-pending-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Verifying Payment with ABA/KHQR...",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-pending-mobile",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-failed-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Not Completed",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-empty-mobile",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 37.640625,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 170.1875,
+            "bottom": 71,
+            "left": 37.640625
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 129.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 187.890625,
+            "bottom": 108,
+            "left": 129.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 187.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 252.265625,
+            "bottom": 108,
+            "left": 187.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 308.359375,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 344.359375,
+            "bottom": 64,
+            "left": 308.359375
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "checkout-small-mobile",
+      "url": "/checkout",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Confirm & Pay",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-results-small-mobile",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-detail-small-mobile",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-paid-small-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Received & Verified!",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "cancel-small-mobile",
+      "url": "/payment/cancel",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Cancelled",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "not-found-small-mobile",
+      "url": "/does-not-exist",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Game Not Found",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [],
+      "images": []
+    },
+    {
+      "name": "success-pending-small-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Verifying Payment with ABA/KHQR...",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "order-pending-small-mobile",
+      "url": "/orders/VISUAL-REVIEW",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "ORD-VISUAL-REVIEW",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "success-failed-small-mobile",
+      "url": "/payment/success",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Payment Not Completed",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    },
+    {
+      "name": "orders-empty-small-mobile",
+      "url": "/orders",
+      "title": "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+      "heading": "Track Your Top-Up Order",
+      "headingColor": "rgb(17, 24, 39)",
+      "background": "#f8fafc",
+      "foreground": "#111827",
+      "overflow": false,
+      "columns": null,
+      "cards": 0,
+      "games": [],
+      "packages": 0,
+      "inputs": [
+        {
+          "label": "Order number or player ID",
+          "color": "rgb(17, 24, 39)",
+          "background": "rgb(255, 255, 255)"
+        }
+      ],
+      "nav": [
+        {
+          "label": "SakSuuu Home",
+          "box": {
+            "x": 34.84375,
+            "y": 21,
+            "width": 132.546875,
+            "height": 50,
+            "top": 21,
+            "right": 167.390625,
+            "bottom": 71,
+            "left": 34.84375
+          }
+        },
+        {
+          "label": "Home",
+          "box": {
+            "x": 94.734375,
+            "y": 84,
+            "width": 58.15625,
+            "height": 24,
+            "top": 84,
+            "right": 152.890625,
+            "bottom": 108,
+            "left": 94.734375
+          }
+        },
+        {
+          "label": "Games",
+          "box": {
+            "x": 152.890625,
+            "y": 84,
+            "width": 64.375,
+            "height": 24,
+            "top": 84,
+            "right": 217.265625,
+            "bottom": 108,
+            "left": 152.890625
+          }
+        },
+        {
+          "label": "Telegram Support",
+          "box": {
+            "x": 241.15625,
+            "y": 28,
+            "width": 36,
+            "height": 36,
+            "top": 28,
+            "right": 277.15625,
+            "bottom": 64,
+            "left": 241.15625
+          }
+        }
+      ],
+      "images": []
+    }
+  ],
+  "selection": {
+    "selected": true,
+    "border": "rgb(190, 24, 93)",
+    "background": "rgb(253, 242, 248)",
+    "columns": "250px 250px 250px"
+  }
+}

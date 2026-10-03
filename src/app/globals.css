@@ -1,0 +1,357 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Admin portals mount under body, so include the server-rendered admin scope. */
+@custom-variant dark (&:is(.dark *, :root:has(.admin-theme) *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter), var(--font-khmer), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+  --font-heading: var(--font-inter), var(--font-khmer), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-blue: var(--brand-blue);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-card-border: var(--card-border);
+  --shadow-soft: 0 8px 30px -12px rgb(71 85 105 / 0.18);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+}
+
+:root {
+  color-scheme: light;
+  --background: #f8fafc;
+  --foreground: #111827;
+  --card: #ffffff;
+  --card-foreground: #111827;
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+  --primary: #be185d;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #334155;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #fdf2f8;
+  --accent-foreground: #9d174d;
+  --destructive: #be123c;
+  --border: #e2e8f0;
+  --input: #94a3b8;
+  --ring: #be185d;
+  --brand-purple: #7e22ce;
+  --brand-blue: #1d4ed8;
+  --success: #065f46;
+  --warning: #92400e;
+  --card-border: #ead5ed;
+  --radius: 0.75rem;
+}
+
+/* Preserve the existing admin palette, including body-mounted dialogs. */
+:root:has(.admin-theme),
+.dark {
+  --background: #070814;
+  --foreground: #f8fafc;
+  --card: #0d0f22;
+  --card-foreground: #f8fafc;
+  --popover: #0d0f22;
+  --popover-foreground: #f8fafc;
+  --primary: #ff2e93;
+  --primary-foreground: #ffffff;
+  --secondary: #171b38;
+  --secondary-foreground: #e2e8f0;
+  --muted: #131730;
+  --muted-foreground: #94a3b8;
+  --accent: #201738;
+  --accent-foreground: #f472b6;
+  --destructive: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #ff2e93;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 7rem;
+    font-family: var(--font-sans);
+  }
+  * {
+    border-color: var(--border);
+  }
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+  input, button, textarea, select, optgroup {
+    font-family: var(--font-sans);
+  }
+  :where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 4px;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+/* Public components share semantic colors without overriding utility classes. */
+@layer components {
+  .public-surface {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .public-button {
+    color: var(--primary-foreground);
+    background: linear-gradient(120deg, var(--primary), var(--brand-purple));
+    box-shadow: 0 4px 12px rgb(190 24 93 / 0.16);
+    transition: transform 250ms ease, box-shadow 250ms ease;
+  }
+
+  .public-button:hover:not(:disabled),
+  .group:hover .public-button {
+    box-shadow: 0 8px 22px rgb(190 24 93 / 0.24);
+    transform: translateY(-1px);
+  }
+
+  .public-button:disabled {
+    color: var(--secondary-foreground);
+    background: var(--secondary);
+    box-shadow: none;
+    opacity: 1;
+  }
+
+  .public-button-blue {
+    background: linear-gradient(120deg, #0369a1, var(--brand-blue));
+  }
+
+  .public-order-details > div {
+    gap: 0.75rem;
+  }
+
+  .public-order-details > div > :last-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+}
+
+/* Custom Gaming Aesthetics */
+.neon-glow-pink {
+  box-shadow: 0 0 30px -4px rgba(255, 46, 147, 0.5), 0 0 10px -2px rgba(255, 46, 147, 0.3);
+}
+
+.neon-glow-purple {
+  box-shadow: 0 0 30px -4px rgba(139, 92, 246, 0.5), 0 0 10px -2px rgba(139, 92, 246, 0.3);
+}
+
+.neon-border-pink {
+  border-color: rgba(255, 46, 147, 0.6);
+  box-shadow: 0 0 15px rgba(255, 46, 147, 0.35);
+}
+
+.neon-border-purple {
+  border-color: rgba(139, 92, 246, 0.6);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.35);
+}
+
+.cyber-card {
+  background: linear-gradient(180deg, rgba(20, 24, 52, 0.7) 0%, rgba(11, 13, 29, 0.85) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cyber-card:hover {
+  border-color: rgba(255, 46, 147, 0.4);
+  box-shadow: 0 12px 30px -10px rgba(255, 46, 147, 0.25), 0 0 20px -5px rgba(139, 92, 246, 0.2);
+  transform: translateY(-3px);
+}
+
+.cyber-card-active {
+  background: linear-gradient(180deg, rgba(37, 24, 60, 0.9) 0%, rgba(20, 16, 38, 0.95) 100%);
+  border-color: #ff2e93;
+  box-shadow: 0 0 20px rgba(255, 46, 147, 0.35);
+}
+
+.cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.cyber-radial-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(255, 46, 147, 0.15) 0%, rgba(139, 92, 246, 0.1) 40%, transparent 70%);
+}
+
+.gradient-text-saksuuu {
+  background: linear-gradient(135deg, #ff4181 0%, #ff2e93 30%, #c084fc 70%, #818cf8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-btn-saksuuu {
+  background: linear-gradient(135deg, #ff2e93 0%, #9333ea 100%);
+  transition: all 0.25s ease;
+}
+
+.gradient-btn-saksuuu:hover {
+  background: linear-gradient(135deg, #ff4181 0%, #a855f7 100%);
+  box-shadow: 0 0 25px rgba(255, 46, 147, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Animated Shimmer & Neon Glow for SakSuuu Brand Logo */
+@keyframes brand-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.saksuuu-brand-text {
+  background: linear-gradient(
+    110deg,
+    #38bdf8 0%,
+    #00f2fe 25%,
+    #ffffff 50%,
+    #00f2fe 75%,
+    #38bdf8 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brand-shimmer 4s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.65)) drop-shadow(0 0 20px rgba(2, 132, 199, 0.35));
+}
+
+/* Light-theme variant for the navbar brand text */
+.saksuuu-brand-text-light {
+  background: linear-gradient(
+    110deg,
+    #2563eb 0%,
+    #0369a1 25%,
+    #7c3aed 50%,
+    #0369a1 75%,
+    #2563eb 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: brand-shimmer 4s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3)) drop-shadow(0 0 16px rgba(124, 58, 237, 0.2));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .saksuuu-brand-text,
+  .saksuuu-brand-text-light {
+    animation: none;
+    background-position: 0% 50%;
+  }
+}
+
+/* Floating Capsule Navbar Animations */
+@keyframes navbar-float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-navbar-float {
+  animation: navbar-float-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-navbar-float {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* Subtle Popular Game Pulse / Glow Animation */
+@keyframes popular-glow {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(255, 46, 147, 0.18), 0 4px 12px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 46, 147, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 46, 147, 0.35), 0 0 12px rgba(168, 85, 247, 0.25), 0 4px 14px rgba(0, 0, 0, 0.5);
+    border-color: rgba(255, 46, 147, 0.6);
+  }
+}
+
+.animate-popular-card {
+  animation: popular-glow 3.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-popular-card {
+    animation: none;
+  }
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ec4899;
+}

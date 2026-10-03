@@ -1,0 +1,33 @@
+{
+  "changed": [
+    "app/error.tsx",
+    "app/globals.css",
+    "app/layout.tsx",
+    "app/loading.tsx",
+    "app/not-found.tsx",
+    "app/(public)/layout.tsx",
+    "app/(public)/page.tsx",
+    "components/public/CustomerFooter.tsx",
+    "components/public/CustomerNavbar.tsx",
+    "components/public/GameCard.tsx",
+    "components/public/GameSearch.tsx",
+    "components/public/GameTopUpClient.tsx",
+    "components/public/HowItWorks.tsx",
+    "components/public/PromotionalBanner.tsx",
+    "app/(admin)/admin/layout.tsx",
+    "app/(public)/checkout/page.tsx",
+    "app/(public)/games/page.tsx",
+    "app/(public)/orders/page.tsx",
+    "app/(public)/orders/[id]/page.tsx",
+    "app/(public)/payment/cancel/page.tsx",
+    "app/(public)/payment/success/page.tsx",
+    "app/(public)/games/[supplier]/[code]/loading.tsx",
+    "app/(public)/games/[supplier]/[code]/page.tsx"
+  ],
+  "nonClassChanges": [
+    "app/layout.tsx",
+    "app/(public)/layout.tsx",
+    "components/public/HowItWorks.tsx"
+  ],
+  "protectedChanges": []
+}
