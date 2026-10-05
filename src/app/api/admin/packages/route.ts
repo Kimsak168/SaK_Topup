@@ -1,3 +1,4 @@
+import { invalidateCatalogueCache } from "@/lib/services/cacheService";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { GamePackage } from "@/models/GamePackage";
@@ -170,6 +171,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Package not found" }, { status: 404 });
     }
 
+    invalidateCatalogueCache();
     return NextResponse.json({
       success: true,
       message: "Package updated successfully",

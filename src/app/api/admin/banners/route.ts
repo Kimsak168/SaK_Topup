@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { Types } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
+import { invalidateBannerCache } from "@/lib/services/cacheService";
 import { connectDB } from "@/lib/mongodb";
 import { Banner } from "@/models/Banner";
 import { requireAdminAuth } from "@/lib/auth";
@@ -105,6 +106,7 @@ export async function POST(req: NextRequest) {
       imageUrl: finalImageUrl,
     });
 
+    invalidateBannerCache();
     return NextResponse.json({ success: true, banner: { id: String(banner._id), imageUrl: finalImageUrl } }, { status: 201 });
   } catch (error) {
     return errorResponse(error);
@@ -161,6 +163,7 @@ export async function PATCH(req: NextRequest) {
       { new: true, runValidators: true }
     );
 
+    invalidateBannerCache();
     // Only delete the old blob after the database update succeeds, and only if not used elsewhere
     if (finalImageUrl && oldImageUrl && oldImageUrl !== finalImageUrl) {
       await safeDeleteBlobIfOrphaned(oldImageUrl).catch((err) => {
@@ -189,6 +192,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Banner not found." }, { status: 404 });
     }
 
+    invalidateBannerCache();
     // Safely delete the blob from Vercel Blob if orphaned
     if (banner.imageUrl) {
       await safeDeleteBlobIfOrphaned(banner.imageUrl).catch((err) => {

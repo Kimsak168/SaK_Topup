@@ -18,6 +18,7 @@ import {
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
   const [form, setForm] = useState({
     siteName: "SakSuuu Game Top-Up",
@@ -39,11 +40,12 @@ export default function AdminSettingsPage() {
       const res = await fetch("/api/admin/settings", { cache: "no-store" });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      if (data.success && data.settings) {
-        setForm(data.settings);
-      }
+      if (!data.success || !data.settings) throw new Error(data.error || "Settings unavailable");
+      setForm(data.settings);
+      setLoadError("");
     } catch (err) {
       console.error("Failed to load settings:", err);
+      setLoadError(err instanceof Error ? err.message : "Settings unavailable");
       toast.error("Failed to fetch website settings");
     } finally {
       setLoading(false);
@@ -56,6 +58,7 @@ export default function AdminSettingsPage() {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loadError) return;
     try {
       setSaving(true);
       const res = await fetch("/api/admin/settings", {
@@ -89,17 +92,25 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="p-16 flex flex-col items-center justify-center gap-3 text-slate-400">
-        <RefreshCw className="h-6 w-6 animate-spin text-pink-500" />
-        <span className="text-xs">Loading website settings...</span>
+      <div className="admin-page max-w-4xl" aria-label="Loading website settings">
+        <div className="admin-page-heading"><div><p className="admin-eyebrow">Platform</p><h1>Website Settings</h1></div></div>
+        <div className="admin-skeleton h-40 rounded-2xl" />
+        <div className="admin-skeleton h-40 rounded-2xl" />
+        <div className="admin-skeleton h-40 rounded-2xl" />
       </div>
     );
   }
 
+  if (loadError) return <div className="admin-page max-w-4xl">
+    <div className="admin-page-heading"><div><p className="admin-eyebrow">Platform</p><h1>Website Settings</h1></div></div>
+    <div className="admin-error" role="alert">Settings could not be loaded: {loadError}
+      <button type="button" onClick={() => void fetchSettings()}>Try again</button></div>
+  </div>;
+
   return (
-    <div className="space-y-6 animate-in fade-in duration-300 max-w-4xl">
+    <div className="admin-page animate-in fade-in duration-300 max-w-4xl">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="admin-page-heading">
         <div>
           <h1 className="text-2xl font-black tracking-tight">Website Settings</h1>
           <p className="text-xs text-slate-400 mt-1">

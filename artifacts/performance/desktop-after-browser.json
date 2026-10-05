@@ -1,0 +1,2978 @@
+{
+  "base": "http://localhost:3100",
+  "at": "2026-10-04T04:48:56.958Z",
+  "viewportWidth": 1440,
+  "cpuSlowdown": 4,
+  "browserCache": "disabled",
+  "homeGamesReadyMs": 360.60000000009313,
+  "home": {
+    "lcp": 1652,
+    "longTasks": [
+      {
+        "start": 172.10000000009313,
+        "duration": 130
+      },
+      {
+        "start": 1412,
+        "duration": 172
+      }
+    ],
+    "commits": [
+      {
+        "at": 410.10000000009313,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 418.39999999990687,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 419.79999999981374,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 422.39999999990687,
+        "rendered": [
+          "n"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1681.6999999997206,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1687.1000000000931,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1772.8999999999069,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1807.3999999999069,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1843.6999999997206,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1652
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1652
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 350.89999999990687,
+      "navigationId": 8872,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.7999999998137355,
+      "domainLookupStart": 0.7999999998137355,
+      "domainLookupEnd": 0.7999999998137355,
+      "connectStart": 0.7999999998137355,
+      "secureConnectionStart": 0,
+      "connectEnd": 0.7999999998137355,
+      "requestStart": 1.7999999998137355,
+      "responseStart": 21.699999999720603,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 21.699999999720603,
+      "responseEnd": 23.799999999813735,
+      "transferSize": 16651,
+      "encodedBodySize": 16351,
+      "decodedBodySize": 120496,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 305,
+      "domContentLoadedEventStart": 305.10000000009313,
+      "domContentLoadedEventEnd": 305.79999999981374,
+      "domComplete": 350.29999999981374,
+      "loadEventStart": 350.6999999997206,
+      "loadEventEnd": 350.89999999990687,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=1920&q=75",
+        "width": 1324,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=1920&q=75",
+        "width": 1324,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=1920&q=75",
+        "width": 865,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=1920&q=75",
+        "width": 865,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=384&q=75",
+        "width": 225,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=384&q=75",
+        "width": 288,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 6.5,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 7.600000000093132,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 8,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 8.100000000093132,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 56.10000000009313,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 9.299999999813735,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=1920&q=75",
+        "type": "link",
+        "ms": 10.199999999720603,
+        "transfer": 126128,
+        "bytes": 125828
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+        "type": "link",
+        "ms": 10.299999999813735,
+        "transfer": 23925,
+        "bytes": 23625
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+        "type": "link",
+        "ms": 55.5,
+        "transfer": 3914,
+        "bytes": 3614
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 55.299999999813735,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+        "type": "script",
+        "ms": 63.5,
+        "transfer": 71876,
+        "bytes": 71576
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 58.799999999813735,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+        "type": "script",
+        "ms": 53.89999999990687,
+        "transfer": 4152,
+        "bytes": 3852
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+        "type": "script",
+        "ms": 57.700000000186265,
+        "transfer": 13381,
+        "bytes": 13081
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 62.3000000002794,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+        "type": "script",
+        "ms": 61.799999999813735,
+        "transfer": 2470,
+        "bytes": 2170
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 62.10000000009313,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+        "type": "script",
+        "ms": 63.89999999990687,
+        "transfer": 5534,
+        "bytes": 5234
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 3.3000000002793968,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 15.399999999906868,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 12.100000000093132,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 11.5,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=1920&q=75",
+        "type": "img",
+        "ms": 21.5,
+        "transfer": 202774,
+        "bytes": 202474
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=384&q=75",
+        "type": "img",
+        "ms": 13.899999999906868,
+        "transfer": 29984,
+        "bytes": 29684
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+        "type": "img",
+        "ms": 344.89999999990687,
+        "transfer": 25434,
+        "bytes": 25134
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=384&q=75",
+        "type": "img",
+        "ms": 27.600000000093132,
+        "transfer": 10420,
+        "bytes": 10120
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=384&q=75",
+        "type": "img",
+        "ms": 401.89999999990687,
+        "transfer": 16946,
+        "bytes": 16646
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=384&q=75",
+        "type": "img",
+        "ms": 28.299999999813735,
+        "transfer": 16440,
+        "bytes": 16140
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=384&q=75",
+        "type": "img",
+        "ms": 28.399999999906868,
+        "transfer": 15442,
+        "bytes": 15142
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=384&q=75",
+        "type": "img",
+        "ms": 29.299999999813735,
+        "transfer": 8884,
+        "bytes": 8584
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=384&q=75",
+        "type": "img",
+        "ms": 30.600000000093132,
+        "transfer": 29828,
+        "bytes": 29528
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=384&q=75",
+        "type": "img",
+        "ms": 32.10000000009313,
+        "transfer": 12032,
+        "bytes": 11732
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=384&q=75",
+        "type": "img",
+        "ms": 32.60000000009313,
+        "transfer": 21092,
+        "bytes": 20792
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 10.799999999813735,
+        "transfer": 480,
+        "bytes": 180
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 10.299999999813735,
+        "transfer": 524,
+        "bytes": 224
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 9.800000000279397,
+        "transfer": 522,
+        "bytes": 222
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 9.100000000093132,
+        "transfer": 513,
+        "bytes": 213
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 4.100000000093132,
+        "transfer": 514,
+        "bytes": 214
+      },
+      {
+        "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 3.7000000001862645,
+        "transfer": 1252,
+        "bytes": 952
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+        "type": "fetch",
+        "ms": 5.600000000093132,
+        "transfer": 2464,
+        "bytes": 2164
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1725,
+        "bytes": 1425
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+        "type": "fetch",
+        "ms": 5.399999999906868,
+        "transfer": 1720,
+        "bytes": 1420
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1717,
+        "bytes": 1417
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 3.900000000372529,
+        "transfer": 1235,
+        "bytes": 935
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.7000000001862645,
+        "transfer": 1238,
+        "bytes": 938
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/8_ball_pool?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.5,
+        "transfer": 1236,
+        "bytes": 936
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/asphalt9?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 9.299999999813735,
+        "transfer": 1238,
+        "bytes": 938
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/bigo?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 5.600000000093132,
+        "transfer": 1231,
+        "bytes": 931
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/bloodstrike?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.100000000093132,
+        "transfer": 1235,
+        "bytes": 935
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/fifa_futcoins_console?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.899999999906868,
+        "transfer": 1243,
+        "bytes": 943
+      }
+    ]
+  },
+  "activeGames": 11,
+  "detailNavigationMs": 299,
+  "detail": {
+    "lcp": 1652,
+    "longTasks": [
+      {
+        "start": 172.10000000009313,
+        "duration": 130
+      },
+      {
+        "start": 1412,
+        "duration": 172
+      }
+    ],
+    "commits": [
+      {
+        "at": 410.10000000009313,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 418.39999999990687,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 419.79999999981374,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 422.39999999990687,
+        "rendered": [
+          "n"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1681.6999999997206,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1687.1000000000931,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1772.8999999999069,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1807.3999999999069,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1843.6999999997206,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 3224.399999999907,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 3274.399999999907,
+        "rendered": [
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 3289.6999999997206,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 3357.7999999998137,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "u",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "_",
+          "y",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": [
+          "7949",
+          "3503",
+          "2819",
+          "3502",
+          "2811",
+          "2793",
+          "2794",
+          "2771",
+          "2719",
+          "2779",
+          "2720",
+          "2764",
+          "2743",
+          "2738",
+          "2739",
+          "2740",
+          "2741",
+          "2772",
+          "2750",
+          "2721",
+          "2765",
+          "2800",
+          "2812",
+          "2735",
+          "2736",
+          "2805",
+          "2744",
+          "2785",
+          "2763",
+          "2773",
+          "2756",
+          "2813",
+          "2737",
+          "2774",
+          "2742",
+          "2730",
+          "2780",
+          "2725",
+          "2806",
+          "2731",
+          "2766",
+          "2795",
+          "2814",
+          "2808",
+          "2775",
+          "2815",
+          "2726",
+          "2776",
+          "2757",
+          "2820",
+          "2723",
+          "2816",
+          "2777",
+          "2801",
+          "2747",
+          "2748",
+          "2751",
+          "2786",
+          "2768",
+          "2787",
+          "2778",
+          "2782",
+          "2758",
+          "2769",
+          "2802",
+          "2753",
+          "2754",
+          "2727"
+        ]
+      },
+      {
+        "at": 3992.5,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "_",
+          "y",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": [
+          "7949",
+          "3503",
+          "2819",
+          "3502",
+          "2811",
+          "2793",
+          "2794",
+          "2771",
+          "2719",
+          "2779",
+          "2720",
+          "2764",
+          "2743",
+          "2738",
+          "2739",
+          "2740",
+          "2741",
+          "2772",
+          "2750",
+          "2721",
+          "2765",
+          "2800",
+          "2812",
+          "2735",
+          "2736",
+          "2805",
+          "2744",
+          "2785",
+          "2763",
+          "2773",
+          "2756",
+          "2813",
+          "2737",
+          "2774",
+          "2742",
+          "2730",
+          "2780",
+          "2725",
+          "2806",
+          "2731",
+          "2766",
+          "2795",
+          "2814",
+          "2808",
+          "2775",
+          "2815",
+          "2726",
+          "2776",
+          "2757",
+          "2820",
+          "2723",
+          "2816",
+          "2777",
+          "2801",
+          "2747",
+          "2748",
+          "2751",
+          "2786",
+          "2768",
+          "2787",
+          "2778",
+          "2782",
+          "2758",
+          "2769",
+          "2802",
+          "2753",
+          "2754",
+          "2727"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1652
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1652
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 350.89999999990687,
+      "navigationId": 8872,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.7999999998137355,
+      "domainLookupStart": 0.7999999998137355,
+      "domainLookupEnd": 0.7999999998137355,
+      "connectStart": 0.7999999998137355,
+      "secureConnectionStart": 0,
+      "connectEnd": 0.7999999998137355,
+      "requestStart": 1.7999999998137355,
+      "responseStart": 21.699999999720603,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 21.699999999720603,
+      "responseEnd": 23.799999999813735,
+      "transferSize": 16651,
+      "encodedBodySize": 16351,
+      "decodedBodySize": 120496,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 305,
+      "domContentLoadedEventStart": 305.10000000009313,
+      "domContentLoadedEventEnd": 305.79999999981374,
+      "domComplete": 350.29999999981374,
+      "loadEventStart": 350.6999999997206,
+      "loadEventEnd": 350.89999999990687,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+        "width": 89,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+        "width": 64,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 6.5,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 7.600000000093132,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 8,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 8.100000000093132,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 56.10000000009313,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 9.299999999813735,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=1920&q=75",
+        "type": "link",
+        "ms": 10.199999999720603,
+        "transfer": 126128,
+        "bytes": 125828
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+        "type": "link",
+        "ms": 10.299999999813735,
+        "transfer": 23925,
+        "bytes": 23625
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+        "type": "link",
+        "ms": 55.5,
+        "transfer": 3914,
+        "bytes": 3614
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 55.299999999813735,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+        "type": "script",
+        "ms": 63.5,
+        "transfer": 71876,
+        "bytes": 71576
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 58.799999999813735,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+        "type": "script",
+        "ms": 53.89999999990687,
+        "transfer": 4152,
+        "bytes": 3852
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+        "type": "script",
+        "ms": 57.700000000186265,
+        "transfer": 13381,
+        "bytes": 13081
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 62.3000000002794,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+        "type": "script",
+        "ms": 61.799999999813735,
+        "transfer": 2470,
+        "bytes": 2170
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 62.10000000009313,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+        "type": "script",
+        "ms": 63.89999999990687,
+        "transfer": 5534,
+        "bytes": 5234
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 3.3000000002793968,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 15.399999999906868,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 12.100000000093132,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 11.5,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=1920&q=75",
+        "type": "img",
+        "ms": 21.5,
+        "transfer": 202774,
+        "bytes": 202474
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=384&q=75",
+        "type": "img",
+        "ms": 13.899999999906868,
+        "transfer": 29984,
+        "bytes": 29684
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+        "type": "img",
+        "ms": 344.89999999990687,
+        "transfer": 25434,
+        "bytes": 25134
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=384&q=75",
+        "type": "img",
+        "ms": 27.600000000093132,
+        "transfer": 10420,
+        "bytes": 10120
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=384&q=75",
+        "type": "img",
+        "ms": 401.89999999990687,
+        "transfer": 16946,
+        "bytes": 16646
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=384&q=75",
+        "type": "img",
+        "ms": 28.299999999813735,
+        "transfer": 16440,
+        "bytes": 16140
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=384&q=75",
+        "type": "img",
+        "ms": 28.399999999906868,
+        "transfer": 15442,
+        "bytes": 15142
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=384&q=75",
+        "type": "img",
+        "ms": 29.299999999813735,
+        "transfer": 8884,
+        "bytes": 8584
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=384&q=75",
+        "type": "img",
+        "ms": 30.600000000093132,
+        "transfer": 29828,
+        "bytes": 29528
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=384&q=75",
+        "type": "img",
+        "ms": 32.10000000009313,
+        "transfer": 12032,
+        "bytes": 11732
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=384&q=75",
+        "type": "img",
+        "ms": 32.60000000009313,
+        "transfer": 21092,
+        "bytes": 20792
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 10.799999999813735,
+        "transfer": 480,
+        "bytes": 180
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 10.299999999813735,
+        "transfer": 524,
+        "bytes": 224
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 9.800000000279397,
+        "transfer": 522,
+        "bytes": 222
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 9.100000000093132,
+        "transfer": 513,
+        "bytes": 213
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 4.100000000093132,
+        "transfer": 514,
+        "bytes": 214
+      },
+      {
+        "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 3.7000000001862645,
+        "transfer": 1252,
+        "bytes": 952
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+        "type": "fetch",
+        "ms": 5.600000000093132,
+        "transfer": 2464,
+        "bytes": 2164
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1725,
+        "bytes": 1425
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+        "type": "fetch",
+        "ms": 5.399999999906868,
+        "transfer": 1720,
+        "bytes": 1420
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1717,
+        "bytes": 1417
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 3.900000000372529,
+        "transfer": 1235,
+        "bytes": 935
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.7000000001862645,
+        "transfer": 1238,
+        "bytes": 938
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/8_ball_pool?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.5,
+        "transfer": 1236,
+        "bytes": 936
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/asphalt9?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 9.299999999813735,
+        "transfer": 1238,
+        "bytes": 938
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/bigo?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 5.600000000093132,
+        "transfer": 1231,
+        "bytes": 931
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/bloodstrike?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.100000000093132,
+        "transfer": 1235,
+        "bytes": 935
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/fifa_futcoins_console?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 4.899999999906868,
+        "transfer": 1243,
+        "bytes": 943
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+        "type": "fetch",
+        "ms": 8.5,
+        "transfer": 4747,
+        "bytes": 4447
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/43mrgh5he1l4q.js",
+        "type": "script",
+        "ms": 3.1000000000931323,
+        "transfer": 10243,
+        "bytes": 9943
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+        "type": "link",
+        "ms": 2.6000000000931323,
+        "transfer": 3582,
+        "bytes": 3282
+      }
+    ]
+  },
+  "initialSelectionCount": 0,
+  "selection": [
+    {
+      "domMs": 25.299999999813735,
+      "nextPaintMs": 47.200000000186265,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5035.899999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "7949"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.600000000093132,
+      "nextPaintMs": 16.5,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5166.299999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "7949",
+            "3503"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.5,
+      "nextPaintMs": 33.59999999962747,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5289.399999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "3503",
+            "2819"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 7.899999999906868,
+      "nextPaintMs": 33.3000000002794,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5422.399999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2819",
+            "3502"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 7,
+      "nextPaintMs": 30.600000000093132,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5557.699999999721,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "3502",
+            "2811"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.2999999998137355,
+      "nextPaintMs": 18.200000000186265,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5691.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2811",
+            "2793"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.699999999720603,
+      "nextPaintMs": 17.299999999813735,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5812.799999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2793",
+            "2794"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.599999999627471,
+      "nextPaintMs": 17.399999999906868,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 5932.5,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2794",
+            "2771"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.600000000093132,
+      "nextPaintMs": 15.800000000279397,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 6051.100000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2771",
+            "2719"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.7000000001862645,
+      "nextPaintMs": 32.89999999990687,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 6169.399999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2719",
+            "2779"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 7.5,
+      "nextPaintMs": 32.5,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 6305.399999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2779",
+            "2720"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.600000000093132,
+      "nextPaintMs": 27.600000000093132,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 6437.799999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2720",
+            "2764"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRequests": [],
+  "errors": [],
+  "smoke": {
+    "verification": true,
+    "lazyPluginLoaded": true,
+    "checkoutOpened": true,
+    "paymentConfirmation": true,
+    "interceptedRequests": [
+      {
+        "url": "http://localhost:3100/api/player/verify",
+        "method": "POST"
+      },
+      {
+        "url": "http://localhost:3100/api/payment/anajakpay/create",
+        "method": "POST"
+      },
+      {
+        "url": "https://anajakpay.com/khqrcc-plugin.js",
+        "method": "GET"
+      },
+      {
+        "url": "http://localhost:3100/api/payment/anajakpay/check",
+        "method": "POST"
+      },
+      {
+        "url": "http://localhost:3100/api/payment/anajakpay/check",
+        "method": "POST"
+      }
+    ],
+    "emptyGamePackageFetches": 0
+  },
+  "requests": [
+    {
+      "url": "http://localhost:3100/",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=1920&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+      "method": "GET",
+      "type": "Other"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=1920&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=384&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/8_ball_pool?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/asphalt9?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/bigo?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/bloodstrike?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/fifa_futcoins_console?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/43mrgh5he1l4q.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/api/player/verify",
+      "method": "POST",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/api/payment/anajakpay/create",
+      "method": "POST",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://anajakpay.com/khqrcc-plugin.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/api/payment/anajakpay/check",
+      "method": "POST",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/api/payment/anajakpay/check",
+      "method": "POST",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/orders?orderNumber=PERF-MOCK&_rsc=T9tCtOj7QsxfySK1",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/orders?orderNumber=PERF-MOCK&_rsc=SYgzr7dSm4fxT-vs",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/orders?orderNumber=PERF-MOCK&_rsc=qxm1SkCyck0I6h_C",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2tycaoy0yj7e6.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/orders?_rsc=T9tCtOj7QsxfySK1",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/valorant",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/43mrgh5he1l4q.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/?_rsc=rg4B6TwU9Tu4cF5G",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=rg4B6TwU9Tu4cF5G",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/?_rsc=roqkJ-r7W3PS1yk_",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=roqkJ-r7W3PS1yk_",
+      "method": "GET",
+      "type": "Fetch"
+    }
+  ]
+}

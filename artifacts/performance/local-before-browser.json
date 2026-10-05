@@ -1,0 +1,1951 @@
+{
+  "base": "http://localhost:3100",
+  "at": "2026-10-04T04:11:51.719Z",
+  "viewport": "390x844",
+  "cpuSlowdown": 4,
+  "browserCache": "disabled",
+  "homeGamesReadyMs": 390.80000000004657,
+  "home": {
+    "lcp": 1640,
+    "longTasks": [
+      {
+        "start": 80.39999999990687,
+        "duration": 136
+      },
+      {
+        "start": 271.19999999995343,
+        "duration": 62
+      },
+      {
+        "start": 1441.6999999999534,
+        "duration": 160
+      }
+    ],
+    "commits": [
+      {
+        "at": 376.39999999990687,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "b",
+          "y",
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 390.10000000009313,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 392.5,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y"
+        ]
+      },
+      {
+        "at": 395.39999999990687,
+        "rendered": [
+          "l"
+        ]
+      },
+      {
+        "at": 1663.5,
+        "rendered": [
+          "l",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1667.3000000000466,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1674.8999999999069,
+        "rendered": [
+          "l",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1681.1000000000931,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1640
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1640
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 515.3999999999069,
+      "navigationId": 6440,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 1.1999999999534339,
+      "domainLookupStart": 1.1999999999534339,
+      "domainLookupEnd": 1.1999999999534339,
+      "connectStart": 1.1999999999534339,
+      "secureConnectionStart": 0,
+      "connectEnd": 1.1999999999534339,
+      "requestStart": 2.699999999953434,
+      "responseStart": 19.300000000046566,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 19.300000000046566,
+      "responseEnd": 81.39999999990687,
+      "transferSize": 18453,
+      "encodedBodySize": 18153,
+      "decodedBodySize": 108297,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 280,
+      "domContentLoadedEventStart": 280,
+      "domContentLoadedEventEnd": 280.89999999990687,
+      "domComplete": 515.1999999999534,
+      "loadEventStart": 515.3999999999069,
+      "loadEventEnd": 515.3999999999069,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "width": 1920,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "width": 1920,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 13.199999999953434,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 14.100000000093132,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 15,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 15.100000000093132,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 15.699999999953434,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2sg42f1n81i9q.css",
+        "type": "link",
+        "ms": 21.699999999953434,
+        "transfer": 23875,
+        "bytes": 23575
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3ivcc6t1s04dh.js",
+        "type": "link",
+        "ms": 22.899999999906868,
+        "transfer": 4218,
+        "bytes": 3918
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 23.899999999906868,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2lm6ee1ot3_cu.js",
+        "type": "script",
+        "ms": 48,
+        "transfer": 71634,
+        "bytes": 71334
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 31.200000000186265,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-129f2r4112crz.js",
+        "type": "script",
+        "ms": 32.200000000186265,
+        "transfer": 4150,
+        "bytes": 3850
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3fntmmi971322.js",
+        "type": "script",
+        "ms": 32.800000000046566,
+        "transfer": 3961,
+        "bytes": 3661
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/07hkq6lp89356.js",
+        "type": "script",
+        "ms": 34,
+        "transfer": 11618,
+        "bytes": 11318
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/16zk2_w7w76dk.js",
+        "type": "script",
+        "ms": 50.5999999998603,
+        "transfer": 2484,
+        "bytes": 2184
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 50.799999999813735,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 52.199999999953434,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "https://anajakpay.com/khqrcc-plugin.js",
+        "type": "link",
+        "ms": 163.5999999998603,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yo3x01untiks.js",
+        "type": "script",
+        "ms": 3.5,
+        "transfer": 5505,
+        "bytes": 5205
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 29.5,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "type": "link",
+        "ms": 275.5,
+        "transfer": 307554,
+        "bytes": 307254
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 9.699999999953434,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 11.899999999906868,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 11,
+        "transfer": 60576,
+        "bytes": 60276
+      }
+    ]
+  },
+  "activeGames": 11,
+  "detailNavigationMs": 583,
+  "detail": {
+    "lcp": 1712,
+    "longTasks": [
+      {
+        "start": 80.39999999990687,
+        "duration": 136
+      },
+      {
+        "start": 271.19999999995343,
+        "duration": 62
+      },
+      {
+        "start": 1441.6999999999534,
+        "duration": 160
+      },
+      {
+        "start": 1709.1000000000931,
+        "duration": 88
+      }
+    ],
+    "commits": [
+      {
+        "at": 376.39999999990687,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "b",
+          "y",
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 390.10000000009313,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 392.5,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y"
+        ]
+      },
+      {
+        "at": 395.39999999990687,
+        "rendered": [
+          "l"
+        ]
+      },
+      {
+        "at": 1663.5,
+        "rendered": [
+          "l",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1667.3000000000466,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1674.8999999999069,
+        "rendered": [
+          "l",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1681.1000000000931,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1818.5,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1912.5,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 2038.8999999999069,
+        "rendered": [
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 2072.6999999999534,
+        "rendered": [
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 2102.899999999907,
+        "rendered": [
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 2319.100000000093,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "i",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "_",
+          "y",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1640
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1640
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 515.3999999999069,
+      "navigationId": 6440,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 1.1999999999534339,
+      "domainLookupStart": 1.1999999999534339,
+      "domainLookupEnd": 1.1999999999534339,
+      "connectStart": 1.1999999999534339,
+      "secureConnectionStart": 0,
+      "connectEnd": 1.1999999999534339,
+      "requestStart": 2.699999999953434,
+      "responseStart": 19.300000000046566,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 19.300000000046566,
+      "responseEnd": 81.39999999990687,
+      "transferSize": 18453,
+      "encodedBodySize": 18153,
+      "decodedBodySize": 108297,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 280,
+      "domContentLoadedEventStart": 280,
+      "domContentLoadedEventEnd": 280.89999999990687,
+      "domComplete": 515.1999999999534,
+      "loadEventStart": 515.3999999999069,
+      "loadEventEnd": 515.3999999999069,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 70,
+        "complete": true
+      },
+      {
+        "src": "https://api.g2bulk.com/images/mlbb.png",
+        "width": 492,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 13.199999999953434,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 14.100000000093132,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 15,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 15.100000000093132,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 15.699999999953434,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2sg42f1n81i9q.css",
+        "type": "link",
+        "ms": 21.699999999953434,
+        "transfer": 23875,
+        "bytes": 23575
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3ivcc6t1s04dh.js",
+        "type": "link",
+        "ms": 22.899999999906868,
+        "transfer": 4218,
+        "bytes": 3918
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 23.899999999906868,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2lm6ee1ot3_cu.js",
+        "type": "script",
+        "ms": 48,
+        "transfer": 71634,
+        "bytes": 71334
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 31.200000000186265,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-129f2r4112crz.js",
+        "type": "script",
+        "ms": 32.200000000186265,
+        "transfer": 4150,
+        "bytes": 3850
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3fntmmi971322.js",
+        "type": "script",
+        "ms": 32.800000000046566,
+        "transfer": 3961,
+        "bytes": 3661
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/07hkq6lp89356.js",
+        "type": "script",
+        "ms": 34,
+        "transfer": 11618,
+        "bytes": 11318
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/16zk2_w7w76dk.js",
+        "type": "script",
+        "ms": 50.5999999998603,
+        "transfer": 2484,
+        "bytes": 2184
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 50.799999999813735,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 52.199999999953434,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "https://anajakpay.com/khqrcc-plugin.js",
+        "type": "link",
+        "ms": 163.5999999998603,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yo3x01untiks.js",
+        "type": "script",
+        "ms": 3.5,
+        "transfer": 5505,
+        "bytes": 5205
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 29.5,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "type": "link",
+        "ms": 275.5,
+        "transfer": 307554,
+        "bytes": 307254
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 9.699999999953434,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 11.899999999906868,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 11,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 309.60000000009313,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+        "type": "img",
+        "ms": 488,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 298.60000000009313,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 292.69999999995343,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 400,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 434.30000000004657,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 347.5,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 360.10000000009313,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 445.60000000009313,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 519.8999999999069,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 467.5999999998603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 312.5,
+        "transfer": 475,
+        "bytes": 175
+      },
+      {
+        "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 315.80000000004657,
+        "transfer": 1289,
+        "bytes": 989
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 194,
+        "transfer": 521,
+        "bytes": 221
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 200.30000000004657,
+        "transfer": 521,
+        "bytes": 221
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=X-WDin4_0GlKEJF5",
+        "type": "fetch",
+        "ms": 253.5999999998603,
+        "transfer": 5562,
+        "bytes": 5262
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 3.699999999953434,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=F2TWEe-mGZpREvBa",
+        "type": "fetch",
+        "ms": 25.600000000093132,
+        "transfer": 1225,
+        "bytes": 925
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2z5o8ika7ui-d.js",
+        "type": "script",
+        "ms": 3.699999999953434,
+        "transfer": 10231,
+        "bytes": 9931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+        "type": "link",
+        "ms": 53,
+        "transfer": 3582,
+        "bytes": 3282
+      },
+      {
+        "url": "https://api.g2bulk.com/images/mlbb.png",
+        "type": "img",
+        "ms": 254.20000000018626,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+        "type": "link",
+        "ms": 3,
+        "transfer": 812,
+        "bytes": 512
+      }
+    ]
+  },
+  "initialSelectionCount": 0,
+  "selection": [
+    {
+      "domMs": 36.699999999953434,
+      "nextPaintMs": 61.299999999813735,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4056.899999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 14.400000000139698,
+      "nextPaintMs": 26.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4198.100000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 17.199999999953434,
+      "nextPaintMs": 28.199999999953434,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4329.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 12.199999999953434,
+      "nextPaintMs": 23.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4455.800000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.899999999906868,
+      "nextPaintMs": 22.399999999906868,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4580.300000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 9.600000000093132,
+      "nextPaintMs": 20.800000000046566,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4702.300000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.099999999860302,
+      "nextPaintMs": 26,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4826.300000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.600000000093132,
+      "nextPaintMs": 30.800000000046566,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 4955.899999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.199999999953434,
+      "nextPaintMs": 22.5,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5088.699999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.5,
+      "nextPaintMs": 23.300000000046566,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5212.199999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.600000000093132,
+      "nextPaintMs": 21.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5338,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.300000000046566,
+      "nextPaintMs": 22.699999999953434,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5462.199999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRequests": [],
+  "requests": [
+    {
+      "url": "http://localhost:3100/",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2sg42f1n81i9q.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3ivcc6t1s04dh.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2lm6ee1ot3_cu.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/turbopack-129f2r4112crz.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3fntmmi971322.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/07hkq6lp89356.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/16zk2_w7w76dk.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://anajakpay.com/khqrcc-plugin.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3yo3x01untiks.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+      "method": "GET",
+      "type": "Other"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=X-WDin4_0GlKEJF5",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=F2TWEe-mGZpREvBa",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2z5o8ika7ui-d.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://api.g2bulk.com/images/mlbb.png",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    }
+  ]
+}

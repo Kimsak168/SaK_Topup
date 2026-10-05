@@ -77,8 +77,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
               alt="SakSuuu Logo"
               width={75}
               height={75}
-              priority
-              unoptimized={Boolean(logoUrl)}
+              preload
               className="h-[50px] w-[50px] sm:h-[66px] sm:w-[66px] md:h-[74px] md:w-[74px] object-contain shrink-0 drop-shadow-[0_0_16px_rgba(0,217,255,0.45)] transition-transform duration-300 group-hover:scale-105"
             />
           </div>

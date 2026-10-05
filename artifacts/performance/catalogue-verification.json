@@ -1,0 +1,71 @@
+{
+  "games": [
+    {
+      "game": "Free Fire",
+      "total": 16,
+      "available": 16,
+      "pricesMatch": true
+    },
+    {
+      "game": "PUBG Mobile",
+      "total": 38,
+      "available": 38,
+      "pricesMatch": true
+    },
+    {
+      "game": "Valorant",
+      "total": 0,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "Blood Strike",
+      "total": 27,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "EAFC 24",
+      "total": 2,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "EAFC Mobile Cambodia",
+      "total": 14,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "Bigo Live Diamonds",
+      "total": 24,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "8 Ball Pool",
+      "total": 13,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "Asphalt 9: Legends",
+      "total": 5,
+      "available": 0,
+      "pricesMatch": true
+    },
+    {
+      "game": "Mobile Legends",
+      "total": 106,
+      "available": 68,
+      "pricesMatch": true
+    },
+    {
+      "game": "Free Fire (SGMY)",
+      "total": 23,
+      "available": 23,
+      "pricesMatch": true
+    }
+  ],
+  "adminProtected": true
+}

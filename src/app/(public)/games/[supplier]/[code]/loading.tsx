@@ -1,14 +1,17 @@
-import { RefreshCw } from "lucide-react";
-
 export default function GameLoading() {
   return (
-    <div className="min-h-[70vh] flex flex-col items-center justify-center gap-4">
-      <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-accent border border-pink-500/20 text-primary">
-        <RefreshCw className="h-8 w-8 animate-spin" />
+    <div role="status" aria-label="Loading game" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+      <span className="sr-only">Loading game packages...</span>
+      <div aria-hidden="true" className="h-24 rounded-2xl bg-muted animate-pulse motion-reduce:animate-none" />
+      <div aria-hidden="true" className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="h-48 rounded-2xl bg-muted animate-pulse motion-reduce:animate-none" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-24 rounded-xl bg-muted animate-pulse motion-reduce:animate-none" />)}
+          </div>
+        </div>
+        <div className="h-80 rounded-2xl bg-muted animate-pulse motion-reduce:animate-none" />
       </div>
-      <p className="text-sm font-semibold text-secondary-foreground">
-        Loading game packages and live pricing...
-      </p>
     </div>
   );
 }

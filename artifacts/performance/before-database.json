@@ -1,0 +1,1183 @@
+{
+  "connectionMs": 556,
+  "queries": [
+    {
+      "collection": "games",
+      "filter": {
+        "isActive": true
+      },
+      "timesMs": [
+        45,
+        43,
+        42
+      ],
+      "count": 11,
+      "execution": {
+        "executionSuccess": true,
+        "nReturned": 11,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 11,
+        "totalDocsExamined": 11,
+        "executionStages": {
+          "isCached": false,
+          "stage": "PROJECTION_SIMPLE",
+          "nReturned": 11,
+          "executionTimeMillisEstimate": 0,
+          "works": 24,
+          "advanced": 11,
+          "needTime": 12,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "transformBy": {
+            "slug": 1,
+            "name": 1,
+            "supplier": 1,
+            "supplierGameCode": 1,
+            "image": 1,
+            "customImage": 1
+          },
+          "inputStage": {
+            "stage": "SORT",
+            "nReturned": 11,
+            "executionTimeMillisEstimate": 0,
+            "works": 24,
+            "advanced": 11,
+            "needTime": 12,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 1,
+            "sortPattern": {
+              "isPopular": -1,
+              "sortOrder": 1,
+              "name": 1
+            },
+            "memLimit": 33554432,
+            "type": "simple",
+            "totalDataSizeSorted": 8822,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "inputStage": {
+              "stage": "FETCH",
+              "nReturned": 11,
+              "executionTimeMillisEstimate": 0,
+              "works": 12,
+              "advanced": 11,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "docsExamined": 11,
+              "alreadyHasObj": 0,
+              "inputStage": {
+                "stage": "IXSCAN",
+                "nReturned": 11,
+                "executionTimeMillisEstimate": 0,
+                "works": 12,
+                "advanced": 11,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "keyPattern": {
+                  "isActive": 1
+                },
+                "indexName": "isActive_1",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "isActive": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "isActive": [
+                    "[true, true]"
+                  ]
+                },
+                "keysExamined": 11,
+                "seeks": 1,
+                "dupsTested": 0,
+                "dupsDropped": 0
+              }
+            }
+          }
+        }
+      },
+      "winningPlan": {
+        "isCached": false,
+        "stage": "PROJECTION_SIMPLE",
+        "transformBy": {
+          "slug": 1,
+          "name": 1,
+          "supplier": 1,
+          "supplierGameCode": 1,
+          "image": 1,
+          "customImage": 1
+        },
+        "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+            "isPopular": -1,
+            "sortOrder": 1,
+            "name": 1
+          },
+          "memLimit": 33554432,
+          "type": "simple",
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "IXSCAN",
+              "keyPattern": {
+                "isActive": 1
+              },
+              "indexName": "isActive_1",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "isActive": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "isActive": [
+                  "[true, true]"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "slug": 1
+          },
+          "name": "slug_1",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "isPopular": 1
+          },
+          "name": "isPopular_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "isActive": 1
+          },
+          "name": "isActive_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "category": 1
+          },
+          "name": "category_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplier": 1,
+            "supplierGameCode": 1
+          },
+          "name": "supplier_1_supplierGameCode_1",
+          "unique": true
+        }
+      ],
+      "games": [
+        {
+          "name": "Free Fire",
+          "supplier": "vizo",
+          "code": "freefire_global"
+        },
+        {
+          "name": "Free Fire (SGMY)",
+          "supplier": "vizo",
+          "code": "freefire_sgmy"
+        },
+        {
+          "name": "Mobile Legends",
+          "supplier": "g2bulk",
+          "code": "mlbb"
+        },
+        {
+          "name": "PUBG Mobile",
+          "supplier": "g2bulk",
+          "code": "pubgm"
+        },
+        {
+          "name": "Valorant",
+          "supplier": "g2bulk",
+          "code": "valorant"
+        },
+        {
+          "name": "Blood Strike",
+          "supplier": "g2bulk",
+          "code": "bloodstrike"
+        },
+        {
+          "name": "8 Ball Pool",
+          "supplier": "g2bulk",
+          "code": "8_ball_pool"
+        },
+        {
+          "name": "Asphalt 9: Legends",
+          "supplier": "g2bulk",
+          "code": "asphalt9"
+        },
+        {
+          "name": "Bigo Live Diamonds",
+          "supplier": "g2bulk",
+          "code": "bigo"
+        },
+        {
+          "name": "EAFC 24",
+          "supplier": "g2bulk",
+          "code": "fifa_futcoins_console"
+        },
+        {
+          "name": "EAFC Mobile Cambodia",
+          "supplier": "g2bulk",
+          "code": "eafcmobile_kh"
+        }
+      ]
+    },
+    {
+      "collection": "banners",
+      "filter": {
+        "isActive": true
+      },
+      "timesMs": [
+        42,
+        44,
+        42
+      ],
+      "count": 4,
+      "execution": {
+        "executionSuccess": true,
+        "nReturned": 4,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 4,
+        "totalDocsExamined": 4,
+        "executionStages": {
+          "isCached": false,
+          "stage": "PROJECTION_SIMPLE",
+          "nReturned": 4,
+          "executionTimeMillisEstimate": 0,
+          "works": 10,
+          "advanced": 4,
+          "needTime": 5,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "transformBy": {
+            "title": 1,
+            "imageUrl": 1
+          },
+          "inputStage": {
+            "stage": "SORT",
+            "nReturned": 4,
+            "executionTimeMillisEstimate": 0,
+            "works": 10,
+            "advanced": 4,
+            "needTime": 5,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 1,
+            "sortPattern": {
+              "sortOrder": 1,
+              "createdAt": -1
+            },
+            "memLimit": 33554432,
+            "type": "simple",
+            "totalDataSizeSorted": 308843,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "inputStage": {
+              "stage": "FETCH",
+              "nReturned": 4,
+              "executionTimeMillisEstimate": 0,
+              "works": 5,
+              "advanced": 4,
+              "needTime": 0,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "docsExamined": 4,
+              "alreadyHasObj": 0,
+              "inputStage": {
+                "stage": "IXSCAN",
+                "nReturned": 4,
+                "executionTimeMillisEstimate": 0,
+                "works": 5,
+                "advanced": 4,
+                "needTime": 0,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "keyPattern": {
+                  "isActive": 1
+                },
+                "indexName": "isActive_1",
+                "isMultiKey": false,
+                "multiKeyPaths": {
+                  "isActive": []
+                },
+                "isUnique": false,
+                "isSparse": false,
+                "isPartial": false,
+                "indexVersion": 2,
+                "direction": "forward",
+                "indexBounds": {
+                  "isActive": [
+                    "[true, true]"
+                  ]
+                },
+                "keysExamined": 4,
+                "seeks": 1,
+                "dupsTested": 0,
+                "dupsDropped": 0
+              }
+            }
+          }
+        }
+      },
+      "winningPlan": {
+        "isCached": false,
+        "stage": "PROJECTION_SIMPLE",
+        "transformBy": {
+          "title": 1,
+          "imageUrl": 1
+        },
+        "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+            "sortOrder": 1,
+            "createdAt": -1
+          },
+          "memLimit": 33554432,
+          "type": "simple",
+          "inputStage": {
+            "stage": "FETCH",
+            "inputStage": {
+              "stage": "IXSCAN",
+              "keyPattern": {
+                "isActive": 1
+              },
+              "indexName": "isActive_1",
+              "isMultiKey": false,
+              "multiKeyPaths": {
+                "isActive": []
+              },
+              "isUnique": false,
+              "isSparse": false,
+              "isPartial": false,
+              "indexVersion": 2,
+              "direction": "forward",
+              "indexBounds": {
+                "isActive": [
+                  "[true, true]"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "isActive": 1
+          },
+          "name": "isActive_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "sortOrder": 1
+          },
+          "name": "sortOrder_1"
+        }
+      ]
+    },
+    {
+      "collection": "gamepackages",
+      "filter": {
+        "supplier": "vizo",
+        "$or": [
+          {
+            "gameCode": "freefire_global"
+          },
+          {
+            "gameSlug": "freefire_global"
+          }
+        ]
+      },
+      "timesMs": [
+        43,
+        43,
+        43
+      ],
+      "count": 0,
+      "execution": {
+        "executionSuccess": true,
+        "nReturned": 0,
+        "executionTimeMillis": 0,
+        "totalKeysExamined": 0,
+        "totalDocsExamined": 0,
+        "executionStages": {
+          "isCached": true,
+          "stage": "PROJECTION_SIMPLE",
+          "nReturned": 0,
+          "executionTimeMillisEstimate": 0,
+          "works": 4,
+          "advanced": 0,
+          "needTime": 2,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "transformBy": {
+            "supplierProductCode": 1,
+            "name": 1,
+            "sellingPrice": 1,
+            "isActive": 1
+          },
+          "inputStage": {
+            "stage": "SORT",
+            "nReturned": 0,
+            "executionTimeMillisEstimate": 0,
+            "works": 4,
+            "advanced": 0,
+            "needTime": 2,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 1,
+            "sortPattern": {
+              "sortOrder": 1,
+              "sellingPrice": 1
+            },
+            "memLimit": 33554432,
+            "type": "simple",
+            "totalDataSizeSorted": 0,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "inputStage": {
+              "stage": "FETCH",
+              "filter": {
+                "supplier": {
+                  "$eq": "vizo"
+                }
+              },
+              "nReturned": 0,
+              "executionTimeMillisEstimate": 0,
+              "works": 2,
+              "advanced": 0,
+              "needTime": 1,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "docsExamined": 0,
+              "alreadyHasObj": 0,
+              "inputStage": {
+                "stage": "OR",
+                "nReturned": 0,
+                "executionTimeMillisEstimate": 0,
+                "works": 2,
+                "advanced": 0,
+                "needTime": 1,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "dupsTested": 0,
+                "dupsDropped": 0,
+                "inputStages": [
+                  {
+                    "stage": "IXSCAN",
+                    "nReturned": 0,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 1,
+                    "advanced": 0,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "gameSlug": 1
+                    },
+                    "indexName": "gameSlug_1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "gameSlug": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "gameSlug": [
+                        "[\"freefire_global\", \"freefire_global\"]"
+                      ]
+                    },
+                    "keysExamined": 0,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  },
+                  {
+                    "stage": "IXSCAN",
+                    "nReturned": 0,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 1,
+                    "advanced": 0,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "gameCode": 1
+                    },
+                    "indexName": "gameCode_1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "gameCode": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "gameCode": [
+                        "[\"freefire_global\", \"freefire_global\"]"
+                      ]
+                    },
+                    "keysExamined": 0,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "winningPlan": {
+        "isCached": true,
+        "stage": "PROJECTION_SIMPLE",
+        "transformBy": {
+          "supplierProductCode": 1,
+          "name": 1,
+          "sellingPrice": 1,
+          "isActive": 1
+        },
+        "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+            "sortOrder": 1,
+            "sellingPrice": 1
+          },
+          "memLimit": 33554432,
+          "type": "simple",
+          "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+              "supplier": {
+                "$eq": "vizo"
+              }
+            },
+            "inputStage": {
+              "stage": "OR",
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "gameSlug": 1
+                  },
+                  "indexName": "gameSlug_1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "gameSlug": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "gameSlug": [
+                      "[\"freefire_global\", \"freefire_global\"]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "gameCode": 1
+                  },
+                  "indexName": "gameCode_1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "gameCode": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "gameCode": [
+                      "[\"freefire_global\", \"freefire_global\"]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameSlug": 1
+          },
+          "name": "gameSlug_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "isActive": 1
+          },
+          "name": "isActive_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameSlug": 1,
+            "supplierProductCode": 1
+          },
+          "name": "gameSlug_1_supplierProductCode_1",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplier": 1
+          },
+          "name": "supplier_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplierProductCode": 1
+          },
+          "name": "supplierProductCode_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "adminConfigured": 1
+          },
+          "name": "adminConfigured_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplier": 1,
+            "supplierProductCode": 1
+          },
+          "name": "supplier_1_supplierProductCode_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameCode": 1
+          },
+          "name": "gameCode_1"
+        }
+      ]
+    },
+    {
+      "collection": "gamepackages",
+      "filter": {
+        "supplier": "g2bulk",
+        "$or": [
+          {
+            "gameCode": "mlbb"
+          },
+          {
+            "gameSlug": "mlbb"
+          }
+        ]
+      },
+      "timesMs": [
+        87,
+        87,
+        86
+      ],
+      "count": 106,
+      "execution": {
+        "executionSuccess": true,
+        "nReturned": 106,
+        "executionTimeMillis": 2,
+        "totalKeysExamined": 212,
+        "totalDocsExamined": 106,
+        "executionStages": {
+          "isCached": false,
+          "stage": "PROJECTION_SIMPLE",
+          "nReturned": 106,
+          "executionTimeMillisEstimate": 0,
+          "works": 321,
+          "advanced": 106,
+          "needTime": 214,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "transformBy": {
+            "supplierProductCode": 1,
+            "name": 1,
+            "sellingPrice": 1,
+            "isActive": 1
+          },
+          "inputStage": {
+            "stage": "SORT",
+            "nReturned": 106,
+            "executionTimeMillisEstimate": 0,
+            "works": 321,
+            "advanced": 106,
+            "needTime": 214,
+            "needYield": 0,
+            "saveState": 0,
+            "restoreState": 0,
+            "isEOF": 1,
+            "sortPattern": {
+              "sortOrder": 1,
+              "sellingPrice": 1
+            },
+            "memLimit": 33554432,
+            "type": "simple",
+            "totalDataSizeSorted": 55234,
+            "usedDisk": false,
+            "spills": 0,
+            "spilledDataStorageSize": 0,
+            "inputStage": {
+              "stage": "FETCH",
+              "filter": {
+                "supplier": {
+                  "$eq": "g2bulk"
+                }
+              },
+              "nReturned": 106,
+              "executionTimeMillisEstimate": 0,
+              "works": 214,
+              "advanced": 106,
+              "needTime": 107,
+              "needYield": 0,
+              "saveState": 0,
+              "restoreState": 0,
+              "isEOF": 1,
+              "docsExamined": 106,
+              "alreadyHasObj": 0,
+              "inputStage": {
+                "stage": "OR",
+                "nReturned": 106,
+                "executionTimeMillisEstimate": 0,
+                "works": 214,
+                "advanced": 106,
+                "needTime": 107,
+                "needYield": 0,
+                "saveState": 0,
+                "restoreState": 0,
+                "isEOF": 1,
+                "dupsTested": 212,
+                "dupsDropped": 106,
+                "inputStages": [
+                  {
+                    "stage": "IXSCAN",
+                    "nReturned": 106,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 107,
+                    "advanced": 106,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "gameSlug": 1
+                    },
+                    "indexName": "gameSlug_1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "gameSlug": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "gameSlug": [
+                        "[\"mlbb\", \"mlbb\"]"
+                      ]
+                    },
+                    "keysExamined": 106,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  },
+                  {
+                    "stage": "IXSCAN",
+                    "nReturned": 106,
+                    "executionTimeMillisEstimate": 0,
+                    "works": 107,
+                    "advanced": 106,
+                    "needTime": 0,
+                    "needYield": 0,
+                    "saveState": 0,
+                    "restoreState": 0,
+                    "isEOF": 1,
+                    "keyPattern": {
+                      "gameCode": 1
+                    },
+                    "indexName": "gameCode_1",
+                    "isMultiKey": false,
+                    "multiKeyPaths": {
+                      "gameCode": []
+                    },
+                    "isUnique": false,
+                    "isSparse": false,
+                    "isPartial": false,
+                    "indexVersion": 2,
+                    "direction": "forward",
+                    "indexBounds": {
+                      "gameCode": [
+                        "[\"mlbb\", \"mlbb\"]"
+                      ]
+                    },
+                    "keysExamined": 106,
+                    "seeks": 1,
+                    "dupsTested": 0,
+                    "dupsDropped": 0
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "winningPlan": {
+        "isCached": false,
+        "stage": "PROJECTION_SIMPLE",
+        "transformBy": {
+          "supplierProductCode": 1,
+          "name": 1,
+          "sellingPrice": 1,
+          "isActive": 1
+        },
+        "inputStage": {
+          "stage": "SORT",
+          "sortPattern": {
+            "sortOrder": 1,
+            "sellingPrice": 1
+          },
+          "memLimit": 33554432,
+          "type": "simple",
+          "inputStage": {
+            "stage": "FETCH",
+            "filter": {
+              "supplier": {
+                "$eq": "g2bulk"
+              }
+            },
+            "inputStage": {
+              "stage": "OR",
+              "inputStages": [
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "gameSlug": 1
+                  },
+                  "indexName": "gameSlug_1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "gameSlug": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "gameSlug": [
+                      "[\"mlbb\", \"mlbb\"]"
+                    ]
+                  }
+                },
+                {
+                  "stage": "IXSCAN",
+                  "keyPattern": {
+                    "gameCode": 1
+                  },
+                  "indexName": "gameCode_1",
+                  "isMultiKey": false,
+                  "multiKeyPaths": {
+                    "gameCode": []
+                  },
+                  "isUnique": false,
+                  "isSparse": false,
+                  "isPartial": false,
+                  "indexVersion": 2,
+                  "direction": "forward",
+                  "indexBounds": {
+                    "gameCode": [
+                      "[\"mlbb\", \"mlbb\"]"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "v": 2,
+          "key": {
+            "_id": 1
+          },
+          "name": "_id_"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameSlug": 1
+          },
+          "name": "gameSlug_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "isActive": 1
+          },
+          "name": "isActive_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameSlug": 1,
+            "supplierProductCode": 1
+          },
+          "name": "gameSlug_1_supplierProductCode_1",
+          "unique": true
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplier": 1
+          },
+          "name": "supplier_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplierProductCode": 1
+          },
+          "name": "supplierProductCode_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "adminConfigured": 1
+          },
+          "name": "adminConfigured_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "supplier": 1,
+            "supplierProductCode": 1
+          },
+          "name": "supplier_1_supplierProductCode_1"
+        },
+        {
+          "v": 2,
+          "key": {
+            "gameCode": 1
+          },
+          "name": "gameCode_1"
+        }
+      ]
+    }
+  ],
+  "fingerprints": {
+    "games": {
+      "count": 219,
+      "sha256": "cb3c34a043c13899616d8ee19a1e8f837b7a01a6fcc30fda8df9bd34b076c373"
+    },
+    "gamepackages": {
+      "count": 319,
+      "sha256": "61418c78dc3434f13cfd78a95787513f4f0e5a312c247796e7578be3cb9c4335"
+    },
+    "banners": {
+      "count": 4,
+      "sha256": "db9b857df0775c4b61bc2e28132c98cdcfb3ff2d5bc2f6bed0d717f7524f0c7e"
+    }
+  },
+  "packageInventory": [
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "8_ball_pool",
+        "gameSlug": "8-ball-pool"
+      },
+      "count": 13,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameSlug": "mobile-legends"
+      },
+      "count": 24,
+      "available": 24
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "fifa_futcoins_console",
+        "gameSlug": "fifa-futcoins-console"
+      },
+      "count": 2,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameSlug": "pubg-mobile"
+      },
+      "count": 38,
+      "available": 38
+    },
+    {
+      "_id": {
+        "supplier": "vizo",
+        "gameSlug": "free-fire"
+      },
+      "count": 16,
+      "available": 16
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "eafcmobile_kh",
+        "gameSlug": "eafcmobile-kh"
+      },
+      "count": 14,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "bloodstrike",
+        "gameSlug": "bloodstrike"
+      },
+      "count": 27,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "vizo",
+        "gameCode": "freefire_sgmy",
+        "gameSlug": "free-fire-sgmy"
+      },
+      "count": 23,
+      "available": 23
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "arena_breakout",
+        "gameSlug": "arena_breakout"
+      },
+      "count": 27,
+      "available": 1
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "bigo",
+        "gameSlug": "bigo"
+      },
+      "count": 24,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "asphalt9",
+        "gameSlug": "asphalt9"
+      },
+      "count": 5,
+      "available": 0
+    },
+    {
+      "_id": {
+        "supplier": "g2bulk",
+        "gameCode": "mlbb",
+        "gameSlug": "mlbb"
+      },
+      "count": 106,
+      "available": 68
+    }
+  ]
+}

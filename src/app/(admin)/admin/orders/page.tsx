@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   ShoppingCart,
   Search,
@@ -63,6 +64,7 @@ export default function AdminOrdersPage() {
 
   // Filter state
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [statusFilter, setStatusFilter] = useState("all");
   const [supplierFilter, setSupplierFilter] = useState("all");
   const [page, setPage] = useState(1);
@@ -70,11 +72,44 @@ export default function AdminOrdersPage() {
 
   // Selected Order for detail modal
   const [selectedOrder, setSelectedOrder] = useState<AdminOrder | null>(null);
+  const detailRef = useRef<HTMLDivElement>(null);
   const [editFulfillment, setEditFulfillment] = useState<string>("pending");
   const [editPayment, setEditPayment] = useState<string>("pending");
   const [editNotes, setEditNotes] = useState<string>("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [reconcilingId, setReconcilingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!selectedOrder) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const dialog = detailRef.current;
+    dialog?.querySelector<HTMLElement>("button")?.focus();
+    const handleDialogKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedOrder(null);
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+      const controls = dialog.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]'
+      );
+      if (!controls.length) return;
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener("keydown", handleDialogKey);
+    return () => {
+      document.removeEventListener("keydown", handleDialogKey);
+      previousFocus?.focus();
+    };
+  }, [selectedOrder]);
 
   const handleReconcileOrder = async (order: AdminOrder) => {
     try {
@@ -118,7 +153,7 @@ export default function AdminOrdersPage() {
         limit: "25",
         status: statusFilter,
         supplier: supplierFilter,
-        search,
+        search: debouncedSearch,
       });
 
       const res = await fetch(`/api/admin/orders?${params.toString()}`, {
@@ -138,11 +173,11 @@ export default function AdminOrdersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, statusFilter, supplierFilter, search]);
+  }, [page, statusFilter, supplierFilter, debouncedSearch]);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    if (search === debouncedSearch) void fetchOrders();
+  }, [search, debouncedSearch, fetchOrders]);
 
   const handleOpenDetail = (order: AdminOrder) => {
     setSelectedOrder(order);
@@ -250,9 +285,9 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="admin-page animate-in fade-in duration-300">
       {/* Top Title & Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="admin-page-heading">
         <div>
           <h1 className="text-2xl font-black tracking-tight">Customer Orders</h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -387,7 +422,7 @@ export default function AdminOrdersPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="admin-table-scroll">
             <table className="w-full text-xs text-left">
               <thead className="bg-[#090b1c] text-slate-400 uppercase text-[10px] font-bold border-b border-white/5">
                 <tr>
@@ -490,7 +525,7 @@ export default function AdminOrdersPage() {
                           type="button"
                           onClick={() => handleReconcileOrder(order)}
                           disabled={isReconciling}
-                          className="p-1.5 rounded-lg border border-pink-500/20 bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition-all cursor-pointer inline-flex items-center gap-1"
+                          className="admin-table-action cursor-pointer"
                           title="Protected Reconcile (AnajakPay & Supplier)"
                         >
                           <ShieldCheck className={`h-3.5 w-3.5 ${isReconciling ? "animate-spin" : ""}`} />
@@ -498,7 +533,7 @@ export default function AdminOrdersPage() {
                         <button
                           type="button"
                           onClick={() => handleOpenDetail(order)}
-                          className="p-1.5 rounded-lg border border-white/10 hover:bg-white/10 text-slate-300 hover:text-white transition-all cursor-pointer inline-flex items-center"
+                          className="admin-table-action cursor-pointer"
                           title="View Details"
                         >
                           <Eye className="h-3.5 w-3.5" />
@@ -541,7 +576,8 @@ export default function AdminOrdersPage() {
       {/* Order Detail Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in">
-          <div className="w-full max-w-2xl rounded-2xl border border-white/10 bg-[#0c0e24] shadow-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
+          <div ref={detailRef} role="dialog" aria-modal="true" aria-label="Order details"
+            className="admin-modal-panel w-full max-w-2xl p-6 space-y-6">
             {/* Modal Header */}
             <div className="flex items-start justify-between border-b border-white/10 pb-4">
               <div>
@@ -559,6 +595,7 @@ export default function AdminOrdersPage() {
               </div>
               <button
                 onClick={() => setSelectedOrder(null)}
+                aria-label="Close order details"
                 className="p-1 rounded-lg text-slate-400 hover:text-white"
               >
                 <X className="h-5 w-5" />

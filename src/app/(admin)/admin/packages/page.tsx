@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   RefreshCw,
   Search,
@@ -64,11 +65,12 @@ export default function AdminPackagesPage() {
 
   // Filter state
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [gameFilter, setGameFilter] = useState("all");
   const [supplierFilter, setSupplierFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState("150"); // default 150 to show all 106 MLBB packages
+  const [pageSize, setPageSize] = useState("50");
   const [totalPages, setTotalPages] = useState(1);
 
   // Sync state
@@ -105,7 +107,7 @@ export default function AdminPackagesPage() {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        search,
+        search: debouncedSearch,
         game: gameFilter,
         supplier: supplierFilter,
         status: statusFilter,
@@ -156,11 +158,11 @@ export default function AdminPackagesPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, gameFilter, supplierFilter, statusFilter, page, pageSize]);
+  }, [debouncedSearch, gameFilter, supplierFilter, statusFilter, page, pageSize]);
 
   useEffect(() => {
-    fetchPackages();
-  }, [fetchPackages]);
+    if (search === debouncedSearch) void fetchPackages();
+  }, [search, debouncedSearch, fetchPackages]);
 
   // Sync packages from API
   const handleSyncPackages = async () => {
@@ -387,9 +389,9 @@ export default function AdminPackagesPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="admin-page">
       {/* Top Header & Sync Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="admin-page-heading">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-400 mb-1">
             <Package className="h-3.5 w-3.5" />
@@ -563,7 +565,7 @@ export default function AdminPackagesPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="admin-table-scroll">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-white/10 bg-[#090b1c] text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                 <tr>
@@ -786,7 +788,7 @@ export default function AdminPackagesPage() {
       {/* Custom Image Upload Modal */}
       {imageModalPkg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-[#0d0f26] p-6 shadow-2xl space-y-5">
+          <div role="dialog" aria-modal="true" aria-label="Custom package image" className="admin-modal-panel relative w-full max-w-md p-6 space-y-5">
             {/* Modal Header */}
             <div className="flex items-center justify-between pb-3 border-b border-white/10">
               <div className="flex items-center gap-2">

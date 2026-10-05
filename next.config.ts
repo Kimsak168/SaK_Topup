@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Admin-uploaded legacy images use versioned local API URLs.
+    localPatterns: [{ pathname: "/**" }],
     dangerouslyAllowSVG: true,
     remotePatterns: [
       {
@@ -25,4 +27,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

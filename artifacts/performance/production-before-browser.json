@@ -1,0 +1,2224 @@
+{
+  "base": "https://saksuuu-topup.vercel.app",
+  "at": "2026-10-04T04:10:39.362Z",
+  "viewport": "390x844",
+  "cpuSlowdown": 4,
+  "browserCache": "disabled",
+  "homeGamesReadyMs": 1600,
+  "home": {
+    "lcp": 1764,
+    "longTasks": [
+      {
+        "start": 1241,
+        "duration": 96
+      },
+      {
+        "start": 1364.3999999999069,
+        "duration": 56
+      },
+      {
+        "start": 1431.7999999998137,
+        "duration": 157
+      }
+    ],
+    "commits": [
+      {
+        "at": 1722.5,
+        "rendered": [
+          "A",
+          "I",
+          "R",
+          "s",
+          "b",
+          "y",
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 1756.5,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 1768.5999999998603,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y"
+        ]
+      },
+      {
+        "at": 1806.0999999998603,
+        "rendered": [
+          "l",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1809.2999999998137,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1832,
+        "rendered": [
+          "l",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1833.3999999999069,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1884.8999999999069,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1636
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1636
+      }
+    ],
+    "navigation": {
+      "name": "https://saksuuu-topup.vercel.app/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 1619.2999999998137,
+      "navigationId": 6206,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "h2",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "br",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.8999999999068677,
+      "domainLookupStart": 112.5999999998603,
+      "domainLookupEnd": 112.69999999995343,
+      "connectStart": 112.69999999995343,
+      "secureConnectionStart": 121.79999999981374,
+      "connectEnd": 248.69999999995343,
+      "requestStart": 248.79999999981374,
+      "responseStart": 315,
+      "firstInterimResponseStart": 315,
+      "finalResponseHeadersStart": 1048.6999999999534,
+      "responseEnd": 1276.5,
+      "transferSize": 14695,
+      "encodedBodySize": 14395,
+      "decodedBodySize": 109067,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 1371.2999999998137,
+      "domContentLoadedEventStart": 1371.2999999998137,
+      "domContentLoadedEventEnd": 1372,
+      "domComplete": 1619.2999999998137,
+      "loadEventStart": 1619.2999999998137,
+      "loadEventEnd": 1619.2999999998137,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "width": 1920,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "width": 1920,
+        "complete": true
+      },
+      {
+        "src": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+        "width": 1254,
+        "complete": true
+      },
+      {
+        "src": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+        "width": 1254,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+        "type": "link",
+        "ms": 134,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+        "type": "link",
+        "ms": 75.80000000004657,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+        "type": "link",
+        "ms": 132.89999999990687,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+        "type": "link",
+        "ms": 134.69999999995343,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+        "type": "link",
+        "ms": 132.39999999990687,
+        "transfer": 1624,
+        "bytes": 1324
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3aqd6l1gjhyb9.css",
+        "type": "link",
+        "ms": 141.19999999995343,
+        "transfer": 23438,
+        "bytes": 23138
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2belr3pe9fbiz.js",
+        "type": "link",
+        "ms": 137.69999999995343,
+        "transfer": 4396,
+        "bytes": 4096
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+        "type": "script",
+        "ms": 131.60000000009313,
+        "transfer": 9185,
+        "bytes": 8885
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/1azcr4cwwofcz.js",
+        "type": "script",
+        "ms": 139.10000000009313,
+        "transfer": 73107,
+        "bytes": 72807
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+        "type": "script",
+        "ms": 140.9000000001397,
+        "transfer": 43720,
+        "bytes": 43420
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1dkpzf4hseib1.js",
+        "type": "script",
+        "ms": 131,
+        "transfer": 4328,
+        "bytes": 4028
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2corl6wyj4669.js",
+        "type": "script",
+        "ms": 131,
+        "transfer": 4104,
+        "bytes": 3804
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+        "type": "script",
+        "ms": 138.20000000018626,
+        "transfer": 6372,
+        "bytes": 6072
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0k14g_5d9o-d7.js",
+        "type": "script",
+        "ms": 143.20000000018626,
+        "transfer": 12169,
+        "bytes": 11869
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2mv50ztnw5-qe.js",
+        "type": "script",
+        "ms": 140.19999999995343,
+        "transfer": 2578,
+        "bytes": 2278
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+        "type": "script",
+        "ms": 140.4000000001397,
+        "transfer": 10359,
+        "bytes": 10059
+      },
+      {
+        "url": "https://anajakpay.com/khqrcc-plugin.js",
+        "type": "link",
+        "ms": 141.69999999995343,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 84.29999999981374,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0lx_0d-jq21m_.js",
+        "type": "script",
+        "ms": 72,
+        "transfer": 5825,
+        "bytes": 5525
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "type": "link",
+        "ms": 76,
+        "transfer": 307554,
+        "bytes": 307254
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 75.5999999998603,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 98.39999999990687,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 81.80000000004657,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 71.80000000004657,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 84.10000000009313,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 91.9000000001397,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 74.69999999995343,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 77.39999999990687,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 82.0999999998603,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 84.5,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 74.4000000001397,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 75.5999999998603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+        "type": "img",
+        "ms": 692.6999999999534,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+        "type": "other",
+        "ms": 69.5999999998603,
+        "transfer": 9609,
+        "bytes": 9309
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 374.9000000001397,
+        "transfer": 463,
+        "bytes": 163
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 335.5999999998603,
+        "transfer": 1148,
+        "bytes": 848
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 348.69999999995343,
+        "transfer": 506,
+        "bytes": 206
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 332.70000000018626,
+        "transfer": 504,
+        "bytes": 204
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 339,
+        "transfer": 500,
+        "bytes": 200
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 333.10000000009313,
+        "transfer": 501,
+        "bytes": 201
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 320.60000000009313,
+        "transfer": 1090,
+        "bytes": 790
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=wDsFIgMTbAvlyotf",
+        "type": "fetch",
+        "ms": 549,
+        "transfer": 1742,
+        "bytes": 1442
+      }
+    ]
+  },
+  "activeGames": 11,
+  "detailNavigationMs": 2637,
+  "detail": {
+    "lcp": 1764,
+    "longTasks": [
+      {
+        "start": 1241,
+        "duration": 96
+      },
+      {
+        "start": 1364.3999999999069,
+        "duration": 56
+      },
+      {
+        "start": 1431.7999999998137,
+        "duration": 157
+      }
+    ],
+    "commits": [
+      {
+        "at": 1722.5,
+        "rendered": [
+          "A",
+          "I",
+          "R",
+          "s",
+          "b",
+          "y",
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 1756.5,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 1768.5999999998603,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "anonymous",
+          "y"
+        ]
+      },
+      {
+        "at": 1806.0999999998603,
+        "rendered": [
+          "l",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1809.2999999998137,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1832,
+        "rendered": [
+          "l",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1833.3999999999069,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1884.8999999999069,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3106.6999999999534,
+        "rendered": [
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3174.1999999999534,
+        "rendered": [
+          "L",
+          "T",
+          "s",
+          "b",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "__next_root_layout_boundary__",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 3191.899999999907,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "o",
+          "O",
+          "j",
+          "b",
+          "y",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "s",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "i",
+          "p",
+          "f",
+          "x",
+          "C",
+          "T",
+          "o",
+          "O",
+          "j",
+          "b",
+          "R",
+          "y",
+          "y",
+          "y",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 3199.399999999907,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3621.0999999998603,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 5466.899999999907,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 5582,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "l",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "i",
+          "p",
+          "f",
+          "x",
+          "anonymous",
+          "_",
+          "y",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1636
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1636
+      }
+    ],
+    "navigation": {
+      "name": "https://saksuuu-topup.vercel.app/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 1619.2999999998137,
+      "navigationId": 6206,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "h2",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "br",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.8999999999068677,
+      "domainLookupStart": 112.5999999998603,
+      "domainLookupEnd": 112.69999999995343,
+      "connectStart": 112.69999999995343,
+      "secureConnectionStart": 121.79999999981374,
+      "connectEnd": 248.69999999995343,
+      "requestStart": 248.79999999981374,
+      "responseStart": 315,
+      "firstInterimResponseStart": 315,
+      "finalResponseHeadersStart": 1048.6999999999534,
+      "responseEnd": 1276.5,
+      "transferSize": 14695,
+      "encodedBodySize": 14395,
+      "decodedBodySize": 109067,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 1371.2999999998137,
+      "domContentLoadedEventStart": 1371.2999999998137,
+      "domContentLoadedEventEnd": 1372,
+      "domComplete": 1619.2999999998137,
+      "loadEventStart": 1619.2999999998137,
+      "loadEventEnd": 1619.2999999998137,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 70,
+        "complete": true
+      },
+      {
+        "src": "https://api.g2bulk.com/images/mlbb.png",
+        "width": 492,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+        "type": "link",
+        "ms": 134,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+        "type": "link",
+        "ms": 75.80000000004657,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+        "type": "link",
+        "ms": 132.89999999990687,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+        "type": "link",
+        "ms": 134.69999999995343,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+        "type": "link",
+        "ms": 132.39999999990687,
+        "transfer": 1624,
+        "bytes": 1324
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3aqd6l1gjhyb9.css",
+        "type": "link",
+        "ms": 141.19999999995343,
+        "transfer": 23438,
+        "bytes": 23138
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2belr3pe9fbiz.js",
+        "type": "link",
+        "ms": 137.69999999995343,
+        "transfer": 4396,
+        "bytes": 4096
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+        "type": "script",
+        "ms": 131.60000000009313,
+        "transfer": 9185,
+        "bytes": 8885
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/1azcr4cwwofcz.js",
+        "type": "script",
+        "ms": 139.10000000009313,
+        "transfer": 73107,
+        "bytes": 72807
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+        "type": "script",
+        "ms": 140.9000000001397,
+        "transfer": 43720,
+        "bytes": 43420
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1dkpzf4hseib1.js",
+        "type": "script",
+        "ms": 131,
+        "transfer": 4328,
+        "bytes": 4028
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2corl6wyj4669.js",
+        "type": "script",
+        "ms": 131,
+        "transfer": 4104,
+        "bytes": 3804
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+        "type": "script",
+        "ms": 138.20000000018626,
+        "transfer": 6372,
+        "bytes": 6072
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0k14g_5d9o-d7.js",
+        "type": "script",
+        "ms": 143.20000000018626,
+        "transfer": 12169,
+        "bytes": 11869
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2mv50ztnw5-qe.js",
+        "type": "script",
+        "ms": 140.19999999995343,
+        "transfer": 2578,
+        "bytes": 2278
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+        "type": "script",
+        "ms": 140.4000000001397,
+        "transfer": 10359,
+        "bytes": 10059
+      },
+      {
+        "url": "https://anajakpay.com/khqrcc-plugin.js",
+        "type": "link",
+        "ms": 141.69999999995343,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 84.29999999981374,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0lx_0d-jq21m_.js",
+        "type": "script",
+        "ms": 72,
+        "transfer": 5825,
+        "bytes": 5525
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+        "type": "link",
+        "ms": 76,
+        "transfer": 307554,
+        "bytes": 307254
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 75.5999999998603,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 98.39999999990687,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 81.80000000004657,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 71.80000000004657,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 84.10000000009313,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 91.9000000001397,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 74.69999999995343,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 77.39999999990687,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 82.0999999998603,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 84.5,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 74.4000000001397,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 75.5999999998603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+        "type": "img",
+        "ms": 692.6999999999534,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+        "type": "other",
+        "ms": 69.5999999998603,
+        "transfer": 9609,
+        "bytes": 9309
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 374.9000000001397,
+        "transfer": 463,
+        "bytes": 163
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 335.5999999998603,
+        "transfer": 1148,
+        "bytes": 848
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 348.69999999995343,
+        "transfer": 506,
+        "bytes": 206
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 332.70000000018626,
+        "transfer": 504,
+        "bytes": 204
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 339,
+        "transfer": 500,
+        "bytes": 200
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 333.10000000009313,
+        "transfer": 501,
+        "bytes": 201
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 320.60000000009313,
+        "transfer": 1090,
+        "bytes": 790
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=wDsFIgMTbAvlyotf",
+        "type": "fetch",
+        "ms": 549,
+        "transfer": 1742,
+        "bytes": 1442
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=Re4BNqK_F1Hef6BI",
+        "type": "fetch",
+        "ms": 553.3999999999069,
+        "transfer": 1741,
+        "bytes": 1441
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=RDoBNhAqgWT5YHhI",
+        "type": "fetch",
+        "ms": 544.6000000000931,
+        "transfer": 1743,
+        "bytes": 1443
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=PigQviXdoRXr6qz9",
+        "type": "fetch",
+        "ms": 533.6000000000931,
+        "transfer": 1746,
+        "bytes": 1446
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=0ogiXAHxbyw3NKte",
+        "type": "fetch",
+        "ms": 2350.8000000000466,
+        "transfer": 4473,
+        "bytes": 4173
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 142.0999999998603,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0hd8ov5s5rf4i.js",
+        "type": "script",
+        "ms": 72.89999999990687,
+        "transfer": 10920,
+        "bytes": 10620
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+        "type": "link",
+        "ms": 87.19999999995343,
+        "transfer": 3582,
+        "bytes": 3282
+      },
+      {
+        "url": "https://api.g2bulk.com/images/mlbb.png",
+        "type": "img",
+        "ms": 319.80000000004657,
+        "transfer": 0,
+        "bytes": 0
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+        "type": "img",
+        "ms": 71.30000000004657,
+        "transfer": 812,
+        "bytes": 512
+      }
+    ]
+  },
+  "initialSelectionCount": 0,
+  "selection": [
+    {
+      "domMs": 35,
+      "nextPaintMs": 59.10000000009313,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7291.799999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 16.299999999813735,
+      "nextPaintMs": 27.5999999998603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7434.699999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 15.300000000046566,
+      "nextPaintMs": 26.100000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7562.899999999907,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11.599999999860302,
+      "nextPaintMs": 24.199999999953434,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7687.09999999986,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.299999999813735,
+      "nextPaintMs": 26.0999999998603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7813.799999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 9.699999999953434,
+      "nextPaintMs": 22.899999999906868,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 7942.699999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10,
+      "nextPaintMs": 21.199999999953434,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8067.699999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.899999999906868,
+      "nextPaintMs": 24.5,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8192.199999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.600000000093132,
+      "nextPaintMs": 22.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8317.699999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 9.199999999953434,
+      "nextPaintMs": 22.0999999998603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8442.199999999953,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 11,
+      "nextPaintMs": 21.699999999953434,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8567.59999999986,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 8.699999999953434,
+      "nextPaintMs": 20.899999999906868,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 8689.299999999814,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "l",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRequests": [],
+  "requests": [
+    {
+      "url": "https://saksuuu-topup.vercel.app/",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3aqd6l1gjhyb9.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2belr3pe9fbiz.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/1azcr4cwwofcz.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1dkpzf4hseib1.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2corl6wyj4669.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0k14g_5d9o-d7.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2mv50ztnw5-qe.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://anajakpay.com/khqrcc-plugin.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0lx_0d-jq21m_.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/api/banners/6abff71e4409f43ddc8487b2/image?v=4542442f-f226-4d8d-82ea-93e05d111127",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://9bzwjnv1fayr5odz.public.blob.vercel-storage.com/banners/banner-6abff71e4409f43ddc8487b-jo2wmellw7s.png",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+      "method": "GET",
+      "type": "Other"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_global?_rsc=wDsFIgMTbAvlyotf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=Re4BNqK_F1Hef6BI",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=RDoBNhAqgWT5YHhI",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=PigQviXdoRXr6qz9",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=0ogiXAHxbyw3NKte",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/0hd8ov5s5rf4i.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://api.g2bulk.com/images/mlbb.png",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Faba-logo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    }
+  ]
+}

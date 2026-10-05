@@ -164,9 +164,9 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className="public-button flex-1 sm:flex-initial flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl sm:rounded-2xl px-5 sm:px-6 text-xs sm:text-sm font-bold text-primary-foreground shadow-md shadow-pink-200/40 hover:shadow-soft hover:shadow-pink-300/40 transition-all cursor-pointer active:scale-95"
+              className="game-action-button flex h-12 flex-1 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-xs font-bold whitespace-nowrap text-white sm:flex-initial sm:rounded-2xl sm:px-6 sm:text-sm"
             >
-              <Search className="h-4 w-4" />
+              <Search className="h-4 w-4 text-white" />
               <span>ស្វែងរក</span>
             </button>
 
@@ -247,4 +247,3 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
     </section>
   );
 }
-

@@ -4,6 +4,7 @@ import { getClientGames } from "@/lib/services/gameService";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  const start = performance.now();
   try {
     const { searchParams } = new URL(req.url);
     const category = searchParams.get("category") || undefined;
@@ -22,7 +23,9 @@ export async function GET(req: NextRequest) {
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+          // Cache data by tag instead of a second untagged CDN copy.
+          "Cache-Control": "no-store",
+          "Server-Timing": `catalogue;dur=${(performance.now() - start).toFixed(1)}`,
         },
       }
     );

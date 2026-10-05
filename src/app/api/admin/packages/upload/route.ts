@@ -1,3 +1,4 @@
+import { invalidateCatalogueCache } from "@/lib/services/cacheService";
 import { randomUUID } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
@@ -80,6 +81,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    invalidateCatalogueCache();
     return NextResponse.json({
       success: true,
       message: "Package image updated successfully",

@@ -29,7 +29,10 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 
 export default async function GameDetailPage({ params }: GamePageProps) {
   const { supplier, code } = await params;
-  const result = await getGameBySupplierAndCode(supplier, code);
+  const [result, initialPackages] = await Promise.all([
+    getGameBySupplierAndCode(supplier, code),
+    getNormalizedPackages(supplier, code),
+  ]);
 
   // Handle invalid supplier and game combinations cleanly without redirect loops
   if (result?.shouldRedirect) {
@@ -42,9 +45,6 @@ export default async function GameDetailPage({ params }: GamePageProps) {
 
   const { game } = result;
 
-  // Fetch packages directly server-side with MongoDB prices applied (no loopback HTTP fetch)
-  const initialPackages = await getNormalizedPackages(game.supplier, game.code);
-
   return (
     <div className="relative min-h-screen w-full overflow-x-clip py-8 sm:py-12">
       {/* Background neon ambient spots */}
@@ -52,7 +52,7 @@ export default async function GameDetailPage({ params }: GamePageProps) {
       <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <GameTopUpClient game={game} initialPackages={initialPackages} />
+        <GameTopUpClient key={game.id} game={game} initialPackages={initialPackages} />
       </div>
     </div>
   );

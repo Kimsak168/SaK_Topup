@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Flame } from "lucide-react";
 import { ClientGame } from "@/types/game";
@@ -11,6 +12,8 @@ interface GameCardProps {
 }
 
 export function GameCard({ game }: GameCardProps) {
+  const router = useRouter();
+  const href = game.path || `/games/${game.supplier}/${game.code || game.slug}`;
   const [imgSrc, setImgSrc] = useState<string>(() => game.image || "/images/freefire.jpg");
 
   // Keep POPULAR only if explicitly marked popular by administrator
@@ -18,7 +21,9 @@ export function GameCard({ game }: GameCardProps) {
 
   return (
     <Link
-      href={game.path || `/games/${game.supplier}/${game.code || game.slug}`}
+      href={href}
+      onMouseEnter={() => router.prefetch(href)}
+      onFocus={() => router.prefetch(href)}
       className={`group relative flex h-full min-w-0 flex-col rounded-2xl overflow-hidden bg-card transition-all duration-300 hover:-translate-y-1.5 focus-visible:outline-2 focus-visible:outline-ring ${
         isPopular
           ? "border border-pink-300/60 shadow-[0_4px_24px_rgba(255,46,147,0.12)] hover:shadow-[0_12px_40px_rgba(255,46,147,0.2)]"
@@ -59,9 +64,9 @@ export function GameCard({ game }: GameCardProps) {
           </h3>
         </div>
 
-        {/* 3. Attractive Pink/Purple Top Up Button */}
+        {/* 3. Top Up Button */}
         <div className="mt-3 pt-2">
-          <div className="public-button flex h-9 sm:h-10 w-full items-center justify-center gap-1.5 rounded-xl text-xs sm:text-sm font-bold text-primary-foreground shadow-md shadow-pink-200/50 group-hover:shadow-soft group-hover:shadow-pink-300/40 transition-all">
+          <div className="game-action-button flex h-9 sm:h-10 w-full items-center justify-center gap-1.5 rounded-xl text-xs sm:text-sm font-bold text-white">
             <span>Top Up</span>
             <span aria-hidden="true">&rarr;</span>
           </div>

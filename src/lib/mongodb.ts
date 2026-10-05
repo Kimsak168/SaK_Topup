@@ -13,7 +13,7 @@ declare global {
   var mongooseCache: MongooseCache | undefined;
 }
 
-let cached: MongooseCache = (globalThis as unknown as { mongooseCache?: MongooseCache }).mongooseCache || {
+const cached: MongooseCache = (globalThis as unknown as { mongooseCache?: MongooseCache }).mongooseCache || {
   conn: null,
   promise: null,
 };
@@ -41,7 +41,7 @@ export async function connectDB(): Promise<typeof mongoose> {
   }
 
   // 2. If disconnected or stale, reset cache
-  if (mongoose.connection.readyState === 0 || mongoose.connection.readyState === 3) {
+  if (cached.conn && mongoose.connection.readyState === 0) {
     cached.conn = null;
     cached.promise = null;
   }
@@ -50,6 +50,7 @@ export async function connectDB(): Promise<typeof mongoose> {
   if (!cached.promise) {
     const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
+      autoIndex: false, // Indexes are maintained explicitly, never during a public request.
       serverSelectionTimeoutMS: 5000, // Fail fast (5s) instead of stalling requests for 30s
       connectTimeoutMS: 5000,
       socketTimeoutMS: 20000,

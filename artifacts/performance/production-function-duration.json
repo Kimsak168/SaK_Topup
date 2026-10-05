@@ -1,0 +1,18 @@
+﻿{
+  "error": {
+    "code": "payment_required",
+    "message": "Observability Plus is required for this query.",
+    "hint": "Check whether Observability Plus is disabled for this project or the team needs a subscription. Enable it if already subscribed. Otherwise, Subscribe with `vercel buy addon observability-plus`.",
+    "retryable": false,
+    "userActionRequired": true,
+    "scope": "kimsak168s-projects",
+    "next": [
+      {
+        "command": "vercel buy addon observability-plus",
+        "when": "the team has no subscription and a person has approved buying the add-on"
+      }
+    ],
+    "cliVersion": "62.2.0",
+    "invocationId": "56911791-dd38-48e1-aaa9-f33b38acfd8b"
+  }
+}

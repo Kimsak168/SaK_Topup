@@ -1,34 +1,25 @@
 import { CustomerNavbar } from "@/components/public/CustomerNavbar";
 import { CustomerFooter } from "@/components/public/CustomerFooter";
 import Image from "next/image";
-import { connectDB } from "@/lib/mongodb";
-import { Setting } from "@/models/Setting";
+import { Suspense } from "react";
+import { getPublicLogoUrl } from "@/lib/services/publicSettingsService";
 
-async function getLogoUrl(): Promise<string | undefined> {
+async function ConfiguredNavbar() {
+  let logoUrl: string | undefined;
   try {
-    const timeoutPromise = new Promise<undefined>((resolve) =>
-      setTimeout(() => resolve(undefined), 600)
-    );
-
-    const fetchLogo = async () => {
-      await connectDB();
-      const setting = await Setting.findOne({ key: "general" }).select("logoUrl").lean();
-      return setting?.logoUrl || undefined;
-    };
-
-    return await Promise.race([fetchLogo(), timeoutPromise]);
+    logoUrl = (await getPublicLogoUrl()) || undefined;
   } catch {
-    return undefined;
+    // Keep the existing branded navbar available during a database outage.
   }
+  return <CustomerNavbar logoUrl={logoUrl} />;
 }
 
 
-export default async function PublicCustomerLayout({
+export default function PublicCustomerLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const logoUrl = await getLogoUrl();
   return (
     <div className="public-theme relative isolate min-h-screen flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Soft decorative background glows */}
@@ -46,7 +37,9 @@ export default async function PublicCustomerLayout({
       </div>
 
       {/* Customer Top Navigation */}
-      <CustomerNavbar logoUrl={logoUrl} />
+      <Suspense fallback={<CustomerNavbar />}>
+        <ConfiguredNavbar />
+      </Suspense>
 
       {/* Main Public Content */}
       <main className="relative z-10 flex-1 w-full min-w-0 pt-36 sm:pt-32">{children}</main>

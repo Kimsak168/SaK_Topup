@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       gameSlug,
       supplier,
       supplierProductCode,
+      expectedPrice,
       playerId,
       serverId,
       playerName,
@@ -54,7 +55,14 @@ export async function POST(req: NextRequest) {
         $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
       }).lean();
 
-      if (pkg && typeof pkg.sellingPrice === "number" && pkg.sellingPrice > 0) {
+      if (!pkg || pkg.isActive === false || typeof pkg.sellingPrice !== "number" || !Number.isFinite(pkg.sellingPrice) || pkg.sellingPrice <= 0) {
+        return NextResponse.json(
+          { success: false, error: "The selected package is unavailable or pending price configuration." },
+          { status: 400 }
+        );
+      }
+
+      if (pkg.sellingPrice > 0) {
         // Enforce authoritative price from database
         if (targetOrder.amount !== pkg.sellingPrice) {
           targetOrder.amount = pkg.sellingPrice;
@@ -86,12 +94,17 @@ export async function POST(req: NextRequest) {
 
       // Validate game and required server ID
       const game = await Game.findOne({
+        supplier: cleanSupplier,
         $or: [
           { slug: cleanGameSlug },
           { supplierGameCode: cleanGameSlug },
         ],
         isActive: true,
       }).lean();
+
+      if (!game) {
+        return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
+      }
 
       if (game?.requiresServer && !String(serverId || "").trim()) {
         return NextResponse.json(
@@ -114,6 +127,7 @@ export async function POST(req: NextRequest) {
       if (
         !pkg ||
         typeof pkg.sellingPrice !== "number" ||
+        !Number.isFinite(pkg.sellingPrice) ||
         pkg.sellingPrice <= 0 ||
         pkg.isActive === false
       ) {
@@ -123,6 +137,17 @@ export async function POST(req: NextRequest) {
             error: "The selected package is unavailable or pending price configuration.",
           },
           { status: 400 }
+        );
+      }
+
+      if (expectedPrice !== undefined && (
+        typeof expectedPrice !== "number" ||
+        !Number.isFinite(expectedPrice) ||
+        Math.round(expectedPrice * 100) !== Math.round(pkg.sellingPrice * 100)
+      )) {
+        return NextResponse.json(
+          { success: false, error: "The package price has changed. Please refresh and select it again." },
+          { status: 409 }
         );
       }
 

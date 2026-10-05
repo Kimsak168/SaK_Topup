@@ -29,56 +29,39 @@ interface AdminDashboardShellProps {
   children: React.ReactNode;
 }
 
-const NAV_ITEMS = [
-  {
-    href: "/admin",
-    label: "Overview",
-    icon: LayoutDashboard,
-    badge: null,
-  },
-  {
-    href: "/admin/games",
-    label: "Games Catalogue",
-    icon: Gamepad2,
-    badge: null,
-  },
-  {
-    href: "/admin/packages",
-    label: "Packages & Pricing",
-    icon: Package,
-    badge: null,
-  },
-  {
-    href: "/admin/orders",
-    label: "Customer Orders",
-    icon: ShoppingCart,
-    badge: null,
-  },
-  {
-    href: "/admin/payments",
-    label: "Payment Gateways",
-    icon: CreditCard,
-    badge: null,
-  },
-  {
-    href: "/admin/banners",
-    label: "Promo Banners",
-    icon: ImageIcon,
-    badge: null,
-  },
-  {
-    href: "/admin/suppliers",
-    label: "Suppliers (Vizo / G2)",
-    icon: Server,
-    badge: "Live",
-  },
-  {
-    href: "/admin/settings",
-    label: "Website Settings",
-    icon: Settings,
-    badge: null,
-  },
+const NAV_GROUPS = [
+  { title: "Workspace", items: [
+    { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  ] },
+  { title: "Catalogue & Sales", items: [
+    { href: "/admin/games", label: "Games Catalogue", icon: Gamepad2 },
+    { href: "/admin/packages", label: "Packages & Pricing", icon: Package },
+    { href: "/admin/orders", label: "Customer Orders", icon: ShoppingCart },
+  ] },
+  { title: "Operations", items: [
+    { href: "/admin/payments", label: "Payment Gateways", icon: CreditCard },
+    { href: "/admin/banners", label: "Promo Banners", icon: ImageIcon },
+  ] },
+  { title: "Platform", items: [
+    { href: "/admin/suppliers", label: "Suppliers (Vizo / G2)", icon: Server },
+    { href: "/admin/settings", label: "Website Settings", icon: Settings },
+  ] },
 ];
+const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items);
+const SUPPLIER_STATUS_EVENT = "saksuuu:supplier-status";
+
+function getVerifiedSupplierCount() {
+  try {
+    const saved = sessionStorage.getItem("saksuuu_supplier_check");
+    if (!saved) return 0;
+    const check = JSON.parse(saved) as { timestamp?: string; vizo?: { status?: string }; g2bulk?: { status?: string } };
+    const checkedAt = Date.parse(check.timestamp || "");
+    if (!Number.isFinite(checkedAt) || Date.now() - checkedAt > 10 * 60_000) return 0;
+    return Number(check.vizo?.status === "connected") + Number(check.g2bulk?.status === "connected");
+  } catch {
+    return 0;
+  }
+}
 
 export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const pathname = usePathname();
@@ -88,6 +71,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [connectedSuppliers, setConnectedSuppliers] = useState(0);
   const drawerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -141,6 +125,27 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
     }
   }, []);
 
+  useEffect(() => {
+    const update = () => setConnectedSuppliers(getVerifiedSupplierCount());
+    update();
+    window.addEventListener(SUPPLIER_STATUS_EVENT, update);
+    window.addEventListener("focus", update);
+    return () => {
+      window.removeEventListener(SUPPLIER_STATUS_EVENT, update);
+      window.removeEventListener("focus", update);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
+    const tablet = window.matchMedia("(min-width: 768px) and (max-width: 1100px)");
+    const collapseForTablet = () => {
+      if (tablet.matches) setCollapsed(true);
+    };
+    collapseForTablet();
+    tablet.addEventListener("change", collapseForTablet);
+    return () => tablet.removeEventListener("change", collapseForTablet);
+  }, []);
+
   const toggleTheme = () => {
     setIsDarkMode((prev) => {
       const next = !prev;
@@ -154,6 +159,8 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
     try {
       setIsLoggingOut(true);
       await fetch("/api/admin/auth/logout", { method: "POST" });
+      sessionStorage.removeItem("saksuuu_supplier_check");
+      setConnectedSuppliers(0);
       toast.success("Logged out successfully");
       router.push("/admin/login");
       router.refresh();
@@ -179,10 +186,10 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
 
   return (
     <div
-      className={`min-h-screen w-full font-sans transition-colors duration-200 ${
+      className={`admin-shell min-h-screen w-full font-sans transition-colors duration-200 ${
         isDarkMode
-          ? "bg-[#070814] text-slate-100"
-          : "bg-slate-50 text-slate-800"
+          ? "admin-shell-dark bg-[#0a0d17] text-slate-100"
+          : "admin-shell-light bg-slate-50 text-slate-800"
       }`}
     >
       <div inert={mobileOpen} className="flex h-dvh overflow-hidden">
@@ -190,8 +197,8 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
         {/* DESKTOP SIDEBAR */}
         {/* ========================================================= */}
         <aside
-          className={`hidden md:flex shrink-0 flex-col border-r transition-all duration-300 z-30 select-none ${
-            collapsed ? "w-20" : "w-64"
+          className={`admin-sidebar hidden md:flex min-h-0 shrink-0 flex-col border-r transition-[width] duration-200 z-30 select-none ${
+            collapsed ? "w-[72px] is-collapsed" : "w-[272px]"
           } ${
             isDarkMode
               ? "bg-[#0a0c20]/95 border-white/10"
@@ -199,30 +206,24 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
           }`}
         >
           {/* Brand Header */}
-          <div className={`shrink-0 px-4 flex items-center border-b border-inherit ${collapsed ? "flex-col gap-2 py-3" : "h-16 justify-between"}`}>
+          <div className={`admin-sidebar-header shrink-0 flex items-center border-b border-inherit ${collapsed ? "flex-col gap-1.5 px-2 py-3" : "h-[68px] justify-between px-4"}`}>
             <Link
               href="/admin"
-              className="flex items-center gap-2.5 overflow-hidden group"
+              className="flex min-w-0 items-center gap-2.5 overflow-hidden group"
               aria-label="Admin Dashboard"
             >
               <Image
                 src="/images/logo.png"
                 alt="SakSuuu Admin Logo"
-                width={50}
-                height={50}
+                width={40}
+                height={40}
                 priority
-                className="h-10 w-10 shrink-0 object-contain drop-shadow-[0_0_10px_rgba(0,217,255,0.25)] transition-transform group-hover:scale-105"
+                className="h-9 w-9 shrink-0 object-contain"
               />
               {!collapsed && (
-                <div className="truncate">
-                  <div className="flex items-center gap-1.5">
-                    <span className="rounded bg-pink-500/10 border border-pink-500/30 px-1.5 py-0.5 text-[10px] font-bold text-pink-400 uppercase tracking-wider">
-                      Admin HQ
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 truncate">
-                    Control Center
-                  </p>
+                <div className="min-w-0 leading-tight">
+                  <strong className="block truncate text-[15px] font-extrabold tracking-tight">SakSuuu</strong>
+                  <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.16em] text-pink-400">Admin HQ</p>
                 </div>
               )}
             </Link>
@@ -231,7 +232,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               onClick={() => setCollapsed(!collapsed)}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               title={collapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-              className={`p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer ${
+              className={`admin-icon-button shrink-0 p-1.5 rounded-lg text-slate-400 hover:text-white transition-colors cursor-pointer ${
                 isDarkMode ? "hover:bg-white/10" : "hover:bg-slate-100"
               }`}
             >
@@ -243,105 +244,53 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-            {NAV_ITEMS.map((item) => {
-              const Icon = item.icon;
-              const isActive =
-                item.href === "/admin"
-                  ? pathname === "/admin"
-                  : pathname.startsWith(item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={collapsed ? item.label : undefined}
-                  aria-label={collapsed ? item.label : undefined}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
-                    isActive
-                      ? "bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-indigo-500/10 text-pink-400 border border-pink-500/30 shadow-[0_0_15px_rgba(255,46,147,0.15)]"
-                      : isDarkMode
-                      ? "text-slate-400 hover:text-slate-100 hover:bg-white/5 border border-transparent"
-                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 border border-transparent"
-                  }`}
-                >
-                  <Icon
-                    className={`h-4 w-4 shrink-0 transition-transform group-hover:scale-110 ${
-                      isActive
-                        ? "text-pink-400"
-                        : isDarkMode
-                        ? "text-slate-400 group-hover:text-slate-200"
-                        : "text-slate-500 group-hover:text-slate-800"
-                    }`}
-                  />
-                  {!collapsed && (
-                    <span className="truncate flex-1">{item.label}</span>
-                  )}
-                  {!collapsed && item.badge && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 uppercase">
-                      {item.badge}
-                    </span>
-                  )}
-                  {/* Collapsed dot indicator */}
-                  {collapsed && isActive && (
-                    <span className="absolute right-2 h-1.5 w-1.5 rounded-full bg-pink-500" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          {/* Bottom Sidebar Info Card */}
-          <div className="p-3 border-t border-inherit space-y-2">
-            {!collapsed && (
-              <div
-                className={`rounded-xl p-3 border text-xs space-y-1.5 ${
-                  isDarkMode
-                    ? "bg-[#070814]/80 border-white/5"
-                    : "bg-slate-50 border-slate-200"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                    API Suppliers
-                  </span>
-                  <span className="flex h-2 w-2 relative">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">Vizo & G2Bulk</span>
-                  <span className="text-emerald-400 font-bold">Online</span>
-                </div>
+          <nav aria-label="Admin sections" className="admin-sidebar-nav min-h-0 flex-1 overflow-y-auto px-3 py-3">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.title} className="admin-nav-group">
+                {collapsed ? <div className="admin-nav-divider" aria-hidden="true" /> :
+                  <p className="admin-nav-heading">{group.title}</p>}
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = item.href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname.startsWith(item.href);
+                  return <Link
+                    key={item.href}
+                    href={item.href}
+                    title={collapsed ? item.label : undefined}
+                    data-tooltip={collapsed ? item.label : undefined}
+                    aria-label={collapsed ? item.label : undefined}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`admin-nav-link relative flex h-10 items-center gap-3 rounded-[11px] px-3 text-[13px] font-medium ${collapsed ? "justify-center px-0" : ""}`}
+                  >
+                    <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.9} />
+                    {!collapsed && <span className="min-w-0 truncate">{item.label}</span>}
+                  </Link>;
+                })}
               </div>
-            )}
+            ))}
+          </nav>
 
-            {/* Admin Profile & Logout Row */}
-            <div className={`flex items-center justify-between gap-2 pt-1 ${collapsed ? "flex-col" : ""}`}>
-              <div className="flex items-center gap-2 overflow-hidden">
-                <div className="h-8 w-8 shrink-0 rounded-lg bg-gradient-to-tr from-pink-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  AD
-                </div>
-                {!collapsed && (
-                  <div className="truncate">
-                    <p className="text-xs font-bold truncate">Super Admin</p>
-                    <p className="text-[10px] text-slate-400">HQ Control</p>
-                  </div>
-                )}
+          <div className={`admin-sidebar-footer shrink-0 border-t border-inherit ${collapsed ? "px-2 py-3" : "p-3"}`}>
+            <Link href="/admin/suppliers" className="admin-supplier-status" title={collapsed ? "Supplier APIs" : undefined} aria-label="View supplier connection status">
+              <span className="admin-supplier-status-icon"><Server size={17} strokeWidth={1.9} /></span>
+              {!collapsed && <span className="min-w-0 flex-1">
+                <strong>Supplier APIs</strong>
+                <small>{connectedSuppliers === 2 ? "Vizo & G2Bulk connected" : connectedSuppliers === 1 ? "1 of 2 connected" : "Verify connections"}</small>
+              </span>}
+              <span className={`admin-supplier-dot ${connectedSuppliers === 2 ? "is-connected" : connectedSuppliers === 1 ? "is-partial" : ""}`} aria-hidden="true" />
+            </Link>
+
+            <div className={`admin-profile ${collapsed ? "is-collapsed" : ""}`}>
+              <div className="flex min-w-0 items-center gap-2.5">
+                <div className="admin-avatar">AD</div>
+                {!collapsed && <div className="min-w-0">
+                  <p className="truncate text-xs font-bold">Super Admin</p>
+                  <p className="text-[11px] text-slate-400">HQ Control</p>
+                </div>}
               </div>
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                title="Sign Out"
-                aria-label="Sign out"
-                className={`p-2 rounded-lg text-slate-400 hover:text-rose-400 transition-colors cursor-pointer ${
-                  isDarkMode ? "hover:bg-rose-500/10" : "hover:bg-rose-50"
-                }`}
-              >
-                <LogOut className="h-4 w-4" />
+              <button onClick={handleLogout} disabled={isLoggingOut} title="Sign out" aria-label="Sign out" className="admin-icon-button" type="button">
+                <LogOut className="h-[18px] w-[18px]" />
               </button>
             </div>
           </div>
@@ -374,27 +323,25 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               </button>
 
               <div className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-sm font-bold tracking-tight">
-                  {currentNav.label}
-                </span>
-                <span className="hidden lg:inline-block text-xs text-slate-500">
-                  /
-                </span>
-                <span className="hidden lg:inline-block whitespace-nowrap text-xs text-pink-400 font-semibold">
-                  SakSuuu HQ
-                </span>
+                <span className="hidden sm:inline-block whitespace-nowrap text-xs text-slate-400 font-medium">Admin HQ</span>
+                <span className="hidden sm:inline-block text-xs text-slate-500">/</span>
+                <span className="truncate text-sm font-semibold tracking-tight">{currentNav.label}</span>
               </div>
             </div>
 
             {/* Right Header Status & Tools */}
             <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
-              {/* Live Supplier Badge */}
+              {/* Connection status is verified on the overview and suppliers pages. */}
               <Link
                 href="/admin/suppliers"
-                className="hidden lg:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-1 rounded-full font-semibold hover:bg-emerald-500/20 transition-colors"
+                className={`hidden lg:flex items-center gap-1.5 text-xs border px-2.5 py-1.5 rounded-full font-semibold transition-colors ${
+                  isDarkMode
+                    ? "text-slate-300 bg-white/5 border-white/10 hover:bg-white/10"
+                    : "text-slate-700 bg-slate-100 border-slate-200 hover:bg-slate-200"
+                }`}
               >
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>Vizo & G2Bulk Live</span>
+                <span>Supplier status</span>
               </Link>
 
               {/* View Public Storefront Button */}
@@ -433,26 +380,12 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 )}
               </button>
 
-              {/* Mobile Logout shortcut */}
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                title="Logout"
-                aria-label="Sign out"
-                className={`md:hidden h-10 w-10 flex items-center justify-center rounded-lg border text-rose-400 cursor-pointer ${
-                  isDarkMode
-                    ? "border-white/10 bg-white/5"
-                    : "border-slate-200 bg-slate-100"
-                }`}
-              >
-                <LogOut className="h-4 w-4" />
-              </button>
             </div>
           </header>
 
           {/* Main Scrollable Content */}
-          <main className="min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 lg:p-8">
-            <div className="min-w-0 max-w-7xl mx-auto space-y-6">{children}</div>
+          <main className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 lg:p-8">
+            <div className="min-w-0 max-w-[1440px] mx-auto space-y-6">{children}</div>
           </main>
         </div>
       </div>
@@ -475,24 +408,22 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Admin navigation"
-            className={`relative w-72 max-w-[80vw] h-full flex flex-col border-r z-50 animate-in slide-in-from-left duration-200 ${
+            className={`admin-mobile-drawer relative w-[272px] max-w-[85vw] h-full min-h-0 flex flex-col border-r z-50 animate-in slide-in-from-left duration-200 ${
               isDarkMode
                 ? "bg-[#090b1c] border-white/10 text-white"
                 : "bg-white border-slate-200 text-slate-900"
             }`}
           >
-            <div className="h-16 px-4 flex items-center justify-between border-b border-inherit">
+            <div className="h-[68px] shrink-0 px-4 flex items-center justify-between border-b border-inherit">
               <div className="flex items-center gap-2.5">
                 <Image
                   src="/images/logo.png"
                   alt="SakSuuu Admin Logo"
-                  width={40}
-                  height={40}
-                  className="h-9 w-9 shrink-0 object-contain drop-shadow-[0_0_10px_rgba(0,217,255,0.25)]"
+                  width={36}
+                  height={36}
+                  className="h-9 w-9 shrink-0 object-contain"
                 />
-                <span className="font-extrabold text-sm gradient-text-saksuuu">
-                  Admin Portal
-                </span>
+                <div><strong className="block text-[15px] font-extrabold">SakSuuu</strong><span className="text-[10px] font-bold uppercase tracking-[0.16em] text-pink-400">Admin HQ</span></div>
               </div>
               <button
                 onClick={() => setMobileOpen(false)}
@@ -503,51 +434,37 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-              {NAV_ITEMS.map((item) => {
-                const Icon = item.icon;
-                const isActive =
-                  item.href === "/admin"
-                    ? pathname === "/admin"
-                    : pathname.startsWith(item.href);
-
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? "page" : undefined}
+            <nav aria-label="Admin sections" className="admin-sidebar-nav min-h-0 flex-1 overflow-y-auto px-3 py-3">
+              {NAV_GROUPS.map((group) => <div key={group.title} className="admin-nav-group">
+                <p className="admin-nav-heading">{group.title}</p>
+                {group.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+                  return <Link key={item.href} href={item.href} aria-current={isActive ? "page" : undefined}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-all ${
-                      isActive
-                        ? "bg-pink-500/20 text-pink-400 border border-pink-500/30"
-                        : isDarkMode
-                        ? "text-slate-300 hover:bg-white/5"
-                        : "text-slate-700 hover:bg-slate-100"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className="h-4 w-4 text-pink-400" />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
+                    className="admin-nav-link relative flex h-10 items-center gap-3 rounded-[11px] px-3 text-[13px] font-medium">
+                    <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.9} />
+                    <span className="min-w-0 truncate">{item.label}</span>
+                  </Link>;
+                })}
+              </div>)}
+            </nav>
 
-            <div className="p-4 border-t border-inherit space-y-3">
-              <button
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                className="w-full py-2.5 px-4 rounded-xl border border-rose-500/30 bg-rose-500/10 text-rose-400 font-bold text-xs flex items-center justify-center gap-2"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Log Out</span>
-              </button>
+            <div className="admin-sidebar-footer shrink-0 border-t border-inherit p-3">
+              <Link href="/admin/suppliers" onClick={() => setMobileOpen(false)} className="admin-supplier-status">
+                <span className="admin-supplier-status-icon"><Server size={17} strokeWidth={1.9} /></span>
+                <span className="min-w-0 flex-1"><strong>Supplier APIs</strong>
+                  <small>{connectedSuppliers === 2 ? "Vizo & G2Bulk connected" : connectedSuppliers === 1 ? "1 of 2 connected" : "Verify connections"}</small></span>
+                <span className={`admin-supplier-dot ${connectedSuppliers === 2 ? "is-connected" : connectedSuppliers === 1 ? "is-partial" : ""}`} aria-hidden="true" />
+              </Link>
+              <div className="admin-profile">
+                <div className="flex min-w-0 items-center gap-2.5"><div className="admin-avatar">AD</div>
+                  <div className="min-w-0"><p className="truncate text-xs font-bold">Super Admin</p><p className="text-[11px] text-slate-400">HQ Control</p></div>
+                </div>
+                <button type="button" onClick={handleLogout} disabled={isLoggingOut} aria-label="Sign out" title="Sign out" className="admin-icon-button">
+                  <LogOut className="h-[18px] w-[18px]" />
+                </button>
+              </div>
             </div>
           </div>
         </div>

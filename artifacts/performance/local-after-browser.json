@@ -1,0 +1,2355 @@
+{
+  "base": "http://localhost:3100",
+  "at": "2026-10-04T04:36:58.958Z",
+  "viewport": "390x844",
+  "cpuSlowdown": 4,
+  "browserCache": "disabled",
+  "homeGamesReadyMs": 457.40000000037253,
+  "home": {
+    "lcp": 1648,
+    "longTasks": [
+      {
+        "start": 224.8000000002794,
+        "duration": 165
+      },
+      {
+        "start": 391.10000000009313,
+        "duration": 52
+      },
+      {
+        "start": 1412.5,
+        "duration": 161
+      }
+    ],
+    "commits": [
+      {
+        "at": 505.10000000009313,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 519,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 525.4000000003725,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ]
+      },
+      {
+        "at": 528.6000000000931,
+        "rendered": [
+          "n"
+        ]
+      },
+      {
+        "at": 1652.8000000002794,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1657.7000000001863,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1716.8000000002794,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1747.1000000000931,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1761.6000000000931,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1612
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1612
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 520.2000000001863,
+      "navigationId": 5015,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.7000000001862645,
+      "domainLookupStart": 0.7000000001862645,
+      "domainLookupEnd": 0.7000000001862645,
+      "connectStart": 0.7000000001862645,
+      "secureConnectionStart": 0,
+      "connectEnd": 0.7000000001862645,
+      "requestStart": 6.300000000279397,
+      "responseStart": 33.90000000037253,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 33.90000000037253,
+      "responseEnd": 41.5,
+      "transferSize": 16651,
+      "encodedBodySize": 16351,
+      "decodedBodySize": 120496,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 391.10000000009313,
+      "domContentLoadedEventStart": 391.10000000009313,
+      "domContentLoadedEventEnd": 391.90000000037253,
+      "domComplete": 519.6000000000931,
+      "loadEventStart": 520,
+      "loadEventEnd": 520.2000000001863,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=640&q=75",
+        "width": 358,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=640&q=75",
+        "width": 358,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "width": 358,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "width": 358,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 24.399999999906868,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 18.799999999813735,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 44,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 45.39999999990687,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 95.60000000009313,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 54.10000000009313,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=640&q=75",
+        "type": "link",
+        "ms": 434.20000000018626,
+        "transfer": 32438,
+        "bytes": 32138
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+        "type": "link",
+        "ms": 64.6999999997206,
+        "transfer": 23925,
+        "bytes": 23625
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+        "type": "link",
+        "ms": 63,
+        "transfer": 3914,
+        "bytes": 3614
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 63.60000000009313,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+        "type": "script",
+        "ms": 78.10000000009313,
+        "transfer": 71876,
+        "bytes": 71576
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 76.39999999990687,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+        "type": "script",
+        "ms": 69.90000000037253,
+        "transfer": 4152,
+        "bytes": 3852
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+        "type": "script",
+        "ms": 71,
+        "transfer": 13381,
+        "bytes": 13081
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 77.70000000018626,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+        "type": "script",
+        "ms": 77.70000000018626,
+        "transfer": 2470,
+        "bytes": 2170
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 79.09999999962747,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+        "type": "script",
+        "ms": 79.89999999990687,
+        "transfer": 5534,
+        "bytes": 5234
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 20.600000000093132,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 13.400000000372529,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 12.299999999813735,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "type": "img",
+        "ms": 11.800000000279397,
+        "transfer": 66702,
+        "bytes": 66402
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 12.100000000093132,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 12.700000000186265,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 10.299999999813735,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 18.899999999906868,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 19.699999999720603,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 20.399999999906868,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.600000000093132,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.399999999906868,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.399999999906868,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 23.199999999720603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 21.600000000093132,
+        "transfer": 480,
+        "bytes": 180
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20.899999999906868,
+        "transfer": 524,
+        "bytes": 224
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20.5,
+        "transfer": 522,
+        "bytes": 222
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20,
+        "transfer": 513,
+        "bytes": 213
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 12.100000000093132,
+        "transfer": 514,
+        "bytes": 214
+      },
+      {
+        "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 22.600000000093132,
+        "transfer": 1253,
+        "bytes": 953
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+        "type": "fetch",
+        "ms": 24.899999999906868,
+        "transfer": 2464,
+        "bytes": 2164
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+        "type": "fetch",
+        "ms": 17.799999999813735,
+        "transfer": 1723,
+        "bytes": 1423
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+        "type": "fetch",
+        "ms": 7.399999999906868,
+        "transfer": 1722,
+        "bytes": 1422
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 6.2999999998137355,
+        "transfer": 1719,
+        "bytes": 1419
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1234,
+        "bytes": 934
+      }
+    ]
+  },
+  "activeGames": 11,
+  "detailNavigationMs": 525,
+  "detail": {
+    "lcp": 1648,
+    "longTasks": [
+      {
+        "start": 224.8000000002794,
+        "duration": 165
+      },
+      {
+        "start": 391.10000000009313,
+        "duration": 52
+      },
+      {
+        "start": 1412.5,
+        "duration": 161
+      }
+    ],
+    "commits": [
+      {
+        "at": 505.10000000009313,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 519,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 525.4000000003725,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ]
+      },
+      {
+        "at": 528.6000000000931,
+        "rendered": [
+          "n"
+        ]
+      },
+      {
+        "at": 1652.8000000002794,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1657.7000000001863,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1716.8000000002794,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1747.1000000000931,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 1761.6000000000931,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "x",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3091.100000000093,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3149.8000000002794,
+        "rendered": [
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "o"
+        ]
+      },
+      {
+        "at": 3168.600000000093,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "o"
+        ]
+      },
+      {
+        "at": 3185.8000000002794,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      },
+      {
+        "at": 3463.3000000002794,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "u",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "_",
+          "y",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1612
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1612
+      }
+    ],
+    "navigation": {
+      "name": "http://localhost:3100/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 520.2000000001863,
+      "navigationId": 5015,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "http/1.1",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "gzip",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.7000000001862645,
+      "domainLookupStart": 0.7000000001862645,
+      "domainLookupEnd": 0.7000000001862645,
+      "connectStart": 0.7000000001862645,
+      "secureConnectionStart": 0,
+      "connectEnd": 0.7000000001862645,
+      "requestStart": 6.300000000279397,
+      "responseStart": 33.90000000037253,
+      "firstInterimResponseStart": 0,
+      "finalResponseHeadersStart": 33.90000000037253,
+      "responseEnd": 41.5,
+      "transferSize": 16651,
+      "encodedBodySize": 16351,
+      "decodedBodySize": 120496,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 391.10000000009313,
+      "domContentLoadedEventStart": 391.10000000009313,
+      "domContentLoadedEventEnd": 391.90000000037253,
+      "domComplete": 519.6000000000931,
+      "loadEventStart": 520,
+      "loadEventEnd": 520.2000000001863,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 70,
+        "complete": true
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+        "type": "link",
+        "ms": 24.399999999906868,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+        "type": "link",
+        "ms": 18.799999999813735,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+        "type": "link",
+        "ms": 44,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+        "type": "link",
+        "ms": 45.39999999990687,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 95.60000000009313,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+        "type": "link",
+        "ms": 54.10000000009313,
+        "transfer": 1602,
+        "bytes": 1302
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=640&q=75",
+        "type": "link",
+        "ms": 434.20000000018626,
+        "transfer": 32438,
+        "bytes": 32138
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+        "type": "link",
+        "ms": 64.6999999997206,
+        "transfer": 23925,
+        "bytes": 23625
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+        "type": "link",
+        "ms": 63,
+        "transfer": 3914,
+        "bytes": 3614
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+        "type": "script",
+        "ms": 63.60000000009313,
+        "transfer": 8804,
+        "bytes": 8504
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+        "type": "script",
+        "ms": 78.10000000009313,
+        "transfer": 71876,
+        "bytes": 71576
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+        "type": "script",
+        "ms": 76.39999999990687,
+        "transfer": 43125,
+        "bytes": 42825
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+        "type": "script",
+        "ms": 69.90000000037253,
+        "transfer": 4152,
+        "bytes": 3852
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+        "type": "script",
+        "ms": 71,
+        "transfer": 13381,
+        "bytes": 13081
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+        "type": "script",
+        "ms": 77.70000000018626,
+        "transfer": 6153,
+        "bytes": 5853
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+        "type": "script",
+        "ms": 77.70000000018626,
+        "transfer": 2470,
+        "bytes": 2170
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+        "type": "script",
+        "ms": 79.09999999962747,
+        "transfer": 9899,
+        "bytes": 9599
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+        "type": "script",
+        "ms": 79.89999999990687,
+        "transfer": 5534,
+        "bytes": 5234
+      },
+      {
+        "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+        "type": "other",
+        "ms": 20.600000000093132,
+        "transfer": 26231,
+        "bytes": 25931
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 13.400000000372529,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 12.299999999813735,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "type": "img",
+        "ms": 11.800000000279397,
+        "transfer": 66702,
+        "bytes": 66402
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 12.100000000093132,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 12.700000000186265,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 10.299999999813735,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 18.899999999906868,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 19.699999999720603,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 20.399999999906868,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.600000000093132,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.399999999906868,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 21.399999999906868,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 23.199999999720603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 21.600000000093132,
+        "transfer": 480,
+        "bytes": 180
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20.899999999906868,
+        "transfer": 524,
+        "bytes": 224
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20.5,
+        "transfer": 522,
+        "bytes": 222
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 20,
+        "transfer": 513,
+        "bytes": 213
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 12.100000000093132,
+        "transfer": 514,
+        "bytes": 214
+      },
+      {
+        "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 22.600000000093132,
+        "transfer": 1253,
+        "bytes": 953
+      },
+      {
+        "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+        "type": "fetch",
+        "ms": 24.899999999906868,
+        "transfer": 2464,
+        "bytes": 2164
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+        "type": "fetch",
+        "ms": 17.799999999813735,
+        "transfer": 1723,
+        "bytes": 1423
+      },
+      {
+        "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+        "type": "fetch",
+        "ms": 7.399999999906868,
+        "transfer": 1722,
+        "bytes": 1422
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 6.2999999998137355,
+        "transfer": 1719,
+        "bytes": 1419
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 5,
+        "transfer": 1234,
+        "bytes": 934
+      },
+      {
+        "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+        "type": "fetch",
+        "ms": 137.79999999981374,
+        "transfer": 4882,
+        "bytes": 4582
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 4,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "http://localhost:3100/_next/static/chunks/43mrgh5he1l4q.js",
+        "type": "script",
+        "ms": 2.599999999627471,
+        "transfer": 10243,
+        "bytes": 9943
+      },
+      {
+        "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+        "type": "link",
+        "ms": 2.2000000001862645,
+        "transfer": 3582,
+        "bytes": 3282
+      }
+    ]
+  },
+  "initialSelectionCount": 0,
+  "selection": [
+    {
+      "domMs": 22.600000000093132,
+      "nextPaintMs": 46,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5126.9000000003725,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.600000000093132,
+      "nextPaintMs": 16.700000000186265,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5259.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 13.399999999906868,
+      "nextPaintMs": 23,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5385.700000000186,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6,
+      "nextPaintMs": 16.199999999720603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5503.5,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.400000000372529,
+      "nextPaintMs": 14.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5621.300000000279,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.900000000372529,
+      "nextPaintMs": 16.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5739.9000000003725,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.400000000372529,
+      "nextPaintMs": 16.40000000037253,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5857.800000000279,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 7.199999999720603,
+      "nextPaintMs": 17.199999999720603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 5978.9000000003725,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.5,
+      "nextPaintMs": 16.699999999720603,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 6096.800000000279,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 7.7000000001862645,
+      "nextPaintMs": 21.100000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 6217.100000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.7999999998137355,
+      "nextPaintMs": 15,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 6337.9000000003725,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 5.7000000001862645,
+      "nextPaintMs": 15.600000000093132,
+      "selectedCount": 1,
+      "commits": [
+        {
+          "at": 6453.9000000003725,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRequests": [],
+  "errors": [],
+  "requests": [
+    {
+      "url": "http://localhost:3100/",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/49625c79f5a84514-s.p.2wf6rvog29rnd.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/6e7b947a26ae60db-s.p.3dytz707x2doa.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791016310709&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/028dndnynkqcn.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1j_hcbcaqexxr.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3yfl9fgvivx3-.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/11jq0c2_zavac.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3g4px251sg85e.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3z4_g_-pfq5m2.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/turbopack-03arc0olqx_5t.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/1lcxv8couu6nm.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/3sglf7q23epen.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/0m8oqcxjmdiaw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/2vvfid4-ghqbw.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/30stjccylb_wa.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/favicon.ico?favicon.2vob68tjqpejf.ico",
+      "method": "GET",
+      "type": "Other"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games?_rsc=rxjYzAtBSs3c_Rsg",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_global?_rsc=bom5vkpZjB00nmwb",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/vizo/freefire_sgmy?_rsc=Wh026fxP6GCnEogJ",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/pubgm?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "http://localhost:3100/_next/static/chunks/43mrgh5he1l4q.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "http://localhost:3100/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    }
+  ]
+}

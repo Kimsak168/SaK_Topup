@@ -45,9 +45,14 @@ export async function POST(req: NextRequest) {
 
     // 1. Validate game and server requirement
     const game = await Game.findOne({
+      supplier: cleanSupplier,
       $or: [{ slug: cleanGameSlug }, { supplierGameCode: cleanGameSlug }],
       isActive: true,
     }).lean();
+
+    if (!game) {
+      return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
+    }
 
     if (game?.requiresServer && !String(serverId || "").trim()) {
       return NextResponse.json(
@@ -70,6 +75,7 @@ export async function POST(req: NextRequest) {
     if (
       !pkg ||
       typeof pkg.sellingPrice !== "number" ||
+      !Number.isFinite(pkg.sellingPrice) ||
       pkg.sellingPrice <= 0 ||
       pkg.isActive === false
     ) {

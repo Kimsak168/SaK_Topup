@@ -76,5 +76,7 @@ const BannerSchema = new Schema<IBanner>(
   }
 );
 
+BannerSchema.index({ isActive: 1, sortOrder: 1, createdAt: -1 });
+
 export const Banner: Model<IBanner> =
   mongoose.models.Banner || mongoose.model<IBanner>("Banner", BannerSchema);

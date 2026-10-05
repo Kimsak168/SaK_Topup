@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import { Inter, JetBrains_Mono, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -60,7 +59,6 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
         {children}
         <ThemeToaster />
-        <Script src="https://anajakpay.com/khqrcc-plugin.js" strategy="afterInteractive" />
       </body>
     </html>
   );

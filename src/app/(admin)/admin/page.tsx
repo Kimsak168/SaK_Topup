@@ -1,575 +1,277 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
-  DollarSign,
-  ShoppingCart,
-  Gamepad2,
-  Package,
-  TrendingUp,
-  RefreshCw,
-  Server,
-  ArrowRight,
-  Zap,
+  Activity, ArrowRight, CircleAlert, DollarSign, Gamepad2, Package,
+  RefreshCw, Server, ShoppingCart, TrendingUp,
 } from "lucide-react";
 import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
+  Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 
 interface OverviewData {
   success: boolean;
   dbConnected: boolean;
   stats: {
-    totalRevenue: number;
-    totalProfit: number;
-    totalOrders: number;
-    pendingOrders: number;
-    completedOrders: number;
-    failedOrders: number;
-    activeGames: number;
-    totalGames: number;
-    activePackages: number;
-    totalPackages: number;
+    totalRevenue: number; totalProfit: number; totalOrders: number;
+    pendingOrders: number; completedOrders: number; failedOrders: number;
+    activeGames: number; totalGames: number; activePackages: number; totalPackages: number;
   };
   recentOrders: Array<{
-    id: string;
-    orderNumber: string;
-    gameName: string;
-    packageName: string;
-    supplier: string;
-    playerId: string;
-    amount: number;
-    profit: number;
-    paymentStatus: string;
-    fulfillmentStatus: string;
-    createdAt: string;
+    id: string; orderNumber: string; gameName: string; packageName: string;
+    playerId: string; amount: number; supplier: string; paymentStatus: string;
+    fulfillmentStatus: string; createdAt: string;
   }>;
-  salesChart: Array<{
-    date: string;
-    revenue: number;
-    orders: number;
-  }>;
-  suppliers: {
-    vizo: {
-      connected: boolean;
-      balance: number;
-      username: string;
-      totalSpent: number;
-      totalOrders: number;
-      successOrders: number;
-      failedOrders: number;
-      error: string | null;
-    };
-    g2bulk: {
-      connected: boolean;
-      balance: number;
-      username: string;
-      firstName: string;
-      userId: number;
-      error: string | null;
-    };
+  salesChart: Array<{ date: string; revenue: number; orders: number }>;
+  suppliers: { vizo: { configured: boolean }; g2bulk: { configured: boolean } };
+}
+
+interface SupplierCheck {
+  timestamp: string;
+  vizo: {
+    status: string; apiKeyConfigured: boolean; error: string | null;
+    reseller: { balance?: number | string; username?: string; total_orders?: number } | null;
+  };
+  g2bulk: {
+    status: string; apiKeyConfigured: boolean; error: string | null;
+    reseller: { balance?: number | string; username?: string; first_name?: string } | null;
   };
 }
 
+const money = (amount: number) => new Intl.NumberFormat("en-US", {
+  style: "currency", currency: "USD", maximumFractionDigits: 2,
+}).format(amount);
+const compact = (value: number) => new Intl.NumberFormat("en-US").format(value);
+
 export default function AdminOverviewPage() {
   const [data, setData] = useState<OverviewData | null>(null);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [rangeLoading, setRangeLoading] = useState(false);
+  const [days, setDays] = useState(14);
+  const [supplierCheck, setSupplierCheck] = useState<SupplierCheck | null>(null);
+  const [checking, setChecking] = useState(false);
+  const lastRequestedDays = useRef<number | null>(null);
+  const activeRequest = useRef(0);
 
-  const fetchOverview = useCallback(async (isRefresh = false) => {
+  const fetchOverview = useCallback(async (manual = false) => {
+    const requestId = ++activeRequest.current;
+    if (manual) setRefreshing(true);
+    else setRangeLoading(true);
     try {
-      if (isRefresh) setRefreshing(true);
-
-      const res = await fetch("/api/admin/overview", { cache: "no-store" });
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}`);
-      }
-      const json: OverviewData = await res.json();
-      setData(json);
-      if (isRefresh) {
-        toast.success("Dashboard statistics updated");
-      }
-    } catch (err) {
-      console.error("Failed to load admin overview:", err);
-      toast.error("Failed to fetch dashboard statistics");
+      const response = await fetch(`/api/admin/overview?days=${days}`, { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok || !body.success) throw new Error(body.error || `HTTP ${response.status}`);
+      if (requestId !== activeRequest.current) return;
+      setData(body);
+      setError("");
+      if (manual) toast.success("Dashboard statistics updated");
+    } catch (cause) {
+      if (requestId !== activeRequest.current) return;
+      console.error("Failed to load admin overview:", cause);
+      setError(cause instanceof Error ? cause.message : "Dashboard data is unavailable");
+      if (manual) toast.error("Could not refresh dashboard statistics");
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (requestId === activeRequest.current) {
+        setLoading(false);
+        setRefreshing(false);
+        setRangeLoading(false);
+      }
+    }
+  }, [days]);
+
+  useEffect(() => {
+    if (lastRequestedDays.current === days) return;
+    lastRequestedDays.current = days;
+    void fetchOverview();
+  }, [days, fetchOverview]);
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("saksuuu_supplier_check");
+      if (saved) {
+        const check = JSON.parse(saved) as SupplierCheck;
+        const checkedAt = Date.parse(check.timestamp);
+        if (Number.isFinite(checkedAt) && Date.now() - checkedAt <= 10 * 60_000) setSupplierCheck(check);
+      }
+    } catch (cause) {
+      console.error("Could not restore supplier verification:", cause);
     }
   }, []);
 
-  useEffect(() => {
-    fetchOverview();
-  }, [fetchOverview]);
-
-  if (loading && !data) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-        <RefreshCw className="h-8 w-8 animate-spin text-pink-500" />
-        <p className="text-xs text-slate-400 font-semibold tracking-wide">
-          Connecting to MongoDB & Supplier APIs...
-        </p>
-      </div>
-    );
-  }
-
-  const stats = data?.stats || {
-    totalRevenue: 0,
-    totalProfit: 0,
-    totalOrders: 0,
-    pendingOrders: 0,
-    completedOrders: 0,
-    failedOrders: 0,
-    activeGames: 0,
-    totalGames: 0,
-    activePackages: 0,
-    totalPackages: 0,
+  const verifySuppliers = async () => {
+    setChecking(true);
+    try {
+      const response = await fetch("/api/admin/suppliers", { method: "POST", cache: "no-store" });
+      const body: SupplierCheck & { error?: string } = await response.json();
+      if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+      setSupplierCheck(body);
+      sessionStorage.setItem("saksuuu_supplier_check", JSON.stringify(body));
+      window.dispatchEvent(new Event("saksuuu:supplier-status"));
+      toast.success("Supplier verification completed");
+    } catch (cause) {
+      console.error("Supplier verification failed:", cause);
+      toast.error("Could not verify supplier connections");
+    } finally {
+      setChecking(false);
+    }
   };
 
-  const vizo = data?.suppliers?.vizo;
-  const g2bulk = data?.suppliers?.g2bulk;
+  const cards = data ? [
+    { label: "Total revenue", value: money(data.stats.totalRevenue),
+      note: `${money(data.stats.totalProfit)} recorded profit`, icon: DollarSign, accent: "pink" },
+    { label: "Total orders", value: compact(data.stats.totalOrders),
+      note: `${compact(data.stats.completedOrders)} completed · ${compact(data.stats.pendingOrders)} pending`,
+      icon: ShoppingCart, accent: "violet" },
+    { label: "Active games", value: compact(data.stats.activeGames),
+      note: `${compact(data.stats.totalGames)} in catalogue`, icon: Gamepad2, accent: "sky" },
+    { label: "Active packages", value: compact(data.stats.activePackages),
+      note: `${compact(data.stats.totalPackages)} configured`, icon: Package, accent: "amber" },
+  ] : [];
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
-      {/* Top Banner & Quick Refresh */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="admin-page">
+      <div className="admin-page-heading">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black tracking-tight">HQ Overview</h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-pink-500/10 text-pink-400 border border-pink-500/20">
-              <Zap className="h-3 w-3" /> Live
-            </span>
-          </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Real-time MongoDB Atlas telemetry, sales performance, and wholesale supplier connections.
-          </p>
+          <p className="admin-eyebrow">Workspace / Overview</p>
+          <h1>Dashboard overview</h1>
+          <p>Store performance, recent orders and supplier account status.</p>
         </div>
-
-        <div className="flex items-center gap-2.5">
-          <button
-            onClick={() => fetchOverview(true)}
-            disabled={refreshing}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
-            <span>{refreshing ? "Refreshing..." : "Refresh Stats"}</span>
+        <div className="admin-heading-actions">
+          <span className={`admin-connection ${error ? "is-failed" : data ? "is-connected" : ""}`}>
+            <span className="admin-connection-dot" />
+            {error ? "Data unavailable" : data ? "MongoDB connected" : "Checking data"}
+          </span>
+          <button type="button" onClick={() => void fetchOverview(true)} disabled={refreshing}
+            className="admin-button admin-button-secondary">
+            <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
+            {refreshing ? "Refreshing" : "Refresh stats"}
           </button>
-
-          <Link
-            href="/admin/games"
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-[0_0_20px_rgba(255,46,147,0.3)] transition-all"
-          >
-            <Gamepad2 className="h-3.5 w-3.5" />
-            <span>Manage Games</span>
-          </Link>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Total Revenue */}
-        <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] shadow-sm relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-pink-500/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform" />
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Total Revenue
-            </span>
-            <div className="h-9 w-9 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
-              <DollarSign className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-white tracking-tight">
-              ${stats.totalRevenue.toFixed(2)}
-            </div>
-            <div className="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
-              <span className="text-emerald-400 font-bold">
-                ${stats.totalProfit.toFixed(2)}
-              </span>
-              <span>net gross profit</span>
-            </div>
-          </div>
+      {error && <div role="alert" className="admin-error">
+        <CircleAlert size={18} /><span>{error}{data ? " Showing the last loaded figures." : ""}</span>
+        <button type="button" onClick={() => void fetchOverview(true)}>Try again</button>
+      </div>}
+
+      {loading && !data ? (
+        <div className="admin-stats-grid" aria-label="Loading dashboard statistics">
+          {[1, 2, 3, 4].map((item) => <div key={item} className="admin-skeleton h-36 rounded-2xl" />)}
         </div>
-
-        {/* Card 2: Total Orders */}
-        <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] shadow-sm relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-purple-500/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform" />
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Total Orders
-            </span>
-            <div className="h-9 w-9 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
-              <ShoppingCart className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-white tracking-tight">
-              {stats.totalOrders}
-            </div>
-            <div className="mt-1 flex items-center gap-2 text-xs">
-              <span className="text-emerald-400 font-semibold">
-                {stats.completedOrders} done
-              </span>
-              <span className="text-amber-400 font-semibold">
-                {stats.pendingOrders} pending
-              </span>
-              {stats.failedOrders > 0 && (
-                <span className="text-rose-400 font-semibold">
-                  {stats.failedOrders} failed
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Card 3: Active Games */}
-        <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] shadow-sm relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-indigo-500/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform" />
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Active Games
-            </span>
-            <div className="h-9 w-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
-              <Gamepad2 className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-white tracking-tight">
-              {stats.activeGames}
-              <span className="text-sm font-normal text-slate-400 ml-1.5">
-                / {stats.totalGames}
-              </span>
-            </div>
-            <div className="mt-1 text-xs text-slate-400">
-              Synchronized & live in storefront
-            </div>
-          </div>
-        </div>
-
-        {/* Card 4: Packages */}
-        <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] shadow-sm relative overflow-hidden group">
-          <div className="absolute -top-10 -right-10 h-24 w-24 rounded-full bg-cyan-500/10 blur-xl pointer-events-none group-hover:scale-150 transition-transform" />
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Active Packages
-            </span>
-            <div className="h-9 w-9 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <Package className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-white tracking-tight">
-              {stats.activePackages}
-              <span className="text-sm font-normal text-slate-400 ml-1.5">
-                / {stats.totalPackages}
-              </span>
-            </div>
-            <div className="mt-1 text-xs text-slate-400">
-              Top-up denominations configured
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Live Supplier Integrations Section */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-extrabold uppercase tracking-wider text-slate-300 flex items-center gap-2">
-            <Server className="h-4 w-4 text-pink-400" />
-            <span>Wholesale Supplier Telemetry</span>
-          </h2>
-          <Link
-            href="/admin/suppliers"
-            className="text-xs text-pink-400 hover:text-pink-300 font-semibold flex items-center gap-1"
-          >
-            <span>Supplier Details</span>
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Vizo Live Telemetry */}
-          <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] relative overflow-hidden">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base text-white">Vizo API</span>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      vizo?.connected
-                        ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                        : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        vizo?.connected ? "bg-emerald-400" : "bg-rose-400"
-                      }`}
-                    />
-                    {vizo?.connected ? "Connected" : "Offline"}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Exclusive provider for Free Fire Global
-                </p>
+      ) : data ? (
+        <>
+          <div className="admin-stats-grid">
+            {cards.map(({ label, value, note, icon: Icon, accent }) => (
+              <div key={label} className={`admin-stat admin-stat-${accent}`}>
+                <div className="admin-stat-top"><span>{label}</span><span className="admin-stat-icon"><Icon size={19} /></span></div>
+                <strong>{value}</strong><p>{note}</p>
               </div>
+            ))}
+          </div>
 
-              <div className="text-right">
-                <span className="text-[10px] uppercase font-bold text-slate-400">
-                  Wallet Balance
-                </span>
-                <div className="text-xl font-black text-emerald-400">
-                  ${(vizo?.balance || 0).toFixed(4)}
-                </div>
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div><p className="admin-eyebrow">Integrations</p><h2>Supplier accounts</h2>
+                <p>Connection and balances are shown only after an explicit verification.</p></div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button type="button" onClick={verifySuppliers} disabled={checking}
+                  className="admin-button admin-button-secondary">
+                  <RefreshCw size={15} className={checking ? "animate-spin" : ""} />
+                  {checking ? "Checking" : "Verify connections"}
+                </button>
+                <Link href="/admin/suppliers" className="admin-text-link">Details <ArrowRight size={14} /></Link>
               </div>
             </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {(["vizo", "g2bulk"] as const).map((key) => {
+                const configured = data.suppliers[key].configured;
+                const verified = supplierCheck?.[key];
+                const status = !configured ? "Unavailable" : !verified ? "Configured" :
+                  verified.status === "connected" ? "Connected" : "Failed";
+                const balance = verified?.status === "connected" && verified.reseller?.balance != null
+                  ? money(Number(verified.reseller.balance)) : "—";
+                return <div className="admin-supplier-card" key={key}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3"><span className="admin-supplier-icon"><Server size={19} /></span>
+                      <div><h3>{key === "vizo" ? "Vizo" : "G2Bulk"}</h3>
+                        <p>{key === "vizo" ? "Free Fire provider" : "Game top-up provider"}</p></div></div>
+                    <span className={`admin-status admin-status-${status.toLowerCase()}`}>{status}</span>
+                  </div>
+                  <div className="admin-supplier-balance"><span>Verified wallet balance</span><strong>{balance}</strong></div>
+                  <div className="admin-supplier-meta">
+                    <span>Account: {verified?.status === "connected" ? verified.reseller?.username || "Available" : "—"}</span>
+                    <span>{supplierCheck && verified ? `Checked ${new Date(supplierCheck.timestamp).toLocaleString()}` : "Not checked this session"}</span>
+                  </div>
+                  {verified?.error && <p className="admin-inline-error">{verified.error}</p>}
+                </div>;
+              })}
+            </div>
+          </section>
 
-            <div className="mt-4 pt-3 border-t border-white/5 grid grid-cols-3 gap-2 text-xs">
-              <div>
-                <span className="text-slate-400 text-[10px]">Reseller:</span>
-                <p className="font-mono text-white truncate font-bold">
-                  {vizo?.username || "—"}
-                </p>
-              </div>
-              <div>
-                <span className="text-slate-400 text-[10px]">Supplier Orders:</span>
-                <p className="font-bold text-white">
-                  {vizo?.totalOrders || 0} ({vizo?.successOrders || 0} ok)
-                </p>
-              </div>
-              <div>
-                <span className="text-slate-400 text-[10px]">Lifetime Spent:</span>
-                <p className="font-bold text-purple-400">
-                  ${(vizo?.totalSpent || 0).toFixed(2)}
-                </p>
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div><p className="admin-eyebrow">Performance</p><h2>Sales & order activity</h2>
+                <p>Paid revenue and all orders recorded in MongoDB.</p></div>
+              <div className="admin-range" role="group" aria-label="Chart date range">
+                {[7, 14, 30, 90].map((range) => <button key={range} type="button"
+                  aria-pressed={days === range} onClick={() => setDays(range)}
+                  className={days === range ? "is-active" : ""}>{range}d</button>)}
               </div>
             </div>
-          </div>
+            {rangeLoading ? <div className="admin-skeleton h-72 rounded-xl" aria-label="Updating chart" />
+              : data.salesChart.length ? <div className="h-72 w-full min-w-0" role="img" aria-label="Daily paid revenue chart">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.salesChart} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
+                  <defs><linearGradient id="adminRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#e92b91" stopOpacity={0.18} />
+                    <stop offset="100%" stopColor="#ec168c" stopOpacity={0} /></linearGradient></defs>
+                  <CartesianGrid vertical={false} stroke="#ffffff18" strokeDasharray="3 5" />
+                  <XAxis dataKey="date" tickFormatter={(value: string) => value.slice(5)}
+                    stroke="#9aa6bd" tickLine={false} axisLine={false} fontSize={11} minTickGap={22} />
+                  <YAxis yAxisId="revenue" stroke="#9aa6bd" tickLine={false} axisLine={false} fontSize={11} width={52}
+                    tickFormatter={(value: number) => `$${value}`} />
+                  <YAxis yAxisId="orders" orientation="right" stroke="#9aa6bd"
+                    tickLine={false} axisLine={false} fontSize={11} width={30}
+                    allowDecimals={false} />
+                  <Tooltip contentStyle={{ background: "#161b2b", border: "1px solid #374055",
+                    borderRadius: 12, color: "#fff" }}
+                    formatter={(value, name) => [name === "revenue" ? money(Number(value)) : value, name === "revenue" ? "Paid revenue" : "Orders"]} />
+                  <Area name="revenue" yAxisId="revenue" type="linear" dataKey="revenue"
+                    stroke="#f338a0" strokeWidth={2.5} fill="url(#adminRevenue)" />
+                  <Line name="orders" yAxisId="orders" type="linear" dataKey="orders"
+                    stroke="#8ea0b7" strokeWidth={2} dot={false} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div> : <div className="admin-empty"><Activity size={24} /><strong>No activity in this range</strong>
+              <p>Orders will appear here when they are recorded.</p></div>}
+            {!rangeLoading && <div className="admin-chart-footnote"><span className="admin-legend-dot" /> Paid revenue
+              <span className="admin-legend-dot admin-legend-orders" /> Orders
+              <span className="ml-auto">{days} days · {data.salesChart.reduce((sum, day) => sum + day.orders, 0)} orders</span></div>}
+          </section>
 
-          {/* G2Bulk Live Telemetry */}
-          <div className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] relative overflow-hidden">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-extrabold text-base text-white">G2Bulk API</span>
-                  <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                      g2bulk?.connected
-                        ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                        : "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        g2bulk?.connected ? "bg-emerald-400" : "bg-rose-400"
-                      }`}
-                    />
-                    {g2bulk?.connected ? "Connected" : "Offline"}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Direct provider for PUBG Mobile, MLBB & Valorant
-                </p>
-              </div>
-
-              <div className="text-right">
-                <span className="text-[10px] uppercase font-bold text-slate-400">
-                  Wallet Balance
-                </span>
-                <div className="text-xl font-black text-emerald-400">
-                  ${(g2bulk?.balance || 0).toFixed(2)}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-3 border-t border-white/5 grid grid-cols-3 gap-2 text-xs">
-              <div>
-                <span className="text-slate-400 text-[10px]">Reseller Account:</span>
-                <p className="font-mono text-white truncate font-bold">
-                  {g2bulk?.username || "—"}
-                </p>
-              </div>
-              <div>
-                <span className="text-slate-400 text-[10px]">Account Name:</span>
-                <p className="font-bold text-white truncate">
-                  {g2bulk?.firstName || "—"}
-                </p>
-              </div>
-              <div>
-                <span className="text-slate-400 text-[10px]">User ID:</span>
-                <p className="font-mono text-purple-400 font-bold">
-                  {g2bulk?.userId || "—"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Sales Chart Section */}
-      <div className="rounded-2xl p-6 border border-white/10 bg-[#0c0e24]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-          <div>
-            <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-pink-400" />
-              <span>Sales & Order Activity</span>
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Live transactional aggregation strictly from MongoDB records.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1.5 text-slate-300">
-              <span className="h-2.5 w-2.5 rounded-full bg-pink-500" />
-              <span>Revenue ($)</span>
-            </span>
-          </div>
-        </div>
-
-        {data?.salesChart && data.salesChart.length > 0 ? (
-          <div className="h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.salesChart}>
-                <defs>
-                  <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ff2e93" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#ff2e93" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                <XAxis
-                  dataKey="date"
-                  stroke="#94a3b8"
-                  fontSize={11}
-                  tickLine={false}
-                />
-                <YAxis
-                  stroke="#94a3b8"
-                  fontSize={11}
-                  tickLine={false}
-                  tickFormatter={(val) => `$${val}`}
-                />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#090b1c",
-                    borderColor: "#ffffff20",
-                    borderRadius: "0.75rem",
-                    color: "#fff",
-                    fontSize: "12px",
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="revenue"
-                  stroke="#ff2e93"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#revenueGradient)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <div className="h-56 flex flex-col items-center justify-center rounded-xl border border-white/5 bg-white/[0.01] text-center p-6">
-            <ShoppingCart className="h-10 w-10 text-slate-600 mb-2" />
-            <p className="text-sm font-bold text-slate-300">
-              No orders recorded in MongoDB yet
-            </p>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm">
-              As customers initiate and complete top-ups through the storefront, daily sales and volume graphs will plot here automatically.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Recent Orders Section */}
-      <div className="rounded-2xl border border-white/10 bg-[#0c0e24] overflow-hidden">
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <div>
-            <h2 className="text-base font-extrabold text-white">Recent Customer Orders</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Latest incoming top-up requests from the MongoDB order log.
-            </p>
-          </div>
-          <Link
-            href="/admin/orders"
-            className="text-xs text-pink-400 hover:text-pink-300 font-bold flex items-center gap-1"
-          >
-            <span>View All Orders</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-
-        {data?.recentOrders && data.recentOrders.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-[#090b1c] text-slate-400 uppercase text-[10px] font-bold border-b border-white/5">
-                <tr>
-                  <th className="py-3 px-4">Order #</th>
-                  <th className="py-3 px-4">Game & Package</th>
-                  <th className="py-3 px-4">Player ID</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Supplier</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {data.recentOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-pink-400">
-                      {order.orderNumber}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-bold text-white">{order.gameName}</div>
-                      <div className="text-slate-400 text-[11px] truncate max-w-xs">
-                        {order.packageName}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-slate-300">
-                      {order.playerId}
-                    </td>
-                    <td className="py-3 px-4 font-bold text-white">
-                      ${order.amount.toFixed(2)}
-                    </td>
-                    <td className="py-3 px-4 uppercase text-[10px] font-bold text-slate-400">
-                      {order.supplier}
-                    </td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          order.fulfillmentStatus === "completed"
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                            : order.fulfillmentStatus === "failed"
-                            ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                            : "bg-amber-500/15 text-amber-400 border border-amber-500/30"
-                        }`}
-                      >
-                        {order.fulfillmentStatus}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-right text-slate-400">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-8 text-center text-slate-400">
-            <p className="text-xs">No customer orders recorded yet.</p>
-          </div>
-        )}
-      </div>
+          <section className="admin-panel admin-panel-table">
+            <div className="admin-panel-heading"><div><p className="admin-eyebrow">Activity</p><h2>Recent orders</h2>
+              <p>Latest customer requests from the order log.</p></div>
+              <Link href="/admin/orders" className="admin-text-link">All orders <ArrowRight size={14} /></Link></div>
+            {data.recentOrders.length ? <div className="overflow-x-auto">
+              <table className="admin-table"><thead><tr><th>Order</th><th>Game & package</th>
+                <th>Player</th><th>Amount</th><th>Payment</th><th>Fulfillment</th><th>Date</th></tr></thead>
+                <tbody>{data.recentOrders.map((order) => <tr key={order.id}>
+                  <td><span className="font-mono text-pink-300">{order.orderNumber}</span></td>
+                  <td><strong>{order.gameName}</strong><small>{order.packageName}</small></td>
+                  <td>{order.playerId}</td><td>{money(order.amount)}</td>
+                  <td><span className="admin-status">{order.paymentStatus || "Unknown"}</span></td>
+                  <td><span className="admin-status">{order.fulfillmentStatus || "Unknown"}</span></td>
+                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
+                </tr>)}</tbody></table>
+            </div> : <div className="admin-empty"><ShoppingCart size={24} /><strong>No orders yet</strong></div>}
+          </section>
+        </>
+      ) : null}
+      <div className="admin-footer-link"><TrendingUp size={14} /> All figures reflect stored records. Supplier balances require verification.</div>
     </div>
   );
 }

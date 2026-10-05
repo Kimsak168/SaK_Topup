@@ -13,10 +13,11 @@ interface PromotionalBannerProps {
 export function PromotionalBanner({ banners }: PromotionalBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const touchStartXRef = useRef<number | null>(null);
 
   // Exactly four configurable banner slots from MongoDB / image storage
-  const slides = banners.filter((b) => Boolean(b.imageUrl)).slice(0, 4);
+  const slides = banners.slice(0, 4);
 
   const nextSlide = useCallback(() => {
     if (slides.length <= 1) return;
@@ -51,7 +52,9 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
     touchStartXRef.current = null;
   };
 
-  if (!slides.length) return null;
+  if (!slides.length) {
+    return <div role="status" className="rounded-2xl border border-border bg-card px-6 py-10 text-center text-muted-foreground">No promotional banners are available right now.</div>;
+  }
 
   return (
     <div
@@ -72,28 +75,29 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
         >
           {slides.map((banner, index) => {
             const artwork = (
-              <div className="relative aspect-[2.4/1] sm:aspect-[2.8/1] md:aspect-[3.2/1] w-full overflow-hidden bg-card">
-                {/* Ambient Blurred Background to prevent letterbox distortion */}
-                <div className="absolute inset-0 opacity-20 blur-2xl scale-110 pointer-events-none">
+              <div className="relative w-full overflow-hidden bg-card" style={{ aspectRatio: "5 / 2" }}>
+                {!banner.imageUrl || failedImages[banner.imageUrl] ? (
+                  <div role="status" className="flex h-full w-full items-center justify-center px-12 text-center text-sm text-muted-foreground">
+                    {banner.title || `Promotional banner ${index + 1}`} image is temporarily unavailable.
+                  </div>
+                ) : (
                   <Image
                     src={banner.imageUrl}
-                    alt=""
+                    alt={banner.title || `Promotional banner ${index + 1}`}
                     fill
-                    unoptimized
-                    className="object-cover"
+                    preload={index === 0}
+                    loading={index === 0 ? undefined : "lazy"}
+                    sizes="(max-width: 1630px) 92vw, 1500px"
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.01]"
+                    onError={(event) => {
+                      console.error("[PromotionalBanner] Image failed to load", {
+                        originalUrl: banner.imageUrl,
+                        requestedUrl: event.currentTarget.currentSrc,
+                      });
+                      setFailedImages((previous) => ({ ...previous, [banner.imageUrl]: true }));
+                    }}
                   />
-                </div>
-
-                {/* Main Clean Banner Image without text/badge overlays */}
-                <Image
-                  src={banner.imageUrl}
-                  alt={banner.title || `Promotional banner ${index + 1}`}
-                  fill
-                  unoptimized
-                  priority={index === 0}
-                  sizes="(max-width: 1500px) 92vw, 1500px"
-                  className="object-contain relative z-10 transition-transform duration-500 group-hover:scale-[1.01]"
-                />
+                )}
               </div>
             );
 

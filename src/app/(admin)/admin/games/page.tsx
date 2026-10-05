@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   RefreshCw,
   Search,
@@ -18,6 +20,7 @@ import {
   X,
   AlertTriangle,
   Gamepad2,
+  Ellipsis,
 } from "lucide-react";
 
 interface AdminGame {
@@ -68,6 +71,7 @@ export default function AdminGamesPage() {
 
   // Filters
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search);
   const [supplierFilter, setSupplierFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
@@ -89,13 +93,37 @@ export default function AdminGamesPage() {
     isActive: true,
   });
   const [isSavingGame, setIsSavingGame] = useState(false);
+  const [actionMenu, setActionMenu] = useState<{ game: AdminGame; top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (!actionMenu) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setActionMenu(null);
+    };
+    const closeOnScroll = () => setActionMenu(null);
+    document.addEventListener("keydown", closeOnEscape);
+    window.addEventListener("scroll", closeOnScroll, true);
+    return () => {
+      document.removeEventListener("keydown", closeOnEscape);
+      window.removeEventListener("scroll", closeOnScroll, true);
+    };
+  }, [actionMenu]);
+
+  const toggleActionMenu = (event: React.MouseEvent<HTMLButtonElement>, game: AdminGame) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setActionMenu((current) => current?.game.id === game.id ? null : {
+      game,
+      top: bounds.bottom + 190 < window.innerHeight ? bounds.bottom + 6 : Math.max(8, bounds.top - 190),
+      left: Math.max(8, Math.min(bounds.right - 208, window.innerWidth - 216)),
+    });
+  };
 
   // Fetch games from API
   const fetchGames = useCallback(async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        search,
+        search: debouncedSearch,
         supplier: supplierFilter,
         status: statusFilter,
         page: String(page),
@@ -118,11 +146,11 @@ export default function AdminGamesPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, supplierFilter, statusFilter, page]);
+  }, [debouncedSearch, supplierFilter, statusFilter, page]);
 
   useEffect(() => {
-    fetchGames();
-  }, [fetchGames]);
+    if (search === debouncedSearch) void fetchGames();
+  }, [search, debouncedSearch, fetchGames]);
 
   // Sync games handler
   const handleSyncGames = async () => {
@@ -258,9 +286,9 @@ export default function AdminGamesPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="admin-page">
       {/* Top Header & Sync Games Action */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="admin-page-heading">
         <div>
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-pink-400 mb-1">
             <Layers className="h-3.5 w-3.5" />
@@ -402,7 +430,7 @@ export default function AdminGamesPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="admin-table-scroll">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-white/10 bg-[#090b1c] text-slate-400 font-bold uppercase tracking-wider text-[11px]">
                 <tr>
@@ -498,48 +526,11 @@ export default function AdminGamesPage() {
 
                     {/* Actions */}
                     <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        {/* Sync Packages Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleSyncGamePackages(game)}
-                          title="Sync real packages for this game"
-                          className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
-                        >
-                          <RefreshCw className="h-3.5 w-3.5" />
-                        </button>
-
-                        {/* View Packages Link */}
-                        <Link
-                          href={`/admin/packages?game=${encodeURIComponent(game.supplierGameCode)}`}
-                          title="View and configure packages & customer prices"
-                          className="p-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-400 transition-colors"
-                        >
-                          <Package className="h-3.5 w-3.5" />
-                        </Link>
-
-                        {/* Edit Game Modal */}
-                        <button
-                          type="button"
-                          onClick={() => openEditModal(game)}
-                          title="Edit game details & custom image"
-                          className="p-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 transition-colors cursor-pointer"
-                        >
-                          <Edit2 className="h-3.5 w-3.5" />
-                        </button>
-
-                        {/* View on website if active */}
-                        {game.isActive && (
-                          <Link
-                            href={`/games/${game.supplier}/${game.supplierGameCode}`}
-                            target="_blank"
-                            title="Open customer page"
-                            className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </Link>
-                        )}
-                      </div>
+                      <button type="button" onClick={(event) => toggleActionMenu(event, game)}
+                        aria-label={`Actions for ${game.name}`} aria-expanded={actionMenu?.game.id === game.id}
+                        title="More actions" className="admin-table-action cursor-pointer">
+                        <Ellipsis className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -576,10 +567,28 @@ export default function AdminGamesPage() {
         </div>
       </div>
 
+      {actionMenu && createPortal(<>
+        <div className="fixed inset-0 z-[60]" onMouseDown={() => setActionMenu(null)} aria-hidden="true" />
+        <div role="group" aria-label={`Actions for ${actionMenu.game.name}`} className="admin-action-menu fixed z-[70]"
+          style={{ top: actionMenu.top, left: actionMenu.left }}>
+          <button type="button" onClick={() => { void handleSyncGamePackages(actionMenu.game); setActionMenu(null); }}>
+            <RefreshCw /> Sync packages
+          </button>
+          <Link href={`/admin/packages?game=${encodeURIComponent(actionMenu.game.supplierGameCode)}`} onClick={() => setActionMenu(null)}>
+            <Package /> View packages & pricing
+          </Link>
+          <button type="button" onClick={() => { openEditModal(actionMenu.game); setActionMenu(null); }}>
+            <Edit2 /> Edit game details
+          </button>
+          {actionMenu.game.isActive && <Link href={`/games/${actionMenu.game.supplier}/${actionMenu.game.supplierGameCode}`}
+            target="_blank" onClick={() => setActionMenu(null)}><ExternalLink /> Open customer page</Link>}
+        </div>
+      </>, document.querySelector(".admin-shell") ?? document.body)}
+
       {/* Sync Summary Modal */}
       {showSyncModal && syncSummary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-lg rounded-3xl bg-[#0e112a] border border-pink-500/30 p-6 sm:p-7 shadow-[0_0_50px_rgba(255,46,147,0.25)] space-y-5">
+          <div role="dialog" aria-modal="true" aria-label="API synchronization report" className="admin-modal-panel relative w-full max-w-lg p-6 sm:p-7 space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-pink-400 font-bold text-sm">
                 <CheckCircle2 className="h-5 w-5 text-emerald-400" />
@@ -641,7 +650,7 @@ export default function AdminGamesPage() {
       {/* Edit Game Modal */}
       {editingGame && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div className="relative w-full max-w-md rounded-3xl bg-[#0e112a] border border-white/10 p-6 sm:p-7 shadow-2xl space-y-4">
+          <div role="dialog" aria-modal="true" aria-label="Edit game" className="admin-modal-panel relative w-full max-w-md p-6 sm:p-7 space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Edit2 className="h-4 w-4 text-pink-400" />

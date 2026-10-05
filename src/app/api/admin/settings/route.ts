@@ -1,3 +1,4 @@
+import { invalidatePublicSettingsCache } from "@/lib/services/cacheService";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Setting } from "@/models/Setting";
@@ -73,6 +74,7 @@ export async function POST(req: NextRequest) {
       { upsert: true, new: true }
     ).lean();
 
+    invalidatePublicSettingsCache();
     return NextResponse.json({
       success: true,
       message: "Website settings saved successfully",

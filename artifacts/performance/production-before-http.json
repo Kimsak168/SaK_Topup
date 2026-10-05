@@ -1,0 +1,165 @@
+{
+  "base": "https://saksuuu-topup.vercel.app",
+  "at": "2026-10-04T04:03:35.036Z",
+  "samples": [
+    {
+      "path": "/",
+      "run": 0,
+      "status": 200,
+      "ttfbMs": 865,
+      "totalMs": 2277,
+      "bytes": 109110,
+      "cache": "MISS",
+      "serverTiming": null
+    },
+    {
+      "path": "/",
+      "run": 1,
+      "status": 200,
+      "ttfbMs": 571,
+      "totalMs": 812,
+      "bytes": 109067,
+      "cache": "MISS",
+      "serverTiming": null
+    },
+    {
+      "path": "/",
+      "run": 2,
+      "status": 200,
+      "ttfbMs": 330,
+      "totalMs": 573,
+      "bytes": 109110,
+      "cache": "MISS",
+      "serverTiming": null
+    },
+    {
+      "path": "/api/games",
+      "run": 0,
+      "status": 200,
+      "ttfbMs": 4738,
+      "totalMs": 4739,
+      "bytes": 6838,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 11
+    },
+    {
+      "path": "/api/games",
+      "run": 1,
+      "status": 200,
+      "ttfbMs": 78,
+      "totalMs": 79,
+      "bytes": 6838,
+      "cache": "HIT",
+      "serverTiming": null,
+      "items": 11
+    },
+    {
+      "path": "/api/games",
+      "run": 2,
+      "status": 200,
+      "ttfbMs": 95,
+      "totalMs": 96,
+      "bytes": 6838,
+      "cache": "HIT",
+      "serverTiming": null,
+      "items": 11
+    },
+    {
+      "path": "/api/games/vizo/freefire_global/packages",
+      "run": 0,
+      "status": 200,
+      "ttfbMs": 1828,
+      "totalMs": 1840,
+      "bytes": 10488,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 16
+    },
+    {
+      "path": "/api/games/vizo/freefire_global/packages",
+      "run": 1,
+      "status": 200,
+      "ttfbMs": 1248,
+      "totalMs": 1249,
+      "bytes": 10488,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 16
+    },
+    {
+      "path": "/api/games/vizo/freefire_global/packages",
+      "run": 2,
+      "status": 200,
+      "ttfbMs": 1247,
+      "totalMs": 1248,
+      "bytes": 10488,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 16
+    },
+    {
+      "path": "/api/games/g2bulk/mlbb/packages",
+      "run": 0,
+      "status": 200,
+      "ttfbMs": 1989,
+      "totalMs": 1990,
+      "bytes": 52072,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 106
+    },
+    {
+      "path": "/api/games/g2bulk/mlbb/packages",
+      "run": 1,
+      "status": 200,
+      "ttfbMs": 1471,
+      "totalMs": 1473,
+      "bytes": 52072,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 106
+    },
+    {
+      "path": "/api/games/g2bulk/mlbb/packages",
+      "run": 2,
+      "status": 200,
+      "ttfbMs": 1246,
+      "totalMs": 1247,
+      "bytes": 52072,
+      "cache": "MISS",
+      "serverTiming": null,
+      "items": 106
+    },
+    {
+      "path": "/games/vizo/freefire_global",
+      "run": 0,
+      "status": 200,
+      "ttfbMs": 1086,
+      "totalMs": 2874,
+      "bytes": 66931,
+      "cache": "MISS",
+      "serverTiming": null
+    },
+    {
+      "path": "/games/vizo/freefire_global",
+      "run": 1,
+      "status": 200,
+      "ttfbMs": 349,
+      "totalMs": 2016,
+      "bytes": 66888,
+      "cache": "MISS",
+      "serverTiming": null
+    },
+    {
+      "path": "/games/vizo/freefire_global",
+      "run": 2,
+      "status": 200,
+      "ttfbMs": 336,
+      "totalMs": 1516,
+      "bytes": 66931,
+      "cache": "MISS",
+      "serverTiming": null
+    }
+  ]
+}

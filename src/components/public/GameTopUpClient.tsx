@@ -1,27 +1,22 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
 import {
   ShieldCheck,
-  Zap,
   CheckCircle2,
   AlertCircle,
   HelpCircle,
-  ChevronRight,
-  QrCode,
-  Sparkles,
   ArrowRight,
   ArrowLeft,
   RefreshCw,
-  Ban,
   Check,
   Copy,
-  Package as PackageIcon,
 } from "lucide-react";
 import { ClientGame, ClientPackage } from "@/types/game";
+import { PackageOptions } from "./PackageOptions";
 import { openKhqrInPageCheckout, closeKhqrInPageCheckout } from "@/lib/khqrPlugin";
 
 interface GameTopUpClientProps {
@@ -49,15 +44,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [verifiedName, setVerifiedName] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [verifyStatusType, setVerifyStatusType] = useState<"success" | "invalid" | "unsupported" | "unavailable" | null>(null);
+  const verificationRequestRef = useRef(0);
   const [showIdGuide, setShowIdGuide] = useState(false);
   const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.jpg");
 
-  // Packages State
-  const [packages, setPackages] = useState<ClientPackage[]>(initialPackages);
-  const [loadingPackages, setLoadingPackages] = useState(initialPackages.length === 0);
-
   // Selected Package — no automatic pre-selection; customer must click to choose
   const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(null);
+  const handlePackageSelect = useCallback((pkg: ClientPackage) => {
+    setSelectedPackage((current) => current?.id === pkg.id ? null : pkg);
+  }, []);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"khqr" | null>(null);
+  const isAccountReady = Boolean(userId.trim()) &&
+    (!game.requiresServer || Boolean(serverId.trim())) &&
+    !verifying &&
+    (verifyStatusType === "success" || verifyStatusType === "unsupported" || verifyStatusType === "unavailable");
 
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -69,6 +69,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   // Cleanup polling and modal on unmount
   useEffect(() => {
     return () => {
+      verificationRequestRef.current += 1;
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
       }
@@ -76,41 +77,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     };
   }, []);
 
-  // Automatically fetch packages from /api/games/[supplier]/[code]/packages if empty
-  useEffect(() => {
-    async function fetchPackages() {
-      try {
-        setLoadingPackages(true);
-        const res = await fetch(`/api/games/${game.supplier}/${game.code}/packages`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data.success && Array.isArray(data.packages)) {
-            setPackages(data.packages);
-          }
-        }
-      } catch (err) {
-        console.error("Error fetching packages in client:", err);
-      } finally {
-        setLoadingPackages(false);
-      }
-    }
-
-    if (initialPackages.length === 0) {
-      fetchPackages();
-    }
-  }, [game.supplier, game.code, initialPackages.length]);
-
   // Player ID verification
   const handleVerify = async () => {
-    if (!userId.trim()) {
+    const cleanUserId = userId.trim();
+    const cleanServerId = serverId.trim();
+    if (!cleanUserId) {
       toast.error(`Please enter your ${game.userIdLabel}`);
       return;
     }
-    if (game.requiresServer && !serverId.trim()) {
+    if (game.requiresServer && !cleanServerId) {
       toast.error(`Please enter your ${game.serverLabel}`);
       return;
     }
 
+    const requestId = ++verificationRequestRef.current;
     setVerifying(true);
     setVerifyError(null);
     setVerifiedName(null);
@@ -124,12 +104,13 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           supplier: game.supplier,
           code: game.code,
           slug: game.slug,
-          userId: userId.trim(),
-          serverId: serverId.trim(),
+          userId: cleanUserId,
+          serverId: cleanServerId,
         }),
       });
 
       const data = await res.json();
+      if (verificationRequestRef.current !== requestId) return;
       if (res.ok && data.success) {
         setVerifiedName(data.playerName || "Verified Player");
         setVerifyStatusType("success");
@@ -152,10 +133,11 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         toast.error(data.message || "Player ID could not be validated.");
       }
     } catch {
+      if (verificationRequestRef.current !== requestId) return;
       setVerifyError("Network error checking player ID. You can still proceed if your ID is correct.");
       setVerifyStatusType("unavailable");
     } finally {
-      setVerifying(false);
+      if (verificationRequestRef.current === requestId) setVerifying(false);
     }
   };
 
@@ -241,12 +223,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       toast.error(`Please enter your ${game.serverLabel}`);
       return;
     }
+    if (!isAccountReady) {
+      toast.error("Please check and verify your account before checking out");
+      return;
+    }
     if (!selectedPackage) {
       toast.error("Please select a top-up package");
       return;
     }
     if (!selectedPackage.isAvailable || selectedPackage.sellingPrice === null) {
       toast.error("This package is not currently available for purchase (pending price configuration)");
+      return;
+    }
+    if (!selectedPaymentMethod) {
+      toast.error("Please select ABA Pay / KHQR before checking out");
       return;
     }
 
@@ -261,6 +251,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           gameSlug: game.slug || game.code,
           supplier: game.supplier,
           supplierProductCode: selectedPackage.supplierProductCode || selectedPackage.id,
+          expectedPrice: selectedPackage.sellingPrice,
           playerId: userId.trim(),
           serverId: serverId.trim() || undefined,
           playerName: verifiedName || undefined,
@@ -337,7 +328,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 alt={game.name}
                 fill
                 sizes="(min-width: 640px) 90px, 70px"
-                priority
+                preload
                 className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
                 onError={() => setHeaderImg("/images/freefire.jpg")}
               />
@@ -411,7 +402,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                   spellCheck={false}
                   value={userId}
                   onChange={(e) => {
+                    verificationRequestRef.current += 1;
                     setUserId(e.target.value);
+                    setVerifying(false);
                     setVerifiedName(null);
                     setVerifyError(null);
                     setVerifyStatusType(null);
@@ -433,7 +426,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     spellCheck={false}
                     value={serverId}
                     onChange={(e) => {
+                      verificationRequestRef.current += 1;
                       setServerId(e.target.value);
+                      setVerifying(false);
                       setVerifiedName(null);
                       setVerifyError(null);
                       setVerifyStatusType(null);
@@ -450,7 +445,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <button
                 type="button"
                 onClick={handleVerify}
-                disabled={verifying || !userId.trim()}
+                disabled={verifying || !userId.trim() || (game.requiresServer && !serverId.trim())}
                 className="inline-flex items-center gap-2 rounded-xl bg-purple-50 border border-purple-200 px-4 py-2 text-xs font-bold text-brand-purple hover:bg-purple-600 hover:text-primary-foreground hover:border-purple-600 disabled:opacity-50 transition-all cursor-pointer"
               >
                 {verifying ? (
@@ -498,159 +493,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-cyan-200/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
 
             <div className="relative z-10 p-4 sm:p-6 space-y-5">
-            {(() => {
-              const validPackages = packages.filter(
-                (p) => p.isAvailable && p.sellingPrice !== null && p.sellingPrice > 0
-              );
-              const specialPackages = validPackages.filter(
-                (p) =>
-                  p.group === "special" ||
-                  p.category === "special" ||
-                  /pass|pack|weekly|monthly|twilight|starlight|member/i.test(p.name)
-              );
-              const diamondPackages = validPackages.filter((p) => !specialPackages.includes(p));
-              const hasDistinction = specialPackages.length > 0 && diamondPackages.length > 0;
-
-              const renderPackageCard = (pkg: ClientPackage) => {
-                const isSelected = selectedPackage?.id === pkg.id;
-                const isAvailable = pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
-
-                return (
-                  <button
-                    key={pkg.id}
-                    type="button"
-                    aria-pressed={isSelected}
-                    disabled={!isAvailable}
-                    onClick={() => {
-                      if (isAvailable) setSelectedPackage(pkg);
-                    }}
-                    className={`group relative flex items-center gap-2.5 p-3 rounded-xl border text-left transition-all duration-200 cursor-pointer ${
-                      !isAvailable
-                        ? "opacity-40 bg-muted border-border cursor-not-allowed"
-                        : isSelected
-                        ? "bg-accent border-primary ring-2 ring-primary/20 shadow-soft shadow-pink-500/10"
-                        : "bg-card backdrop-blur-sm border-card-border hover:-translate-y-0.5 hover:border-primary hover:shadow-soft hover:shadow-pink-500/8 hover:bg-card"
-                    }`}
-                  >
-                    {/* Badge */}
-                    {pkg.badge && (
-                      <span className="public-button absolute -top-2 right-2 rounded-full px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary-foreground shadow-sm z-10">
-                        {pkg.badge}
-                      </span>
-                    )}
-
-                    {/* Package Image — left side */}
-                    <div className="relative h-14 w-14 xl:h-16 xl:w-16 shrink-0 rounded-xl overflow-hidden border border-border bg-muted flex items-center justify-center shadow-sm">
-                      {pkg.customImage ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={pkg.customImage} alt={pkg.name} className="h-full w-full object-cover" />
-                      ) : (
-                        <PackageIcon className="h-5 w-5 text-secondary-foreground" />
-                      )}
-                    </div>
-
-                    {/* Info — right side */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-center gap-0.5 pr-5">
-                      <div className="text-[13px] sm:text-sm font-bold text-foreground leading-snug break-words">
-                        {pkg.diamondsOrPoints || pkg.name}
-                      </div>
-                      {pkg.bonus && (
-                        <div className="text-[10px] font-bold text-success break-words">
-                          {pkg.bonus}
-                        </div>
-                      )}
-                      {isAvailable && pkg.sellingPrice !== null ? (
-                        <div className="flex items-baseline gap-1.5 mt-0.5">
-                          <span className="text-sm sm:text-base font-black text-primary">
-                            ${pkg.sellingPrice.toFixed(2)}
-                          </span>
-                          {pkg.originalPrice && pkg.originalPrice > pkg.sellingPrice && (
-                            <span className="text-[10px] text-secondary-foreground line-through">
-                              ${pkg.originalPrice.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <Ban className="h-3 w-3 text-muted-foreground" />
-                          <span>Unavailable</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Selected Checkmark */}
-                    {isSelected && isAvailable && (
-                      <div className="absolute top-2 right-2 h-5 w-5 rounded-full bg-primary flex items-center justify-center shadow-md shadow-pink-500/25">
-                        <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />
-                      </div>
-                    )}
-                  </button>
-                );
-              };
-
-              return (
-                <>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="public-button flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black text-primary-foreground shadow-md">
-                        2
-                      </span>
-                      <h3 className="text-base sm:text-lg font-bold text-foreground">
-                        Select {game.currencyName} Package
-                      </h3>
-                    </div>
-                    <span className="text-xs font-semibold text-secondary-foreground">
-                      {validPackages.length} packages available
-                    </span>
-                  </div>
-
-
-
-                  {loadingPackages ? (
-                    <div className="rounded-xl border border-border bg-card p-8 text-center text-sm text-muted-foreground flex flex-col items-center justify-center gap-3">
-                      <RefreshCw className="h-5 w-5 animate-spin text-primary" />
-                      <span>Loading available packages...</span>
-                    </div>
-                  ) : validPackages.length > 0 ? (
-                    <div className="space-y-6">
-                      {/* Special Passes Section */}
-                      {specialPackages.length > 0 && (
-                        <div className="space-y-3">
-                          {hasDistinction && (
-                            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand-purple">
-                              <Sparkles className="h-3.5 w-3.5" />
-                              <span>Passes &amp; Special Bundles</span>
-                            </div>
-                          )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
-                            {specialPackages.map(renderPackageCard)}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Diamond Denominations Section */}
-                      {diamondPackages.length > 0 && (
-                        <div className="space-y-3">
-                          {hasDistinction && (
-                            <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand-blue pt-3 border-t border-border">
-                              <Zap className="h-3.5 w-3.5" />
-                              <span>Diamond Denominations</span>
-                            </div>
-                          )}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
-                            {diamondPackages.map(renderPackageCard)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-                      No customer-ready packages configured yet. Check back soon!
-                    </div>
-                  )}
-                </>
-              );
-            })()}
+              <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
             </div>
           </section>
 
@@ -670,7 +513,12 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </div>
 
             {/* ONE payment card: ABA Pay / KHQR */}
-            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-pink-300/60 bg-gradient-to-r from-pink-50 via-purple-50/50 to-white shadow-md flex items-center justify-between gap-4">
+            <button
+              type="button"
+              aria-pressed={selectedPaymentMethod === "khqr"}
+              onClick={() => setSelectedPaymentMethod((current) => current === "khqr" ? null : "khqr")}
+              className={`relative w-full p-4 sm:p-5 rounded-2xl border-2 bg-gradient-to-r from-pink-50 via-purple-50/50 to-white shadow-md flex items-center justify-between gap-4 text-left cursor-pointer transition-[border-color,box-shadow] ${selectedPaymentMethod === "khqr" ? "border-primary ring-2 ring-primary/20" : "border-border hover:shadow-soft"}`}
+            >
               <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
                 <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-md ring-1 ring-slate-200 bg-[#004B87]">
                   <Image
@@ -679,7 +527,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     width={55}
                     height={55}
                     className="h-full w-full object-cover rounded-xl"
-                    priority
+                    loading="lazy"
                   />
                 </div>
                 <div className="space-y-0.5 min-w-0">
@@ -693,12 +541,14 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                  <CheckCircle2 className="h-4 w-4" />
+              {selectedPaymentMethod === "khqr" && (
+                <div className="flex shrink-0 items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                    <CheckCircle2 className="h-4 w-4" />
+                  </div>
                 </div>
-              </div>
-            </div>
+              )}
+            </button>
           </section>
         </div>
 
@@ -749,7 +599,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <div className="flex justify-between text-secondary-foreground">
                 <span className="text-muted-foreground">Payment:</span>
                 <span className="font-bold text-foreground">
-                  ABA Pay / KHQR
+                  {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Select a payment method"}
                 </span>
               </div>
             </div>
@@ -777,7 +627,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             <button
               type="button"
               onClick={handleCheckout}
-              disabled={isCheckingOut || !selectedPackage || !selectedPackage.isAvailable || selectedPackage.sellingPrice === null}
+              disabled={isCheckingOut || !isAccountReady || !selectedPackage || !selectedPackage.isAvailable || selectedPackage.sellingPrice === null || !selectedPaymentMethod}
               className="public-button w-full rounded-xl py-3.5 px-4 font-bold shadow-md shadow-pink-200/40 hover:shadow-soft hover:shadow-pink-300/40 cursor-pointer flex items-center justify-center gap-2 transition-all"
             >
               {isCheckingOut ? (

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getClientGames } from "@/lib/services/gameService";
 import { getPublicBanners } from "@/lib/services/bannerService";
+import type { PublicBanner } from "@/lib/services/bannerService";
 import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { GameSearch } from "@/components/public/GameSearch";
 import { BannerSkeleton, GameGridSkeleton } from "@/components/public/HomeSkeletons";
@@ -15,8 +16,21 @@ export const metadata: Metadata = {
 };
 
 async function BannerSection() {
-  const banners = await getPublicBanners();
-  if (!banners || banners.length === 0) return null;
+  let banners: PublicBanner[] | null = null;
+  try {
+    banners = await getPublicBanners();
+  } catch (error) {
+    console.error("[BannerSection] Failed to load homepage banners:", error);
+  }
+
+  if (banners === null) {
+    return (
+      <section aria-label="Promotions" className="w-full rounded-2xl border border-border bg-card px-6 py-10 text-center text-muted-foreground sm:rounded-3xl">
+        <p role="alert">Promotional banners are temporarily unavailable. Please refresh the page.</p>
+      </section>
+    );
+  }
+
   return (
     <section className="w-full">
       <PromotionalBanner banners={banners} />

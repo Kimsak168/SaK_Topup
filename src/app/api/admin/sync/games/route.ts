@@ -1,3 +1,4 @@
+import { invalidateCatalogueCache } from "@/lib/services/cacheService";
 import { NextRequest, NextResponse } from "next/server";
 import { syncGamesFromSuppliers } from "@/lib/services/syncService";
 import { requireAdminAuth } from "@/lib/auth";
@@ -24,5 +25,7 @@ export async function POST(req: NextRequest) {
       },
       { status: 500 }
     );
+  } finally {
+    invalidateCatalogueCache();
   }
 }

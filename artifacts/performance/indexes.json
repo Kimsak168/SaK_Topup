@@ -1,0 +1,18 @@
+[
+  {
+    "collection": "games",
+    "index": "isActive_1_isPopular_-1_sortOrder_1_name_1"
+  },
+  {
+    "collection": "banners",
+    "index": "isActive_1_sortOrder_1_createdAt_-1"
+  },
+  {
+    "collection": "gamepackages",
+    "index": "supplier_1_gameCode_1_sortOrder_1_sellingPrice_1"
+  },
+  {
+    "collection": "gamepackages",
+    "index": "supplier_1_gameSlug_1_sortOrder_1_sellingPrice_1"
+  }
+]

@@ -134,6 +134,8 @@ const GamePackageSchema = new Schema<IGamePackage>(
 // Compound indexes
 GamePackageSchema.index({ gameSlug: 1, supplierProductCode: 1 }, { unique: true });
 GamePackageSchema.index({ supplier: 1, supplierProductCode: 1 });
+GamePackageSchema.index({ supplier: 1, gameCode: 1, sortOrder: 1, sellingPrice: 1 });
+GamePackageSchema.index({ supplier: 1, gameSlug: 1, sortOrder: 1, sellingPrice: 1 });
 
 export const GamePackage: Model<IGamePackage> =
   mongoose.models.GamePackage ||

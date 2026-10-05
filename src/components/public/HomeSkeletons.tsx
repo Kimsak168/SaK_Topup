@@ -1,7 +1,7 @@
 export function BannerSkeleton() {
   return (
     <div className="w-full space-y-3">
-      <div className="relative aspect-[2.4/1] sm:aspect-[2.8/1] md:aspect-[3.2/1] w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card/60 shadow-soft">
+      <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card/60 shadow-soft" style={{ aspectRatio: "5 / 2" }}>
         <div className="absolute inset-0 bg-gradient-to-r from-muted/40 via-muted/80 to-muted/40 animate-pulse" />
         <div className="absolute bottom-4 left-6 h-4 w-32 rounded-md bg-muted/60" />
       </div>

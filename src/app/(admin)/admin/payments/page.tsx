@@ -117,9 +117,9 @@ export default function AdminPaymentsPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-300">
+    <div className="admin-page animate-in fade-in duration-300">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="admin-page-heading">
         <div>
           <h1 className="text-2xl font-black tracking-tight">Payment Gateways</h1>
           <p className="text-xs text-slate-400 mt-1">
@@ -315,7 +315,7 @@ export default function AdminPaymentsPage() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="admin-table-scroll">
             <table className="w-full text-xs text-left">
               <thead className="bg-[#090b1c] text-slate-400 uppercase text-[10px] font-bold border-b border-white/5">
                 <tr>

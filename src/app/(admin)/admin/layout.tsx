@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { AdminDashboardShell } from "@/components/admin/AdminDashboardShell";
+import "./admin-dashboard.css";
 
 export const metadata = {
   title: "Admin HQ — SakSuuu Game Top-Up",

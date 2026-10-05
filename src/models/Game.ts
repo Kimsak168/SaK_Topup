@@ -133,6 +133,7 @@ const GameSchema = new Schema<IGame>(
 );
 
 GameSchema.index({ supplier: 1, supplierGameCode: 1 }, { unique: true });
+GameSchema.index({ isActive: 1, isPopular: -1, sortOrder: 1, name: 1 });
 
 export const Game: Model<IGame> =
   mongoose.models.Game || mongoose.model<IGame>("Game", GameSchema);

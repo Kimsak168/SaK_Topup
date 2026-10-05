@@ -201,8 +201,8 @@ export default function AdminBannersPage() {
   const currentImage = previewUrl || form.imageUrl;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+    <div className="admin-page animate-in fade-in duration-300">
+      <div className="admin-page-heading">
         <div>
           <div className="flex items-center gap-2.5 mb-1">
             <h1 className="text-2xl font-bold tracking-tight text-white">Promotional Banners</h1>
