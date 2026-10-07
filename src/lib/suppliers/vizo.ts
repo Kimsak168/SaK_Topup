@@ -158,7 +158,8 @@ export interface VizoVerifyResult {
 export async function checkVizoPlayer(
   rawGame: string,
   userId: string,
-  serverId?: string
+  serverId?: string,
+  signal?: AbortSignal
 ): Promise<VizoVerifyResult> {
   const apiKey = process.env.VIZO_API_KEY;
   if (!apiKey) {
@@ -195,7 +196,7 @@ export async function checkVizoPlayer(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(10000),
+      signal: signal || AbortSignal.timeout(10000),
       cache: "no-store",
     });
 
@@ -310,7 +311,7 @@ export async function checkVizoPlayer(
   } catch (error) {
     const isTimeout =
       error instanceof Error &&
-      (error.name === "TimeoutError" || error.message.toLowerCase().includes("timeout"));
+      (error.name === "TimeoutError" || error.name === "AbortError" || error.message.toLowerCase().includes("timeout"));
     return {
       success: false,
       isUnavailable: true,

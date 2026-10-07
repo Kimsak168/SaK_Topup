@@ -1,0 +1,6 @@
+{
+  "status": 200,
+  "bytes": 307254,
+  "cacheControl": "public, max-age=31536000, s-maxage=31536000, immutable",
+  "matchesBackupImage": true
+}

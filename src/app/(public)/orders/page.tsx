@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -35,6 +35,9 @@ function OrderTrackingContent() {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState<TrackedOrder[]>([]);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [submittedQuery, setSubmittedQuery] = useState("");
+  const requestRef = useRef<AbortController | null>(null);
 
   const handleSearch = useCallback(async (targetQuery: string) => {
     const q = targetQuery.trim();
@@ -43,31 +46,39 @@ function OrderTrackingContent() {
       return;
     }
 
+    requestRef.current?.abort();
+    const controller = new AbortController();
+    requestRef.current = controller;
     try {
       setLoading(true);
       setSearched(true);
-      const res = await fetch(`/api/orders/track?query=${encodeURIComponent(q)}`);
+      setSearchError(null);
+      setSubmittedQuery(q);
+      const res = await fetch(`/api/orders/track?query=${encodeURIComponent(q)}`, { signal: controller.signal });
       const data = await res.json();
+      if (controller.signal.aborted) return;
 
-      if (data.success) {
+      if (res.ok && data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
         if (data.orders.length === 0) {
           toast.info("No matching orders found. Double-check your details.");
         }
       } else {
-        toast.error(data.error || "Lookup failed");
+        setSearchError(data.error || "Lookup failed. Please try again.");
       }
     } catch {
-      toast.error("Network error while searching for order");
+      if (!controller.signal.aborted) setSearchError("Unable to connect. Check your connection and try again.");
     } finally {
-      setLoading(false);
+      if (!controller.signal.aborted) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
     if (initialQuery) {
+      setQuery(initialQuery);
       handleSearch(initialQuery);
     }
+    return () => requestRef.current?.abort();
   }, [initialQuery, handleSearch]);
 
   return (
@@ -100,6 +111,8 @@ function OrderTrackingContent() {
             type="text"
             aria-label="Order number or player ID"
             autoComplete="off"
+            maxLength={128}
+            enterKeyHint="search"
             spellCheck={false}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -122,7 +135,18 @@ function OrderTrackingContent() {
       </form>
 
       {/* Results Section */}
-      {searched && !loading && (
+      {loading && <div role="status" className="min-h-64 space-y-4 rounded-2xl border border-border bg-card p-6">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground"><RefreshCw className="h-4 w-4 animate-spin" />Finding your orders...</div>
+        <div className="h-5 w-1/3 rounded bg-secondary animate-pulse" />
+        <div className="h-20 rounded-xl bg-secondary animate-pulse" />
+      </div>}
+      {!loading && searchError && <div role="alert" className="min-h-48 rounded-2xl border border-destructive/20 bg-card p-6 text-center">
+        <AlertCircle className="mx-auto mb-3 h-6 w-6 text-destructive" />
+        <h2 className="font-bold">We couldn&apos;t load your orders</h2>
+        <p className="mt-2 text-sm text-muted-foreground">{searchError}</p>
+        <button type="button" onClick={() => handleSearch(submittedQuery)} className="public-button mt-4 min-h-11 rounded-xl px-5 text-sm font-semibold">Try again</button>
+      </div>}
+      {searched && !loading && !searchError && (
         <div aria-live="polite" className="space-y-4 pt-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-secondary-foreground">
             Order Results ({orders.length})
@@ -133,7 +157,7 @@ function OrderTrackingContent() {
               <AlertCircle className="h-10 w-10 text-secondary-foreground mx-auto" />
               <h3 className="font-bold text-foreground text-base">No orders found</h3>
               <p className="text-xs max-w-sm mx-auto">
-                No top-up record matched &quot;{query}&quot;. Please verify your Player ID or Order Number, or contact our 24/7 support.
+                No top-up record matched &quot;{submittedQuery}&quot;. Please verify your Player ID or Order Number, or contact our 24/7 support.
               </p>
               <Link
                 href="https://t.me/saksuuu_support"

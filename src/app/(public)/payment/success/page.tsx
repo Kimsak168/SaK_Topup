@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   CheckCircle2,
   Clock,
   AlertCircle,
   RefreshCw,
-  ExternalLink,
   ChevronRight,
   ShieldCheck,
   Copy,
@@ -34,7 +33,6 @@ interface OrderData {
 
 function SuccessContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const orderNumber = searchParams.get("orderNumber") || "";
   const txn = searchParams.get("txn") || "";
@@ -46,7 +44,7 @@ function SuccessContent() {
   const [copied, setCopied] = useState(false);
   const [pollCount, setPollCount] = useState(0);
 
-  const fetchStatus = async () => {
+  const fetchStatus = useCallback(async () => {
     if (!queryRef) {
       setError("No transaction reference provided in payment return.");
       setLoading(false);
@@ -70,12 +68,12 @@ function SuccessContent() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [queryRef]);
 
   useEffect(() => {
+    setPollCount(0);
     fetchStatus();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryRef]);
+  }, [fetchStatus]);
 
   // Auto-polling when payment is still pending verification
   // Recommended documentation standard: Poll every ~3 seconds for up to 3 minutes (60 iterations)
@@ -85,7 +83,10 @@ function SuccessContent() {
   useEffect(() => {
     if (!order) return;
 
-    if (order.paymentStatus === "PENDING" && pollCount < MAX_POLL_COUNT) {
+    const ongoing = order.paymentStatus === "PENDING" ||
+      (order.paymentStatus === "PAID" &&
+        (order.fulfillmentStatus === "NOT_STARTED" || order.fulfillmentStatus === "PROCESSING"));
+    if (ongoing && pollCount < MAX_POLL_COUNT) {
       const timer = setTimeout(() => {
         setPollCount((prev) => prev + 1);
         fetchStatus();
@@ -93,7 +94,7 @@ function SuccessContent() {
 
       return () => clearTimeout(timer);
     }
-  }, [order, pollCount]);
+  }, [order, pollCount, fetchStatus]);
 
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);

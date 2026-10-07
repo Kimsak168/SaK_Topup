@@ -6,6 +6,7 @@ import {
   verifyAnajakPayWebhookSignature,
   formatAnajakAmount,
   checkAnajakPayTransactionV2,
+  type AnajakPayVerifyV2Result,
 } from "@/lib/services/anajakPayService";
 import { triggerAutomaticFulfillment } from "@/lib/services/fulfillmentService";
 
@@ -29,6 +30,10 @@ export async function POST(req: NextRequest) {
       }
     } else {
       body = await req.json().catch(() => ({}));
+    }
+
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ success: false, error: "Invalid callback body" }, { status: 400 });
     }
 
     const reqTime = String(
@@ -64,6 +69,8 @@ export async function POST(req: NextRequest) {
     // Formula: SHA256(secret_key + req_time + transaction_id + amount + "SUCCESS")
     const hasSignatureFields = Boolean(reqTime && transactionId && rawAmount !== undefined && receivedHash);
     let isSignatureValid = false;
+    let verifiedAmount = rawAmount;
+    let reconciliation: AnajakPayVerifyV2Result | undefined;
 
     if (hasSignatureFields) {
       isSignatureValid = verifyAnajakPayWebhookSignature({
@@ -83,6 +90,14 @@ export async function POST(req: NextRequest) {
 
       const verifyCheck = await checkAnajakPayTransactionV2(transactionId);
       if (verifyCheck.status === "PAID") {
+        if (typeof verifyCheck.amount !== "number" || !Number.isFinite(verifyCheck.amount)) {
+          return NextResponse.json(
+            { success: false, error: "Transaction reconciliation did not provide a valid amount" },
+            { status: 503 }
+          );
+        }
+        reconciliation = verifyCheck;
+        verifiedAmount = verifyCheck.amount;
         console.log(`[AnajakPay Webhook] Successfully reconciled transaction via Verify V2: ${transactionId}`);
         isSignatureValid = true;
       } else {
@@ -114,7 +129,7 @@ export async function POST(req: NextRequest) {
     // 3. Exact payment amount verification
     const orderCanonicalAmount = formatAnajakAmount(order.amount);
     const callbackCanonicalAmount = formatAnajakAmount(
-      typeof rawAmount === "number" ? rawAmount : String(rawAmount)
+      typeof verifiedAmount === "number" ? verifiedAmount : String(verifiedAmount)
     );
 
     if (orderCanonicalAmount !== callbackCanonicalAmount) {
@@ -128,7 +143,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Currency verification where provided
-    if (currency && currency !== "USD" && currency !== order.currency) {
+    if (!reconciliation && currency !== (order.currency || "USD").toUpperCase()) {
       console.warn(
         `[AnajakPay Webhook] Currency mismatch on ${order.orderNumber}: ${currency}`
       );
@@ -140,35 +155,16 @@ export async function POST(req: NextRequest) {
 
     // 5. Payment status check from callback
     const isSuccessCallback =
-      paymentStatusRaw === "SUCCESS" ||
+      Boolean(reconciliation) || paymentStatusRaw === "SUCCESS" ||
       paymentStatusRaw === "PAID" ||
       paymentStatusRaw === "COMPLETED";
 
     if (!isSuccessCallback) {
-      // Mark as failed or cancelled
-      const newStatus =
-        paymentStatusRaw === "CANCELLED" || paymentStatusRaw === "CANCELED"
-          ? "CANCELLED"
-          : paymentStatusRaw === "EXPIRED"
-          ? "EXPIRED"
-          : "FAILED";
-
-      await Order.findByIdAndUpdate(order._id, {
-        $set: {
-          paymentStatus: newStatus,
-          errorLog: `Callback received non-success status: ${paymentStatusRaw}`,
-        },
-      });
-
-      await Payment.findOneAndUpdate(
-        { orderNumber: order.orderNumber },
-        { $set: { status: newStatus, rawResponse: body } }
+      // The signature authenticates SUCCESS, not arbitrary callback status text.
+      return NextResponse.json(
+        { success: false, error: "Callback status does not match its success signature" },
+        { status: 400 }
       );
-
-      return NextResponse.json({
-        success: true,
-        message: `Order payment status updated to ${newStatus}`,
-      });
     }
 
     // 6. Duplicate callback detection (Idempotency)
@@ -182,12 +178,16 @@ export async function POST(req: NextRequest) {
     }
 
     // 7. Verify V2 query status check as additional transaction audit
-    const queryCheck = await checkAnajakPayTransactionV2(transactionId);
+    const queryCheck = reconciliation ?? await checkAnajakPayTransactionV2(transactionId);
     if (queryCheck.status === "FAILED") {
       return NextResponse.json(
         { success: false, error: "Transaction verification inquiry reported failure" },
         { status: 400 }
       );
+    }
+
+    if (queryCheck.amount !== undefined && formatAnajakAmount(queryCheck.amount) !== orderCanonicalAmount) {
+      return NextResponse.json({ success: false, error: "Verified payment amount mismatch" }, { status: 400 });
     }
 
     // 8. Idempotent Atomic Database Update: PENDING -> PAID

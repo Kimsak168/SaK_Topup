@@ -1,0 +1,3084 @@
+{
+  "base": "https://saksuuu-topup.vercel.app",
+  "at": "2026-10-05T15:11:39.432Z",
+  "viewportWidth": 390,
+  "cpuSlowdown": 4,
+  "browserCache": "disabled",
+  "homeGamesReadyMs": 1366.1000000000931,
+  "home": {
+    "lcp": 2016,
+    "longTasks": [
+      {
+        "start": 1189,
+        "duration": 128
+      },
+      {
+        "start": 1411.3000000000466,
+        "duration": 171
+      }
+    ],
+    "commits": [
+      {
+        "at": 1597.5,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1623.8000000000466,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1625.6000000000931,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1656.4000000001397,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1659.7000000001863,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1741.5,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1767.6000000000931,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1773.5,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 6667.300000000047,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 6781.600000000093,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1620
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1620
+      }
+    ],
+    "navigation": {
+      "name": "https://saksuuu-topup.vercel.app/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 6657.600000000093,
+      "navigationId": 1338,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "h2",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "br",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.9000000001396984,
+      "domainLookupStart": 312.10000000009313,
+      "domainLookupEnd": 320.4000000001397,
+      "connectStart": 320.4000000001397,
+      "secureConnectionStart": 329.9000000001397,
+      "connectEnd": 453.5,
+      "requestStart": 453.60000000009313,
+      "responseStart": 517.6000000000931,
+      "firstInterimResponseStart": 517.6000000000931,
+      "finalResponseHeadersStart": 835.9000000001397,
+      "responseEnd": 1068.1000000000931,
+      "transferSize": 15703,
+      "encodedBodySize": 15403,
+      "decodedBodySize": 138889,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 1318,
+      "domContentLoadedEventStart": 1318.2000000001863,
+      "domContentLoadedEventEnd": 1318.8000000000466,
+      "domComplete": 6657.100000000093,
+      "loadEventStart": 6657.5,
+      "loadEventEnd": 6657.600000000093,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "width": 358,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=640&q=75",
+        "width": 275,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fhok.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fkingshot.png&w=256&q=75",
+        "width": 195,
+        "complete": true
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+        "type": "link",
+        "ms": 262,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+        "type": "link",
+        "ms": 260,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+        "type": "link",
+        "ms": 255.89999999990687,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+        "type": "link",
+        "ms": 210.19999999995343,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 365.19999999995343,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+        "type": "link",
+        "ms": 76,
+        "transfer": 1624,
+        "bytes": 1324
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/06e61-lcj_qts.css",
+        "type": "link",
+        "ms": 72.20000000018626,
+        "transfer": 23298,
+        "bytes": 22998
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/36s0t0o8ux5as.js",
+        "type": "link",
+        "ms": 73.19999999995343,
+        "transfer": 4071,
+        "bytes": 3771
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+        "type": "script",
+        "ms": 78.89999999990687,
+        "transfer": 9185,
+        "bytes": 8885
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/19w8ji20c03g7.js",
+        "type": "script",
+        "ms": 96.30000000004657,
+        "transfer": 73428,
+        "bytes": 73128
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1n8ctn51zpn9i.js",
+        "type": "script",
+        "ms": 74.10000000009313,
+        "transfer": 4334,
+        "bytes": 4034
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+        "type": "script",
+        "ms": 97.9000000001397,
+        "transfer": 43720,
+        "bytes": 43420
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+        "type": "script",
+        "ms": 78.9000000001397,
+        "transfer": 6372,
+        "bytes": 6072
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/22brf8u0l66ph.js",
+        "type": "script",
+        "ms": 79.20000000018626,
+        "transfer": 14008,
+        "bytes": 13708
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2f02vei_2lvm9.js",
+        "type": "script",
+        "ms": 99.60000000009313,
+        "transfer": 2562,
+        "bytes": 2262
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+        "type": "script",
+        "ms": 79.5,
+        "transfer": 10359,
+        "bytes": 10059
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3z1ehnmq8d974.js",
+        "type": "script",
+        "ms": 80.0999999998603,
+        "transfer": 6045,
+        "bytes": 5745
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791104770475&w=640&q=75",
+        "type": "link",
+        "ms": 5563.5,
+        "transfer": 384,
+        "bytes": 84
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 367.5,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 91.39999999990687,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 378.29999999981374,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 98.5,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 331.19999999995343,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 330.70000000018626,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 367.70000000018626,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 396.10000000009313,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 348.69999999995343,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 367.80000000004657,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 371.5999999998603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fhok.png&w=256&q=75",
+        "type": "img",
+        "ms": 416.69999999995343,
+        "transfer": 9480,
+        "bytes": 9180
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 418.19999999995343,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fkingshot.png&w=256&q=75",
+        "type": "img",
+        "ms": 370.5,
+        "transfer": 11996,
+        "bytes": 11696
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "type": "img",
+        "ms": 583.6999999999534,
+        "transfer": 66702,
+        "bytes": 66402
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 403.19999999995343,
+        "transfer": 468,
+        "bytes": 168
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 356.80000000004657,
+        "transfer": 508,
+        "bytes": 208
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 371.30000000004657,
+        "transfer": 501,
+        "bytes": 201
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 410.9000000001397,
+        "transfer": 503,
+        "bytes": 203
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 301.60000000009313,
+        "transfer": 1135,
+        "bytes": 835
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=-iSYfClm2u0Pl81f",
+        "type": "fetch",
+        "ms": 336,
+        "transfer": 1808,
+        "bytes": 1508
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=NLM5jmWwHWG371un",
+        "type": "fetch",
+        "ms": 327.5,
+        "transfer": 456,
+        "bytes": 156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 577.8999999999069,
+        "transfer": 1565,
+        "bytes": 1265
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=ekKxv9INL9Ixp1HH",
+        "type": "fetch",
+        "ms": 882.6999999999534,
+        "transfer": 1620,
+        "bytes": 1320
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 321.19999999995343,
+        "transfer": 1111,
+        "bytes": 811
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 329.19999999995343,
+        "transfer": 1081,
+        "bytes": 781
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+        "type": "other",
+        "ms": 223.30000000004657,
+        "transfer": 9609,
+        "bytes": 9309
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=640&q=75",
+        "type": "img",
+        "ms": 406.30000000004657,
+        "transfer": 48478,
+        "bytes": 48178
+      }
+    ]
+  },
+  "activeGames": 19,
+  "detailNavigationMs": 3502,
+  "detail": {
+    "lcp": 2016,
+    "longTasks": [
+      {
+        "start": 1189,
+        "duration": 128
+      },
+      {
+        "start": 1411.3000000000466,
+        "duration": 171
+      }
+    ],
+    "commits": [
+      {
+        "at": 1597.5,
+        "rendered": [
+          "A",
+          "D",
+          "R",
+          "s",
+          "_",
+          "y",
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1623.8000000000466,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1625.6000000000931,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "anonymous"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1656.4000000001397,
+        "rendered": [
+          "n",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1659.7000000001863,
+        "rendered": [
+          "n",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1741.5,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1767.6000000000931,
+        "rendered": [
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 1773.5,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 6667.300000000047,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 6781.600000000093,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "h",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 8073.5,
+        "rendered": [
+          "n",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 8107.40000000014,
+        "rendered": [
+          "L",
+          "T",
+          "s",
+          "_",
+          "y",
+          "p",
+          "f",
+          "z",
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "__next_root_layout_boundary__",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "anonymous",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 8125.40000000014,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "i",
+          "j",
+          "P",
+          "_",
+          "y",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "d",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "u",
+          "p",
+          "f",
+          "_",
+          "E",
+          "C",
+          "i",
+          "j",
+          "P",
+          "_",
+          "T",
+          "y",
+          "y",
+          "y",
+          "y",
+          "o"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 8129.800000000047,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 8442.100000000093,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 11263.700000000186,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": []
+      },
+      {
+        "at": 11402.40000000014,
+        "rendered": [
+          "__next_viewport_boundary__",
+          "__next_metadata_boundary__",
+          "n",
+          "anonymous",
+          "y",
+          "_",
+          "y",
+          "y",
+          "y",
+          "u",
+          "p",
+          "f",
+          "_",
+          "anonymous",
+          "_",
+          "y",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "anonymous",
+          "__next_outlet_boundary__",
+          "y",
+          "y",
+          "y",
+          "y"
+        ],
+        "packageCards": [
+          "7949",
+          "3503",
+          "2819",
+          "3502",
+          "2811",
+          "2793",
+          "2794",
+          "2771",
+          "2719",
+          "2779",
+          "2720",
+          "2764",
+          "2743",
+          "2738",
+          "2739",
+          "2740",
+          "2741",
+          "2772",
+          "2750",
+          "2721",
+          "2765",
+          "2800",
+          "2812",
+          "2735",
+          "2736",
+          "2805",
+          "2744",
+          "2785",
+          "2763",
+          "2773",
+          "2756",
+          "2813",
+          "2737",
+          "2774",
+          "2742",
+          "2730",
+          "2780",
+          "2725",
+          "2806",
+          "2731",
+          "2766",
+          "2795",
+          "2814",
+          "2808",
+          "2775",
+          "2815",
+          "2726",
+          "2776",
+          "2757",
+          "2820",
+          "2723",
+          "2816",
+          "2777",
+          "2801",
+          "2747",
+          "2748",
+          "2751",
+          "2786",
+          "2768",
+          "2787",
+          "2778",
+          "2782",
+          "2758",
+          "2769",
+          "2802",
+          "2753",
+          "2754",
+          "2727"
+        ]
+      }
+    ],
+    "paints": [
+      {
+        "name": "first-paint",
+        "at": 1620
+      },
+      {
+        "name": "first-contentful-paint",
+        "at": 1620
+      }
+    ],
+    "navigation": {
+      "name": "https://saksuuu-topup.vercel.app/",
+      "entryType": "navigation",
+      "startTime": 0,
+      "duration": 6657.600000000093,
+      "navigationId": 1338,
+      "initiatorType": "navigation",
+      "deliveryType": "",
+      "nextHopProtocol": "h2",
+      "renderBlockingStatus": "non-blocking",
+      "contentType": "text/html",
+      "contentEncoding": "br",
+      "workerStart": 0,
+      "workerRouterEvaluationStart": 0,
+      "workerCacheLookupStart": 0,
+      "workerMatchedSourceType": "",
+      "workerFinalSourceType": "",
+      "redirectStart": 0,
+      "redirectEnd": 0,
+      "fetchStart": 0.9000000001396984,
+      "domainLookupStart": 312.10000000009313,
+      "domainLookupEnd": 320.4000000001397,
+      "connectStart": 320.4000000001397,
+      "secureConnectionStart": 329.9000000001397,
+      "connectEnd": 453.5,
+      "requestStart": 453.60000000009313,
+      "responseStart": 517.6000000000931,
+      "firstInterimResponseStart": 517.6000000000931,
+      "finalResponseHeadersStart": 835.9000000001397,
+      "responseEnd": 1068.1000000000931,
+      "transferSize": 15703,
+      "encodedBodySize": 15403,
+      "decodedBodySize": 138889,
+      "responseStatus": 200,
+      "serverTiming": [],
+      "unloadEventStart": 0,
+      "unloadEventEnd": 0,
+      "domInteractive": 1318,
+      "domContentLoadedEventStart": 1318.2000000001863,
+      "domContentLoadedEventEnd": 1318.8000000000466,
+      "domComplete": 6657.100000000093,
+      "loadEventStart": 6657.5,
+      "loadEventEnd": 6657.600000000093,
+      "type": "navigate",
+      "redirectCount": 0,
+      "activationStart": 0,
+      "criticalCHRestart": 0,
+      "notRestoredReasons": null,
+      "confidence": {}
+    },
+    "images": [
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "width": 672,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "width": 448,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "width": 96,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 70,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fkaleoz-media.seagmcdn.com%2Fkaleoz-store%2F202502%2Foss-4d5cde2441bc0776b878d1eba42d7f74.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": true
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "width": 55,
+        "complete": false
+      },
+      {
+        "src": "",
+        "width": 0,
+        "complete": false
+      },
+      {
+        "src": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "width": 64,
+        "complete": true
+      }
+    ],
+    "resources": [
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+        "type": "link",
+        "ms": 262,
+        "transfer": 57376,
+        "bytes": 57076
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+        "type": "link",
+        "ms": 260,
+        "transfer": 33636,
+        "bytes": 33336
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+        "type": "link",
+        "ms": 255.89999999990687,
+        "transfer": 40780,
+        "bytes": 40480
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+        "type": "link",
+        "ms": 210.19999999995343,
+        "transfer": 48732,
+        "bytes": 48432
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+        "type": "link",
+        "ms": 365.19999999995343,
+        "transfer": 5044,
+        "bytes": 4744
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+        "type": "link",
+        "ms": 76,
+        "transfer": 1624,
+        "bytes": 1324
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/06e61-lcj_qts.css",
+        "type": "link",
+        "ms": 72.20000000018626,
+        "transfer": 23298,
+        "bytes": 22998
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/36s0t0o8ux5as.js",
+        "type": "link",
+        "ms": 73.19999999995343,
+        "transfer": 4071,
+        "bytes": 3771
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+        "type": "script",
+        "ms": 78.89999999990687,
+        "transfer": 9185,
+        "bytes": 8885
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/19w8ji20c03g7.js",
+        "type": "script",
+        "ms": 96.30000000004657,
+        "transfer": 73428,
+        "bytes": 73128
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1n8ctn51zpn9i.js",
+        "type": "script",
+        "ms": 74.10000000009313,
+        "transfer": 4334,
+        "bytes": 4034
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+        "type": "script",
+        "ms": 97.9000000001397,
+        "transfer": 43720,
+        "bytes": 43420
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+        "type": "script",
+        "ms": 78.9000000001397,
+        "transfer": 6372,
+        "bytes": 6072
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/22brf8u0l66ph.js",
+        "type": "script",
+        "ms": 79.20000000018626,
+        "transfer": 14008,
+        "bytes": 13708
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2f02vei_2lvm9.js",
+        "type": "script",
+        "ms": 99.60000000009313,
+        "transfer": 2562,
+        "bytes": 2262
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+        "type": "script",
+        "ms": 79.5,
+        "transfer": 10359,
+        "bytes": 10059
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3z1ehnmq8d974.js",
+        "type": "script",
+        "ms": 80.0999999998603,
+        "transfer": 6045,
+        "bytes": 5745
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791104770475&w=640&q=75",
+        "type": "link",
+        "ms": 5563.5,
+        "transfer": 384,
+        "bytes": 84
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+        "type": "img",
+        "ms": 367.5,
+        "transfer": 71182,
+        "bytes": 70882
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+        "type": "img",
+        "ms": 91.39999999990687,
+        "transfer": 60576,
+        "bytes": 60276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+        "type": "img",
+        "ms": 378.29999999981374,
+        "transfer": 15688,
+        "bytes": 15388
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+        "type": "img",
+        "ms": 98.5,
+        "transfer": 13986,
+        "bytes": 13686
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+        "type": "img",
+        "ms": 331.19999999995343,
+        "transfer": 11118,
+        "bytes": 10818
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+        "type": "img",
+        "ms": 330.70000000018626,
+        "transfer": 9576,
+        "bytes": 9276
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+        "type": "img",
+        "ms": 367.70000000018626,
+        "transfer": 8728,
+        "bytes": 8428
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+        "type": "img",
+        "ms": 396.10000000009313,
+        "transfer": 10456,
+        "bytes": 10156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+        "type": "img",
+        "ms": 348.69999999995343,
+        "transfer": 15040,
+        "bytes": 14740
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+        "type": "img",
+        "ms": 367.80000000004657,
+        "transfer": 5818,
+        "bytes": 5518
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+        "type": "img",
+        "ms": 371.5999999998603,
+        "transfer": 12188,
+        "bytes": 11888
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fhok.png&w=256&q=75",
+        "type": "img",
+        "ms": 416.69999999995343,
+        "transfer": 9480,
+        "bytes": 9180
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+        "type": "img",
+        "ms": 418.19999999995343,
+        "transfer": 7108,
+        "bytes": 6808
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fkingshot.png&w=256&q=75",
+        "type": "img",
+        "ms": 370.5,
+        "transfer": 11996,
+        "bytes": 11696
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+        "type": "img",
+        "ms": 583.6999999999534,
+        "transfer": 66702,
+        "bytes": 66402
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 403.19999999995343,
+        "transfer": 468,
+        "bytes": 168
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 356.80000000004657,
+        "transfer": 508,
+        "bytes": 208
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 371.30000000004657,
+        "transfer": 501,
+        "bytes": 201
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+        "type": "fetch",
+        "ms": 410.9000000001397,
+        "transfer": 503,
+        "bytes": 203
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 301.60000000009313,
+        "transfer": 1135,
+        "bytes": 835
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=-iSYfClm2u0Pl81f",
+        "type": "fetch",
+        "ms": 336,
+        "transfer": 1808,
+        "bytes": 1508
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=NLM5jmWwHWG371un",
+        "type": "fetch",
+        "ms": 327.5,
+        "transfer": 456,
+        "bytes": 156
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+        "type": "fetch",
+        "ms": 577.8999999999069,
+        "transfer": 1565,
+        "bytes": 1265
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=ekKxv9INL9Ixp1HH",
+        "type": "fetch",
+        "ms": 882.6999999999534,
+        "transfer": 1620,
+        "bytes": 1320
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 321.19999999995343,
+        "transfer": 1111,
+        "bytes": 811
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+        "type": "fetch",
+        "ms": 329.19999999995343,
+        "transfer": 1081,
+        "bytes": 781
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+        "type": "other",
+        "ms": 223.30000000004657,
+        "transfer": 9609,
+        "bytes": 9309
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=640&q=75",
+        "type": "img",
+        "ms": 406.30000000004657,
+        "transfer": 48478,
+        "bytes": 48178
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+        "type": "fetch",
+        "ms": 3176.8000000000466,
+        "transfer": 4628,
+        "bytes": 4328
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+        "type": "img",
+        "ms": 392.80000000004657,
+        "transfer": 2932,
+        "bytes": 2632
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/18z8wopy5j7zc.js",
+        "type": "script",
+        "ms": 80.60000000009313,
+        "transfer": 11284,
+        "bytes": 10984
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+        "type": "link",
+        "ms": 82.80000000004657,
+        "transfer": 3582,
+        "bytes": 3282
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fkaleoz-media.seagmcdn.com%2Fkaleoz-store%2F202502%2Foss-4d5cde2441bc0776b878d1eba42d7f74.png&w=64&q=75",
+        "type": "img",
+        "ms": 423.4000000001397,
+        "transfer": 1366,
+        "bytes": 1066
+      },
+      {
+        "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+        "type": "img",
+        "ms": 382.69999999995343,
+        "transfer": 1072,
+        "bytes": 772
+      }
+    ]
+  },
+  "initialSelectionCount": 0,
+  "selection": [
+    {
+      "domMs": 30.699999999953434,
+      "nextPaintMs": 54.5,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13210,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "7949"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.800000000046566,
+      "nextPaintMs": 25.899999999906868,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13347.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "7949",
+            "3503"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 13,
+      "nextPaintMs": 24.5,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13477.800000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "3503",
+            "2819"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 10.5,
+      "nextPaintMs": 25,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13601.200000000186,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2819",
+            "3502"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.5,
+      "nextPaintMs": 16.600000000093132,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13724.40000000014,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "3502",
+            "2811"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 8.5,
+      "nextPaintMs": 24.699999999953434,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13845.5,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2811",
+            "2793"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 8.699999999953434,
+      "nextPaintMs": 24.600000000093132,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 13973.300000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2793",
+            "2794"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 9.199999999953434,
+      "nextPaintMs": 27.699999999953434,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 14100.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2794",
+            "2771"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 3,
+      "nextPaintMs": 15.199999999953434,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 14225.300000000047,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2771",
+            "2719"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 8.199999999953434,
+      "nextPaintMs": 21.0999999998603,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 14349.200000000186,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2719",
+            "2779"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 6.099999999860302,
+      "nextPaintMs": 16.899999999906868,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 14469.600000000093,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2779",
+            "2720"
+          ]
+        }
+      ]
+    },
+    {
+      "domMs": 4.7999999998137355,
+      "nextPaintMs": 17.199999999953434,
+      "selectedCount": 1,
+      "summaryMatches": true,
+      "commits": [
+        {
+          "at": 14587,
+          "rendered": [
+            "__next_viewport_boundary__",
+            "__next_metadata_boundary__",
+            "n",
+            "anonymous",
+            "y",
+            "_",
+            "y",
+            "y",
+            "y",
+            "anonymous",
+            "_",
+            "y",
+            "anonymous",
+            "anonymous",
+            "anonymous",
+            "y",
+            "y",
+            "y",
+            "y"
+          ],
+          "packageCards": [
+            "2720",
+            "2764"
+          ]
+        }
+      ]
+    }
+  ],
+  "selectionRequests": [],
+  "toggle": {
+    "packageCleared": true,
+    "paymentSelected": true,
+    "paymentCleared": true,
+    "payDisabled": true,
+    "totalMs": 58.300000000046566
+  },
+  "toggleRequests": [],
+  "errors": [],
+  "requests": [
+    {
+      "url": "https://saksuuu-topup.vercel.app/",
+      "method": "GET",
+      "type": "Document"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/49625c79f5a84514-s.p.2lx7-3uow36p3.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/6e7b947a26ae60db-s.p.0a4oorcji4amy.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/70bc3e132a0a741e-s.p.269kn9uafm0ti.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/media/83afe278b6a6bb3c-s.p.45535valc9rzk.woff2",
+      "method": "GET",
+      "type": "Font"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3-q2xmi1n5yfh.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/06e61-lcj_qts.css",
+      "method": "GET",
+      "type": "Stylesheet"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/36s0t0o8ux5as.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2u5v7xdlfh11m.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/19w8ji20c03g7.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3vse7arq77ffq.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/turbopack-1n8ctn51zpn9i.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/22brf8u0l66ph.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2h000dfojcuxp.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2f02vei_2lvm9.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/2g4kyii-eu167.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/3z1ehnmq8d974.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fapi%2Fbanners%2F6abff71e4409f43ddc8487b2%2Fimage%3Fv%3D1791104770475&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Fhero-banner.jpg&w=750&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Ffreefire.jpg&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fpubgm.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fvalorant.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2F8_ball_pool.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fasphalt9.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbigo.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fbloodstrike.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffifa_futcoins_console.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Feafcmobile_kh.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fhok.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fkingshot.png&w=256&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2F9bzwjnv1fayr5odz.public.blob.vercel-storage.com%2Fbanners%2Fbanner-6abff71e4409f43ddc8487b-jo2wmellw7s.png&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=5CB68i4pnAekjehf",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/vizo/freefire_sgmy?_rsc=-iSYfClm2u0Pl81f",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games?_rsc=NLM5jmWwHWG371un",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=hrP0uuJLPHSzaoez",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/pubgm?_rsc=ekKxv9INL9Ixp1HH",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/valorant?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games?_rsc=tXyZJ52UQVBCVsD3",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/favicon.ico?favicon.3fpu2ql9ns1a0.ico",
+      "method": "GET",
+      "type": "Other"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Ffreefire_global.png&w=640&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/games/g2bulk/mlbb?_rsc=QSGrlYVnCy8rfoHU",
+      "method": "GET",
+      "type": "Fetch"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=%2Fimages%2Flogo.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/static/immutable/chunks/18z8wopy5j7zc.js",
+      "method": "GET",
+      "type": "Script"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fapi.g2bulk.com%2Fimages%2Fmlbb.png&w=96&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fkaleoz-media.seagmcdn.com%2Fkaleoz-store%2F202502%2Foss-4d5cde2441bc0776b878d1eba42d7f74.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    },
+    {
+      "url": "https://saksuuu-topup.vercel.app/_next/image?url=https%3A%2F%2Fpng.pngtree.com%2Fpng-vector%2F20211111%2Fourmid%2Fpngtree-blue-shiny-clear-diamond-realistic-illustration-png-image_4029162.png&w=64&q=75",
+      "method": "GET",
+      "type": "Image"
+    }
+  ]
+}

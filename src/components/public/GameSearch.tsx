@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useDeferredValue } from "react";
 import { Search, X, RotateCcw, AlertCircle } from "lucide-react";
 import { ClientGame } from "@/types/game";
 import { GameCard } from "./GameCard";
@@ -40,14 +40,13 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
   const [fetchError, setFetchError] = useState<string | null>(initialError || null);
   const [searchTerm, setSearchTerm] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
+  const deferredQuery = useDeferredValue(activeQuery);
 
   // Sync when initialGames changes
   useEffect(() => {
-    if (initialGames && initialGames.length > 0) {
-      setGames(initialGames);
-      setFetchError(null);
-    }
-  }, [initialGames]);
+    setGames(initialGames || []);
+    setFetchError(initialError || null);
+  }, [initialGames, initialError]);
 
   // Client-side fallback retry mechanism
   const fetchClientGames = useCallback(async () => {
@@ -96,7 +95,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
 
   // Filter games based on search query (real-time filtering by name)
   const filteredGames = useMemo(() => {
-    const rawQuery = activeQuery.trim().toLowerCase();
+    const rawQuery = deferredQuery.trim().toLowerCase();
     if (!rawQuery) return sortedGames;
 
     // Expand search terms with aliases if any
@@ -115,13 +114,13 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           publisher.includes(term)
       );
     });
-  }, [activeQuery, sortedGames]);
+  }, [deferredQuery, sortedGames]);
 
   return (
-    <section id="games" className="w-full min-w-0 space-y-6 scroll-mt-28">
+    <section id="games" className="w-full min-w-0 space-y-4 sm:space-y-6 scroll-mt-28">
       {/* 1. Heading: Exact Khmer heading "ហ្គេមទាំងអស់" without decorative icons or English headings */}
-      <div className="space-y-4">
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+      <div className="space-y-3 sm:space-y-4">
+        <h2 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           ហ្គេមទាំងអស់
         </h2>
 
@@ -130,14 +129,18 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           onSubmit={handleSearchSubmit}
           role="search"
           aria-label="ស្វែងរកហ្គេម"
-          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 max-w-2xl w-full"
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 max-w-2xl w-full"
         >
           {/* Search Input Container */}
           <div className="relative min-w-0 flex-1 group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-primary pointer-events-none transition-colors group-focus-within:text-primary" />
+            <Search className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5 text-primary pointer-events-none transition-colors group-focus-within:text-primary" />
             <input
               type="text"
               name="gameQuery"
+              autoComplete="off"
+              spellCheck={false}
+              enterKeyHint="search"
+              aria-controls="game-results"
               aria-label="ស្វែងរកហ្គេម"
               value={searchTerm}
               onChange={(e) => {
@@ -145,14 +148,14 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
                 setActiveQuery(e.target.value); // Real-time searching while typing
               }}
               placeholder="ស្វែងរកហ្គេម"
-              className="h-12 w-full rounded-xl sm:rounded-2xl border border-input bg-card pl-11 pr-11 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-4 focus:ring-ring/20 transition-all shadow-sm"
+              className="h-11 sm:h-12 w-full rounded-lg sm:rounded-2xl border border-input bg-card pl-9 sm:pl-11 pr-11 text-base sm:text-sm text-foreground placeholder:text-sm placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-4 focus:ring-ring/20 transition-all shadow-sm"
             />
             {/* Quick in-input clear button */}
             {searchTerm && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="absolute right-0.5 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
                 aria-label="Clear search input"
               >
                 <X className="h-4 w-4" />
@@ -164,9 +167,9 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className="game-action-button flex h-12 flex-1 shrink-0 items-center justify-center gap-2 rounded-xl px-5 text-xs font-bold whitespace-nowrap text-white sm:flex-initial sm:rounded-2xl sm:px-6 sm:text-sm"
+              className="game-action-button flex h-11 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 text-xs font-bold whitespace-nowrap text-white sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm"
             >
-              <Search className="h-4 w-4 text-white" />
+              <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
               <span>ស្វែងរក</span>
             </button>
 
@@ -174,7 +177,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="flex h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl sm:rounded-2xl border border-border bg-card hover:bg-muted px-4 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="flex h-11 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-lg sm:rounded-2xl border border-border bg-card hover:bg-muted px-4 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                 aria-label="Clear search"
               >
                 <X className="h-4 w-4" />
@@ -186,6 +189,8 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
       </div>
 
       {/* 3. Games Grid or Skeleton / Error / Empty States */}
+      <div id="game-results" className="min-h-64" aria-busy={isLoading || activeQuery !== deferredQuery}>
+      <p className="sr-only" role="status">{isLoading ? "Loading games" : `${filteredGames.length} games found`}</p>
       {isLoading ? (
         <GameGridSkeleton count={10} />
       ) : fetchError && games.length === 0 ? (
@@ -207,7 +212,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           </button>
         </div>
       ) : filteredGames.length > 0 ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 min-[360px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-5">
           {filteredGames.map((game) => (
             <GameCard key={game.id || game.slug} game={game} />
           ))}
@@ -244,6 +249,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           )}
         </div>
       )}
+      </div>
     </section>
   );
 }

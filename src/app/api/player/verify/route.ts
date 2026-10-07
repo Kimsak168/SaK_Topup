@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectDB } from "@/lib/mongodb";
-import { Game } from "@/models/Game";
+import { getVerificationGame } from "@/lib/services/verificationGameService";
 import { checkVizoPlayer } from "@/lib/suppliers/vizo";
 import { checkG2BulkPlayer } from "@/lib/suppliers/g2bulk";
 
@@ -13,6 +12,35 @@ function maskId(id: string): string {
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now();
+  const started = performance.now();
+  const spans: { name: string; ms: number }[] = [];
+  const timed = async <T,>(name: string, operation: () => Promise<T>): Promise<T> => {
+    const start = performance.now();
+    try { return await operation(); }
+    finally { spans.push({ name, ms: performance.now() - start }); }
+  };
+  const respond = (body: unknown, init?: ResponseInit) => {
+    const total = performance.now() - started;
+    const app = Math.max(0, total - spans.reduce((sum, span) => sum + span.ms, 0));
+    const headers = new Headers(init?.headers);
+    headers.set("Cache-Control", "no-store");
+    // Durations only: no player IDs, supplier payloads, keys or connection strings.
+    headers.set("Server-Timing", [...spans, { name: "app", ms: app }, { name: "total", ms: total }]
+      .map(span => span.name + ";dur=" + span.ms.toFixed(1)).join(", "));
+    return NextResponse.json(body, { ...init, headers });
+  };
+  // One budget for the entire supplier chain, not a fresh timeout per fallback.
+  // Begin after metadata resolution, and also honor browser cancellation.
+  let supplierSignal: AbortSignal | undefined;
+  const signal = () => {
+    supplierSignal ??= AbortSignal.any([req.signal, AbortSignal.timeout(8000)]);
+    // Reserve time for the existing fallback if the primary supplier stalls.
+    return AbortSignal.any([supplierSignal, AbortSignal.timeout(5000)]);
+  };
+  const verifyVizo = (game: string, id: string, server?: string) =>
+    timed("vizo", () => checkVizoPlayer(game, id, server, signal()));
+  const verifyG2Bulk = (game: string, id: string, server?: string) =>
+    timed(game === "mlbb_global" ? "g2bulk_global" : "g2bulk", () => checkG2BulkPlayer(game, id, server, signal()));
   try {
     const body = await req.json().catch(() => ({}));
     const { supplier, code, slug, userId, serverId } = body;
@@ -22,7 +50,7 @@ export async function POST(req: NextRequest) {
     const cleanServerId = serverId ? String(serverId).trim() : undefined;
 
     if (!gameIdentifier || !cleanUserId) {
-      return NextResponse.json(
+      return respond(
         { success: false, message: "Please enter your Player ID to verify" },
         { status: 400 }
       );
@@ -40,21 +68,13 @@ export async function POST(req: NextRequest) {
 
     let game = null;
     try {
-      await connectDB();
-      game = await Game.findOne({
-        $or: [
-          { supplier: targetSupplier, supplierGameCode: gameIdentifier },
-          { supplier: targetSupplier, slug: gameIdentifier },
-          { supplierGameCode: gameIdentifier },
-          { slug: gameIdentifier },
-        ],
-      } as any).lean();
+      game = await timed("metadata", () => getVerificationGame(targetSupplier, gameIdentifier));
     } catch (dbErr) {
       console.warn("[PlayerVerify] DB query fallback:", dbErr instanceof Error ? dbErr.message : String(dbErr));
     }
 
     if (game?.requiresServer && !cleanServerId) {
-      return NextResponse.json(
+      return respond(
         { success: false, message: `Please enter your ${game.serverLabel || "Zone / Server ID"}` },
         { status: 400 }
       );
@@ -68,14 +88,14 @@ export async function POST(req: NextRequest) {
     // ==========================================
     if (isFreeFire) {
       // Free Fire on Vizo /player_info/check endpoint requires 'freefire_sgmy'
-      const vizoRes = await checkVizoPlayer("freefire_sgmy", cleanUserId, cleanServerId);
+      const vizoRes = await verifyVizo("freefire_sgmy", cleanUserId, cleanServerId);
       const duration = Date.now() - startTime;
 
       if (vizoRes.success) {
         console.log(
           `[PlayerVerify] Free Fire via Vizo: SUCCESS (IGN: ${vizoRes.playerName}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(vizoRes);
+        return respond(vizoRes);
       }
 
       // If Vizo explicitly confirmed the player ID is invalid, do not false-report
@@ -83,32 +103,32 @@ export async function POST(req: NextRequest) {
         console.log(
           `[PlayerVerify] Free Fire via Vizo: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(vizoRes, { status: 400 });
+        return respond(vizoRes, { status: 400 });
       }
 
       // If Vizo encountered an auth/network/timeout issue, try resilient fallback to G2Bulk freefire_sgmy
       console.warn(
         `[PlayerVerify] Free Fire Vizo check was not conclusive (${vizoRes.message}). Attempting G2Bulk fallback...`
       );
-      const g2Res = await checkG2BulkPlayer("freefire_sgmy", cleanUserId, cleanServerId);
+      const g2Res = await verifyG2Bulk("freefire_sgmy", cleanUserId, cleanServerId);
       const totalDuration = Date.now() - startTime;
 
       if (g2Res.success) {
         console.log(
           `[PlayerVerify] Free Fire via G2Bulk fallback: SUCCESS (IGN: ${g2Res.playerName}) in ${totalDuration}ms [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(g2Res);
+        return respond(g2Res);
       }
 
       if (g2Res.isInvalidId) {
         console.log(
           `[PlayerVerify] Free Fire via G2Bulk fallback: INVALID_ID in ${totalDuration}ms [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(g2Res, { status: 400 });
+        return respond(g2Res, { status: 400 });
       }
 
       // Both failed due to network / temporary supplier issue
-      return NextResponse.json({
+      return respond({
         success: false,
         isUnavailable: true,
         message: "Live verification server is temporarily busy. You can still proceed with your Top Up.",
@@ -120,38 +140,38 @@ export async function POST(req: NextRequest) {
     // ==========================================
     if (targetCode === "mlbb" || targetCode === "mobile-legends" || gameIdentifier.includes("mlbb")) {
       // 2a. First try G2Bulk mlbb
-      const g2Res = await checkG2BulkPlayer("mlbb", cleanUserId, cleanServerId);
+      const g2Res = await verifyG2Bulk("mlbb", cleanUserId, cleanServerId);
       const duration = Date.now() - startTime;
 
       if (g2Res.success) {
         console.log(
           `[PlayerVerify] MLBB via G2Bulk: SUCCESS (IGN: ${g2Res.playerName}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(g2Res);
+        return respond(g2Res);
       }
 
       // 2b. If invalid on standard mlbb, also check Indonesian mlbb_global
       if (g2Res.isInvalidId) {
-        const g2GlobalRes = await checkG2BulkPlayer("mlbb_global", cleanUserId, cleanServerId);
+        const g2GlobalRes = await verifyG2Bulk("mlbb_global", cleanUserId, cleanServerId);
         if (g2GlobalRes.success) {
           console.log(
             `[PlayerVerify] MLBB via G2Bulk mlbb_global: SUCCESS (IGN: ${g2GlobalRes.playerName}) [UID: ${maskId(cleanUserId)}]`
           );
-          return NextResponse.json(g2GlobalRes);
+          return respond(g2GlobalRes);
         }
       }
 
       // 2c. Also try Vizo mlbb as secondary validation
-      const vizoRes = await checkVizoPlayer("mlbb", cleanUserId, cleanServerId);
+      const vizoRes = await verifyVizo("mlbb", cleanUserId, cleanServerId);
       if (vizoRes.success) {
         console.log(
           `[PlayerVerify] MLBB via Vizo fallback: SUCCESS (IGN: ${vizoRes.playerName}) [UID: ${maskId(cleanUserId)}]`
         );
-        return NextResponse.json(vizoRes);
+        return respond(vizoRes);
       }
 
       if (g2Res.isInvalidId) {
-        return NextResponse.json(
+        return respond(
           {
             success: false,
             isInvalidId: true,
@@ -161,25 +181,25 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      return NextResponse.json(g2Res);
+      return respond(g2Res);
     }
 
     // ==========================================
     // 3. PUBG MOBILE & OTHER G2BULK GAMES
     // ==========================================
-    const result = await checkG2BulkPlayer(targetCode, cleanUserId, cleanServerId);
+    const result = await verifyG2Bulk(targetCode, cleanUserId, cleanServerId);
     const duration = Date.now() - startTime;
 
     console.log(
       `[PlayerVerify] Game: ${targetCode} via G2Bulk: ${result.success ? "SUCCESS (" + result.playerName + ")" : result.isInvalidId ? "INVALID" : "UNAVAILABLE"} in ${duration}ms [UID: ${maskId(cleanUserId)}]`
     );
 
-    return NextResponse.json(result, {
+    return respond(result, {
       status: result.isInvalidId ? 400 : 200,
     });
   } catch (error) {
     console.error("[PlayerVerify] Error:", error instanceof Error ? error.message : String(error));
-    return NextResponse.json(
+    return respond(
       {
         success: false,
         isUnavailable: true,

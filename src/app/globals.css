@@ -66,6 +66,8 @@
   --warning: #92400e;
   --card-border: #ead5ed;
   --radius: 0.75rem;
+  --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --duration-ui: 180ms;
 }
 
 /* Preserve the existing admin palette, including body-mounted dialogs. */
@@ -93,6 +95,7 @@
 
 @layer base {
   html {
+    scrollbar-gutter: stable;
     scroll-behavior: smooth;
     scroll-padding-top: 7rem;
     font-family: var(--font-sans);
@@ -113,6 +116,15 @@
   input, button, textarea, select, optgroup {
     font-family: var(--font-sans);
   }
+  :where(button, a, input, select, textarea) {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  :where(input, textarea, select) {
+    transition: border-color var(--duration-ui) ease, box-shadow var(--duration-ui) ease;
+  }
+  :where(h1, h2, h3) { text-wrap: balance; }
+  :where(button:disabled) { pointer-events: auto; }
   :where(a, button, input, select, textarea):focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 4px;
@@ -128,6 +140,39 @@
 
 /* Public components share semantic colors without overriding utility classes. */
 @layer components {
+  .public-ambient {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 90% 0%, #fce7f355, transparent 48%),
+      radial-gradient(ellipse at 0% 40%, #ede9fe66, transparent 48%);
+  }
+  .skip-link {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    padding: .75rem 1rem;
+    border-radius: .75rem;
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-200%);
+  }
+  .skip-link:focus { transform: translateY(0); }
+  .public-nav-link, .package-option {
+    transition: color var(--duration-ui) ease, background-color var(--duration-ui) ease,
+      border-color var(--duration-ui) ease, box-shadow var(--duration-ui) ease,
+      transform var(--duration-ui) var(--ease-ui);
+  }
+  .public-nav-link:active, .package-option:active:not(:disabled) { transform: scale(.98); }
+  .game-card { transition: transform 220ms var(--ease-ui), box-shadow 220ms ease, border-color 220ms ease; }
+  .game-card-image { transition: transform 350ms var(--ease-ui); }
+  .game-card:active { transform: scale(.99); }
+  .public-navbar .saksuuu-brand-text-light { animation: none; filter: none; }
+  .public-theme :where(section) { scroll-margin-top: 10rem; }
+  .public-theme :where(input:not([type="checkbox"]):not([type="radio"]), select) { min-height: 2.75rem; }
   .public-surface {
     background: var(--card);
     color: var(--card-foreground);
@@ -221,7 +266,7 @@
   background: linear-gradient(180deg, rgba(20, 24, 52, 0.7) 0%, rgba(11, 13, 29, 0.85) 100%);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 220ms var(--ease-ui), border-color 220ms ease, box-shadow 220ms ease;
 }
 
 .cyber-card:hover {
@@ -255,7 +300,7 @@
 
 .gradient-btn-saksuuu {
   background: linear-gradient(135deg, #ff2e93 0%, #9333ea 100%);
-  transition: all 0.25s ease;
+  transition: transform var(--duration-ui) var(--ease-ui), box-shadow var(--duration-ui) ease;
 }
 
 .gradient-btn-saksuuu:hover {
@@ -374,7 +419,7 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -382,4 +427,21 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #ec4899;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .game-card:hover { transform: translateY(-3px); }
+  .game-card:hover .game-card-image { transform: scale(1.035); }
+}
+
+@media (max-width: 639px) {
+  /* Prevent mobile browsers zooming the viewport when a form receives focus. */
+  .public-theme :is(input, select, textarea),
+  .admin-theme :is(input, select, textarea) { font-size: 16px; }
+  .public-navbar { padding-top: env(safe-area-inset-top, 0px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card:hover, .game-card:active, .game-card:hover .game-card-image,
+  .public-nav-link:active, .package-option:active:not(:disabled) { transform: none; }
 }

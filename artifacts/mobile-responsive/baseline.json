@@ -1,0 +1,748 @@
+{
+  "results": [
+    {
+      "path": "/",
+      "width": 320,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 320,
+          "height": 134
+        },
+        "input": {
+          "x": 16.796875,
+          "y": 419.75,
+          "width": 286.390625,
+          "height": 48
+        },
+        "search": {
+          "x": 16.796875,
+          "y": 477.75,
+          "width": 286.390625,
+          "height": 48
+        },
+        "grid": {
+          "x": 16.796875,
+          "y": 549.75,
+          "width": 286.390625,
+          "height": 2402.90625
+        },
+        "card": {
+          "x": 16.796875,
+          "y": 549.75,
+          "width": 135.1875,
+          "height": 225.890625
+        },
+        "heading": {
+          "x": 16.796875,
+          "y": 371.75,
+          "width": 286.390625,
+          "height": 32
+        },
+        "banner": {
+          "x": 16.796875,
+          "y": 168,
+          "width": 286.390625,
+          "height": 115.75
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/",
+      "width": 360,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 360,
+          "height": 134
+        },
+        "input": {
+          "x": 18.40625,
+          "y": 434.46875,
+          "width": 323.1875,
+          "height": 48
+        },
+        "search": {
+          "x": 18.40625,
+          "y": 492.46875,
+          "width": 323.1875,
+          "height": 48
+        },
+        "grid": {
+          "x": 18.40625,
+          "y": 564.46875,
+          "width": 323.1875,
+          "height": 2540.875
+        },
+        "card": {
+          "x": 18.40625,
+          "y": 564.46875,
+          "width": 153.59375,
+          "height": 239.6875
+        },
+        "heading": {
+          "x": 18.40625,
+          "y": 386.46875,
+          "width": 323.1875,
+          "height": 32
+        },
+        "banner": {
+          "x": 18.40625,
+          "y": 168,
+          "width": 323.1875,
+          "height": 130.46875
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/",
+      "width": 375,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 375,
+          "height": 134
+        },
+        "input": {
+          "x": 19,
+          "y": 440,
+          "width": 337,
+          "height": 48
+        },
+        "search": {
+          "x": 19,
+          "y": 498,
+          "width": 337,
+          "height": 48
+        },
+        "grid": {
+          "x": 19,
+          "y": 570,
+          "width": 337,
+          "height": 2592.75
+        },
+        "card": {
+          "x": 19,
+          "y": 570,
+          "width": 160.5,
+          "height": 244.875
+        },
+        "heading": {
+          "x": 19,
+          "y": 392,
+          "width": 337,
+          "height": 32
+        },
+        "banner": {
+          "x": 19,
+          "y": 168,
+          "width": 337,
+          "height": 136
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 390,
+          "height": 134
+        },
+        "input": {
+          "x": 19.59375,
+          "y": 445.515625,
+          "width": 350.796875,
+          "height": 48
+        },
+        "search": {
+          "x": 19.59375,
+          "y": 503.515625,
+          "width": 350.796875,
+          "height": 48
+        },
+        "grid": {
+          "x": 19.59375,
+          "y": 575.515625,
+          "width": 350.796875,
+          "height": 2644.453125
+        },
+        "card": {
+          "x": 19.59375,
+          "y": 575.515625,
+          "width": 167.390625,
+          "height": 250.046875
+        },
+        "heading": {
+          "x": 19.59375,
+          "y": 397.515625,
+          "width": 350.796875,
+          "height": 32
+        },
+        "banner": {
+          "x": 19.59375,
+          "y": 168,
+          "width": 350.796875,
+          "height": 141.515625
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/",
+      "width": 430,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 430,
+          "height": 134
+        },
+        "input": {
+          "x": 21.203125,
+          "y": 460.234375,
+          "width": 387.59375,
+          "height": 48
+        },
+        "search": {
+          "x": 21.203125,
+          "y": 518.234375,
+          "width": 387.59375,
+          "height": 48
+        },
+        "grid": {
+          "x": 21.203125,
+          "y": 590.234375,
+          "width": 387.59375,
+          "height": 2782.4375
+        },
+        "card": {
+          "x": 21.203125,
+          "y": 590.234375,
+          "width": 185.796875,
+          "height": 263.84375
+        },
+        "heading": {
+          "x": 21.203125,
+          "y": 412.234375,
+          "width": 387.59375,
+          "height": 32
+        },
+        "banner": {
+          "x": 21.203125,
+          "y": 168,
+          "width": 387.59375,
+          "height": 156.234375
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/",
+      "width": 768,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 20,
+          "width": 760,
+          "height": 78
+        },
+        "input": {
+          "x": 38.40625,
+          "y": 566.46875,
+          "width": 549.0625,
+          "height": 48
+        },
+        "search": {
+          "x": 597.46875,
+          "y": 566.46875,
+          "width": 112.9375,
+          "height": 48
+        },
+        "grid": {
+          "x": 38.40625,
+          "y": 638.46875,
+          "width": 683.1875,
+          "height": 1326.71875
+        },
+        "card": {
+          "x": 38.40625,
+          "y": 638.46875,
+          "width": 155.796875,
+          "height": 249.34375
+        },
+        "heading": {
+          "x": 38.40625,
+          "y": 514.46875,
+          "width": 683.1875,
+          "height": 36
+        },
+        "banner": {
+          "x": 38.40625,
+          "y": 144,
+          "width": 683.1875,
+          "height": 274.46875
+        }
+      },
+      "columns": 4,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "14px"
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 20,
+          "width": 1432,
+          "height": 78
+        },
+        "input": {
+          "x": 65.28125,
+          "y": 813.765625,
+          "width": 549.0625,
+          "height": 48
+        },
+        "search": {
+          "x": 624.34375,
+          "y": 813.765625,
+          "width": 112.9375,
+          "height": 48
+        },
+        "grid": {
+          "x": 65.28125,
+          "y": 885.765625,
+          "width": 1301.4375,
+          "height": 1322.875
+        },
+        "card": {
+          "x": 65.28125,
+          "y": 885.765625,
+          "width": 244.28125,
+          "height": 315.71875
+        },
+        "heading": {
+          "x": 65.28125,
+          "y": 761.765625,
+          "width": 1301.4375,
+          "height": 36
+        },
+        "banner": {
+          "x": 65.28125,
+          "y": 144,
+          "width": 1301.4375,
+          "height": 521.765625
+        }
+      },
+      "columns": 5,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "14px"
+    },
+    {
+      "path": "/games",
+      "width": 320,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 320,
+          "height": 134
+        },
+        "input": {
+          "x": 16,
+          "y": 450,
+          "width": 288,
+          "height": 48
+        },
+        "search": {
+          "x": 16,
+          "y": 508,
+          "width": 288,
+          "height": 48
+        },
+        "grid": {
+          "x": 16,
+          "y": 580,
+          "width": 288,
+          "height": 2409
+        },
+        "card": {
+          "x": 16,
+          "y": 580,
+          "width": 136,
+          "height": 226.5
+        },
+        "heading": {
+          "x": 16,
+          "y": 402,
+          "width": 288,
+          "height": 32
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/games",
+      "width": 360,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 360,
+          "height": 134
+        },
+        "input": {
+          "x": 16,
+          "y": 450,
+          "width": 328,
+          "height": 48
+        },
+        "search": {
+          "x": 16,
+          "y": 508,
+          "width": 328,
+          "height": 48
+        },
+        "grid": {
+          "x": 16,
+          "y": 580,
+          "width": 328,
+          "height": 2559
+        },
+        "card": {
+          "x": 16,
+          "y": 580,
+          "width": 156,
+          "height": 241.5
+        },
+        "heading": {
+          "x": 16,
+          "y": 402,
+          "width": 328,
+          "height": 32
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/games",
+      "width": 375,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 375,
+          "height": 134
+        },
+        "input": {
+          "x": 16,
+          "y": 450,
+          "width": 343,
+          "height": 48
+        },
+        "search": {
+          "x": 16,
+          "y": 508,
+          "width": 343,
+          "height": 48
+        },
+        "grid": {
+          "x": 16,
+          "y": 580,
+          "width": 343,
+          "height": 2615.25
+        },
+        "card": {
+          "x": 16,
+          "y": 580,
+          "width": 163.5,
+          "height": 247.125
+        },
+        "heading": {
+          "x": 16,
+          "y": 402,
+          "width": 343,
+          "height": 32
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/games",
+      "width": 390,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 390,
+          "height": 134
+        },
+        "input": {
+          "x": 16,
+          "y": 450,
+          "width": 358,
+          "height": 48
+        },
+        "search": {
+          "x": 16,
+          "y": 508,
+          "width": 358,
+          "height": 48
+        },
+        "grid": {
+          "x": 16,
+          "y": 580,
+          "width": 358,
+          "height": 2671.5
+        },
+        "card": {
+          "x": 16,
+          "y": 580,
+          "width": 171,
+          "height": 252.75
+        },
+        "heading": {
+          "x": 16,
+          "y": 402,
+          "width": 358,
+          "height": 32
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/games",
+      "width": 430,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 12,
+          "width": 430,
+          "height": 134
+        },
+        "input": {
+          "x": 16,
+          "y": 450,
+          "width": 398,
+          "height": 48
+        },
+        "search": {
+          "x": 16,
+          "y": 508,
+          "width": 398,
+          "height": 48
+        },
+        "grid": {
+          "x": 16,
+          "y": 580,
+          "width": 398,
+          "height": 2821.5
+        },
+        "card": {
+          "x": 16,
+          "y": 580,
+          "width": 191,
+          "height": 267.75
+        },
+        "heading": {
+          "x": 16,
+          "y": 402,
+          "width": 398,
+          "height": 32
+        }
+      },
+      "columns": 2,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "16px"
+    },
+    {
+      "path": "/games",
+      "width": 768,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 20,
+          "width": 760,
+          "height": 78
+        },
+        "input": {
+          "x": 24,
+          "y": 370,
+          "width": 549.0625,
+          "height": 48
+        },
+        "search": {
+          "x": 583.0625,
+          "y": 370,
+          "width": 112.9375,
+          "height": 48
+        },
+        "grid": {
+          "x": 24,
+          "y": 442,
+          "width": 712,
+          "height": 1353.75
+        },
+        "card": {
+          "x": 24,
+          "y": 442,
+          "width": 163,
+          "height": 254.75
+        },
+        "heading": {
+          "x": 24,
+          "y": 318,
+          "width": 712,
+          "height": 36
+        }
+      },
+      "columns": 4,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "14px"
+    },
+    {
+      "path": "/games",
+      "width": 1440,
+      "dimensions": {
+        "navbar": {
+          "x": 0,
+          "y": 20,
+          "width": 1432,
+          "height": 78
+        },
+        "input": {
+          "x": 108,
+          "y": 370,
+          "width": 549.0625,
+          "height": 48
+        },
+        "search": {
+          "x": 667.0625,
+          "y": 370,
+          "width": 112.9375,
+          "height": 48
+        },
+        "grid": {
+          "x": 108,
+          "y": 442,
+          "width": 1216,
+          "height": 1271.5625
+        },
+        "card": {
+          "x": 108,
+          "y": 442,
+          "width": 227.1875,
+          "height": 302.890625
+        },
+        "heading": {
+          "x": 108,
+          "y": 318,
+          "width": 1216,
+          "height": 36
+        }
+      },
+      "columns": 5,
+      "overflow": false,
+      "contentOverflow": false,
+      "navFits": true,
+      "navOverlap": false,
+      "uniformCards": true,
+      "imagesCover": true,
+      "inputFont": "14px"
+    }
+  ],
+  "errors": [],
+  "gameRequests": []
+}

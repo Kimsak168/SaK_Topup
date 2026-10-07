@@ -1,0 +1,146 @@
+﻿{
+    "restoreCommit":  "102ba0ba05aec70e721c16e921a49d1b1080a363",
+    "backupPath":  "D:\\web\\saksuuu-topup\\.local-backups\\project-cleanup-20261005-153848",
+    "deleted":  [
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-fixed-1280.png",
+                        "bytes":  170888,
+                        "sha256":  "29B7993AFA750B849A48CA18977D448D12B03034FF9C8EF7A541CD02B11E6E8B"
+                    },
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-fixed-390.png",
+                        "bytes":  338882,
+                        "sha256":  "91CD5781428D04B483957FDA65E609727B05630944DB610AE26E94E4BC62A1A6"
+                    },
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-fixed-stable-1280.png",
+                        "bytes":  1120916,
+                        "sha256":  "B316B2F93F8416E079B951660572767D514B4BFD1D2E73088975045B18FB2171"
+                    },
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-fixed-stable-390.png",
+                        "bytes":  338882,
+                        "sha256":  "91CD5781428D04B483957FDA65E609727B05630944DB610AE26E94E4BC62A1A6"
+                    },
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-ratio-check-1280.png",
+                        "bytes":  797743,
+                        "sha256":  "0F7092B20C366F679FE73F5F0C66FE2803603CF2589CB3C69F54B60716674F3A"
+                    },
+                    {
+                        "path":  "artifacts/banner-diagnostics/local-ratio-check-390.png",
+                        "bytes":  284307,
+                        "sha256":  "AC22E3D55B153FC841C30502C3303AF980E53A8C8FB6A8A59457554F0D27D97F"
+                    },
+                    {
+                        "path":  "public/file.svg",
+                        "bytes":  391,
+                        "sha256":  "2B67812C325C199A02536CDBEEA0C593A72F707D323B72EE3E08DBAB06753BD4"
+                    },
+                    {
+                        "path":  "public/globe.svg",
+                        "bytes":  1035,
+                        "sha256":  "B614B9BF183925957661AC851498FE1D8029FD43A62FBFED86F9E2624A57E7CF"
+                    },
+                    {
+                        "path":  "public/window.svg",
+                        "bytes":  385,
+                        "sha256":  "644768C4AAEB4767BCE293344EEB0C125FB804A94D801440424072202D85E3A1"
+                    },
+                    {
+                        "path":  "src/components/Footer.tsx",
+                        "bytes":  126,
+                        "sha256":  "A9E097A2D51F86BC510EB03680A272A1CCA8F468CA2482F942EEFBBAAA99A193"
+                    },
+                    {
+                        "path":  "src/components/GameCard.tsx",
+                        "bytes":  46,
+                        "sha256":  "859FD74D873F3D6CFB0880DB04A66062A633BFBAEA5E1BDFDC64E9FD24B4032B"
+                    },
+                    {
+                        "path":  "src/components/GameSearch.tsx",
+                        "bytes":  50,
+                        "sha256":  "1B05097085A6F3B5FDC4F09F30CB731680B2B08010D324881B8111E111B3708C"
+                    },
+                    {
+                        "path":  "src/components/HowItWorks.tsx",
+                        "bytes":  50,
+                        "sha256":  "707D3C7D7D3056CD4767C24F5F298E809F7153CBD8381DC7A987F863F0625B1E"
+                    },
+                    {
+                        "path":  "src/components/Navbar.tsx",
+                        "bytes":  126,
+                        "sha256":  "C1942A1E89DF58D0CAB1AF0C7CE2A8BC489B956C5A7EB3CD1E75B8C1F525E4E2"
+                    },
+                    {
+                        "path":  "src/components/PromotionalBanner.tsx",
+                        "bytes":  7034,
+                        "sha256":  "2600DDE01FBC44958238E305F9D3EF480CEC766D13B010D8E8A1E628F1A3EE46"
+                    },
+                    {
+                        "path":  "src/components/public/HowItWorks.tsx",
+                        "bytes":  5516,
+                        "sha256":  "4019E9EA8777448028EA849D462BC55E7EA1F8B0DCCAADDC8542CE8C5D576FC1"
+                    },
+                    {
+                        "path":  "src/components/ui/badge.tsx",
+                        "bytes":  1915,
+                        "sha256":  "D9FB280E266119C4B62A4C518E63152DE27B094C68D3E5F8929D05BFB0C1BC6C"
+                    },
+                    {
+                        "path":  "src/components/ui/button.tsx",
+                        "bytes":  3226,
+                        "sha256":  "FE8220AFC0EC9B62C7A520F4E6EB0B56B3B9E951EB963183C29D274395EE476C"
+                    },
+                    {
+                        "path":  "src/components/ui/card.tsx",
+                        "bytes":  2583,
+                        "sha256":  "28DEC8D76E1CF48BF822BF533ACC00A9B389D2DE804A40B27A24B869E4845ED7"
+                    },
+                    {
+                        "path":  "src/components/ui/dialog.tsx",
+                        "bytes":  3982,
+                        "sha256":  "FB2C7BBC9698DEDDA4D36F93C2B96FF23781F955120128FE455BA402D31D982A"
+                    },
+                    {
+                        "path":  "src/components/ui/input.tsx",
+                        "bytes":  1005,
+                        "sha256":  "B8D0C2A2AB66080B5FE9A3467884F896EB6F9E6B45AC0185925E831F551362E6"
+                    },
+                    {
+                        "path":  "src/components/ui/label.tsx",
+                        "bytes":  508,
+                        "sha256":  "B3B7B21D2877838FC73713DF48A47248392DE04A3B3FAFA8961369F33AB14530"
+                    },
+                    {
+                        "path":  "src/components/ui/select.tsx",
+                        "bytes":  6601,
+                        "sha256":  "EE90EF211D5DE0E918AAABC7682BA8305BAC233A79137457E10240D9B0D2548B"
+                    },
+                    {
+                        "path":  "src/components/ui/skeleton.tsx",
+                        "bytes":  266,
+                        "sha256":  "4C2AF7FA9C645358A0FB188779DEAB6F0B981733B62BEFC25E18AAEBEA1350DC"
+                    },
+                    {
+                        "path":  "src/components/ui/sonner.tsx",
+                        "bytes":  1226,
+                        "sha256":  "2DD975AD2170BA2570B00E58713DCBDA90F26A7FFFDACEB1EF7255F450C2D2A6"
+                    },
+                    {
+                        "path":  "src/components/ui/table.tsx",
+                        "bytes":  2392,
+                        "sha256":  "749B0501E97591F8D7C9EF81366D636E4B47857A15A28E6CF3B87841232E74BF"
+                    },
+                    {
+                        "path":  "src/components/ui/tabs.tsx",
+                        "bytes":  3487,
+                        "sha256":  "50954A06EDB2B56AF0BC77BBEE995C5C6713CCED0867C7A999D33F2C7226B584"
+                    },
+                    {
+                        "path":  "src/components/ui/textarea.tsx",
+                        "bytes":  807,
+                        "sha256":  "6D096EF81EE782D94696D0DDAD1C926E530D952B54B9FF9E8B837D8BBEEA8D00"
+                    }
+                ]
+}

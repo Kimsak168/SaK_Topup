@@ -1,4 +1,5 @@
 .admin-theme {
+  color-scheme: dark;
   --admin-surface: #111827;
   --admin-surface-raised: #171f2e;
   --admin-border: #283247;
@@ -100,6 +101,7 @@
 .admin-sidebar.is-collapsed .admin-supplier-dot { position: absolute; top: .35rem; right: .35rem; }
 
 .admin-content {
+  scrollbar-gutter: stable;
   scrollbar-color: #39455b transparent;
   background: #0b101c;
 }
@@ -300,6 +302,14 @@
   box-shadow: 0 24px 70px rgba(0, 0, 0, .35);
 }
 .admin-modal-panel { max-height: calc(100dvh - 2rem); overflow-y: auto; }
+.admin-modal-panel { overscroll-behavior: contain; }
+.admin-content :is(input, select, textarea) { min-height: 2.75rem; }
+.admin-content input:is([type="checkbox"], [type="radio"]) { min-height: auto; }
+.admin-button, .admin-icon-button, .admin-shell header button, .admin-shell header a { min-height: 2.75rem; }
+.admin-icon-button, .admin-shell header button { min-width: 2.75rem; }
+.admin-content :is(th, td) { font-variant-numeric: tabular-nums; }
+.admin-table-scroll { overscroll-behavior-x: contain; scrollbar-gutter: stable; }
+.admin-shell-light { color-scheme: light; --background: #f5f7fb; --foreground: #172033; --card: #fff; --card-foreground: #172033; --muted: #f1f5f9; --muted-foreground: #64748b; --border: #e2e8f0; --input: #94a3b8; }
 .admin-content button:disabled { opacity: .55; }
 .admin-content :is(button, a, input, select, textarea):focus-visible { outline: 2px solid #f57eb9; outline-offset: 2px; }
 

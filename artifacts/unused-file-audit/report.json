@@ -1,0 +1,2535 @@
+{
+  "createdAt": "2026-10-05T08:38:13.763Z",
+  "restoreCommit": "102ba0ba05aec70e721c16e921a49d1b1080a363",
+  "scope": "Tracked project files; excludes dependencies, build output, Git objects and private backups. Database strings scanned offline; no production calls.",
+  "protectedIgnoredPaths": [
+    ".env.local",
+    ".next/",
+    "node_modules/",
+    ".vercel/",
+    ".local-backups/ (all BSON backups, restore tools and work backups)",
+    "artifacts/performance/package-audit-* (current task evidence)"
+  ],
+  "trackedBytesBefore": 28493034,
+  "safeBytes": 3094375,
+  "rows": [
+    {
+      "path": ".env.example",
+      "bytes": 1010,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": ".gitattributes",
+      "bytes": 60,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 591,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 678,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "CLAUDE.md",
+      "bytes": 11,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1450,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/1440-light-overview.png",
+      "bytes": 114416,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "scripts/verify-admin-redesign.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/1440-overview.png",
+      "bytes": 139753,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/1440-suppliers.png",
+      "bytes": 149458,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-banners.png",
+      "bytes": 140233,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-games.png",
+      "bytes": 58216,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-orders.png",
+      "bytes": 53304,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-overview.png",
+      "bytes": 60418,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-packages.png",
+      "bytes": 64675,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-payments.png",
+      "bytes": 58413,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-settings.png",
+      "bytes": 62259,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/390-suppliers.png",
+      "bytes": 62867,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/900-overview.png",
+      "bytes": 98227,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/900-suppliers.png",
+      "bytes": 99152,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-redesign/smoke.json",
+      "bytes": 6439,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "scripts/verify-admin-redesign.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/admin-ui/1440-light-overview.png",
+      "bytes": 167625,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [
+        "scripts/verify-admin-ui.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/admin-ui/1440-overview.png",
+      "bytes": 226238,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/admin-ui/1440-suppliers.png",
+      "bytes": 218643,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/admin-ui/390-overview.png",
+      "bytes": 80271,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/admin-ui/390-suppliers.png",
+      "bytes": 98797,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/admin-ui/smoke.json",
+      "bytes": 4267,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [
+        "scripts/verify-admin-ui.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-before-1280.png",
+      "bytes": 253302,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-before-390.png",
+      "bytes": 284307,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-final-1280.png",
+      "bytes": 1120916,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-final-390.png",
+      "bytes": 338882,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-final-768.png",
+      "bytes": 659275,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-fixed-1280.png",
+      "bytes": 170888,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-fixed-390.png",
+      "bytes": 338882,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-fixed-stable-1280.png",
+      "bytes": 1120916,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-fixed-stable-390.png",
+      "bytes": 338882,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-ratio-check-1280.png",
+      "bytes": 797743,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/local-ratio-check-390.png",
+      "bytes": 284307,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreferenced intermediate banner screenshot superseded by local-final screenshots; not served or imported.",
+      "references": [],
+      "risk": "Low; final and before evidence retained",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/production-before-1280.png",
+      "bytes": 703291,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/production-before-390.png",
+      "bytes": 320635,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/search-button-1280.png",
+      "bytes": 1123472,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/search-button-390.png",
+      "bytes": 339963,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/search-button-768.png",
+      "bytes": 662143,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/solid-pink-actions-1280.png",
+      "bytes": 1120046,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/solid-pink-actions-390.png",
+      "bytes": 327138,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/banner-diagnostics/solid-pink-actions-768.png",
+      "bytes": 652224,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/REPORT.md",
+      "bytes": 14138,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/after-database.json",
+      "bytes": 33847,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/before-database.json",
+      "bytes": 30791,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/catalogue-verification.json",
+      "bytes": 1269,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md",
+        "scripts/performance/catalogue.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/desktop-after-browser.json",
+      "bytes": 72765,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/desktop-after-game.png",
+      "bytes": 386709,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/desktop-after-home.png",
+      "bytes": 1103494,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/desktop-after-selection.cpuprofile",
+      "bytes": 393001,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/indexes.json",
+      "bytes": 399,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [
+        "scripts/performance/indexes.mjs"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/local-after-browser.json",
+      "bytes": 57351,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-after-home.png",
+      "bytes": 299185,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-after-http.json",
+      "bytes": 3427,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-after-selection.cpuprofile",
+      "bytes": 586673,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/local-after-verified-browser.json",
+      "bytes": 63449,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-after-verified-home.png",
+      "bytes": 299185,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/local-after-verified-selection.cpuprofile",
+      "bytes": 350093,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/local-before-browser.json",
+      "bytes": 45485,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-before-home.png",
+      "bytes": 218354,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/local-before-http.json",
+      "bytes": 3270,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/local-before-selection.cpuprofile",
+      "bytes": 289552,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-before-browser.json",
+      "bytes": 56736,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-before-home.png",
+      "bytes": 300818,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-before-http.json",
+      "bytes": 3362,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/performance/production-before-selection.cpuprofile",
+      "bytes": 138044,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-before-vercel.jsonl",
+      "bytes": 7603,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-function-cpu.json",
+      "bytes": 713,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/performance/production-function-duration.json",
+      "bytes": 713,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/theme-review/admin-login-desktop.png",
+      "bytes": 124326,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/catalogue-populated-desktop.png",
+      "bytes": 1488697,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/catalogue-populated-mobile.png",
+      "bytes": 714263,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/checkout-small-mobile.png",
+      "bytes": 242216,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/confirmation-mobile.png",
+      "bytes": 351697,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/expanded-results.json",
+      "bytes": 57670,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/theme-review/final-visual.json",
+      "bytes": 10880,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/theme-review/game-desktop.png",
+      "bytes": 602479,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/game-small-mobile.png",
+      "bytes": 357326,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/game-tablet.png",
+      "bytes": 526641,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/order-detail-mobile.png",
+      "bytes": 178982,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/orders-results-mobile.png",
+      "bytes": 213968,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/source-review.json",
+      "bytes": 1023,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Historical screenshot, smoke result or performance evidence; no runtime use, but retention value requires review.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "artifacts/theme-review/success-paid-desktop.png",
+      "bytes": 388156,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [
+        "artifacts/theme-review/verification.md"
+      ],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "artifacts/theme-review/verification.md",
+      "bytes": 3548,
+      "classification": "KEEP",
+      "reason": "Verification report, linked evidence or latest admin redesign verification.",
+      "references": [],
+      "risk": "Evidence/history loss",
+      "action": "Keep"
+    },
+    {
+      "path": "components.json",
+      "bytes": 520,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "eslint.config.mjs",
+      "bytes": 542,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "next.config.ts",
+      "bytes": 621,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 386223,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "package.json",
+      "bytes": 1285,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "postcss.config.mjs",
+      "bytes": 94,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/file.svg",
+      "bytes": 391,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unmodified Next starter decoration; zero source/config/script or verified database string references.",
+      "references": [],
+      "risk": "Low; unused starter decoration",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "public/globe.svg",
+      "bytes": 1035,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unmodified Next starter decoration; zero source/config/script or verified database string references.",
+      "references": [],
+      "risk": "Low; unused starter decoration",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "public/images/aba-logo.png",
+      "bytes": 16494,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [
+        "artifacts/performance/desktop-after-browser.json",
+        "artifacts/performance/local-before-browser.json",
+        "artifacts/performance/production-before-browser.json",
+        "src/app/(public)/checkout/page.tsx",
+        "src/components/public/GameTopUpClient.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/images/freefire.jpg",
+      "bytes": 888279,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [
+        "artifacts/performance/desktop-after-browser.json",
+        "artifacts/performance/local-after-browser.json",
+        "artifacts/performance/local-after-verified-browser.json",
+        "artifacts/performance/local-before-browser.json",
+        "artifacts/performance/production-before-browser.json",
+        "src/app/(admin)/admin/games/page.tsx",
+        "src/app/(public)/layout.tsx",
+        "src/components/public/GameCard.tsx",
+        "src/components/public/GameTopUpClient.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/images/hero-banner.jpg",
+      "bytes": 1054935,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [
+        "artifacts/performance/desktop-after-browser.json",
+        "artifacts/performance/local-after-browser.json",
+        "artifacts/performance/local-after-verified-browser.json",
+        "artifacts/performance/local-before-browser.json",
+        "artifacts/performance/production-before-browser.json",
+        "src/app/(admin)/admin/games/page.tsx",
+        "src/app/(public)/layout.tsx",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/images/logo.png",
+      "bytes": 1332146,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [
+        "artifacts/performance/desktop-after-browser.json",
+        "artifacts/performance/local-after-browser.json",
+        "artifacts/performance/local-after-verified-browser.json",
+        "artifacts/performance/local-before-browser.json",
+        "artifacts/performance/production-before-browser.json",
+        "src/app/(admin-auth)/admin/login/page.tsx",
+        "src/app/(public)/checkout/page.tsx",
+        "src/components/admin/AdminDashboardShell.tsx",
+        "src/components/public/CustomerFooter.tsx",
+        "src/components/public/CustomerNavbar.tsx",
+        "src/components/public/GameTopUpClient.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/images/promo-banner.jpg",
+      "bytes": 1022080,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [
+        "Verified BSON backup: 2 string references"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/next.svg",
+      "bytes": 1375,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/vercel.svg",
+      "bytes": 128,
+      "classification": "KEEP",
+      "reason": "Public asset; may be loaded by URL or database field. Logos and existing artwork are protected.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "public/window.svg",
+      "bytes": 385,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unmodified Next starter decoration; zero source/config/script or verified database string references.",
+      "references": [],
+      "risk": "Low; unused starter decoration",
+      "action": "Delete after Git restore check"
+    },
+    {
+      "path": "scripts/init-admin.mjs",
+      "bytes": 4242,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "package.json"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/inspect-db.mjs",
+      "bytes": 1129,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Manual database inspection utility with no package.json command; usage cannot be inferred.",
+      "references": [],
+      "risk": "Manual workflow may rely on this script",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "scripts/manage-admin.mjs",
+      "bytes": 7702,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "package.json"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/migrate-images-to-blob.mjs",
+      "bytes": 8778,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "package.json"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/browser.mjs",
+      "bytes": 14342,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/catalogue.mjs",
+      "bytes": 2418,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/database.mjs",
+      "bytes": 3327,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/http.mjs",
+      "bytes": 1359,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/indexes.mjs",
+      "bytes": 1405,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/performance/regressions.test.mjs",
+      "bytes": 9323,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [
+        "artifacts/performance/REPORT.md"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/verify-admin-redesign.mjs",
+      "bytes": 15544,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/verify-admin-ui.mjs",
+      "bytes": 11110,
+      "classification": "REVIEW REQUIRED",
+      "reason": "Older smoke script overlaps verify-admin-redesign.mjs but is an independent manual entrypoint.",
+      "references": [],
+      "risk": "Manual workflow may rely on this script",
+      "action": "Keep pending approval"
+    },
+    {
+      "path": "scripts/verify-banners-browser.mjs",
+      "bytes": 7316,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "scripts/verify-banners.mjs",
+      "bytes": 1422,
+      "classification": "KEEP",
+      "reason": "Manually invoked operational or verification script; lack of imports does not imply unused.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/admin-dashboard.css",
+      "bytes": 20850,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [
+        "src/app/(admin)/admin/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/banners/page.tsx",
+      "bytes": 18244,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/games/mlbb-test/page.tsx",
+      "bytes": 20577,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/games/page.tsx",
+      "bytes": 32741,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/layout.tsx",
+      "bytes": 589,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/orders/page.tsx",
+      "bytes": 33238,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/packages/page.tsx",
+      "bytes": 37828,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/page.tsx",
+      "bytes": 14998,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/payments/page.tsx",
+      "bytes": 14524,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/settings/page.tsx",
+      "bytes": 16334,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin)/admin/suppliers/page.tsx",
+      "bytes": 21963,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin-auth)/admin/login/page.tsx",
+      "bytes": 8719,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(admin-auth)/layout.tsx",
+      "bytes": 163,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/checkout/page.tsx",
+      "bytes": 16869,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/contact/page.tsx",
+      "bytes": 211,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/game/[slug]/page.tsx",
+      "bytes": 1690,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/games/[supplier]/[code]/loading.tsx",
+      "bytes": 937,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/games/[supplier]/[code]/page.tsx",
+      "bytes": 2037,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/games/loading.tsx",
+      "bytes": 416,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/games/page.tsx",
+      "bytes": 1485,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/layout.tsx",
+      "bytes": 2295,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/orders/[id]/page.tsx",
+      "bytes": 14557,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/orders/page.tsx",
+      "bytes": 10476,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/page.tsx",
+      "bytes": 3161,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/payment/cancel/page.tsx",
+      "bytes": 3008,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/(public)/payment/success/page.tsx",
+      "bytes": 14994,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/auth/login/route.ts",
+      "bytes": 1645,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/auth/logout/route.ts",
+      "bytes": 423,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/auth/me/route.ts",
+      "bytes": 648,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/banners/route.ts",
+      "bytes": 6678,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/games/mlbb-configure/route.ts",
+      "bytes": 4335,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/games/mlbb-test/route.ts",
+      "bytes": 3338,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/games/route.ts",
+      "bytes": 5120,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/orders/reconcile/route.ts",
+      "bytes": 3851,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/orders/route.ts",
+      "bytes": 6778,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/overview/route.ts",
+      "bytes": 4253,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/packages/route.ts",
+      "bytes": 6857,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/packages/upload/route.ts",
+      "bytes": 3167,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/payments/route.ts",
+      "bytes": 5672,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/prices/route.ts",
+      "bytes": 1319,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/settings/route.ts",
+      "bytes": 3173,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/suppliers/route.ts",
+      "bytes": 3359,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/sync/games/route.ts",
+      "bytes": 941,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/sync/packages/route.ts",
+      "bytes": 1291,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/uploads/blob-client/route.ts",
+      "bytes": 1533,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/admin/uploads/blob/route.ts",
+      "bytes": 3663,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/banners/[bannerId]/image/route.ts",
+      "bytes": 1187,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/banners/route.ts",
+      "bytes": 625,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/games/[supplier]/[code]/packages/route.ts",
+      "bytes": 3025,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/games/route.ts",
+      "bytes": 1191,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/health/route.ts",
+      "bytes": 2302,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/orders/[id]/route.ts",
+      "bytes": 4670,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/orders/route.ts",
+      "bytes": 5575,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/orders/track/route.ts",
+      "bytes": 2019,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/packages/[packageId]/image/route.ts",
+      "bytes": 1193,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/payment/anajakpay/check/route.ts",
+      "bytes": 4295,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/payment/anajakpay/create/route.ts",
+      "bytes": 8232,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/payment/anajakpay/webhook/route.ts",
+      "bytes": 7801,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/api/player/verify/route.ts",
+      "bytes": 7128,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/error.tsx",
+      "bytes": 1685,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/favicon.ico",
+      "bytes": 25931,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/globals.css",
+      "bytes": 10336,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [
+        "src/app/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "bytes": 1643,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/loading.tsx",
+      "bytes": 919,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "bytes": 1195,
+      "classification": "KEEP",
+      "reason": "App Router route, layout, metadata, API endpoint or active stylesheet; protected by convention.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/Footer.tsx",
+      "bytes": 126,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/GameCard.tsx",
+      "bytes": 46,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/GameSearch.tsx",
+      "bytes": 50,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/HowItWorks.tsx",
+      "bytes": 50,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/Navbar.tsx",
+      "bytes": 126,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/PromotionalBanner.tsx",
+      "bytes": 7034,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ThemeToaster.tsx",
+      "bytes": 343,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/admin/AdminDashboardShell.tsx",
+      "bytes": 20394,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(admin)/admin/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/CustomerFooter.tsx",
+      "bytes": 7471,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/layout.tsx",
+        "src/components/Footer.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/CustomerNavbar.tsx",
+      "bytes": 8105,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/layout.tsx",
+        "src/components/Navbar.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/GameCard.tsx",
+      "bytes": 3287,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/components/GameCard.tsx",
+        "src/components/public/GameSearch.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/GameSearch.tsx",
+      "bytes": 11106,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/games/page.tsx",
+        "src/app/(public)/page.tsx",
+        "src/components/GameSearch.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/GameTopUpClient.tsx",
+      "bytes": 33976,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/games/[supplier]/[code]/page.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/HomeSkeletons.tsx",
+      "bytes": 1609,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/games/loading.tsx",
+        "src/app/(public)/page.tsx",
+        "src/components/public/GameSearch.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/HowItWorks.tsx",
+      "bytes": 5516,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [
+        "src/components/HowItWorks.tsx"
+      ],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/public/PackageOptions.tsx",
+      "bytes": 7218,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/components/public/GameTopUpClient.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/public/PromotionalBanner.tsx",
+      "bytes": 6976,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/page.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/components/ui/badge.tsx",
+      "bytes": 1915,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "bytes": 3226,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [
+        "src/components/ui/dialog.tsx"
+      ],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/card.tsx",
+      "bytes": 2583,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/dialog.tsx",
+      "bytes": 3982,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "bytes": 1005,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/label.tsx",
+      "bytes": 508,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/select.tsx",
+      "bytes": 6601,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/skeleton.tsx",
+      "bytes": 266,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/sonner.tsx",
+      "bytes": 1226,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/table.tsx",
+      "bytes": 2392,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/tabs.tsx",
+      "bytes": 3487,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/components/ui/textarea.tsx",
+      "bytes": 807,
+      "classification": "SAFE TO DELETE",
+      "reason": "Unreachable from all App Router, middleware, configuration and script roots; static/dynamic import and re-export graph checked. No runtime component discovery exists.",
+      "references": [],
+      "risk": "Low; unused private component",
+      "action": "Delete only after backing up current work and checking unchanged Git content"
+    },
+    {
+      "path": "src/hooks/useDebouncedValue.ts",
+      "bytes": 365,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(admin)/admin/games/page.tsx",
+        "src/app/(admin)/admin/orders/page.tsx",
+        "src/app/(admin)/admin/packages/page.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/auth.ts",
+      "bytes": 5552,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/auth/login/route.ts",
+        "src/app/api/admin/auth/logout/route.ts",
+        "src/app/api/admin/auth/me/route.ts",
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/games/mlbb-test/route.ts",
+        "src/app/api/admin/games/route.ts",
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/admin/orders/route.ts",
+        "src/app/api/admin/overview/route.ts",
+        "src/app/api/admin/packages/route.ts",
+        "src/app/api/admin/packages/upload/route.ts",
+        "src/app/api/admin/payments/route.ts",
+        "src/app/api/admin/prices/route.ts",
+        "src/app/api/admin/settings/route.ts",
+        "src/app/api/admin/suppliers/route.ts",
+        "src/app/api/admin/sync/games/route.ts",
+        "src/app/api/admin/sync/packages/route.ts",
+        "src/app/api/admin/uploads/blob-client/route.ts",
+        "src/app/api/admin/uploads/blob/route.ts",
+        "src/middleware.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/bannerUpload.ts",
+      "bytes": 4338,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/admin/packages/upload/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/blob-shared.ts",
+      "bytes": 2341,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/lib/clientBlobUpload.ts",
+        "src/lib/services/blobService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/clientBlobUpload.ts",
+      "bytes": 2535,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(admin)/admin/banners/page.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/khqrPlugin.ts",
+      "bytes": 11286,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/checkout/page.tsx",
+        "src/app/(public)/orders/[id]/page.tsx",
+        "src/components/public/GameTopUpClient.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/mongodb.ts",
+      "bytes": 2445,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/game/[slug]/page.tsx",
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/games/route.ts",
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/admin/orders/route.ts",
+        "src/app/api/admin/overview/route.ts",
+        "src/app/api/admin/packages/route.ts",
+        "src/app/api/admin/packages/upload/route.ts",
+        "src/app/api/admin/payments/route.ts",
+        "src/app/api/admin/settings/route.ts",
+        "src/app/api/banners/[bannerId]/image/route.ts",
+        "src/app/api/health/route.ts",
+        "src/app/api/orders/[id]/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/orders/track/route.ts",
+        "src/app/api/packages/[packageId]/image/route.ts",
+        "src/app/api/payment/anajakpay/check/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/app/api/payment/anajakpay/webhook/route.ts",
+        "src/app/api/player/verify/route.ts",
+        "src/lib/services/adminService.ts",
+        "src/lib/services/blobService.ts",
+        "src/lib/services/catalogueTiming.ts",
+        "src/lib/services/fulfillmentService.ts",
+        "src/lib/services/gameService.ts",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/adminService.ts",
+      "bytes": 5263,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/auth/login/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/anajakPayService.ts",
+      "bytes": 10543,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/admin/payments/route.ts",
+        "src/app/api/orders/[id]/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/payment/anajakpay/check/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/app/api/payment/anajakpay/webhook/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/bannerService.ts",
+      "bytes": 1374,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/page.tsx",
+        "src/app/api/banners/route.ts",
+        "src/components/public/PromotionalBanner.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/blobService.ts",
+      "bytes": 3139,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/admin/uploads/blob-client/route.ts",
+        "src/app/api/admin/uploads/blob/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/cacheService.ts",
+      "bytes": 1697,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/games/route.ts",
+        "src/app/api/admin/packages/route.ts",
+        "src/app/api/admin/packages/upload/route.ts",
+        "src/app/api/admin/settings/route.ts",
+        "src/app/api/admin/sync/games/route.ts",
+        "src/app/api/admin/sync/packages/route.ts",
+        "src/lib/services/bannerService.ts",
+        "src/lib/services/gameService.ts",
+        "src/lib/services/publicSettingsService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/catalogueTiming.ts",
+      "bytes": 1044,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/lib/services/bannerService.ts",
+        "src/lib/services/gameService.ts",
+        "src/lib/services/publicSettingsService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/fulfillmentService.ts",
+      "bytes": 10172,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/orders/[id]/route.ts",
+        "src/app/api/payment/anajakpay/check/route.ts",
+        "src/app/api/payment/anajakpay/webhook/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/gameService.ts",
+      "bytes": 7171,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/games/[supplier]/[code]/page.tsx",
+        "src/app/(public)/games/page.tsx",
+        "src/app/(public)/page.tsx",
+        "src/app/api/admin/prices/route.ts",
+        "src/app/api/games/[supplier]/[code]/packages/route.ts",
+        "src/app/api/games/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/publicSettingsService.ts",
+      "bytes": 499,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/services/syncService.ts",
+      "bytes": 18329,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/sync/games/route.ts",
+        "src/app/api/admin/sync/packages/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/suppliers/g2bulk.ts",
+      "bytes": 12235,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/games/mlbb-test/route.ts",
+        "src/app/api/admin/suppliers/route.ts",
+        "src/app/api/player/verify/route.ts",
+        "src/lib/services/fulfillmentService.ts",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/suppliers/vizo.ts",
+      "bytes": 13410,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/suppliers/route.ts",
+        "src/app/api/player/verify/route.ts",
+        "src/lib/services/fulfillmentService.ts",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "bytes": 24,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/layout.tsx"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/middleware.ts",
+      "bytes": 4971,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Admin.ts",
+      "bytes": 1002,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/lib/services/adminService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Banner.ts",
+      "bytes": 1540,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/banners/route.ts",
+        "src/app/api/banners/[bannerId]/image/route.ts",
+        "src/app/api/health/route.ts",
+        "src/lib/services/bannerService.ts",
+        "src/lib/services/blobService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Game.ts",
+      "bytes": 2878,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/(public)/game/[slug]/page.tsx",
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/games/route.ts",
+        "src/app/api/admin/overview/route.ts",
+        "src/app/api/admin/packages/route.ts",
+        "src/app/api/health/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/app/api/player/verify/route.ts",
+        "src/lib/services/blobService.ts",
+        "src/lib/services/gameService.ts",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/GamePackage.ts",
+      "bytes": 3212,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/games/mlbb-configure/route.ts",
+        "src/app/api/admin/overview/route.ts",
+        "src/app/api/admin/packages/route.ts",
+        "src/app/api/admin/packages/upload/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/packages/[packageId]/image/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/lib/services/blobService.ts",
+        "src/lib/services/gameService.ts",
+        "src/lib/services/syncService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Order.ts",
+      "bytes": 3797,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/admin/orders/route.ts",
+        "src/app/api/admin/overview/route.ts",
+        "src/app/api/admin/payments/route.ts",
+        "src/app/api/orders/[id]/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/orders/track/route.ts",
+        "src/app/api/payment/anajakpay/check/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/app/api/payment/anajakpay/webhook/route.ts",
+        "src/lib/services/fulfillmentService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Payment.ts",
+      "bytes": 1899,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/orders/reconcile/route.ts",
+        "src/app/api/admin/payments/route.ts",
+        "src/app/api/orders/[id]/route.ts",
+        "src/app/api/orders/route.ts",
+        "src/app/api/payment/anajakpay/check/route.ts",
+        "src/app/api/payment/anajakpay/create/route.ts",
+        "src/app/api/payment/anajakpay/webhook/route.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/models/Setting.ts",
+      "bytes": 1698,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/app/api/admin/settings/route.ts",
+        "src/lib/services/blobService.ts",
+        "src/lib/services/publicSettingsService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "src/types/game.ts",
+      "bytes": 1261,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [
+        "src/components/public/GameCard.tsx",
+        "src/components/public/GameSearch.tsx",
+        "src/components/public/GameTopUpClient.tsx",
+        "src/components/public/PackageOptions.tsx",
+        "src/lib/services/gameService.ts"
+      ],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "tsconfig.json",
+      "bytes": 670,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    },
+    {
+      "path": "vercel.json",
+      "bytes": 82,
+      "classification": "KEEP",
+      "reason": "Active project configuration, runtime dependency, or protected operational file.",
+      "references": [],
+      "risk": "Required or protected",
+      "action": "Keep"
+    }
+  ]
+}

@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { AlertTriangle, ArrowLeft, RefreshCw, ShoppingCart } from "lucide-react";
+import { AlertTriangle, RefreshCw, ShoppingCart } from "lucide-react";
 
 function CancelContent() {
   const searchParams = useSearchParams();

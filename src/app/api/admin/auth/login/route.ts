@@ -7,9 +7,9 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}));
-    const { username, password } = body;
+    const { username, password } = body ?? {};
 
-    if (!username || !password) {
+    if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password) {
       return NextResponse.json(
         { success: false, error: "Username and password are required" },
         { status: 400 }

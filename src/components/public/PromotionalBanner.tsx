@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import type { PublicBanner } from "@/lib/services/bannerService";
 
 interface PromotionalBannerProps {
@@ -13,11 +13,30 @@ interface PromotionalBannerProps {
 export function PromotionalBanner({ banners }: PromotionalBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [pauseRequested, setPauseRequested] = useState(false);
+  const [hasFocus, setHasFocus] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const touchStartXRef = useRef<number | null>(null);
 
   // Exactly four configurable banner slots from MongoDB / image storage
   const slides = banners.slice(0, 4);
+  const activeIndex = slides.length ? currentIndex % slides.length : 0;
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotion = () => setReduceMotion(media.matches);
+    const syncVisibility = () => setIsVisible(!document.hidden);
+    syncMotion();
+    syncVisibility();
+    media.addEventListener("change", syncMotion);
+    document.addEventListener("visibilitychange", syncVisibility);
+    return () => {
+      media.removeEventListener("change", syncMotion);
+      document.removeEventListener("visibilitychange", syncVisibility);
+    };
+  }, []);
 
   const nextSlide = useCallback(() => {
     if (slides.length <= 1) return;
@@ -31,10 +50,10 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
 
   // Automatically switch to next banner every 5 seconds, looping after the last banner
   useEffect(() => {
-    if (slides.length <= 1 || isPaused) return;
+    if (slides.length <= 1 || isPaused || pauseRequested || hasFocus || reduceMotion || !isVisible) return;
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, [slides.length, isPaused, nextSlide]);
+  }, [slides.length, isPaused, pauseRequested, hasFocus, reduceMotion, isVisible, nextSlide]);
 
   // Touch and swipe gestures for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -60,9 +79,14 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
     <div
       role="region"
       aria-label="Promotions"
+      aria-roledescription="carousel"
       className="relative w-full space-y-3 select-none"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
+      onFocusCapture={() => setHasFocus(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setHasFocus(false);
+      }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
@@ -70,12 +94,12 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
       <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card shadow-soft transition-all hover:border-pink-500/30">
         {/* Smooth Horizontal Sliding Track */}
         <div
-          className="flex transition-transform duration-500 ease-in-out"
-          style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+          className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {slides.map((banner, index) => {
             const artwork = (
-              <div className="relative w-full overflow-hidden bg-card" style={{ aspectRatio: "5 / 2" }}>
+              <div className="relative w-full overflow-hidden bg-card h-[138px] sm:h-auto" style={{ aspectRatio: "5 / 2" }}>
                 {!banner.imageUrl || failedImages[banner.imageUrl] ? (
                   <div role="status" className="flex h-full w-full items-center justify-center px-12 text-center text-sm text-muted-foreground">
                     {banner.title || `Promotional banner ${index + 1}`} image is temporarily unavailable.
@@ -102,7 +126,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
             );
 
             return (
-              <div key={banner.id || index} className="w-full shrink-0">
+              <div key={banner.id || index} className="w-full shrink-0" inert={index !== activeIndex} aria-hidden={index !== activeIndex}>
                 {banner.targetUrl ? (
                   <Link
                     href={banner.targetUrl}
@@ -125,18 +149,18 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               type="button"
               onClick={prevSlide}
               aria-label="Previous banner"
-              className="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground hover:text-primary-foreground hover:bg-primary hover:border-pink-500 transition-all opacity-90 sm:opacity-70 sm:group-hover:opacity-100 focus-visible:opacity-100 z-20 cursor-pointer shadow-soft active:scale-95"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/90 sm:bg-card/95 border border-border text-foreground hover:text-primary-foreground hover:bg-primary transition-colors z-20 shadow-soft"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
 
             <button
               type="button"
               onClick={nextSlide}
               aria-label="Next banner"
-              className="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/95 backdrop-blur-md border border-border text-foreground hover:text-primary-foreground hover:bg-primary hover:border-pink-500 transition-all opacity-90 sm:opacity-70 sm:group-hover:opacity-100 focus-visible:opacity-100 z-20 cursor-pointer shadow-soft active:scale-95"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/90 sm:bg-card/95 border border-border text-foreground hover:text-primary-foreground hover:bg-primary transition-colors z-20 shadow-soft"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
           </>
         )}
@@ -144,20 +168,22 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
 
       {/* Navigation Dots Below the Banner (highlighting active banner) */}
       {slides.length > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-1">
+        <div className="flex items-center justify-center gap-0.5 sm:gap-1">
           {slides.map((_, i) => (
             <button
               key={i}
               type="button"
               onClick={() => setCurrentIndex(i)}
               aria-label={`Go to banner ${i + 1}`}
-              className={`h-2 rounded-full transition-all cursor-pointer ${
-                i === currentIndex
-                  ? "w-8 bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 shadow-[0_0_10px_rgba(255,46,147,0.7)]"
-                  : "w-2 bg-input hover:bg-primary"
-              }`}
-            />
+              aria-current={i === activeIndex ? "true" : undefined}
+              className="flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-full"
+            >
+              <span className={`h-1.5 rounded-full transition-[width,background-color] duration-200 ${i === activeIndex ? "w-5 sm:w-6 bg-primary" : "w-1.5 bg-input"}`} />
+            </button>
           ))}
+          {!reduceMotion && <button type="button" onClick={() => setPauseRequested(!pauseRequested)} aria-label={pauseRequested ? "Play slideshow" : "Pause slideshow"} className="flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground">
+            {pauseRequested ? <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : <Pause className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
+          </button>}
         </div>
       )}
     </div>

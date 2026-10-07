@@ -1,0 +1,34 @@
+{
+  "base": "https://saksuuu-topup.vercel.app",
+  "code": "freefire_sgmy",
+  "at": "2026-10-05T17:15:07.361Z",
+  "samples": [
+    {
+      "run": 0,
+      "status": 200,
+      "totalMs": 4776.8,
+      "serverTiming": null,
+      "requestToResponseMs": 4766.8,
+      "responseTransferMs": 9,
+      "result": "verified"
+    },
+    {
+      "run": 1,
+      "status": 200,
+      "totalMs": 4673.5,
+      "serverTiming": null,
+      "requestToResponseMs": 4672.4,
+      "responseTransferMs": 0.2,
+      "result": "verified"
+    },
+    {
+      "run": 2,
+      "status": 200,
+      "totalMs": 3135.8,
+      "serverTiming": null,
+      "requestToResponseMs": 3134.5,
+      "responseTransferMs": 0.3,
+      "result": "verified"
+    }
+  ]
+}

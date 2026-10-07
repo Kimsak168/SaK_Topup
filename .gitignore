@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.npm-cache/
 /.pnp
 .pnp.*
 .yarn/*
@@ -40,3 +41,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/.local-backups/
+/artifacts/performance/package-audit-*
+/artifacts/unused-file-audit/admin-check/
+/artifacts/unused-file-audit/work-backup.json

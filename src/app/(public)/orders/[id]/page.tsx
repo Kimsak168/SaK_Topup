@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, use } from "react";
+import { useState, useEffect, useCallback, use } from "react";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -8,8 +8,6 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
-  ExternalLink,
-  ShieldCheck,
   CreditCard,
   Copy,
   Check,
@@ -55,7 +53,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const [copiedOrder, setCopiedOrder] = useState(false);
   const [copiedTxn, setCopiedTxn] = useState(false);
 
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const res = await fetch(`/api/orders/${encodeURIComponent(orderId)}`, {
         cache: "no-store",
@@ -73,20 +71,21 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [orderId]);
 
   useEffect(() => {
     fetchOrder();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId]);
+    return () => closeKhqrInPageCheckout();
+  }, [fetchOrder]);
 
   // Auto-refresh pending/processing orders
   useEffect(() => {
     if (!order) return;
     const isOngoing =
       order.paymentStatus === "PENDING" ||
-      order.fulfillmentStatus === "PROCESSING" ||
-      order.fulfillmentStatus === "NOT_STARTED";
+      (order.paymentStatus === "PAID" &&
+        (order.fulfillmentStatus === "PROCESSING" ||
+          order.fulfillmentStatus === "NOT_STARTED"));
 
     if (isOngoing) {
       const interval = setInterval(() => {
@@ -94,7 +93,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       }, 3500);
       return () => clearInterval(interval);
     }
-  }, [order]);
+  }, [order, fetchOrder]);
 
   const copyToClipboard = (text: string, isTxn = false) => {
     navigator.clipboard.writeText(text);

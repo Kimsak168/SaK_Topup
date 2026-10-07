@@ -73,6 +73,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [connectedSuppliers, setConnectedSuppliers] = useState(0);
   const drawerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -115,14 +116,15 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
+    contentRef.current?.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
   // Load theme preference from localStorage if available
   useEffect(() => {
-    const savedTheme = localStorage.getItem("saksuuu_admin_theme");
-    if (savedTheme === "light") {
-      setIsDarkMode(false);
-    }
+    try {
+      const savedTheme = localStorage.getItem("saksuuu_admin_theme");
+      if (savedTheme === "light") setIsDarkMode(false);
+    } catch { /* Storage can be unavailable in private browsing. */ }
   }, []);
 
   useEffect(() => {
@@ -149,7 +151,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const toggleTheme = () => {
     setIsDarkMode((prev) => {
       const next = !prev;
-      localStorage.setItem("saksuuu_admin_theme", next ? "dark" : "light");
+      try { localStorage.setItem("saksuuu_admin_theme", next ? "dark" : "light"); } catch { /* Keep the current session usable. */ }
       return next;
     });
   };
@@ -384,7 +386,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
           </header>
 
           {/* Main Scrollable Content */}
-          <main className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 lg:p-8">
+          <main ref={contentRef} id="main-content" tabIndex={-1} className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 lg:p-8">
             <div className="min-w-0 max-w-[1440px] mx-auto space-y-6">{children}</div>
           </main>
         </div>

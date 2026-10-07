@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export const ADMIN_COOKIE_NAME = "saksuuu_admin_token";
-const SECRET_KEY =
-  process.env.AUTH_SECRET ||
-  process.env.ADMIN_SECRET ||
-  "saksuuu-hq-secure-admin-portal-session-2025-token-key";
 
 // Convert string to Uint8Array for Web Crypto
 function getSecretBytes(): Uint8Array {
-  return new TextEncoder().encode(SECRET_KEY);
+  const secret = process.env.AUTH_SECRET || process.env.ADMIN_SECRET;
+  if (!secret) throw new Error("AUTH_SECRET must be configured for admin sessions");
+  return new TextEncoder().encode(secret);
 }
 
 // Base64URL encode/decode
@@ -84,6 +82,8 @@ export async function verifyAdminToken(token: string): Promise<AdminSession | nu
     if (parts.length !== 3) return null;
 
     const [headerB64, payloadB64, signatureB64] = parts;
+    const header = JSON.parse(new TextDecoder().decode(base64UrlDecode(headerB64)));
+    if (header?.alg !== "HS256" || header?.typ !== "JWT") return null;
     const message = `${headerB64}.${payloadB64}`;
 
     const key = await crypto.subtle.importKey(
@@ -111,7 +111,14 @@ export async function verifyAdminToken(token: string): Promise<AdminSession | nu
 
     // Check expiration
     const now = Math.floor(Date.now() / 1000);
-    if (payload.exp && payload.exp < now) {
+    if (
+      !payload ||
+      !Number.isFinite(payload.exp) || payload.exp <= now ||
+      !Number.isFinite(payload.iat) || payload.iat > now ||
+      typeof payload.username !== "string" || !payload.username.trim() ||
+      typeof payload.name !== "string" ||
+      !["Admin", "Super Admin"].includes(payload.role)
+    ) {
       return null;
     }
 
@@ -123,10 +130,10 @@ export async function verifyAdminToken(token: string): Promise<AdminSession | nu
 }
 
 /**
- * Validates admin credentials against configured or default administrator accounts
+ * Validates admin credentials against explicitly configured accounts
  */
 export function validateAdminCredentials(username?: string, password?: string): boolean {
-  if (!username || !password) return false;
+  if (typeof username !== "string" || typeof password !== "string" || !username || !password) return false;
 
   const validUsername = process.env.ADMIN_USERNAME;
   const validPassword = process.env.ADMIN_PASSWORD;
@@ -134,9 +141,7 @@ export function validateAdminCredentials(username?: string, password?: string): 
   if (!validUsername || !validPassword) return false;
 
   const trimmedUser = username.trim().toLowerCase();
-  const trimmedPass = password.trim();
-
-  return trimmedUser === validUsername.toLowerCase() && trimmedPass === validPassword;
+  return trimmedUser === validUsername.trim().toLowerCase() && password === validPassword;
 }
 
 /**

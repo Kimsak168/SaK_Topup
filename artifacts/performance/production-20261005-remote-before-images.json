@@ -1,0 +1,66 @@
+{
+  "base": "https://saksuuu-topup.vercel.app",
+  "at": "2026-10-05T15:29:04.871Z",
+  "samples": [
+    {
+      "source": "original",
+      "run": 0,
+      "status": 200,
+      "headersMs": 6085.1,
+      "totalMs": 6968.6,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": "MISS"
+    },
+    {
+      "source": "original",
+      "run": 1,
+      "status": 200,
+      "headersMs": 243.1,
+      "totalMs": 315.8,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": "HIT"
+    },
+    {
+      "source": "original",
+      "run": 2,
+      "status": 200,
+      "headersMs": 94.2,
+      "totalMs": 156,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": "HIT"
+    },
+    {
+      "source": "optimized",
+      "run": 0,
+      "status": 200,
+      "headersMs": 204.3,
+      "totalMs": 204.7,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": "MISS"
+    },
+    {
+      "source": "optimized",
+      "run": 1,
+      "status": 200,
+      "headersMs": 81.5,
+      "totalMs": 81.8,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": "HIT"
+    },
+    {
+      "source": "optimized",
+      "run": 2,
+      "status": 200,
+      "headersMs": 100.9,
+      "totalMs": 101.2,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": "HIT"
+    }
+  ]
+}

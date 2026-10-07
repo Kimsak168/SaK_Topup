@@ -3,7 +3,7 @@ import { GameSearch } from "@/components/public/GameSearch";
 import { Gamepad2 } from "lucide-react";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "Games Catalogue — SakSuuu Game Top-Up",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GamesCataloguePage() {
-  const games = await getClientGames();
+  const games = await getClientGames(undefined, undefined, { throwOnError: true });
 
   return (
     <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10">

@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "node --test scripts/performance/regressions.test.mjs",
+    "typecheck": "next typegen && tsc --noEmit",
     "admin:setup": "node --env-file=.env.local scripts/manage-admin.mjs",
     "admin:reset": "node --env-file=.env.local scripts/manage-admin.mjs --reset",
     "admin:init": "node --env-file=.env.local scripts/init-admin.mjs",

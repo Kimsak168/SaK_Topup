@@ -190,7 +190,8 @@ export interface G2BulkVerifyResult {
 export async function checkG2BulkPlayer(
   rawGame: string,
   userId: string,
-  serverId?: string
+  serverId?: string,
+  signal?: AbortSignal
 ): Promise<G2BulkVerifyResult> {
   const apiKey = process.env.G2BULK_API_KEY;
   if (!apiKey) {
@@ -231,7 +232,7 @@ export async function checkG2BulkPlayer(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(10000),
+      signal: signal || AbortSignal.timeout(10000),
       cache: "no-store",
     });
 
@@ -304,7 +305,7 @@ export async function checkG2BulkPlayer(
   } catch (error) {
     const isTimeout =
       error instanceof Error &&
-      (error.name === "TimeoutError" || error.message.toLowerCase().includes("timeout"));
+      (error.name === "TimeoutError" || error.name === "AbortError" || error.message.toLowerCase().includes("timeout"));
     return {
       success: false,
       isUnavailable: true,

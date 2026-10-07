@@ -348,7 +348,7 @@ export default function MLBBTestPage() {
                   ) : (
                     <Check className="h-4 w-4" />
                   )}
-                  <span>Configure 'mlbb' as Main Mobile Legends Game</span>
+                  <span>Configure &apos;mlbb&apos; as Main Mobile Legends Game</span>
                 </button>
               )}
             </div>

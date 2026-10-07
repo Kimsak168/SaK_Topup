@@ -19,7 +19,7 @@
  */
 
 import { put, head } from "@vercel/blob";
-import { MongoClient, ObjectId } from "mongodb";
+import { MongoClient } from "mongodb";
 import { randomUUID } from "node:crypto";
 
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -66,7 +66,6 @@ async function runMigration() {
     const db = client.db();
     const bannersCollection = db.collection("banners");
     const packagesCollection = db.collection("gamepackages");
-    const settingsCollection = db.collection("settings");
 
     const stats = {
       bannersScanned: 0,

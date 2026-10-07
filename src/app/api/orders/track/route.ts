@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const query = searchParams.get("query")?.trim() || "";
 
-    if (!query) {
+    if (!query || query.length > 128) {
       return NextResponse.json(
-        { success: false, error: "Please provide an Order Number or Player ID" },
+        { success: false, error: "Please provide an Order Number or Player ID (up to 128 characters)" },
         { status: 400 }
       );
     }
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
       // Query by orderNumber or playerId
       const orders = await Order.find({
         $or: [
-          { orderNumber: { $regex: new RegExp(`^${query}$`, "i") } },
+          { orderNumber: { $regex: new RegExp(`^${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") } },
           { playerId: query },
         ],
       })
@@ -53,11 +53,10 @@ export async function GET(req: NextRequest) {
       });
     } catch (dbErr) {
       console.warn("MongoDB offline or connection error during order track:", dbErr);
-      return NextResponse.json({
-        success: true,
-        orders: [],
-        message: "No orders found matching the query",
-      });
+      return NextResponse.json(
+        { success: false, error: "Order lookup is temporarily unavailable. Please try again." },
+        { status: 503 }
+      );
     }
   } catch (error) {
     console.error("Public order track error:", error);

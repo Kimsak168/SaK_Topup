@@ -159,8 +159,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
   const verifyPaymentStatus = async (
     orderNumber: string,
-    transactionId: string,
-    isInstantCallback = false
+    transactionId: string
   ) => {
     try {
       const res = await fetch("/api/payment/anajakpay/check", {
@@ -283,7 +282,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         checkoutUrl: data.checkoutUrl,
         onSuccess: () => {
           // Trigger immediate server-side payment verification
-          verifyPaymentStatus(data.orderNumber, data.transactionId, true);
+          verifyPaymentStatus(data.orderNumber, data.transactionId);
         },
         onError: (err) => {
           console.warn("[AnajakPay] Plugin reported event:", err);
@@ -291,7 +290,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         onClose: () => {
           // User closed checkout: keep order pending
           stopPolling();
-          verifyPaymentStatus(data.orderNumber, data.transactionId, false);
+          verifyPaymentStatus(data.orderNumber, data.transactionId);
           toast.info("Payment window closed. Your pending order is saved.");
         },
       });
@@ -492,7 +491,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-300/15 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
             <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-cyan-200/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
 
-            <div className="relative z-10 p-4 sm:p-6 space-y-5">
+            <div className="relative z-10 p-3 min-[360px]:p-4 sm:p-6 space-y-4 sm:space-y-5">
               <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
             </div>
           </section>

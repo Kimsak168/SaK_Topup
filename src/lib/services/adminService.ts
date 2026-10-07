@@ -27,8 +27,9 @@ export function verifyPassword(password: string, storedHash: string): boolean {
     if (parts.length !== 2) return false;
 
     const [salt, keyHex] = parts;
+    if (!/^[a-f0-9]{32}$/i.test(salt) || !/^[a-f0-9]{128}$/i.test(keyHex)) return false;
     const key = Buffer.from(keyHex, "hex");
-    const derivedKey = scryptSync(password, salt, key.length);
+    const derivedKey = scryptSync(password, salt, HASH_KEY_LENGTH);
 
     return timingSafeEqual(key, derivedKey);
   } catch {
@@ -63,21 +64,21 @@ export async function authenticateAdmin(
   username?: string,
   password?: string
 ): Promise<{ success: boolean; user?: AuthenticatedAdmin; error?: string }> {
-  if (!username || !password) {
+  if (typeof username !== "string" || typeof password !== "string" || !username.trim() || !password) {
     return { success: false, error: "Username and password are required" };
   }
 
   const cleanUser = username.trim().toLowerCase();
-  const cleanPass = password.trim();
+  const cleanPass = password;
 
   try {
     await connectDB();
     const adminDoc: IAdmin | null = await Admin.findOne({
       username: cleanUser,
-      isActive: true,
     });
 
     if (adminDoc) {
+      if (!adminDoc.isActive) return { success: false, error: "Invalid username or password" };
       const isMatch = verifyPassword(cleanPass, adminDoc.passwordHash);
       if (isMatch) {
         // Record last login timestamp (non-blocking)
@@ -95,13 +96,19 @@ export async function authenticateAdmin(
       }
       return { success: false, error: "Invalid username or password" };
     }
+    // Environment credentials are only a bootstrap option before accounts exist.
+    if (await Admin.countDocuments({}) > 0) {
+      return { success: false, error: "Invalid username or password" };
+    }
   } catch (err) {
     console.error("MongoDB admin authentication check error:", err);
+    return { success: false, error: "Authentication is temporarily unavailable" };
   }
 
   // Fallback to environment variables if no database admin exists yet
-  const envUser = (process.env.ADMIN_USERNAME || "admin").toLowerCase().trim();
-  const envPass = process.env.ADMIN_PASSWORD || "saksuuu2025!";
+  const envUser = process.env.ADMIN_USERNAME?.toLowerCase().trim();
+  const envPass = process.env.ADMIN_PASSWORD;
+  if (!envUser || !envPass) return { success: false, error: "Invalid username or password" };
 
   const isEnvUserMatch = cleanUser === envUser;
   const isEnvPassMatch = cleanPass === envPass;

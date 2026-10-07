@@ -1,0 +1,34 @@
+{
+  "base": "http://localhost:3200",
+  "code": "freefire_sgmy",
+  "at": "2026-10-05T17:18:11.489Z",
+  "samples": [
+    {
+      "run": 0,
+      "status": 200,
+      "totalMs": 4143,
+      "serverTiming": "metadata;dur=136.2, vizo;dur=3982.6, app;dur=1.7, total;dur=4120.6",
+      "requestToResponseMs": 4141.2,
+      "responseTransferMs": 0.4,
+      "result": "verified"
+    },
+    {
+      "run": 1,
+      "status": 200,
+      "totalMs": 3209.1,
+      "serverTiming": "metadata;dur=0.1, vizo;dur=3204.4, app;dur=0.3, total;dur=3204.8",
+      "requestToResponseMs": 3207.5,
+      "responseTransferMs": 0.3,
+      "result": "verified"
+    },
+    {
+      "run": 2,
+      "status": 200,
+      "totalMs": 3768.6,
+      "serverTiming": "metadata;dur=0.1, vizo;dur=3764.6, app;dur=0.4, total;dur=3765.0",
+      "requestToResponseMs": 3767.5,
+      "responseTransferMs": 0.2,
+      "result": "verified"
+    }
+  ]
+}

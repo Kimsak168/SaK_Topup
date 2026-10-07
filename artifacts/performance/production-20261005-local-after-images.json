@@ -1,0 +1,66 @@
+{
+  "base": "http://localhost:3200",
+  "at": "2026-10-05T17:08:49.193Z",
+  "samples": [
+    {
+      "source": "original",
+      "run": 0,
+      "status": 200,
+      "headersMs": 232.8,
+      "totalMs": 236.2,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": null
+    },
+    {
+      "source": "original",
+      "run": 1,
+      "status": 200,
+      "headersMs": 48.9,
+      "totalMs": 50.2,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": null
+    },
+    {
+      "source": "original",
+      "run": 2,
+      "status": 200,
+      "headersMs": 46.1,
+      "totalMs": 47,
+      "bytes": 307254,
+      "type": "image/jpeg",
+      "cache": null
+    },
+    {
+      "source": "optimized",
+      "run": 0,
+      "status": 200,
+      "headersMs": 70.8,
+      "totalMs": 71,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": null
+    },
+    {
+      "source": "optimized",
+      "run": 1,
+      "status": 200,
+      "headersMs": 9.1,
+      "totalMs": 9.3,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": null
+    },
+    {
+      "source": "optimized",
+      "run": 2,
+      "status": 200,
+      "headersMs": 14.5,
+      "totalMs": 14.6,
+      "bytes": 32138,
+      "type": "image/webp",
+      "cache": null
+    }
+  ]
+}

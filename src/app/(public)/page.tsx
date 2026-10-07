@@ -1,13 +1,13 @@
 import { Suspense } from "react";
 import { getClientGames } from "@/lib/services/gameService";
 import { getPublicBanners } from "@/lib/services/bannerService";
-import type { PublicBanner } from "@/lib/services/bannerService";
 import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { GameSearch } from "@/components/public/GameSearch";
 import { BannerSkeleton, GameGridSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 
-export const dynamic = "force-dynamic";
+// Public shell + catalogue are cacheable; admin writes invalidate the page.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "SakSuuu Game Top-Up — បញ្ចូលលុយហ្គេមលឿនរហ័ស 24/7",
@@ -16,20 +16,8 @@ export const metadata: Metadata = {
 };
 
 async function BannerSection() {
-  let banners: PublicBanner[] | null = null;
-  try {
-    banners = await getPublicBanners();
-  } catch (error) {
-    console.error("[BannerSection] Failed to load homepage banners:", error);
-  }
-
-  if (banners === null) {
-    return (
-      <section aria-label="Promotions" className="w-full rounded-2xl border border-border bg-card px-6 py-10 text-center text-muted-foreground sm:rounded-3xl">
-        <p role="alert">Promotional banners are temporarily unavailable. Please refresh the page.</p>
-      </section>
-    );
-  }
+  // Throw on a failed regeneration so ISR retains the last healthy page.
+  const banners = await getPublicBanners();
 
   return (
     <section className="w-full">
@@ -39,17 +27,13 @@ async function BannerSection() {
 }
 
 async function GamesSection() {
-  const games = await getClientGames();
+  const games = await getClientGames(undefined, undefined, { throwOnError: true });
   return <GameSearch initialGames={games} />;
 }
 
 export default function HomePage() {
   return (
     <div className="relative w-full overflow-x-clip text-foreground">
-      {/* Subtle Ambient Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-pink-600/10 blur-[140px] rounded-full pointer-events-none" />
-      <div className="absolute top-80 right-10 w-[350px] h-[350px] bg-purple-600/10 blur-[130px] rounded-full pointer-events-none" />
-
       {/* Main Content Container — flows naturally into footer */}
       <div className="w-[92%] max-w-[1500px] mx-auto px-1 sm:px-2 pt-2 pb-10 sm:pt-4 sm:pb-14 space-y-8 sm:space-y-10 relative z-10">
         {/* 1. Promotional Banner Carousel directly below navbar with Suspense streaming */}

@@ -1,0 +1,519 @@
+{
+  "results": [
+    {
+      "path": "/",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "ហ្គេមទាំងអស់",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Browse All Games & Top-Up Options",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games/vizo/freefire_sgmy",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Free Fire (SGMY)",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/orders",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Track Your Top-Up Order",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/success",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Order Lookup Error",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/cancel",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Payment Cancelled",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Dashboard overview",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/games",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Game Management & Supplier Sync",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/packages",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Package Pricing & Stock Availability",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/orders",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Customer Orders",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/payments",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Payment Gateways",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/banners",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Promotional Banners",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/suppliers",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "API Suppliers",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/settings",
+      "width": 320,
+      "documentWidth": 320,
+      "title": "Website Settings",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "ហ្គេមទាំងអស់",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Browse All Games & Top-Up Options",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games/vizo/freefire_sgmy",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Free Fire (SGMY)",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/orders",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Track Your Top-Up Order",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/success",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Order Lookup Error",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/cancel",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Payment Cancelled",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Dashboard overview",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/games",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Game Management & Supplier Sync",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/packages",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Package Pricing & Stock Availability",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/orders",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Customer Orders",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/payments",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Payment Gateways",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/banners",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Promotional Banners",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/suppliers",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "API Suppliers",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/settings",
+      "width": 390,
+      "documentWidth": 390,
+      "title": "Website Settings",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "ហ្គេមទាំងអស់",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Browse All Games & Top-Up Options",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games/vizo/freefire_sgmy",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Free Fire (SGMY)",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/orders",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Track Your Top-Up Order",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/success",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Order Lookup Error",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/cancel",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Payment Cancelled",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Dashboard overview",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/games",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Game Management & Supplier Sync",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/packages",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Package Pricing & Stock Availability",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/orders",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Customer Orders",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/payments",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Payment Gateways",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/banners",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Promotional Banners",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/suppliers",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "API Suppliers",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/settings",
+      "width": 768,
+      "documentWidth": 760,
+      "title": "Website Settings",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "ហ្គេមទាំងអស់",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Browse All Games & Top-Up Options",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/games/vizo/freefire_sgmy",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Free Fire (SGMY)",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/orders",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Track Your Top-Up Order",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/success",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Order Lookup Error",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/payment/cancel",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Payment Cancelled",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Dashboard overview",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/games",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Game Management & Supplier Sync",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/packages",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Package Pricing & Stock Availability",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/orders",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Customer Orders",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/payments",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Payment Gateways",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/banners",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Promotional Banners",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/suppliers",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "API Suppliers",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    },
+    {
+      "path": "/admin/settings",
+      "width": 1440,
+      "documentWidth": 1432,
+      "title": "Website Settings",
+      "overflow": false,
+      "navOverlap": false,
+      "smallInput": false
+    }
+  ],
+  "interactions": {
+    "drawerFocus": true,
+    "drawerEscape": true,
+    "lightTheme": true,
+    "gameSearch": true,
+    "reducedMotion": true,
+    "orderRetry": true,
+    "packageSelection": true,
+    "loginLayout": true
+  },
+  "errors": []
+}

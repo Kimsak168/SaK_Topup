@@ -1,8 +1,6 @@
 import "server-only";
 import crypto from "crypto";
 
-const ANAJAKPAY_REQUEST_BASE = "https://anajakpay.com/api/payment/requestv2";
-
 export class AnajakPayConfigError extends Error {
   constructor(message: string) {
     super(message);
@@ -45,8 +43,11 @@ export function getAnajakPayConfig(): AnajakPayConfig {
  * The exact same string representation MUST be used in both hash signing and the request.
  */
 export function formatAnajakAmount(amount: number | string): string {
-  const num = typeof amount === "number" ? amount : parseFloat(String(amount));
-  if (isNaN(num) || num < 0) {
+  if (typeof amount !== "number" && (typeof amount !== "string" || !/^\d+(?:\.\d+)?$/.test(amount.trim()))) {
+    throw new Error("Invalid payment amount");
+  }
+  const num = typeof amount === "number" ? amount : Number(amount.trim());
+  if (!Number.isFinite(num) || num < 0) {
     throw new Error("Invalid payment amount");
   }
   return num.toFixed(2);
