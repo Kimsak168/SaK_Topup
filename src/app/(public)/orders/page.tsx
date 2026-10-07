@@ -103,10 +103,10 @@ function OrderTrackingContent() {
           e.preventDefault();
           handleSearch(query);
         }}
-        className="max-w-xl mx-auto flex gap-2"
+        className="max-w-xl mx-auto flex items-center gap-2"
       >
         <div className="relative min-w-0 flex-1">
-          <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             aria-label="Order number or player ID"
@@ -117,18 +117,18 @@ function OrderTrackingContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter Order # or Player ID..."
-            className="w-full rounded-xl border border-input bg-card pl-10 pr-4 py-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-2 focus:ring-ring/20"
+            className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="public-button shrink-0 px-4 sm:px-6 py-3 rounded-xl text-primary-foreground font-bold text-xs sm:text-sm flex items-center gap-2 cursor-pointer disabled:opacity-50 transition-colors shadow-soft shadow-pink-950/20"
+          className="public-button shrink-0 h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-primary-foreground font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-xs"
         >
           {loading ? (
-            <RefreshCw className="h-4 w-4 animate-spin" />
+            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
           ) : (
-            <Search className="h-4 w-4" />
+            <Search className="h-3.5 w-3.5" />
           )}
           <span>Track</span>
         </button>

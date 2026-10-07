@@ -35,7 +35,7 @@ export default function HomePage() {
   return (
     <div className="relative w-full overflow-x-clip text-foreground">
       {/* Main Content Container — flows naturally into footer */}
-      <div className="w-[92%] max-w-[1500px] mx-auto px-1 sm:px-2 pt-2 pb-10 sm:pt-4 sm:pb-14 space-y-8 sm:space-y-10 relative z-10">
+      <div className="w-[92%] max-w-[1500px] mx-auto px-1 sm:px-2 pt-2 pb-8 sm:pt-4 sm:pb-14 space-y-8 sm:space-y-10 relative z-10">
         {/* 1. Promotional Banner Carousel directly below navbar with Suspense streaming */}
         <Suspense fallback={<BannerSkeleton />}>
           <BannerSection />

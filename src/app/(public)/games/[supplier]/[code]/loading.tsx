@@ -1,6 +1,6 @@
 export default function GameLoading() {
   return (
-    <div role="status" aria-label="Loading game" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+    <div role="status" aria-label="Loading game" className="max-w-7xl mx-auto px-2 min-[360px]:px-3 sm:px-6 lg:px-8 py-2 min-[360px]:py-3 sm:py-8 space-y-4 sm:space-y-6">
       <span className="sr-only">Loading game packages...</span>
       <div aria-hidden="true" className="h-24 rounded-2xl bg-muted animate-pulse motion-reduce:animate-none" />
       <div aria-hidden="true" className="grid gap-6 lg:grid-cols-3">

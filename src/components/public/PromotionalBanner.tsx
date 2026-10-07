@@ -91,7 +91,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
       onTouchEnd={handleTouchEnd}
     >
       {/* Wide, Responsive Single-Banner Frame with Rounded Corners */}
-      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-card shadow-soft transition-all hover:border-pink-500/30">
+      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-pink-100/90 bg-white shadow-sm transition-all hover:border-pink-300/60">
         {/* Smooth Horizontal Sliding Track */}
         <div
           className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"
@@ -99,7 +99,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
         >
           {slides.map((banner, index) => {
             const artwork = (
-              <div className="relative w-full overflow-hidden bg-card h-[138px] sm:h-auto" style={{ aspectRatio: "5 / 2" }}>
+              <div className="relative w-full overflow-hidden bg-white h-[138px] sm:h-auto" style={{ aspectRatio: "5 / 2" }}>
                 {!banner.imageUrl || failedImages[banner.imageUrl] ? (
                   <div role="status" className="flex h-full w-full items-center justify-center px-12 text-center text-sm text-muted-foreground">
                     {banner.title || `Promotional banner ${index + 1}`} image is temporarily unavailable.
@@ -149,18 +149,18 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               type="button"
               onClick={prevSlide}
               aria-label="Previous banner"
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/90 sm:bg-card/95 border border-border text-foreground hover:text-primary-foreground hover:bg-primary transition-colors z-20 shadow-soft"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-pink-100 text-slate-700 hover:text-white hover:bg-primary transition-colors z-20 shadow-sm"
             >
-              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ChevronLeft className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </button>
 
             <button
               type="button"
               onClick={nextSlide}
               aria-label="Next banner"
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-full bg-card/90 sm:bg-card/95 border border-border text-foreground hover:text-primary-foreground hover:bg-primary transition-colors z-20 shadow-soft"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-pink-100 text-slate-700 hover:text-white hover:bg-primary transition-colors z-20 shadow-sm"
             >
-              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+              <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </button>
           </>
         )}

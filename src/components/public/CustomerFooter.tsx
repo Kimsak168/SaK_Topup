@@ -6,12 +6,12 @@ const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/s
 
 export function CustomerFooter() {
   return (
-    <footer className="relative z-10 w-full bg-card backdrop-blur-xl overflow-hidden border-t border-border">
+    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-pink-100/90">
       {/* Background Ambient Glow Accents */}
-      <div className="absolute -top-32 -left-32 w-80 h-80 rounded-full bg-gradient-to-br from-pink-200/20 via-purple-200/10 to-transparent blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-80 h-80 rounded-full bg-gradient-to-tl from-blue-200/15 via-cyan-200/10 to-transparent blur-3xl pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-pink-100/30 blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-pink-100/20 blur-2xl pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-12 pb-8">
+      <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-7 sm:pt-12 pb-6">
         {/* Responsive 3-Section Grid: Desktop (3 cols), Tablet (2 cols), Mobile (1 col) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 items-start">
           

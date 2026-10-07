@@ -53,12 +53,8 @@ export default async function GameDetailPage({ params }: GamePageProps) {
   const { game } = result;
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-clip py-8 sm:py-12">
-      {/* Background neon ambient spots */}
-      <div className="absolute top-10 left-1/3 w-[600px] h-[300px] bg-pink-600/10 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div className="relative min-h-screen w-full overflow-x-clip py-2 min-[360px]:py-3 sm:py-8">
+      <div className="max-w-7xl mx-auto px-2 min-[360px]:px-3 sm:px-6 lg:px-8 relative z-10">
         <GameTopUpClient key={game.id} game={game} initialPackages={initialPackages} />
       </div>
     </div>

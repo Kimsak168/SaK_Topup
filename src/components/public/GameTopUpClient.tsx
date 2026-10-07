@@ -315,18 +315,18 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-6">
       {/* Simplified Game Header Card */}
-      <div className="relative rounded-2xl overflow-hidden p-3.5 sm:p-5 border border-border bg-card backdrop-blur-sm shadow-soft">
+      <div className="relative rounded-2xl overflow-hidden p-3 min-[360px]:p-3.5 sm:p-5 border border-pink-100/90 bg-white shadow-xs">
         <div className="flex items-center justify-between gap-3 sm:gap-6 flex-wrap sm:flex-nowrap">
           {/* Left: Game picture and name */}
-          <div className="flex items-center gap-3.5 sm:gap-5 min-w-0">
-            <div className="relative h-[70px] w-[70px] sm:h-[90px] sm:w-[90px] shrink-0 rounded-2xl overflow-hidden border-2 border-pink-300/40 shadow-md bg-muted group">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="relative h-14 w-14 min-[360px]:h-16 min-[360px]:w-16 sm:h-[80px] sm:w-[80px] shrink-0 rounded-xl overflow-hidden border border-pink-200/60 shadow-xs bg-pink-50/40 group">
               <Image
                 src={headerImg}
                 alt={game.name}
                 fill
-                sizes="(min-width: 640px) 90px, 70px"
+                sizes="(min-width: 640px) 80px, 64px"
                 preload
                 className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
                 onError={() => setHeaderImg("/images/freefire.jpg")}
@@ -334,7 +334,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </div>
 
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground tracking-tight break-words">
+              <h1 className="text-base min-[360px]:text-lg sm:text-2xl md:text-3xl font-black text-foreground tracking-tight break-words">
                 {game.name}
               </h1>
             </div>
@@ -343,23 +343,23 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           {/* Right: Back to Home button */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-primary bg-accent hover:bg-pink-100 border border-pink-200 hover:border-pink-300 shadow-sm transition-all duration-200 group shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-primary bg-pink-50 hover:bg-pink-100 border border-pink-200 shadow-xs transition-all duration-200 group shrink-0"
           >
-            <ArrowLeft className="h-4 w-4 text-primary group-hover:-translate-x-1 transition-transform duration-200" />
+            <ArrowLeft className="h-3.5 w-3.5 text-primary group-hover:-translate-x-1 transition-transform duration-200" />
             <span>Back to Home</span>
           </Link>
         </div>
       </div>
 
       {/* Main Grid: Left Steps (1, 2, 3) vs Right Summary Drawer */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-6 items-start">
         {/* Left Column: Top-Up Process */}
-        <div className="min-w-0 lg:col-span-8 space-y-5 sm:space-y-6">
+        <div className="min-w-0 lg:col-span-8 space-y-3.5 sm:space-y-6">
           {/* STEP 1: Enter Account Information */}
-          <section className="rounded-2xl border border-border bg-card backdrop-blur-sm shadow-soft p-4 sm:p-6 space-y-5">
+          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <div className="flex items-center gap-3">
-                <span className="public-button flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black text-primary-foreground shadow-md">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-black text-white shadow-xs">
                   1
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-foreground">
@@ -372,16 +372,16 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 onClick={() => setShowIdGuide(!showIdGuide)}
                 aria-expanded={showIdGuide}
                 aria-controls="player-id-guide"
-                className="flex min-h-10 items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary transition-colors cursor-pointer"
+                className="flex min-h-8 items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
               >
-                <HelpCircle className="h-4 w-4" />
+                <HelpCircle className="h-3.5 w-3.5" />
                 <span>How to find ID?</span>
               </button>
             </div>
 
             {/* Instruction Callout */}
             {showIdGuide && (
-              <div id="player-id-guide" className="rounded-xl border border-pink-200 bg-accent p-4 text-sm leading-relaxed text-secondary-foreground animate-in fade-in">
+              <div id="player-id-guide" className="rounded-xl border border-pink-200 bg-pink-50/50 p-3.5 text-xs sm:text-sm leading-relaxed text-secondary-foreground animate-in fade-in">
                 <p className="font-semibold text-primary mb-1">
                   How to locate your {game.name} ID:
                 </p>
@@ -389,9 +389,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </div>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               <div>
-                <label htmlFor="player-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-2">
+                <label htmlFor="player-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-1.5">
                   {game.userIdLabel} <span className="text-primary">*</span>
                 </label>
                 <input
@@ -409,13 +409,13 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     setVerifyStatusType(null);
                   }}
                   placeholder="Enter Player ID"
-                  className="w-full rounded-xl border border-input bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-2 focus:ring-ring/20 transition-all font-mono"
+                  className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white px-3 sm:px-4 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono shadow-xs"
                 />
               </div>
 
               {game.requiresServer && (
                 <div>
-                  <label htmlFor="server-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-2">
+                  <label htmlFor="server-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-1.5">
                     {game.serverLabel} <span className="text-primary">*</span>
                   </label>
                   <input
@@ -433,19 +433,19 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                       setVerifyStatusType(null);
                     }}
                     placeholder="Enter Zone ID"
-                    className="w-full rounded-xl border border-input bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-2 focus:ring-ring/20 transition-all font-mono"
+                    className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white px-3 sm:px-4 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono shadow-xs"
                   />
                 </div>
               )}
             </div>
 
             {/* Verification Button & Status */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1">
               <button
                 type="button"
                 onClick={handleVerify}
                 disabled={verifying || !userId.trim() || (game.requiresServer && !serverId.trim())}
-                className="inline-flex items-center gap-2 rounded-xl bg-purple-50 border border-purple-200 px-4 py-2 text-xs font-bold text-brand-purple hover:bg-purple-600 hover:text-primary-foreground hover:border-purple-600 disabled:opacity-50 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-pink-50 border border-pink-200 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary hover:text-white hover:border-primary disabled:opacity-50 transition-all cursor-pointer shadow-xs active:scale-95"
               >
                 {verifying ? (
                   <>
@@ -461,21 +461,21 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </button>
 
               {verifiedName && (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg shadow-sm">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg shadow-xs">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                   <span>Verified: {verifiedName}</span>
                 </div>
               )}
 
               {verifyError && verifyStatusType === "invalid" && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-rose-50 border border-rose-200 px-3 py-1.5 rounded-lg">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg">
                   <AlertCircle className="h-4 w-4 shrink-0" />
                   <span>{verifyError}</span>
                 </div>
               )}
 
               {verifyError && (verifyStatusType === "unsupported" || verifyStatusType === "unavailable") && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg">
                   <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
                   <span>{verifyError}</span>
                 </div>
@@ -484,28 +484,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           </section>
 
           {/* STEP 2: Select Package */}
-          <section className="relative rounded-2xl overflow-hidden border border-border shadow-soft">
-            {/* Soft blurred background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-pink-50/40" />
-            <div className="absolute top-0 right-0 w-72 h-72 bg-pink-300/20 rounded-full blur-3xl -translate-y-1/3 translate-x-1/3" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-300/15 rounded-full blur-3xl translate-y-1/4 -translate-x-1/4" />
-            <div className="absolute top-1/2 left-1/2 w-48 h-48 bg-cyan-200/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
-
-            <div className="relative z-10 p-3 min-[360px]:p-4 sm:p-6 space-y-4 sm:space-y-5">
-              <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
-            </div>
+          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
+            <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
           </section>
 
           {/* STEP 3: Select Payment Method */}
-          <section className="rounded-2xl border border-border bg-card backdrop-blur-sm shadow-soft p-4 sm:p-6 space-y-5">
+          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="public-button flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-xs font-black text-primary-foreground shadow-md">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-black text-white shadow-xs">
                   3
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-foreground">Payment Method</h3>
               </div>
-              <span className="text-[11px] font-bold text-primary bg-accent border border-pink-200 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <span className="text-[10px] sm:text-[11px] font-bold text-primary bg-pink-50 border border-pink-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Official Gateway
               </span>
@@ -516,34 +508,34 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               type="button"
               aria-pressed={selectedPaymentMethod === "khqr"}
               onClick={() => setSelectedPaymentMethod((current) => current === "khqr" ? null : "khqr")}
-              className={`relative w-full p-4 sm:p-5 rounded-2xl border-2 bg-gradient-to-r from-pink-50 via-purple-50/50 to-white shadow-md flex items-center justify-between gap-4 text-left cursor-pointer transition-[border-color,box-shadow] ${selectedPaymentMethod === "khqr" ? "border-primary ring-2 ring-primary/20" : "border-border hover:shadow-soft"}`}
+              className={`relative w-full p-3.5 sm:p-4 rounded-xl border-2 shadow-xs flex items-center justify-between gap-3 text-left cursor-pointer transition-all ${selectedPaymentMethod === "khqr" ? "border-primary bg-pink-50/50 ring-2 ring-primary/20" : "border-slate-200/80 bg-white hover:border-pink-200"}`}
             >
-              <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-md ring-1 ring-slate-200 bg-[#004B87]">
+              <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
+                <div className="relative h-11 w-11 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-slate-200 bg-[#004B87]">
                   <Image
                     src="/images/aba-logo.png"
                     alt="ABA Bank"
-                    width={55}
-                    height={55}
+                    width={48}
+                    height={48}
                     className="h-full w-full object-cover rounded-xl"
                     loading="lazy"
                   />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-base sm:text-lg font-black text-foreground tracking-tight flex flex-wrap items-center gap-2">
+                  <div className="text-sm sm:text-base font-black text-foreground tracking-tight flex flex-wrap items-center gap-1.5">
                     <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-accent text-primary border border-pink-200 shrink-0">
-                      KHQRcc
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-pink-100 text-primary border border-pink-200 shrink-0">
+                      KHQR
                     </span>
                   </div>
-                  <p className="text-xs text-secondary-foreground font-medium">Secure KHQR Checkout</p>
+                  <p className="text-[11px] text-muted-foreground font-medium">Scan with ABA Mobile or any KHQR app</p>
                 </div>
               </div>
 
               {selectedPaymentMethod === "khqr" && (
                 <div className="flex shrink-0 items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
-                    <CheckCircle2 className="h-4 w-4" />
+                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-white shadow-xs">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
                   </div>
                 </div>
               )}
@@ -552,14 +544,14 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         </div>
 
         {/* Right Column: Order Summary Drawer / Sticky Card */}
-        <div className="min-w-0 lg:col-span-4 lg:sticky lg:top-32 space-y-4">
-          <div className="rounded-2xl border border-pink-200/60 bg-card backdrop-blur-sm p-4 sm:p-5 space-y-4 shadow-soft">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-base font-extrabold text-foreground">Order Summary</h3>
+        <div className="min-w-0 lg:col-span-4 lg:sticky lg:top-32 space-y-3.5 sm:space-y-4">
+          <div className="rounded-2xl border border-pink-100/90 bg-white p-3.5 sm:p-5 space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-pink-100 pb-2.5">
+              <h3 className="text-sm sm:text-base font-extrabold text-foreground">Order Summary</h3>
             </div>
 
             {/* Selected Game & Package */}
-            <div className="space-y-2.5 text-sm [&>div]:gap-4 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
+            <div className="space-y-2 text-xs sm:text-sm [&>div]:gap-3 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
               <div className="flex justify-between text-secondary-foreground">
                 <span className="text-muted-foreground">Game:</span>
                 <span className="font-bold text-foreground">{game.name}</span>
@@ -575,7 +567,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <div className="flex justify-between text-secondary-foreground">
                 <span className="text-muted-foreground">{game.userIdLabel}:</span>
                 <span className="font-mono text-foreground">
-                  {userId ? userId : <em className="text-muted-foreground">Not provided</em>}
+                  {userId ? userId : <em className="text-muted-foreground font-sans">Not provided</em>}
                 </span>
               </div>
 
@@ -583,7 +575,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 <div className="flex justify-between text-secondary-foreground">
                   <span className="text-muted-foreground">{game.serverLabel}:</span>
                   <span className="font-mono text-foreground">
-                    {serverId ? serverId : <em className="text-muted-foreground">Not provided</em>}
+                    {serverId ? serverId : <em className="text-muted-foreground font-sans">Not provided</em>}
                   </span>
                 </div>
               )}
@@ -591,24 +583,24 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               {verifiedName && (
                 <div className="flex justify-between text-secondary-foreground">
                   <span className="text-muted-foreground">Character:</span>
-                  <span className="font-bold text-success">{verifiedName}</span>
+                  <span className="font-bold text-emerald-600">{verifiedName}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-secondary-foreground">
                 <span className="text-muted-foreground">Payment:</span>
                 <span className="font-bold text-foreground">
-                  {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Select a payment method"}
+                  {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Select payment"}
                 </span>
               </div>
             </div>
 
             {/* Pricing Details */}
-            <div className="border-t border-border pt-3.5 space-y-1.5">
+            <div className="border-t border-pink-100 pt-3 space-y-1">
               <div className="flex justify-between items-baseline">
-                <span className="text-sm font-bold text-foreground">Total Amount</span>
+                <span className="text-xs sm:text-sm font-bold text-foreground">Total Amount</span>
                 <div className="text-right">
-                  <span className="text-2xl font-black text-primary">
+                  <span className="text-xl sm:text-2xl font-black text-primary">
                     {selectedPackage?.sellingPrice !== null && selectedPackage?.sellingPrice !== undefined
                       ? `$${selectedPackage.sellingPrice.toFixed(2)}`
                       : "—"}
@@ -627,7 +619,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               type="button"
               onClick={handleCheckout}
               disabled={isCheckingOut || !isAccountReady || !selectedPackage || !selectedPackage.isAvailable || selectedPackage.sellingPrice === null || !selectedPaymentMethod}
-              className="public-button w-full rounded-xl py-3.5 px-4 font-bold shadow-md shadow-pink-200/40 hover:shadow-soft hover:shadow-pink-300/40 cursor-pointer flex items-center justify-center gap-2 transition-all"
+              className="public-button w-full rounded-xl py-3 px-4 font-bold text-xs sm:text-sm shadow-xs cursor-pointer flex items-center justify-center gap-2 transition-all active:scale-98"
             >
               {isCheckingOut ? (
                 <>
@@ -642,8 +634,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-2 text-[10px] text-muted-foreground pt-0.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-success" />
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
               <span>Official Direct Top-Up Delivery</span>
             </div>
           </div>

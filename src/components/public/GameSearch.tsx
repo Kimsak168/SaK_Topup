@@ -118,7 +118,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
 
   return (
     <section id="games" className="w-full min-w-0 space-y-4 sm:space-y-6 scroll-mt-28">
-      {/* 1. Heading: Exact Khmer heading "ហ្គេមទាំងអស់" without decorative icons or English headings */}
+      {/* 1. Heading: Exact Khmer heading "ហ្គេមទាំងអស់" */}
       <div className="space-y-3 sm:space-y-4">
         <h2 className="text-xl sm:text-3xl font-extrabold text-foreground tracking-tight">
           ហ្គេមទាំងអស់
@@ -148,17 +148,17 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
                 setActiveQuery(e.target.value); // Real-time searching while typing
               }}
               placeholder="ស្វែងរកហ្គេម"
-              className="h-11 sm:h-12 w-full rounded-lg sm:rounded-2xl border border-input bg-card pl-9 sm:pl-11 pr-11 text-base sm:text-sm text-foreground placeholder:text-sm placeholder:text-muted-foreground focus:border-ring focus-visible:outline-2 focus-visible:outline-ring focus:ring-4 focus:ring-ring/20 transition-all shadow-sm"
+              className="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-pink-200/80 bg-white pl-9 sm:pl-11 pr-11 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 transition-all shadow-xs"
             />
             {/* Quick in-input clear button */}
             {searchTerm && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-0.5 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-pink-50 transition-colors cursor-pointer"
                 aria-label="Clear search input"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             )}
           </div>
@@ -167,7 +167,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className="game-action-button flex h-11 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-lg px-4 text-xs font-bold whitespace-nowrap text-white sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm"
+              className="game-action-button flex h-11 sm:h-12 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold whitespace-nowrap text-white sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm shadow-xs"
             >
               <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
               <span>ស្វែងរក</span>
@@ -177,10 +177,10 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="flex h-11 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-lg sm:rounded-2xl border border-border bg-card hover:bg-muted px-4 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
+                className="flex h-11 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl sm:rounded-2xl border border-pink-200 bg-white hover:bg-pink-50 px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-muted-foreground hover:text-foreground transition-all cursor-pointer"
                 aria-label="Clear search"
               >
-                <X className="h-4 w-4" />
+                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 <span>សម្អាត</span>
               </button>
             )}
@@ -194,20 +194,20 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
       {isLoading ? (
         <GameGridSkeleton count={10} />
       ) : fetchError && games.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-card/60 px-5 py-12 text-center sm:py-16 shadow-soft">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-pink-500/10 text-primary mb-3">
-            <AlertCircle className="h-6 w-6" />
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-pink-200/80 bg-white px-5 py-10 text-center sm:py-16 shadow-xs">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-50 text-primary mb-3">
+            <AlertCircle className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-bold text-foreground">មិនអាចផ្ទុកទិន្នន័យហ្គេមបានទេ</h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground max-w-md break-words">
+          <h3 className="text-sm sm:text-base font-bold text-foreground">មិនអាចផ្ទុកទិន្នន័យហ្គេមបានទេ</h3>
+          <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-muted-foreground max-w-md break-words">
             {fetchError}. សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិត ឬចុចប៊ូតុងខាងក្រោមដើម្បីព្យាយាមម្តងទៀត។
           </p>
           <button
             type="button"
             onClick={fetchClientGames}
-            className="public-button mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-bold text-primary-foreground shadow-md transition-all cursor-pointer active:scale-95"
+            className="public-button mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-primary-foreground shadow-xs transition-all cursor-pointer active:scale-95"
           >
-            <RotateCcw className="h-4 w-4" />
+            <RotateCcw className="h-3.5 w-3.5" />
             <span>ព្យាយាមម្តងទៀត (Retry)</span>
           </button>
         </div>

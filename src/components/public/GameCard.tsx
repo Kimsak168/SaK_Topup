@@ -24,14 +24,14 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       href={href}
       onMouseEnter={() => router.prefetch(href)}
       onFocus={() => router.prefetch(href)}
-      className={`game-card group relative flex h-full min-w-0 flex-col rounded-xl sm:rounded-2xl overflow-hidden bg-card focus-visible:outline-2 focus-visible:outline-ring ${
+      className={`game-card group relative flex h-full min-w-0 flex-col justify-between rounded-xl sm:rounded-2xl overflow-hidden bg-white border ${
         isPopular
-          ? "border border-pink-300/60 shadow-[0_4px_24px_rgba(255,46,147,0.12)] hover:shadow-[0_12px_40px_rgba(255,46,147,0.2)]"
-          : "border border-card-border shadow-soft hover:shadow-[0_12px_32px_rgba(126,34,206,0.12)]"
-      } hover:border-pink-300/70`}
+          ? "border-pink-300/80 shadow-xs hover:shadow-sm"
+          : "border-pink-100/90 shadow-xs hover:shadow-sm"
+      } hover:border-pink-300 transition-all focus-visible:outline-2 focus-visible:outline-primary`}
     >
       {/* 1. Game Image Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-pink-50/40">
         <Image
           src={imgSrc}
           alt={game.name}
@@ -44,10 +44,10 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
 
-        {/* POPULAR badge only if marked popular — no other clutter */}
+        {/* POPULAR badge only if marked popular */}
         {isPopular && (
-          <div className="absolute left-1 top-1 z-10 sm:left-2.5 sm:top-2.5">
-            <span className="public-button inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[7px] font-black uppercase tracking-wide text-primary-foreground shadow-md sm:gap-1 sm:rounded-md sm:px-2 sm:text-[9px] sm:tracking-wider">
+          <div className="absolute left-1 top-1 z-10 sm:left-2 sm:top-2">
+            <span className="inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[7px] font-black uppercase tracking-wide bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xs sm:rounded-md sm:px-1.5 sm:text-[8px]">
               <Flame aria-hidden="true" className="h-2 w-2 fill-white sm:h-2.5 sm:w-2.5" />
               <span>POPULAR</span>
             </span>
@@ -56,17 +56,17 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       </div>
 
       {/* 2. Simplified Card Content: ONLY Game Name and Top Up Button */}
-      <div className="flex flex-1 flex-col justify-between p-2 sm:p-4">
+      <div className="flex flex-1 flex-col justify-between p-1.5 min-[360px]:p-2 sm:p-4">
         {/* Game Name (consistent 2-line height for uniform alignment across all cards) */}
         <div>
-          <h3 className="text-[11px] sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug h-8 sm:h-auto sm:min-h-[2.5rem] break-words">
+          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug h-8 sm:h-auto sm:min-h-[2.5rem] break-words text-center sm:text-left">
             {game.name}
           </h3>
         </div>
 
         {/* 3. Top Up Button */}
-        <div className="mt-2 sm:mt-3 sm:pt-2">
-          <div className="game-action-button flex h-7 sm:h-10 w-full items-center justify-center gap-1 sm:gap-1.5 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-white">
+        <div className="mt-1.5 sm:mt-3 sm:pt-2">
+          <div className="game-action-button flex h-7 sm:h-10 w-full items-center justify-center gap-1 rounded-lg sm:rounded-xl text-[10px] sm:text-sm font-bold text-white shadow-xs active:scale-95 transition-all">
             <span>Top Up</span>
             <span aria-hidden="true">&rarr;</span>
           </div>

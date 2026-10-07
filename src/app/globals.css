@@ -42,29 +42,29 @@
 
 :root {
   color-scheme: light;
-  --background: #f8fafc;
-  --foreground: #111827;
+  --background: #faf7f9;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #111827;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #111827;
-  --primary: #be185d;
+  --popover-foreground: #0f172a;
+  --primary: #ec168c;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
+  --secondary: #fdf2f8;
   --secondary-foreground: #334155;
-  --muted: #f8fafc;
+  --muted: #fbf5f8;
   --muted-foreground: #64748b;
   --accent: #fdf2f8;
-  --accent-foreground: #9d174d;
+  --accent-foreground: #ec168c;
   --destructive: #be123c;
-  --border: #e2e8f0;
-  --input: #94a3b8;
-  --ring: #be185d;
-  --brand-purple: #7e22ce;
-  --brand-blue: #1d4ed8;
-  --success: #065f46;
-  --warning: #92400e;
-  --card-border: #ead5ed;
+  --border: #f1e3ec;
+  --input: #cbd5e1;
+  --ring: #ec168c;
+  --brand-purple: #9333ea;
+  --brand-blue: #0284c7;
+  --success: #059669;
+  --warning: #d97706;
+  --card-border: #f1e3ec;
   --radius: 0.75rem;
   --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-ui: 180ms;
@@ -145,8 +145,8 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at 90% 0%, #fce7f355, transparent 48%),
-      radial-gradient(ellipse at 0% 40%, #ede9fe66, transparent 48%);
+    background: radial-gradient(ellipse at 85% 0%, rgba(254, 226, 237, 0.35), transparent 45%),
+      radial-gradient(ellipse at 10% 25%, rgba(253, 232, 245, 0.25), transparent 45%);
   }
   .skip-link {
     position: fixed;
