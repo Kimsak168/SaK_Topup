@@ -42,29 +42,30 @@
 
 :root {
   color-scheme: light;
-  --background: #faf7f9;
-  --foreground: #0f172a;
+  --background: #fff8fc;
+  --foreground: #1e293b;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #1e293b;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #1e293b;
   --primary: #ec168c;
   --primary-foreground: #ffffff;
-  --secondary: #fdf2f8;
-  --secondary-foreground: #334155;
-  --muted: #fbf5f8;
+  --secondary: #fff1f7;
+  --secondary-foreground: #1e293b;
+  --muted: #fff1f7;
   --muted-foreground: #64748b;
-  --accent: #fdf2f8;
+  --accent: #fff1f7;
   --accent-foreground: #ec168c;
-  --destructive: #be123c;
-  --border: #f1e3ec;
-  --input: #cbd5e1;
+  --destructive: #ef4444;
+  --border: #f4c7dd;
+  --border-soft: #f8dce9;
+  --input: #f4c7dd;
   --ring: #ec168c;
-  --brand-purple: #9333ea;
-  --brand-blue: #0284c7;
-  --success: #059669;
-  --warning: #d97706;
-  --card-border: #f1e3ec;
+  --brand-purple: #ec168c;
+  --brand-blue: #ec168c;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --card-border: #f4c7dd;
   --radius: 0.75rem;
   --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-ui: 180ms;
@@ -145,8 +146,8 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at 85% 0%, rgba(254, 226, 237, 0.35), transparent 45%),
-      radial-gradient(ellipse at 10% 25%, rgba(253, 232, 245, 0.25), transparent 45%);
+    background: radial-gradient(ellipse at 85% 0%, rgba(255, 241, 247, 0.6), transparent 50%),
+      radial-gradient(ellipse at 10% 25%, rgba(248, 220, 233, 0.35), transparent 50%);
   }
   .skip-link {
     position: fixed;
@@ -181,54 +182,51 @@
   }
 
   .public-button {
-    color: var(--primary-foreground);
-    background: linear-gradient(120deg, var(--primary), var(--brand-purple));
-    box-shadow: 0 4px 12px rgb(190 24 93 / 0.16);
-    transition: transform 250ms ease, box-shadow 250ms ease;
+    color: #ffffff;
+    background-color: #ec168c;
+    box-shadow: 0 2px 8px rgb(236 22 140 / 0.16);
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .public-button:hover:not(:disabled),
   .group:hover .public-button {
-    box-shadow: 0 8px 22px rgb(190 24 93 / 0.24);
+    background-color: #ff3aa2;
+    box-shadow: 0 4px 12px rgb(255 58 162 / 0.22);
     transform: translateY(-1px);
   }
 
   .public-button:disabled {
-    color: var(--secondary-foreground);
-    background: var(--secondary);
+    color: #64748b;
+    background-color: #f8dce9;
     box-shadow: none;
     opacity: 1;
   }
 
-  .public-button-blue {
-    background: linear-gradient(120deg, #0369a1, var(--brand-blue));
-  }
-
   .game-action-button {
-    color: #fff;
+    color: #ffffff;
     background-color: #ec168c;
-    box-shadow: 0 4px 12px rgb(236 22 140 / 0.22);
-    transition: background-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+    box-shadow: 0 2px 8px rgb(236 22 140 / 0.16);
+    transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .game-action-button:hover:not(:disabled),
   .group:hover .game-action-button {
-    background-color: #fa329f;
-    box-shadow: 0 6px 16px rgb(236 22 140 / 0.3);
+    background-color: #ff3aa2;
+    box-shadow: 0 4px 12px rgb(255 58 162 / 0.22);
   }
 
   .game-action-button:active:not(:disabled),
   .group:active .game-action-button {
-    background-color: #d9117e;
-    box-shadow: 0 2px 8px rgb(236 22 140 / 0.2);
+    background-color: #ec168c;
+    box-shadow: 0 1px 4px rgb(236 22 140 / 0.15);
     transform: scale(0.98);
   }
 
   .game-action-button:disabled {
-    color: #fff;
+    color: #ffffff;
     background-color: #ec168c;
-    box-shadow: 0 2px 8px rgb(236 22 140 / 0.14);
-    opacity: 1;
+    box-shadow: none;
+    opacity: 0.6;
     transform: none;
   }
 

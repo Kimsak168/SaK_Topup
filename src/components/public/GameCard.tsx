@@ -26,12 +26,12 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       onFocus={() => router.prefetch(href)}
       className={`game-card group relative flex h-full min-w-0 flex-col justify-between rounded-xl sm:rounded-2xl overflow-hidden bg-white border ${
         isPopular
-          ? "border-pink-300/80 shadow-xs hover:shadow-sm"
-          : "border-pink-100/90 shadow-xs hover:shadow-sm"
-      } hover:border-pink-300 transition-all focus-visible:outline-2 focus-visible:outline-primary`}
+          ? "border-[#F4C7DD] shadow-xs hover:shadow-sm"
+          : "border-[#F8DCE9] shadow-xs hover:shadow-sm"
+      } hover:border-[#F4C7DD] transition-all focus-visible:outline-2 focus-visible:outline-[#EC168C]`}
     >
       {/* 1. Game Image Container */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-pink-50/40">
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#FFF1F7]">
         <Image
           src={imgSrc}
           alt={game.name}
@@ -47,7 +47,7 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
         {/* POPULAR badge only if marked popular */}
         {isPopular && (
           <div className="absolute left-1 top-1 z-10 sm:left-2 sm:top-2">
-            <span className="inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[7px] font-black uppercase tracking-wide bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xs sm:rounded-md sm:px-1.5 sm:text-[8px]">
+            <span className="inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[7px] font-black uppercase tracking-wide bg-[#EC168C] text-white shadow-xs sm:rounded-md sm:px-1.5 sm:text-[8px]">
               <Flame aria-hidden="true" className="h-2 w-2 fill-white sm:h-2.5 sm:w-2.5" />
               <span>POPULAR</span>
             </span>
@@ -59,7 +59,7 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       <div className="flex flex-1 flex-col justify-between p-1.5 min-[360px]:p-2 sm:p-4">
         {/* Game Name (consistent 2-line height for uniform alignment across all cards) */}
         <div>
-          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-sm font-bold text-foreground group-hover:text-primary transition-colors line-clamp-2 leading-snug h-8 sm:h-auto sm:min-h-[2.5rem] break-words text-center sm:text-left">
+          <h3 className="text-[10px] min-[360px]:text-[11px] sm:text-sm font-bold text-[#1E293B] group-hover:text-[#EC168C] transition-colors line-clamp-2 leading-snug h-8 sm:h-auto sm:min-h-[2.5rem] break-words text-center sm:text-left">
             {game.name}
           </h3>
         </div>

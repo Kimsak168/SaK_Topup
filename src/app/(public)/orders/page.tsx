@@ -85,14 +85,14 @@ function OrderTrackingContent() {
     <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in">
       {/* Page Header */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-accent px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-primary">
-          <ShoppingBag className="h-3.5 w-3.5 text-primary" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#F4C7DD] bg-[#FFF1F7] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#EC168C]">
+          <ShoppingBag className="h-3.5 w-3.5 text-[#EC168C]" />
           <span>Real-Time Tracking</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-foreground tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-[#1E293B] tracking-tight">
           Track Your Top-Up Order
         </h1>
-        <p className="text-sm leading-relaxed text-secondary-foreground">
+        <p className="text-sm leading-relaxed text-[#64748B]">
           Enter your Order Number (e.g., ORD-123456) or your in-game Player ID to check fulfillment status.
         </p>
       </div>
@@ -106,7 +106,7 @@ function OrderTrackingContent() {
         className="max-w-xl mx-auto flex items-center gap-2"
       >
         <div className="relative min-w-0 flex-1">
-          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" />
           <input
             type="text"
             aria-label="Order number or player ID"
@@ -117,13 +117,13 @@ function OrderTrackingContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter Order # or Player ID..."
-            className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 shadow-xs"
+            className="h-10 sm:h-11 w-full rounded-xl border border-[#F4C7DD] bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-[#1E293B] placeholder:text-[#64748B] focus:border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C] focus:ring-2 focus:ring-[#EC168C]/20 shadow-xs"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="public-button shrink-0 h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-primary-foreground font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-xs"
+          className="public-button shrink-0 h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-xs"
         >
           {loading ? (
             <RefreshCw className="h-3.5 w-3.5 animate-spin" />

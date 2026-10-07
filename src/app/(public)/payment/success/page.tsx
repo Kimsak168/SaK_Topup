@@ -273,7 +273,7 @@ function SuccessContent() {
                     ? "bg-success/10 text-success border-emerald-500/30"
                     : order.fulfillmentStatus === "FAILED"
                     ? "bg-destructive/10 text-destructive border-rose-500/30"
-                    : "bg-accent text-primary border-pink-500/30 animate-pulse"
+                    : "bg-[#FFF1F7] text-[#EC168C] border-[#F4C7DD] animate-pulse"
                 }`}
               >
                 {order.fulfillmentStatus === "COMPLETED"

@@ -46,10 +46,10 @@ export default function HomePage() {
           fallback={
             <div className="space-y-6">
               <div className="space-y-4">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#1E293B] tracking-tight">
                   ហ្គេមទាំងអស់
                 </h2>
-                <div className="h-12 max-w-2xl w-full rounded-2xl bg-card border border-border animate-pulse" />
+                <div className="h-12 max-w-2xl w-full rounded-2xl bg-white border border-[#F8DCE9] animate-pulse" />
               </div>
               <GameGridSkeleton count={10} />
             </div>

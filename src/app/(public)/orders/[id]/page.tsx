@@ -247,7 +247,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 isFulfilled
                   ? "bg-success/10 text-success border-emerald-500/30"
                   : order.fulfillmentStatus === "PROCESSING"
-                  ? "bg-accent text-primary border-pink-500/30 animate-pulse"
+                  ? "bg-[#FFF1F7] text-[#EC168C] border-[#F4C7DD] animate-pulse"
                   : order.fulfillmentStatus === "FAILED"
                   ? "bg-destructive/10 text-destructive border-rose-500/30"
                   : "bg-muted0/20 text-muted-foreground border-border"
@@ -336,17 +336,17 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
         {/* Pending Payment Pay Button */}
         {isPending && order.checkoutUrl && (
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-indigo-500/10 border border-pink-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl bg-[#FFF1F7] border border-[#F4C7DD] flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
-              <div className="font-bold text-foreground text-sm">Payment Pending</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="font-bold text-[#1E293B] text-sm">Payment Pending</div>
+              <p className="text-xs text-[#64748B]">
                 Complete your ABA Mobile or KHQR payment to trigger instant delivery.
               </p>
             </div>
             <button
               type="button"
               onClick={handleOpenInPageCheckout}
-              className="py-3 px-6 rounded-xl bg-primary hover:bg-primary text-primary-foreground font-bold text-xs transition-all shadow-[0_0_20px_rgba(255,46,147,0.4)] flex items-center gap-2 shrink-0 cursor-pointer"
+              className="py-3 px-6 rounded-xl bg-[#EC168C] hover:bg-[#FF3AA2] text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
             >
               <CreditCard className="h-4 w-4" />
               <span>Complete Payment with KHQR</span>

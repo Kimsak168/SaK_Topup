@@ -317,11 +317,11 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   return (
     <div className="space-y-3.5 sm:space-y-6">
       {/* Simplified Game Header Card */}
-      <div className="relative rounded-2xl overflow-hidden p-3 min-[360px]:p-3.5 sm:p-5 border border-pink-100/90 bg-white shadow-xs">
+      <div className="relative rounded-2xl overflow-hidden p-3 min-[360px]:p-3.5 sm:p-5 border border-[#F8DCE9] bg-white shadow-xs">
         <div className="flex items-center justify-between gap-3 sm:gap-6 flex-wrap sm:flex-nowrap">
           {/* Left: Game picture and name */}
           <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-            <div className="relative h-14 w-14 min-[360px]:h-16 min-[360px]:w-16 sm:h-[80px] sm:w-[80px] shrink-0 rounded-xl overflow-hidden border border-pink-200/60 shadow-xs bg-pink-50/40 group">
+            <div className="relative h-14 w-14 min-[360px]:h-16 min-[360px]:w-16 sm:h-[80px] sm:w-[80px] shrink-0 rounded-xl overflow-hidden border border-[#F8DCE9] shadow-xs bg-[#FFF1F7] group">
               <Image
                 src={headerImg}
                 alt={game.name}
@@ -334,7 +334,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </div>
 
             <div className="min-w-0">
-              <h1 className="text-base min-[360px]:text-lg sm:text-2xl md:text-3xl font-black text-foreground tracking-tight break-words">
+              <h1 className="text-base min-[360px]:text-lg sm:text-2xl md:text-3xl font-black text-[#1E293B] tracking-tight break-words">
                 {game.name}
               </h1>
             </div>
@@ -343,9 +343,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           {/* Right: Back to Home button */}
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-primary bg-pink-50 hover:bg-pink-100 border border-pink-200 shadow-xs transition-all duration-200 group shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-[#EC168C] bg-[#FFF1F7] hover:bg-[#FF3AA2] hover:text-white border border-[#F4C7DD] shadow-xs transition-colors duration-200 group shrink-0"
           >
-            <ArrowLeft className="h-3.5 w-3.5 text-primary group-hover:-translate-x-1 transition-transform duration-200" />
+            <ArrowLeft className="h-3.5 w-3.5 text-[#EC168C] group-hover:text-white group-hover:-translate-x-1 transition-transform duration-200" />
             <span>Back to Home</span>
           </Link>
         </div>
@@ -356,13 +356,13 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         {/* Left Column: Top-Up Process */}
         <div className="min-w-0 lg:col-span-8 space-y-3.5 sm:space-y-6">
           {/* STEP 1: Enter Account Information */}
-          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
+          <section className="rounded-2xl border border-[#F8DCE9] bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-black text-white shadow-xs">
+                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-[#EC168C] text-xs font-black text-white shadow-xs">
                   1
                 </span>
-                <h3 className="text-base sm:text-lg font-bold text-foreground">
+                <h3 className="text-base sm:text-lg font-bold text-[#1E293B]">
                   Enter Account Information
                 </h3>
               </div>
@@ -372,7 +372,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 onClick={() => setShowIdGuide(!showIdGuide)}
                 aria-expanded={showIdGuide}
                 aria-controls="player-id-guide"
-                className="flex min-h-8 items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
+                className="flex min-h-8 items-center gap-1.5 text-xs font-semibold text-[#EC168C] hover:text-[#FF3AA2] transition-colors cursor-pointer"
               >
                 <HelpCircle className="h-3.5 w-3.5" />
                 <span>How to find ID?</span>
@@ -381,18 +381,18 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
             {/* Instruction Callout */}
             {showIdGuide && (
-              <div id="player-id-guide" className="rounded-xl border border-pink-200 bg-pink-50/50 p-3.5 text-xs sm:text-sm leading-relaxed text-secondary-foreground animate-in fade-in">
-                <p className="font-semibold text-primary mb-1">
+              <div id="player-id-guide" className="rounded-xl border border-[#F4C7DD] bg-[#FFF1F7] p-3.5 text-xs sm:text-sm leading-relaxed text-[#1E293B] animate-in fade-in">
+                <p className="font-semibold text-[#EC168C] mb-1">
                   How to locate your {game.name} ID:
                 </p>
-                <p>{game.instruction}</p>
+                <p className="text-[#64748B]">{game.instruction}</p>
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               <div>
-                <label htmlFor="player-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-1.5">
-                  {game.userIdLabel} <span className="text-primary">*</span>
+                <label htmlFor="player-id" className="block text-xs font-bold uppercase tracking-wider text-[#1E293B] mb-1.5">
+                  {game.userIdLabel} <span className="text-[#EC168C]">*</span>
                 </label>
                 <input
                   id="player-id"
@@ -409,14 +409,14 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     setVerifyStatusType(null);
                   }}
                   placeholder="Enter Player ID"
-                  className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white px-3 sm:px-4 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono shadow-xs"
+                  className="h-10 sm:h-11 w-full rounded-xl border border-[#F4C7DD] bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#1E293B] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#64748B] focus:border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C] focus:ring-2 focus:ring-[#EC168C]/20 transition-all font-mono shadow-xs"
                 />
               </div>
 
               {game.requiresServer && (
                 <div>
-                  <label htmlFor="server-id" className="block text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-1.5">
-                    {game.serverLabel} <span className="text-primary">*</span>
+                  <label htmlFor="server-id" className="block text-xs font-bold uppercase tracking-wider text-[#1E293B] mb-1.5">
+                    {game.serverLabel} <span className="text-[#EC168C]">*</span>
                   </label>
                   <input
                     id="server-id"
@@ -433,7 +433,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                       setVerifyStatusType(null);
                     }}
                     placeholder="Enter Zone ID"
-                    className="h-10 sm:h-11 w-full rounded-xl border border-pink-200/80 bg-white px-3 sm:px-4 text-xs sm:text-sm text-foreground placeholder:text-xs sm:placeholder:text-sm placeholder:text-muted-foreground focus:border-primary focus-visible:outline-2 focus-visible:outline-primary focus:ring-2 focus:ring-primary/20 transition-all font-mono shadow-xs"
+                    className="h-10 sm:h-11 w-full rounded-xl border border-[#F4C7DD] bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#1E293B] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#64748B] focus:border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C] focus:ring-2 focus:ring-[#EC168C]/20 transition-all font-mono shadow-xs"
                   />
                 </div>
               )}
@@ -445,7 +445,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 type="button"
                 onClick={handleVerify}
                 disabled={verifying || !userId.trim() || (game.requiresServer && !serverId.trim())}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-pink-50 border border-pink-200 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary hover:text-white hover:border-primary disabled:opacity-50 transition-all cursor-pointer shadow-xs active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-[#FFF1F7] border border-[#F4C7DD] px-3.5 py-2 text-xs font-bold text-[#EC168C] hover:bg-[#EC168C] hover:text-white hover:border-[#EC168C] disabled:opacity-50 transition-all cursor-pointer shadow-xs active:scale-95"
               >
                 {verifying ? (
                   <>
@@ -461,22 +461,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </button>
 
               {verifiedName && (
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg shadow-xs">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <div className="flex items-center gap-1.5 text-xs font-bold text-[#10B981] bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg shadow-xs">
+                  <CheckCircle2 className="h-4 w-4 text-[#10B981]" />
                   <span>Verified: {verifiedName}</span>
                 </div>
               )}
 
               {verifyError && verifyStatusType === "invalid" && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg">
-                  <AlertCircle className="h-4 w-4 shrink-0" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#EF4444] bg-rose-50 border border-rose-200 px-2.5 py-1.5 rounded-lg">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-[#EF4444]" />
                   <span>{verifyError}</span>
                 </div>
               )}
 
               {verifyError && (verifyStatusType === "unsupported" || verifyStatusType === "unavailable") && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg">
-                  <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#F59E0B] bg-amber-50 border border-amber-200 px-2.5 py-1.5 rounded-lg">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-[#F59E0B]" />
                   <span>{verifyError}</span>
                 </div>
               )}
@@ -484,21 +484,21 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           </section>
 
           {/* STEP 2: Select Package */}
-          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
+          <section className="rounded-2xl border border-[#F8DCE9] bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
             <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
           </section>
 
           {/* STEP 3: Select Payment Method */}
-          <section className="rounded-2xl border border-pink-100/90 bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
+          <section className="rounded-2xl border border-[#F8DCE9] bg-white shadow-xs p-3.5 sm:p-6 space-y-3.5 sm:space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-black text-white shadow-xs">
+                <span className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-lg bg-[#EC168C] text-xs font-black text-white shadow-xs">
                   3
                 </span>
-                <h3 className="text-base sm:text-lg font-bold text-foreground">Payment Method</h3>
+                <h3 className="text-base sm:text-lg font-bold text-[#1E293B]">Payment Method</h3>
               </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-primary bg-pink-50 border border-pink-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] sm:text-[11px] font-bold text-[#EC168C] bg-[#FFF1F7] border border-[#F4C7DD] px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" />
                 Official Gateway
               </span>
             </div>
@@ -508,10 +508,10 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               type="button"
               aria-pressed={selectedPaymentMethod === "khqr"}
               onClick={() => setSelectedPaymentMethod((current) => current === "khqr" ? null : "khqr")}
-              className={`relative w-full p-3.5 sm:p-4 rounded-xl border-2 shadow-xs flex items-center justify-between gap-3 text-left cursor-pointer transition-all ${selectedPaymentMethod === "khqr" ? "border-primary bg-pink-50/50 ring-2 ring-primary/20" : "border-slate-200/80 bg-white hover:border-pink-200"}`}
+              className={`relative w-full p-3.5 sm:p-4 rounded-xl border-2 shadow-xs flex items-center justify-between gap-3 text-left cursor-pointer transition-all ${selectedPaymentMethod === "khqr" ? "border-[#EC168C] bg-[#FFF1F7] ring-2 ring-[#EC168C]/20" : "border-[#F4C7DD] bg-white hover:border-[#EC168C]"}`}
             >
               <div className="flex items-center gap-3 sm:gap-3.5 min-w-0">
-                <div className="relative h-11 w-11 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-slate-200 bg-[#004B87]">
+                <div className="relative h-11 w-11 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#F4C7DD] bg-[#004B87]">
                   <Image
                     src="/images/aba-logo.png"
                     alt="ABA Bank"
@@ -522,19 +522,19 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                   />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-sm sm:text-base font-black text-foreground tracking-tight flex flex-wrap items-center gap-1.5">
+                  <div className="text-sm sm:text-base font-black text-[#1E293B] tracking-tight flex flex-wrap items-center gap-1.5">
                     <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-pink-100 text-primary border border-pink-200 shrink-0">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-[#FFF1F7] text-[#EC168C] border border-[#F4C7DD] shrink-0">
                       KHQR
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground font-medium">Scan with ABA Mobile or any KHQR app</p>
+                  <p className="text-[11px] text-[#64748B] font-medium">Scan with ABA Mobile or any KHQR app</p>
                 </div>
               </div>
 
               {selectedPaymentMethod === "khqr" && (
                 <div className="flex shrink-0 items-center gap-2">
-                  <div className="h-5 w-5 rounded-full bg-primary flex items-center justify-center text-white shadow-xs">
+                  <div className="h-5 w-5 rounded-full bg-[#EC168C] flex items-center justify-center text-white shadow-xs">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   </div>
                 </div>
@@ -545,68 +545,68 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
         {/* Right Column: Order Summary Drawer / Sticky Card */}
         <div className="min-w-0 lg:col-span-4 lg:sticky lg:top-32 space-y-3.5 sm:space-y-4">
-          <div className="rounded-2xl border border-pink-100/90 bg-white p-3.5 sm:p-5 space-y-3.5 shadow-xs">
-            <div className="flex items-center justify-between border-b border-pink-100 pb-2.5">
-              <h3 className="text-sm sm:text-base font-extrabold text-foreground">Order Summary</h3>
+          <div className="rounded-2xl border border-[#F8DCE9] bg-white p-3.5 sm:p-5 space-y-3.5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-[#F8DCE9] pb-2.5">
+              <h3 className="text-sm sm:text-base font-extrabold text-[#1E293B]">Order Summary</h3>
             </div>
 
             {/* Selected Game & Package */}
             <div className="space-y-2 text-xs sm:text-sm [&>div]:gap-3 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
-              <div className="flex justify-between text-secondary-foreground">
-                <span className="text-muted-foreground">Game:</span>
-                <span className="font-bold text-foreground">{game.name}</span>
+              <div className="flex justify-between text-[#1E293B]">
+                <span className="text-[#64748B]">Game:</span>
+                <span className="font-bold text-[#1E293B]">{game.name}</span>
               </div>
 
-              <div className="flex justify-between text-secondary-foreground">
-                <span className="text-muted-foreground">Package:</span>
-                <span className="font-bold text-primary text-right">
+              <div className="flex justify-between text-[#1E293B]">
+                <span className="text-[#64748B]">Package:</span>
+                <span className="font-bold text-[#EC168C] text-right">
                   {selectedPackage?.name || "Select a package"}
                 </span>
               </div>
 
-              <div className="flex justify-between text-secondary-foreground">
-                <span className="text-muted-foreground">{game.userIdLabel}:</span>
-                <span className="font-mono text-foreground">
-                  {userId ? userId : <em className="text-muted-foreground font-sans">Not provided</em>}
+              <div className="flex justify-between text-[#1E293B]">
+                <span className="text-[#64748B]">{game.userIdLabel}:</span>
+                <span className="font-mono text-[#1E293B]">
+                  {userId ? userId : <em className="text-[#64748B] font-sans">Not provided</em>}
                 </span>
               </div>
 
               {game.requiresServer && (
-                <div className="flex justify-between text-secondary-foreground">
-                  <span className="text-muted-foreground">{game.serverLabel}:</span>
-                  <span className="font-mono text-foreground">
-                    {serverId ? serverId : <em className="text-muted-foreground font-sans">Not provided</em>}
+                <div className="flex justify-between text-[#1E293B]">
+                  <span className="text-[#64748B]">{game.serverLabel}:</span>
+                  <span className="font-mono text-[#1E293B]">
+                    {serverId ? serverId : <em className="text-[#64748B] font-sans">Not provided</em>}
                   </span>
                 </div>
               )}
 
               {verifiedName && (
-                <div className="flex justify-between text-secondary-foreground">
-                  <span className="text-muted-foreground">Character:</span>
-                  <span className="font-bold text-emerald-600">{verifiedName}</span>
+                <div className="flex justify-between text-[#1E293B]">
+                  <span className="text-[#64748B]">Character:</span>
+                  <span className="font-bold text-[#10B981]">{verifiedName}</span>
                 </div>
               )}
 
-              <div className="flex justify-between text-secondary-foreground">
-                <span className="text-muted-foreground">Payment:</span>
-                <span className="font-bold text-foreground">
+              <div className="flex justify-between text-[#1E293B]">
+                <span className="text-[#64748B]">Payment:</span>
+                <span className="font-bold text-[#1E293B]">
                   {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Select payment"}
                 </span>
               </div>
             </div>
 
             {/* Pricing Details */}
-            <div className="border-t border-pink-100 pt-3 space-y-1">
+            <div className="border-t border-[#F8DCE9] pt-3 space-y-1">
               <div className="flex justify-between items-baseline">
-                <span className="text-xs sm:text-sm font-bold text-foreground">Total Amount</span>
+                <span className="text-xs sm:text-sm font-bold text-[#1E293B]">Total Amount</span>
                 <div className="text-right">
-                  <span className="text-xl sm:text-2xl font-black text-primary">
+                  <span className="text-xl sm:text-2xl font-black text-[#EC168C]">
                     {selectedPackage?.sellingPrice !== null && selectedPackage?.sellingPrice !== undefined
                       ? `$${selectedPackage.sellingPrice.toFixed(2)}`
                       : "—"}
                   </span>
                   {selectedPackage?.sellingPrice !== null && selectedPackage?.sellingPrice !== undefined && (
-                    <div className="text-[10px] text-muted-foreground">
+                    <div className="text-[10px] text-[#64748B]">
                       ≈ {Math.round(selectedPackage.sellingPrice * 4100).toLocaleString()} KHR
                     </div>
                   )}
@@ -634,8 +634,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground pt-0.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#64748B] pt-0.5">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#10B981]" />
               <span>Official Direct Top-Up Delivery</span>
             </div>
           </div>
@@ -644,36 +644,36 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
       {/* Checkout Confirmation Modal / Alert */}
       {checkoutComplete && activeOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl public-surface border border-emerald-500/50 p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 shadow-[0_0_50px_rgba(16,185,129,0.2)]">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success border border-emerald-500/30 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl bg-white border border-[#10B981]/40 p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 shadow-md">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#10B981]/10 text-[#10B981] border border-[#10B981]/30">
               <CheckCircle2 className="h-8 w-8" />
             </div>
 
             <div className="space-y-1">
-              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-success/10 text-success border border-emerald-500/30">
+              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 text-[#10B981] border border-emerald-200">
                 Payment Verified
               </span>
-              <h3 className="text-xl font-black text-foreground">Top-Up Dispatched!</h3>
-              <p className="text-xs text-secondary-foreground">
+              <h3 className="text-xl font-black text-[#1E293B]">Top-Up Dispatched!</h3>
+              <p className="text-xs text-[#64748B]">
                 Your payment for{" "}
-                <strong className="text-primary">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
+                <strong className="text-[#EC168C]">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
               </p>
             </div>
 
-            <div className="public-order-details rounded-xl bg-card p-4 text-xs text-left space-y-2.5 border border-border font-mono">
+            <div className="public-order-details rounded-xl bg-white p-4 text-xs text-left space-y-2.5 border border-[#F8DCE9] font-mono">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground font-sans">Order Number:</span>
+                <span className="text-[#64748B] font-sans">Order Number:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-primary font-bold">{activeOrder.orderNumber}</span>
+                  <span className="text-[#EC168C] font-bold">{activeOrder.orderNumber}</span>
                   <button
                     type="button"
                     onClick={handleCopyOrderNumber}
-                    className="p-1 hover:text-foreground text-muted-foreground transition-colors"
+                    className="p-1 hover:text-[#1E293B] text-[#64748B] transition-colors"
                     aria-label="Copy order number"
                   >
                     {copiedOrderNo ? (
-                      <Check className="h-3.5 w-3.5 text-success" />
+                      <Check className="h-3.5 w-3.5 text-[#10B981]" />
                     ) : (
                       <Copy className="h-3.5 w-3.5" />
                     )}
@@ -682,51 +682,51 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </div>
 
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Game:</span>
-                <span className="text-foreground font-sans font-semibold">{game.name}</span>
+                <span className="text-[#64748B] font-sans">Game:</span>
+                <span className="text-[#1E293B] font-sans font-semibold">{game.name}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Player ID:</span>
-                <span className="text-foreground font-bold">{activeOrder.playerId}</span>
+                <span className="text-[#64748B] font-sans">Player ID:</span>
+                <span className="text-[#1E293B] font-bold">{activeOrder.playerId}</span>
               </div>
 
               {activeOrder.serverId && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground font-sans">Server / Zone:</span>
-                  <span className="text-foreground">{activeOrder.serverId}</span>
+                  <span className="text-[#64748B] font-sans">Server / Zone:</span>
+                  <span className="text-[#1E293B]">{activeOrder.serverId}</span>
                 </div>
               )}
 
               {activeOrder.playerName && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground font-sans">IGN:</span>
-                  <span className="text-success font-sans">{activeOrder.playerName}</span>
+                  <span className="text-[#64748B] font-sans">IGN:</span>
+                  <span className="text-[#10B981] font-sans">{activeOrder.playerName}</span>
                 </div>
               )}
 
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Amount Paid:</span>
-                <span className="text-success font-bold text-sm">
+                <span className="text-[#64748B] font-sans">Amount Paid:</span>
+                <span className="text-[#10B981] font-bold text-sm">
                   ${activeOrder.amount.toFixed(2)} USD
                 </span>
               </div>
 
-              <div className="flex justify-between pt-1 border-t border-border">
-                <span className="text-muted-foreground font-sans">Status:</span>
-                <span className="text-success font-bold">PAID (CONFIRMED)</span>
+              <div className="flex justify-between pt-1 border-t border-[#F8DCE9]">
+                <span className="text-[#64748B] font-sans">Status:</span>
+                <span className="text-[#10B981] font-bold">PAID (CONFIRMED)</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Delivery:</span>
-                <span className="text-primary font-sans">Automated Direct API</span>
+                <span className="text-[#64748B] font-sans">Delivery:</span>
+                <span className="text-[#EC168C] font-sans">Automated Direct API</span>
               </div>
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
               <Link
                 href={`/orders?orderNumber=${encodeURIComponent(activeOrder.orderNumber)}`}
-                className="w-full rounded-xl bg-primary py-3 text-xs font-bold text-primary-foreground hover:bg-primary transition-colors shadow-[0_0_20px_rgba(255,46,147,0.4)] flex items-center justify-center gap-1.5"
+                className="w-full rounded-xl bg-[#EC168C] hover:bg-[#FF3AA2] py-3 text-xs font-bold text-white transition-colors shadow-xs flex items-center justify-center gap-1.5"
               >
                 <span>Track Live Order Status</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -734,7 +734,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <button
                 type="button"
                 onClick={() => setCheckoutComplete(false)}
-                className="w-full rounded-xl border border-border py-2.5 text-xs font-semibold text-secondary-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="w-full rounded-xl border border-[#F4C7DD] py-2.5 text-xs font-semibold text-[#1E293B] hover:bg-[#FFF1F7] transition-colors cursor-pointer"
               >
                 Close & Return to Game
               </button>

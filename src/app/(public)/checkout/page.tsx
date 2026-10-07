@@ -222,16 +222,16 @@ function CheckoutContent() {
                 <QrCode className="h-4 w-4 text-primary" />
                 <span>Payment Method</span>
               </h2>
-              <span className="text-[11px] font-bold text-primary bg-accent border border-pink-500/20 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[11px] font-bold text-[#EC168C] bg-[#FFF1F7] border border-[#F4C7DD] px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" />
                 Official Gateway
               </span>
             </div>
 
             {/* Single Payment Card: ABA Pay / KHQR */}
-            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-pink-500/60 bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-transparent shadow-[0_0_25px_rgba(255,46,147,0.15)] flex items-center justify-between gap-4">
+            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-[#EC168C] bg-[#FFF1F7] ring-2 ring-[#EC168C]/20 shadow-xs flex items-center justify-between gap-4">
               <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-sm ring-1 ring-border bg-[#004B87]">
+                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#F4C7DD] bg-[#004B87]">
                   <Image
                     src="/images/aba-logo.png"
                     alt="ABA Bank"
@@ -242,13 +242,13 @@ function CheckoutContent() {
                   />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-base sm:text-lg font-black text-foreground tracking-tight flex flex-wrap items-center gap-2">
+                  <div className="text-base sm:text-lg font-black text-[#1E293B] tracking-tight flex flex-wrap items-center gap-2">
                     <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-accent text-primary border border-pink-500/30 shrink-0">
-                      KHQRcc
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-white text-[#EC168C] border border-[#F4C7DD] shrink-0">
+                      KHQR
                     </span>
                   </div>
-                  <p className="text-xs text-secondary-foreground font-medium">Secure KHQR Checkout</p>
+                  <p className="text-xs text-[#64748B] font-medium">Secure KHQR Checkout</p>
                 </div>
               </div>
 
@@ -350,8 +350,8 @@ function CheckoutContent() {
 
       {/* Confirmation Modal */}
       {orderComplete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/30 backdrop-blur-md p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-pink-500/40 bg-card p-6 sm:p-8 space-y-5 text-center shadow-soft">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-[#F8DCE9] bg-white p-6 sm:p-8 space-y-5 text-center shadow-md">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success border border-emerald-500/30">
               <CheckCircle2 className="h-8 w-8" />
             </div>

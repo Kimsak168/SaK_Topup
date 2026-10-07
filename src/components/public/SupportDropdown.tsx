@@ -72,7 +72,7 @@ export function SupportDropdown() {
         aria-controls={panelId}
         aria-label={open ? "Close menu" : "Open menu"}
         onClick={() => setOpen((current) => !current)}
-        className="public-nav-link flex h-8 w-8 shrink-0 items-center justify-center justify-self-end rounded-full border border-pink-200 bg-pink-50 text-primary hover:bg-pink-100 sm:h-auto sm:w-auto sm:min-h-11 sm:gap-1.5 sm:px-4 sm:text-xs sm:font-semibold"
+        className="public-nav-link flex h-8 w-8 shrink-0 items-center justify-center justify-self-end rounded-full border border-[#F4C7DD] bg-[#FFF1F7] text-[#EC168C] hover:bg-[#FF3AA2] hover:text-white transition-colors sm:h-auto sm:w-auto sm:min-h-11 sm:gap-1.5 sm:px-4 sm:text-xs sm:font-semibold"
       >
         <span className="hidden sm:inline">Support</span>
         <Menu aria-hidden="true" className="h-4 w-4 sm:hidden" />
@@ -84,7 +84,7 @@ export function SupportDropdown() {
         aria-hidden={!open}
         className={`absolute right-0 top-full z-10 mt-2 grid w-44 origin-top-right transition-[grid-template-rows,opacity,transform,margin] duration-200 ease-out motion-reduce:transition-none sm:w-44 ${open ? "grid-rows-[1fr] opacity-100 translate-y-0" : "pointer-events-none grid-rows-[0fr] opacity-0 -translate-y-1"}`}
       >
-        <div className="min-h-0 overflow-hidden rounded-2xl shadow-lg border border-pink-200/80 bg-white">
+        <div className="min-h-0 overflow-hidden rounded-2xl shadow-sm border border-[#F4C7DD] bg-white">
           <nav aria-label="Support social links" className="p-1">
             <ul className="flex flex-col gap-0.5 sm:grid sm:grid-cols-1">
               {menuLinks.map(({ label, href, icon: Icon, path }) => (
@@ -98,12 +98,12 @@ export function SupportDropdown() {
                       setOpen(false);
                       buttonRef.current?.focus();
                     }}
-                    className="flex min-h-9 items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:bg-pink-50 hover:text-primary focus-visible:bg-pink-50 focus-visible:text-primary motion-reduce:transition-none sm:px-3 sm:text-sm"
+                    className="flex min-h-9 items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#1E293B] transition-colors hover:bg-[#FFF1F7] hover:text-[#EC168C] focus-visible:bg-[#FFF1F7] focus-visible:text-[#EC168C] motion-reduce:transition-none sm:px-3 sm:text-sm"
                   >
                     {Icon ? (
-                      <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-primary" />
+                      <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-[#EC168C]" />
                     ) : (
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0 text-primary">
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0 text-[#EC168C]">
                         <path d={path} />
                       </svg>
                     )}

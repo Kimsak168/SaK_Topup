@@ -6,10 +6,10 @@ const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/s
 
 export function CustomerFooter() {
   return (
-    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-pink-100/90">
+    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-[#F4C7DD]">
       {/* Background Ambient Glow Accents */}
-      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-pink-100/30 blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-pink-100/20 blur-2xl pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-[#FFF1F7]/50 blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-[#FFF1F7]/40 blur-2xl pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-7 sm:pt-12 pb-6">
         {/* Responsive 3-Section Grid: Desktop (3 cols), Tablet (2 cols), Mobile (1 col) */}
@@ -19,25 +19,25 @@ export function CustomerFooter() {
           <div className="flex flex-col items-start space-y-3.5">
             <Link
               href="/"
-              className="inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-ring focus-visible:ring-2 focus-visible:ring-ring rounded-xl"
+              className="inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-[#EC168C] focus-visible:ring-2 focus-visible:ring-[#EC168C]/20 rounded-xl"
             >
               <Image
                 src="/images/logo.png"
                 alt="SakSuuu Logo"
                 width={55}
                 height={55}
-                className="h-[55px] w-[55px] object-contain drop-shadow-[0_0_14px_rgba(0,217,255,0.35)] group-hover:scale-105 transition-transform duration-300"
+                className="h-[55px] w-[55px] object-contain group-hover:scale-105 transition-transform duration-300"
               />
               <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-black tracking-wide bg-gradient-to-r from-blue-600 via-brand-blue to-purple-600 bg-clip-text text-transparent">
+                <span className="text-xl sm:text-2xl font-black tracking-wide text-[#1E293B]">
                   SakSuuu
                 </span>
-                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+                <span className="text-xs font-semibold text-[#64748B] tracking-wider uppercase">
                   Game Top-Up Store
                 </span>
               </div>
             </Link>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm">
+            <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-sm">
               Instant, secure game recharges with automated delivery 24/7. Top up diamonds, passes, and UC at competitive rates.
             </p>
           </div>
@@ -45,15 +45,15 @@ export function CustomerFooter() {
           {/* Section 2: Quick Links & Payment Methods (Middle) */}
           <div className="flex flex-col space-y-4">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-secondary-foreground mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-pink-400" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] mb-3 flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#EC168C]" />
                 Quick Links
               </h3>
               <ul className="space-y-2 text-sm font-medium">
                 <li>
                   <Link
                     href="/"
-                    className="text-muted-foreground hover:text-primary hover:translate-x-1 inline-flex items-center transition-all duration-200"
+                    className="text-[#64748B] hover:text-[#EC168C] hover:translate-x-1 inline-flex items-center transition-all duration-200"
                   >
                     Home
                   </Link>
@@ -61,7 +61,7 @@ export function CustomerFooter() {
                 <li>
                   <Link
                     href="/games"
-                    className="text-muted-foreground hover:text-primary hover:translate-x-1 inline-flex items-center transition-all duration-200"
+                    className="text-[#64748B] hover:text-[#EC168C] hover:translate-x-1 inline-flex items-center transition-all duration-200"
                   >
                     Games
                   </Link>
@@ -70,23 +70,23 @@ export function CustomerFooter() {
             </div>
 
             {/* Small Payment-Method Section */}
-            <div className="pt-3 border-t border-border">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <div className="pt-3 border-t border-[#F8DCE9]">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-2">
                 Payment Methods
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 <div
                   title="KHQR Universal Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted border border-border text-xs font-medium text-secondary-foreground hover:border-pink-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF1F7] border border-[#F4C7DD] text-xs font-medium text-[#1E293B] hover:border-[#EC168C] transition-colors"
                 >
-                  <QrCode className="h-3.5 w-3.5 text-primary" />
+                  <QrCode className="h-3.5 w-3.5 text-[#EC168C]" />
                   <span>KHQR</span>
                 </div>
                 <div
                   title="ABA Mobile Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted border border-border text-xs font-medium text-secondary-foreground hover:border-blue-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF1F7] border border-[#F4C7DD] text-xs font-medium text-[#1E293B] hover:border-[#EC168C] transition-colors"
                 >
-                  <CreditCard className="h-3.5 w-3.5 text-brand-blue" />
+                  <CreditCard className="h-3.5 w-3.5 text-[#004B87]" />
                   <span>ABA</span>
                 </div>
               </div>
@@ -95,11 +95,11 @@ export function CustomerFooter() {
 
           {/* Section 3: Support (Right) */}
           <div className="flex flex-col space-y-3.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-secondary-foreground flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#EC168C]" />
               Support
             </h3>
-            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm">
+            <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-sm">
               Have questions or need assistance with your order? Our support team is ready to help on Telegram.
             </p>
             <div className="pt-1">
@@ -108,7 +108,7 @@ export function CustomerFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Contact support on Telegram"
-                className="public-button public-button-blue group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-primary-foreground font-semibold text-xs sm:text-sm shadow-md shadow-blue-200/40 hover:shadow-soft hover:shadow-blue-300/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 border border-blue-400/30 focus-visible:outline-2 focus-visible:outline-ring focus-visible:ring-2 focus-visible:ring-brand-blue"
+                className="public-button group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-sm shadow-xs hover:bg-[#FF3AA2] active:scale-[0.98] transition-all duration-200 border border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C]"
               >
                 {/* Official Telegram Icon */}
                 <svg
@@ -126,12 +126,12 @@ export function CustomerFooter() {
 
         </div>
 
-        {/* Thin Gradient Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-pink-300/30 via-purple-300/20 to-transparent mt-10 sm:mt-12 mb-6" />
+        {/* Thin Divider */}
+        <div className="w-full h-px bg-[#F8DCE9] mt-10 sm:mt-12 mb-6" />
 
         {/* Copyright Section */}
         <div className="text-center">
-          <p className="text-xs text-muted-foreground tracking-wide font-normal">
+          <p className="text-xs text-[#64748B] tracking-wide font-normal">
             © 2026 SakSuuu. All rights reserved.
           </p>
         </div>

@@ -91,7 +91,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
       onTouchEnd={handleTouchEnd}
     >
       {/* Wide, Responsive Single-Banner Frame with Rounded Corners */}
-      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-pink-100/90 bg-white shadow-sm transition-all hover:border-pink-300/60">
+      <div className="group relative overflow-hidden rounded-2xl sm:rounded-3xl border border-[#F8DCE9] bg-white shadow-xs transition-all hover:border-[#F4C7DD]">
         {/* Smooth Horizontal Sliding Track */}
         <div
           className="flex transition-transform duration-500 ease-in-out motion-reduce:transition-none"
@@ -101,7 +101,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
             const artwork = (
               <div className="relative w-full overflow-hidden bg-white h-[138px] sm:h-auto" style={{ aspectRatio: "5 / 2" }}>
                 {!banner.imageUrl || failedImages[banner.imageUrl] ? (
-                  <div role="status" className="flex h-full w-full items-center justify-center px-12 text-center text-sm text-muted-foreground">
+                  <div role="status" className="flex h-full w-full items-center justify-center px-12 text-center text-sm text-[#64748B]">
                     {banner.title || `Promotional banner ${index + 1}`} image is temporarily unavailable.
                   </div>
                 ) : (
@@ -130,7 +130,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
                 {banner.targetUrl ? (
                   <Link
                     href={banner.targetUrl}
-                    className="block focus-visible:outline-2 focus-visible:outline-ring focus-visible:ring-2 focus-visible:ring-ring"
+                    className="block focus-visible:outline-2 focus-visible:outline-[#EC168C] focus-visible:ring-2 focus-visible:ring-[#EC168C]/20"
                   >
                     {artwork}
                   </Link>
@@ -149,7 +149,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               type="button"
               onClick={prevSlide}
               aria-label="Previous banner"
-              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-pink-100 text-slate-700 hover:text-white hover:bg-primary transition-colors z-20 shadow-sm"
+              className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-[#F4C7DD] text-[#1E293B] hover:text-white hover:bg-[#EC168C] transition-colors z-20 shadow-xs"
             >
               <ChevronLeft className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </button>
@@ -158,7 +158,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               type="button"
               onClick={nextSlide}
               aria-label="Next banner"
-              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-pink-100 text-slate-700 hover:text-white hover:bg-primary transition-colors z-20 shadow-sm"
+              className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex h-7 w-7 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/90 sm:bg-white/95 border border-[#F4C7DD] text-[#1E293B] hover:text-white hover:bg-[#EC168C] transition-colors z-20 shadow-xs"
             >
               <ChevronRight className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
             </button>
@@ -178,10 +178,10 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               aria-current={i === activeIndex ? "true" : undefined}
               className="flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-full"
             >
-              <span className={`h-1.5 rounded-full transition-[width,background-color] duration-200 ${i === activeIndex ? "w-5 sm:w-6 bg-primary" : "w-1.5 bg-input"}`} />
+              <span className={`h-1.5 rounded-full transition-[width,background-color] duration-200 ${i === activeIndex ? "w-5 sm:w-6 bg-[#EC168C]" : "w-1.5 bg-[#F4C7DD]"}`} />
             </button>
           ))}
-          {!reduceMotion && <button type="button" onClick={() => setPauseRequested(!pauseRequested)} aria-label={pauseRequested ? "Play slideshow" : "Pause slideshow"} className="flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground">
+          {!reduceMotion && <button type="button" onClick={() => setPauseRequested(!pauseRequested)} aria-label={pauseRequested ? "Play slideshow" : "Pause slideshow"} className="flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-full text-[#64748B] hover:bg-[#FFF1F7] hover:text-[#EC168C]">
             {pauseRequested ? <Play className="h-3 w-3 sm:h-3.5 sm:w-3.5" /> : <Pause className="h-3 w-3 sm:h-3.5 sm:w-3.5" />}
           </button>}
         </div>
