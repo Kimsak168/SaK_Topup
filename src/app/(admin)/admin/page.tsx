@@ -5,7 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import {
   Activity, ArrowRight, CircleAlert, DollarSign, Gamepad2, Package,
-  RefreshCw, Server, ShoppingCart, TrendingUp,
+  RefreshCw, Server, ShoppingCart, TrendingUp, CheckCircle2, Clock, AlertTriangle
 } from "lucide-react";
 import {
   Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis,
@@ -44,6 +44,32 @@ const money = (amount: number) => new Intl.NumberFormat("en-US", {
   style: "currency", currency: "USD", maximumFractionDigits: 2,
 }).format(amount);
 const compact = (value: number) => new Intl.NumberFormat("en-US").format(value);
+
+function getStatusBadge(status: string) {
+  const norm = (status || "").toUpperCase();
+  if (norm === "PAID" || norm === "COMPLETED" || norm === "SUCCESS" || norm === "CONNECTED") {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.28)]">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E]" />
+        {status}
+      </span>
+    );
+  }
+  if (norm === "PENDING" || norm === "PROCESSING" || norm === "CONFIGURED") {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/30">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
+        {status}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30">
+      <span className="h-1.5 w-1.5 rounded-full bg-[#EF4444]" />
+      {status || "Failed"}
+    </span>
+  );
+}
 
 export default function AdminOverviewPage() {
   const [data, setData] = useState<OverviewData | null>(null);
@@ -88,6 +114,7 @@ export default function AdminOverviewPage() {
     lastRequestedDays.current = days;
     void fetchOverview();
   }, [days, fetchOverview]);
+
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem("saksuuu_supplier_check");
@@ -119,72 +146,161 @@ export default function AdminOverviewPage() {
     }
   };
 
-  const cards = data ? [
-    { label: "Total revenue", value: money(data.stats.totalRevenue),
-      note: `${money(data.stats.totalProfit)} recorded profit`, icon: DollarSign, accent: "pink" },
-    { label: "Total orders", value: compact(data.stats.totalOrders),
+  const statCards = data ? [
+    {
+      label: "TOTAL REVENUE",
+      value: money(data.stats.totalRevenue),
+      note: `${money(data.stats.totalProfit)} recorded profit`,
+      icon: DollarSign,
+    },
+    {
+      label: "TOTAL ORDERS",
+      value: compact(data.stats.totalOrders),
       note: `${compact(data.stats.completedOrders)} completed · ${compact(data.stats.pendingOrders)} pending`,
-      icon: ShoppingCart, accent: "violet" },
-    { label: "Active games", value: compact(data.stats.activeGames),
-      note: `${compact(data.stats.totalGames)} in catalogue`, icon: Gamepad2, accent: "sky" },
-    { label: "Active packages", value: compact(data.stats.activePackages),
-      note: `${compact(data.stats.totalPackages)} configured`, icon: Package, accent: "amber" },
+      icon: ShoppingCart,
+    },
+    {
+      label: "ACTIVE GAMES",
+      value: compact(data.stats.activeGames),
+      note: `${compact(data.stats.totalGames)} in catalogue`,
+      icon: Gamepad2,
+    },
+    {
+      label: "ACTIVE PACKAGES",
+      value: compact(data.stats.activePackages),
+      note: `${compact(data.stats.totalPackages)} configured`,
+      icon: Package,
+    },
   ] : [];
 
   return (
-    <div className="admin-page">
-      <div className="admin-page-heading">
+    <div className="space-y-6">
+      {/* 5. PAGE HEADER */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="admin-eyebrow">Workspace / Overview</p>
-          <h1>Dashboard overview</h1>
-          <p>Store performance, recent orders and supplier account status.</p>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">
+            Dashboard Overview
+          </h1>
+          <p className="text-xs sm:text-sm text-[#94A3B8] mt-0.5">
+            Store performance and recent activity
+          </p>
         </div>
-        <div className="admin-heading-actions">
-          <span className={`admin-connection ${error ? "is-failed" : data ? "is-connected" : ""}`}>
-            <span className="admin-connection-dot" />
-            {error ? "Data unavailable" : data ? "MongoDB connected" : "Checking data"}
-          </span>
-          <button type="button" onClick={() => void fetchOverview(true)} disabled={refreshing}
-            className="admin-button admin-button-secondary">
-            <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
-            {refreshing ? "Refreshing" : "Refresh stats"}
+
+        <div className="flex items-center gap-2.5">
+          <div
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
+              error
+                ? "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30"
+                : data
+                ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border-[rgba(34,197,94,0.28)]"
+                : "bg-[#151F31] text-[#94A3B8] border-[#243047]"
+            }`}
+          >
+            <span
+              className={`h-2 w-2 rounded-full ${
+                error
+                  ? "bg-[#EF4444]"
+                  : data
+                  ? "bg-[#22C55E] shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+                  : "bg-[#64748B]"
+              }`}
+            />
+            <span>{error ? "Data Unavailable" : data ? "MongoDB Connected" : "Checking..."}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => void fetchOverview(true)}
+            disabled={refreshing}
+            className="inline-flex h-9 items-center gap-1.5 px-3 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#111A2B] text-xs font-semibold text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
+          >
+            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+            <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
           </button>
         </div>
       </div>
 
-      {error && <div role="alert" className="admin-error">
-        <CircleAlert size={18} /><span>{error}{data ? " Showing the last loaded figures." : ""}</span>
-        <button type="button" onClick={() => void fetchOverview(true)}>Try again</button>
-      </div>}
+      {error && (
+        <div
+          role="alert"
+          className="flex items-center justify-between gap-3 p-3.5 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/10 text-xs text-[#EF4444]"
+        >
+          <div className="flex items-center gap-2">
+            <CircleAlert size={16} className="shrink-0" />
+            <span>{error}{data ? " Showing the last loaded figures." : ""}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => void fetchOverview(true)}
+            className="px-2.5 py-1 rounded-md bg-[#EF4444] text-white font-semibold hover:bg-[#DC2626] transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      )}
 
+      {/* 6. STAT CARDS & 7. STAT GRID RESPONSIVE */}
       {loading && !data ? (
-        <div className="admin-stats-grid" aria-label="Loading dashboard statistics">
-          {[1, 2, 3, 4].map((item) => <div key={item} className="admin-skeleton h-36 rounded-2xl" />)}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" aria-label="Loading statistics">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="h-28 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" />
+          ))}
         </div>
       ) : data ? (
         <>
-          <div className="admin-stats-grid">
-            {cards.map(({ label, value, note, icon: Icon, accent }) => (
-              <div key={label} className={`admin-stat admin-stat-${accent}`}>
-                <div className="admin-stat-top"><span>{label}</span><span className="admin-stat-icon"><Icon size={19} /></span></div>
-                <strong>{value}</strong><p>{note}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {statCards.map(({ label, value, note, icon: Icon }) => (
+              <div
+                key={label}
+                className="flex flex-col justify-between h-28 p-4 rounded-xl bg-[#111A2B] border border-[#243047] hover:border-[rgba(34,197,94,0.3)] transition-colors"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#94A3B8]">
+                    {label}
+                  </span>
+                  <div className="h-7 w-7 rounded-lg bg-[rgba(34,197,94,0.10)] border border-[rgba(34,197,94,0.25)] flex items-center justify-center text-[#22C55E]">
+                    <Icon size={15} strokeWidth={2} />
+                  </div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold tracking-tight text-[#F8FAFC]">
+                    {value}
+                  </div>
+                  <div className="text-[11px] text-[#94A3B8] truncate mt-0.5">
+                    {note}
+                  </div>
+                </div>
               </div>
             ))}
           </div>
 
-          <section className="admin-panel">
-            <div className="admin-panel-heading">
-              <div><p className="admin-eyebrow">Integrations</p><h2>Supplier accounts</h2>
-                <p>Connection and balances are shown only after an explicit verification.</p></div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button type="button" onClick={verifySuppliers} disabled={checking}
-                  className="admin-button admin-button-secondary">
-                  <RefreshCw size={15} className={checking ? "animate-spin" : ""} />
-                  {checking ? "Checking" : "Verify connections"}
+          {/* 8. SUPPLIER SECTION */}
+          <section className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#243047]">
+              <div>
+                <h2 className="text-sm font-bold text-[#F8FAFC] tracking-tight">Supplier Connections</h2>
+                <p className="text-xs text-[#94A3B8]">Direct API integrations for automated fulfillment</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={verifySuppliers}
+                  disabled={checking}
+                  className="inline-flex h-8 items-center gap-1.5 px-3 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#111A2B] text-xs font-semibold text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <RefreshCw size={13} className={checking ? "animate-spin" : ""} />
+                  <span>{checking ? "Verifying..." : "Verify Connections"}</span>
                 </button>
-                <Link href="/admin/suppliers" className="admin-text-link">Details <ArrowRight size={14} /></Link>
+                <Link
+                  href="/admin/suppliers"
+                  className="inline-flex h-8 items-center gap-1 px-2.5 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#111A2B] text-xs font-medium text-[#22C55E] transition-colors"
+                >
+                  <span>Details</span>
+                  <ArrowRight size={13} />
+                </Link>
               </div>
             </div>
+
             <div className="grid gap-4 md:grid-cols-2">
               {(["vizo", "g2bulk"] as const).map((key) => {
                 const configured = data.suppliers[key].configured;
@@ -193,85 +309,260 @@ export default function AdminOverviewPage() {
                   verified.status === "connected" ? "Connected" : "Failed";
                 const balance = verified?.status === "connected" && verified.reseller?.balance != null
                   ? money(Number(verified.reseller.balance)) : "—";
-                return <div className="admin-supplier-card" key={key}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center gap-3"><span className="admin-supplier-icon"><Server size={19} /></span>
-                      <div><h3>{key === "vizo" ? "Vizo" : "G2Bulk"}</h3>
-                        <p>{key === "vizo" ? "Free Fire provider" : "Game top-up provider"}</p></div></div>
-                    <span className={`admin-status admin-status-${status.toLowerCase()}`}>{status}</span>
+                return (
+                  <div
+                    key={key}
+                    className="rounded-xl border border-[#243047] bg-[#151F31] p-4 flex flex-col justify-between gap-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg bg-[#111A2B] border border-[#243047] flex items-center justify-center text-[#22C55E]">
+                          <Server size={16} />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-[#F8FAFC]">
+                            {key === "vizo" ? "Vizo" : "G2Bulk"}
+                          </h3>
+                          <p className="text-[11px] text-[#94A3B8]">
+                            {key === "vizo" ? "Free Fire supplier" : "Game top-up supplier"}
+                          </p>
+                        </div>
+                      </div>
+                      {getStatusBadge(status)}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#243047]/60 text-xs">
+                      <div>
+                        <div className="text-[10px] uppercase font-bold text-[#64748B]">Wallet Balance</div>
+                        <div className="text-sm font-bold text-[#F8FAFC] mt-0.5">{balance}</div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase font-bold text-[#64748B]">Account</div>
+                        <div className="text-xs text-[#94A3B8] truncate mt-0.5">
+                          {verified?.status === "connected" ? verified.reseller?.username || "Active" : "—"}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-[10px] uppercase font-bold text-[#64748B]">Last Verified</div>
+                        <div className="text-[11px] text-[#94A3B8] truncate mt-0.5">
+                          {supplierCheck && verified ? new Date(supplierCheck.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Not checked"}
+                        </div>
+                      </div>
+                    </div>
+
+                    {verified?.error && (
+                      <p className="text-[11px] text-[#EF4444] bg-[#EF4444]/10 p-2 rounded-lg border border-[#EF4444]/20">
+                        {verified.error}
+                      </p>
+                    )}
                   </div>
-                  <div className="admin-supplier-balance"><span>Verified wallet balance</span><strong>{balance}</strong></div>
-                  <div className="admin-supplier-meta">
-                    <span>Account: {verified?.status === "connected" ? verified.reseller?.username || "Available" : "—"}</span>
-                    <span>{supplierCheck && verified ? `Checked ${new Date(supplierCheck.timestamp).toLocaleString()}` : "Not checked this session"}</span>
-                  </div>
-                  {verified?.error && <p className="admin-inline-error">{verified.error}</p>}
-                </div>;
+                );
               })}
             </div>
           </section>
 
-          <section className="admin-panel">
-            <div className="admin-panel-heading">
-              <div><p className="admin-eyebrow">Performance</p><h2>Sales & order activity</h2>
-                <p>Paid revenue and all orders recorded in MongoDB.</p></div>
-              <div className="admin-range" role="group" aria-label="Chart date range">
-                {[7, 14, 30, 90].map((range) => <button key={range} type="button"
-                  aria-pressed={days === range} onClick={() => setDays(range)}
-                  className={days === range ? "is-active" : ""}>{range}d</button>)}
+          {/* 9. PERFORMANCE / SALES SECTION */}
+          <section className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#243047]">
+              <div>
+                <h2 className="text-sm font-bold text-[#F8FAFC] tracking-tight">Sales & Order Activity</h2>
+                <p className="text-xs text-[#94A3B8]">Paid revenue and order volume recorded in MongoDB</p>
+              </div>
+
+              <div className="inline-flex items-center rounded-lg border border-[#243047] bg-[#151F31] p-0.5">
+                {[7, 14, 30, 90].map((range) => (
+                  <button
+                    key={range}
+                    type="button"
+                    aria-pressed={days === range}
+                    onClick={() => setDays(range)}
+                    className={`px-2.5 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      days === range
+                        ? "bg-[rgba(34,197,94,0.15)] text-[#22C55E]"
+                        : "text-[#94A3B8] hover:text-[#F8FAFC]"
+                    }`}
+                  >
+                    {range}D
+                  </button>
+                ))}
               </div>
             </div>
-            {rangeLoading ? <div className="admin-skeleton h-72 rounded-xl" aria-label="Updating chart" />
-              : data.salesChart.length ? <div className="h-72 w-full min-w-0" role="img" aria-label="Daily paid revenue chart">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data.salesChart} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
-                  <defs><linearGradient id="adminRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#e92b91" stopOpacity={0.18} />
-                    <stop offset="100%" stopColor="#ec168c" stopOpacity={0} /></linearGradient></defs>
-                  <CartesianGrid vertical={false} stroke="#ffffff18" strokeDasharray="3 5" />
-                  <XAxis dataKey="date" tickFormatter={(value: string) => value.slice(5)}
-                    stroke="#9aa6bd" tickLine={false} axisLine={false} fontSize={11} minTickGap={22} />
-                  <YAxis yAxisId="revenue" stroke="#9aa6bd" tickLine={false} axisLine={false} fontSize={11} width={52}
-                    tickFormatter={(value: number) => `$${value}`} />
-                  <YAxis yAxisId="orders" orientation="right" stroke="#9aa6bd"
-                    tickLine={false} axisLine={false} fontSize={11} width={30}
-                    allowDecimals={false} />
-                  <Tooltip contentStyle={{ background: "#161b2b", border: "1px solid #374055",
-                    borderRadius: 12, color: "#fff" }}
-                    formatter={(value, name) => [name === "revenue" ? money(Number(value)) : value, name === "revenue" ? "Paid revenue" : "Orders"]} />
-                  <Area name="revenue" yAxisId="revenue" type="linear" dataKey="revenue"
-                    stroke="#f338a0" strokeWidth={2.5} fill="url(#adminRevenue)" />
-                  <Line name="orders" yAxisId="orders" type="linear" dataKey="orders"
-                    stroke="#8ea0b7" strokeWidth={2} dot={false} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div> : <div className="admin-empty"><Activity size={24} /><strong>No activity in this range</strong>
-              <p>Orders will appear here when they are recorded.</p></div>}
-            {!rangeLoading && <div className="admin-chart-footnote"><span className="admin-legend-dot" /> Paid revenue
-              <span className="admin-legend-dot admin-legend-orders" /> Orders
-              <span className="ml-auto">{days} days · {data.salesChart.reduce((sum, day) => sum + day.orders, 0)} orders</span></div>}
+
+            {rangeLoading ? (
+              <div className="h-64 rounded-xl bg-[#151F31] animate-pulse" aria-label="Updating chart" />
+            ) : data.salesChart.length && data.salesChart.some((d) => d.revenue > 0 || d.orders > 0) ? (
+              <div className="h-64 w-full min-w-0" role="img" aria-label="Daily paid revenue chart">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={data.salesChart} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="adminRevenueGreen" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#22C55E" stopOpacity={0.25} />
+                        <stop offset="100%" stopColor="#22C55E" stopOpacity={0.0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid vertical={false} stroke="#243047" strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(val: string) => val.slice(5)}
+                      stroke="#64748B"
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={11}
+                      minTickGap={20}
+                    />
+                    <YAxis
+                      yAxisId="revenue"
+                      stroke="#64748B"
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={11}
+                      width={48}
+                      tickFormatter={(val: number) => `$${val}`}
+                    />
+                    <YAxis
+                      yAxisId="orders"
+                      orientation="right"
+                      stroke="#64748B"
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={11}
+                      width={28}
+                      allowDecimals={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#151F31",
+                        borderColor: "#243047",
+                        borderRadius: "8px",
+                        color: "#F8FAFC",
+                        fontSize: "12px",
+                      }}
+                      formatter={(val, name) => [
+                        name === "revenue" ? money(Number(val)) : val,
+                        name === "revenue" ? "Paid Revenue" : "Orders",
+                      ]}
+                    />
+                    <Area
+                      name="revenue"
+                      yAxisId="revenue"
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#22C55E"
+                      strokeWidth={2}
+                      fill="url(#adminRevenueGreen)"
+                    />
+                    <Line
+                      name="orders"
+                      yAxisId="orders"
+                      type="monotone"
+                      dataKey="orders"
+                      stroke="#94A3B8"
+                      strokeWidth={1.5}
+                      dot={false}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-12 text-center text-[#94A3B8]">
+                <Activity size={28} className="text-[#64748B] mb-2" />
+                <strong className="text-sm font-semibold text-[#F8FAFC]">No sales activity in this range</strong>
+                <p className="text-xs text-[#64748B] mt-0.5">Orders will display here once recorded.</p>
+              </div>
+            )}
+
+            {!rangeLoading && (
+              <div className="flex items-center gap-4 text-xs text-[#94A3B8] pt-2 border-t border-[#243047]/60">
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#22C55E]" />
+                  <span>Paid Revenue</span>
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="h-2 w-2 rounded-full bg-[#94A3B8]" />
+                  <span>Orders</span>
+                </span>
+                <span className="ml-auto text-[#64748B]">
+                  {days} days · {data.salesChart.reduce((sum, d) => sum + d.orders, 0)} total orders
+                </span>
+              </div>
+            )}
           </section>
 
-          <section className="admin-panel admin-panel-table">
-            <div className="admin-panel-heading"><div><p className="admin-eyebrow">Activity</p><h2>Recent orders</h2>
-              <p>Latest customer requests from the order log.</p></div>
-              <Link href="/admin/orders" className="admin-text-link">All orders <ArrowRight size={14} /></Link></div>
-            {data.recentOrders.length ? <div className="overflow-x-auto">
-              <table className="admin-table"><thead><tr><th>Order</th><th>Game & package</th>
-                <th>Player</th><th>Amount</th><th>Payment</th><th>Fulfillment</th><th>Date</th></tr></thead>
-                <tbody>{data.recentOrders.map((order) => <tr key={order.id}>
-                  <td><span className="font-mono text-pink-300">{order.orderNumber}</span></td>
-                  <td><strong>{order.gameName}</strong><small>{order.packageName}</small></td>
-                  <td>{order.playerId}</td><td>{money(order.amount)}</td>
-                  <td><span className="admin-status">{order.paymentStatus || "Unknown"}</span></td>
-                  <td><span className="admin-status">{order.fulfillmentStatus || "Unknown"}</span></td>
-                  <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                </tr>)}</tbody></table>
-            </div> : <div className="admin-empty"><ShoppingCart size={24} /><strong>No orders yet</strong></div>}
+          {/* 10. RECENT ORDERS & 11. TABLE DESIGN */}
+          <section className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#243047]">
+              <div>
+                <h2 className="text-sm font-bold text-[#F8FAFC] tracking-tight">Recent Orders</h2>
+                <p className="text-xs text-[#94A3B8]">Latest customer transactions</p>
+              </div>
+              <Link
+                href="/admin/orders"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-[#22C55E] hover:underline"
+              >
+                <span>All Orders</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+
+            {data.recentOrders.length ? (
+              <div className="overflow-x-auto rounded-lg border border-[#243047]">
+                <table className="w-full text-left text-xs text-[#94A3B8]">
+                  <thead className="bg-[#151F31] text-[11px] uppercase tracking-wider text-[#94A3B8] font-bold border-b border-[#243047]">
+                    <tr>
+                      <th className="py-2.5 px-3.5">Order ID</th>
+                      <th className="py-2.5 px-3.5">Game & Package</th>
+                      <th className="py-2.5 px-3.5">Player ID</th>
+                      <th className="py-2.5 px-3.5">Amount</th>
+                      <th className="py-2.5 px-3.5">Payment</th>
+                      <th className="py-2.5 px-3.5">Fulfillment</th>
+                      <th className="py-2.5 px-3.5">Date</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#243047]">
+                    {data.recentOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-[#151F31]/50 transition-colors">
+                        <td className="py-2.5 px-3.5 font-mono text-[#F8FAFC] font-medium">
+                          {order.orderNumber}
+                        </td>
+                        <td className="py-2.5 px-3.5">
+                          <strong className="block text-[#F8FAFC]">{order.gameName}</strong>
+                          <span className="text-[11px] text-[#64748B]">{order.packageName}</span>
+                        </td>
+                        <td className="py-2.5 px-3.5 text-[#F8FAFC]">
+                          {order.playerId}
+                        </td>
+                        <td className="py-2.5 px-3.5 font-semibold text-[#F8FAFC]">
+                          {money(order.amount)}
+                        </td>
+                        <td className="py-2.5 px-3.5">
+                          {getStatusBadge(order.paymentStatus)}
+                        </td>
+                        <td className="py-2.5 px-3.5">
+                          {getStatusBadge(order.fulfillmentStatus)}
+                        </td>
+                        <td className="py-2.5 px-3.5 text-[#64748B]">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-center text-[#94A3B8]">
+                <ShoppingCart size={24} className="text-[#64748B] mb-2" />
+                <strong className="text-sm font-semibold text-[#F8FAFC]">No orders recorded yet</strong>
+                <p className="text-xs text-[#64748B] mt-0.5">Customer purchases will show up here.</p>
+              </div>
+            )}
           </section>
         </>
       ) : null}
-      <div className="admin-footer-link"><TrendingUp size={14} /> All figures reflect stored records. Supplier balances require verification.</div>
+
+      <div className="flex items-center gap-1.5 text-[11px] text-[#64748B]">
+        <TrendingUp size={13} />
+        <span>All dashboard figures reflect live MongoDB records. Supplier balances update upon verification.</span>
+      </div>
     </div>
   );
 }

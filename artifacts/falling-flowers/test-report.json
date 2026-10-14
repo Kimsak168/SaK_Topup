@@ -1,0 +1,60 @@
+{
+  "routesTested": [
+    "/",
+    "/games",
+    "/orders",
+    "/checkout"
+  ],
+  "adminExcluded": true,
+  "responsive": [
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "expectedMin": 4,
+      "expectedMax": 7,
+      "exact": 5,
+      "visibleCount": 5,
+      "minWidth": 15.194656372070312,
+      "maxWidth": 23.63568115234375,
+      "hasOverflow": false,
+      "infinite": true,
+      "delay": -2000,
+      "notBlockedByFlowers": true,
+      "sampleTop": 326.7747802734375
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "expectedMin": 7,
+      "expectedMax": 10,
+      "exact": 8,
+      "visibleCount": 8,
+      "minWidth": 24.3101806640625,
+      "maxWidth": 37.575439453125,
+      "hasOverflow": false,
+      "infinite": true,
+      "delay": -2000,
+      "notBlockedByFlowers": true,
+      "sampleTop": 479.51544189453125
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "expectedMin": 10,
+      "expectedMax": 14,
+      "exact": 12,
+      "visibleCount": 12,
+      "minWidth": 24.568115234375,
+      "maxWidth": 38.8577766418457,
+      "hasOverflow": false,
+      "infinite": true,
+      "delay": -2000,
+      "notBlockedByFlowers": true,
+      "sampleTop": 506.1370849609375
+    }
+  ],
+  "downwardDelta": 131.9063720703125
+}

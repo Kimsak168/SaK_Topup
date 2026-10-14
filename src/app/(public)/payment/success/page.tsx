@@ -106,8 +106,8 @@ function SuccessContent() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-center px-4">
-        <RefreshCw className="h-10 w-10 animate-spin text-primary" />
-        <p className="text-sm font-semibold text-secondary-foreground">
+        <RefreshCw className="h-10 w-10 animate-spin text-[#16A34A]" />
+        <p className="text-sm font-semibold text-[#64748B]">
           Retrieving authoritative order record...
         </p>
       </div>
@@ -117,12 +117,12 @@ function SuccessContent() {
   if (error || !order) {
     return (
       <div className="max-w-lg mx-auto py-16 px-4 text-center space-y-6">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-destructive/10 text-destructive border border-rose-500/30">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-[#EF4444] border border-[#EF4444]/30 shadow-xs">
           <AlertCircle className="h-8 w-8" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-foreground">Order Lookup Error</h1>
-          <p className="text-sm text-secondary-foreground">{error || "Transaction record missing"}</p>
+          <h1 className="text-2xl font-black text-[#172033]">Order Lookup Error</h1>
+          <p className="text-sm text-[#64748B]">{error || "Transaction record missing"}</p>
         </div>
         <div className="flex justify-center gap-3 pt-2">
           <button
@@ -130,13 +130,13 @@ function SuccessContent() {
               setLoading(true);
               fetchStatus();
             }}
-            className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-white font-bold text-xs transition-colors shadow-xs"
           >
             Retry Verification
           </button>
           <Link
             href="/"
-            className="px-5 py-2.5 rounded-xl border border-border text-secondary-foreground font-bold text-xs hover:bg-muted transition-colors"
+            className="px-5 py-2.5 rounded-xl border border-[#BBF7D0] bg-white text-[#64748B] hover:text-[#16A34A] hover:bg-[#F0FDF4] active:text-[#22C55E] font-bold text-xs transition-colors shadow-xs"
           >
             Return to Store
           </Link>
@@ -155,32 +155,32 @@ function SuccessContent() {
   return (
     <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6 space-y-8 animate-in fade-in">
       {/* Status Hero Card */}
-      <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 text-center space-y-6 shadow-soft relative overflow-hidden">
+      <div className="rounded-3xl border border-[#BBF7D0] bg-white p-6 sm:p-8 text-center space-y-6 shadow-xs relative overflow-hidden">
         {/* Glow backdrop */}
         <div
           className={`absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 blur-3xl pointer-events-none rounded-full ${
             isPaid
-              ? "bg-success/10"
+              ? "bg-[#10B981]/5"
               : isPending
-              ? "bg-warning/10"
-              : "bg-destructive/10"
+              ? "bg-[#F59E0B]/5"
+              : "bg-[#EF4444]/5"
           }`}
         />
 
         {/* Status Icon */}
         <div className="relative z-10 flex justify-center">
           {isPaid && (
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-success/10 text-success border border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50 text-[#10B981] border border-[#10B981]/30 shadow-xs">
               <CheckCircle2 className="h-10 w-10" />
             </div>
           )}
           {isPending && (
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-warning/10 text-warning border border-amber-500/40 shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-50 text-[#F59E0B] border border-[#F59E0B]/30 shadow-xs">
               <Clock className="h-10 w-10 animate-pulse" />
             </div>
           )}
           {isFailed && (
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-destructive/10 text-destructive border border-rose-500/40 shadow-[0_0_30px_rgba(244,63,94,0.3)]">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-rose-50 text-[#EF4444] border border-[#EF4444]/30 shadow-xs">
               <AlertCircle className="h-10 w-10" />
             </div>
           )}
@@ -190,12 +190,12 @@ function SuccessContent() {
         <div className="relative z-10 space-y-2">
           {isPaid && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#172033] tracking-tight">
                 Payment Received & Verified!
               </h1>
-              <p className="text-xs sm:text-sm text-secondary-foreground max-w-md mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto leading-relaxed">
                 Thank you! Your payment of{" "}
-                <strong className="text-success">
+                <strong className="text-[#10B981]">
                   ${order.amount.toFixed(2)} USD
                 </strong>{" "}
                 was cryptographically verified with AnajakPay KHQR.
@@ -205,12 +205,12 @@ function SuccessContent() {
 
           {isPending && isPollExpired && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#172033] tracking-tight">
                 Awaiting Bank Settlement Confirmation
               </h1>
-              <p className="text-xs sm:text-sm text-secondary-foreground max-w-md mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto leading-relaxed">
                 Your order{" "}
-                <span className="font-mono text-primary font-bold">
+                <span className="font-mono text-[#16A34A] font-bold">
                   {order.orderNumber}
                 </span>{" "}
                 remains PENDING and is awaiting final settlement confirmation from the bank. If you already completed payment in ABA Mobile or via KHQR, our background reconciliation will automatically fulfill your items once confirmed.
@@ -222,7 +222,7 @@ function SuccessContent() {
                     setPollCount(0);
                     fetchStatus();
                   }}
-                  className="px-4 py-2 rounded-xl bg-primary hover:bg-primary text-xs font-bold text-primary-foreground transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-xs font-bold text-white transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   <span>Check Status Again</span>
@@ -233,17 +233,17 @@ function SuccessContent() {
 
           {isPending && !isPollExpired && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#172033] tracking-tight">
                 Verifying Payment with ABA/KHQR...
               </h1>
-              <p className="text-xs sm:text-sm text-secondary-foreground max-w-md mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto leading-relaxed">
                 We are currently awaiting bank settlement confirmation for order{" "}
-                <span className="font-mono text-primary font-bold">
+                <span className="font-mono text-[#16A34A] font-bold">
                   {order.orderNumber}
                 </span>
                 . Please keep this page open.
               </p>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-warning/10 border border-amber-500/30 text-[11px] font-bold text-warning mt-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-[#F59E0B]/30 text-[11px] font-bold text-[#F59E0B] mt-2 shadow-xs">
                 <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                 <span>Verifying bank response ({pollCount + 1}/60)...</span>
               </div>
@@ -252,10 +252,10 @@ function SuccessContent() {
 
           {isFailed && (
             <>
-              <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#172033] tracking-tight">
                 Payment Not Completed
               </h1>
-              <p className="text-xs sm:text-sm text-secondary-foreground max-w-md mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto leading-relaxed">
                 This transaction was not completed or was cancelled at checkout.
               </p>
             </>
@@ -264,16 +264,16 @@ function SuccessContent() {
 
         {/* Fulfillment Status Banner (When Paid) */}
         {isPaid && (
-          <div className="p-4 rounded-2xl bg-muted border border-border space-y-2 text-left">
+          <div className="p-4 rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] space-y-2 text-left">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Delivery Status:</span>
+              <span className="text-[#64748B]">Delivery Status:</span>
               <span
                 className={`font-bold px-2.5 py-0.5 rounded-full text-[11px] border ${
                   order.fulfillmentStatus === "COMPLETED"
-                    ? "bg-success/10 text-success border-emerald-500/30"
+                    ? "bg-emerald-50 text-[#10B981] border-[#10B981]/30"
                     : order.fulfillmentStatus === "FAILED"
-                    ? "bg-destructive/10 text-destructive border-rose-500/30"
-                    : "bg-[#FFF1F7] text-[#EC168C] border-[#F4C7DD] animate-pulse"
+                    ? "bg-rose-50 text-[#EF4444] border-[#EF4444]/30"
+                    : "bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0] animate-pulse"
                 }`}
               >
                 {order.fulfillmentStatus === "COMPLETED"
@@ -283,7 +283,7 @@ function SuccessContent() {
                   : "PROCESSING DELIVERY..."}
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-[#64748B]">
               {order.fulfillmentStatus === "COMPLETED"
                 ? "Your top-up items have been injected directly into your account."
                 : order.fulfillmentStatus === "FAILED"
@@ -294,19 +294,19 @@ function SuccessContent() {
         )}
 
         {/* Authoritative Order Details Table */}
-        <div className="public-order-details rounded-2xl bg-muted p-4 text-xs space-y-2.5 text-left border border-border font-mono">
+        <div className="public-order-details rounded-2xl bg-[#F0FDF4] p-4 text-xs space-y-2.5 text-left border border-[#DCFCE7] font-mono">
           <div className="flex justify-between items-center">
-            <span className="text-muted-foreground font-sans">Order Number:</span>
+            <span className="text-[#64748B] font-sans">Order Number:</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-primary font-bold">{order.orderNumber}</span>
+              <span className="text-[#16A34A] font-bold">{order.orderNumber}</span>
               <button
                 type="button"
                 onClick={() => handleCopy(order.orderNumber)}
-                className="p-1 text-muted-foreground hover:text-foreground"
+                className="p-1 text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E]"
                 title="Copy Order ID"
               >
                 {copied ? (
-                  <Check className="h-3 w-3 text-success" />
+                  <Check className="h-3 w-3 text-[#10B981]" />
                 ) : (
                   <Copy className="h-3 w-3" />
                 )}
@@ -315,30 +315,30 @@ function SuccessContent() {
           </div>
 
           <div className="flex justify-between">
-            <span className="text-muted-foreground font-sans">Game:</span>
-            <span className="text-foreground font-sans font-bold">{order.gameName}</span>
+            <span className="text-[#64748B] font-sans">Game:</span>
+            <span className="text-[#172033] font-sans font-bold">{order.gameName}</span>
           </div>
 
           <div className="flex justify-between">
-            <span className="text-muted-foreground font-sans">Package:</span>
-            <span className="text-primary font-sans">{order.packageName}</span>
+            <span className="text-[#64748B] font-sans">Package:</span>
+            <span className="text-[#16A34A] font-sans font-semibold">{order.packageName}</span>
           </div>
 
           <div className="flex justify-between">
-            <span className="text-muted-foreground font-sans">Target UID:</span>
-            <span className="text-foreground">{order.playerId}</span>
+            <span className="text-[#64748B] font-sans">Target UID:</span>
+            <span className="text-[#172033]">{order.playerId}</span>
           </div>
 
           {order.serverId && (
             <div className="flex justify-between">
-              <span className="text-muted-foreground font-sans">Server / Zone:</span>
-              <span className="text-foreground">{order.serverId}</span>
+              <span className="text-[#64748B] font-sans">Server / Zone:</span>
+              <span className="text-[#172033]">{order.serverId}</span>
             </div>
           )}
 
-          <div className="flex justify-between pt-2 border-t border-border">
-            <span className="text-muted-foreground font-sans font-bold">Amount Paid:</span>
-            <span className="text-success font-bold text-sm">
+          <div className="flex justify-between pt-2 border-t border-[#DCFCE7]">
+            <span className="text-[#64748B] font-sans font-bold">Amount Paid:</span>
+            <span className="text-[#16A34A] font-bold text-sm">
               ${order.amount.toFixed(2)} USD
             </span>
           </div>
@@ -348,7 +348,7 @@ function SuccessContent() {
         <div className="pt-2 flex flex-col sm:flex-row gap-3">
           <Link
             href={`/orders/${encodeURIComponent(order.orderNumber)}`}
-            className="flex-1 py-3 px-4 rounded-xl bg-primary hover:bg-primary text-xs font-bold text-primary-foreground transition-all shadow-[0_0_20px_rgba(255,46,147,0.3)] flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-xs font-bold text-white transition-all shadow-xs flex items-center justify-center gap-2"
           >
             <span>Live Order Tracker</span>
             <ChevronRight className="h-4 w-4" />
@@ -356,14 +356,14 @@ function SuccessContent() {
 
           <Link
             href="/"
-            className="py-3 px-5 rounded-xl border border-border hover:bg-muted text-xs font-bold text-secondary-foreground transition-all text-center"
+            className="py-3 px-5 rounded-xl border border-[#BBF7D0] bg-white hover:bg-[#F0FDF4] hover:text-[#16A34A] active:text-[#22C55E] text-xs font-bold text-[#64748B] transition-all text-center shadow-xs"
           >
             Top Up Another Game
           </Link>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-success" />
+        <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#64748B]">
+          <ShieldCheck className="h-3.5 w-3.5 text-[#10B981]" />
           <span>Official Anti-Ban Delivery Guarantee</span>
         </div>
       </div>
@@ -375,8 +375,8 @@ export default function PaymentSuccessPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-muted-foreground">
-          <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-[#64748B]">
+          <RefreshCw className="h-6 w-6 animate-spin text-[#16A34A]" />
           <span className="text-xs">Verifying order status...</span>
         </div>
       }

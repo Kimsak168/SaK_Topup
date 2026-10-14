@@ -195,20 +195,20 @@ function CheckoutContent() {
   return (
     <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in">
       {/* Breadcrumb Header */}
-      <div className="flex flex-wrap items-center gap-2 text-xs text-secondary-foreground">
-        <Link href="/games" className="hover:text-primary flex items-center gap-1">
+      <div className="flex flex-wrap items-center gap-2 text-xs text-[#64748B]">
+        <Link href="/games" className="hover:text-[#16A34A] active:text-[#22C55E] flex items-center gap-1">
           <ChevronLeft className="h-3.5 w-3.5" />
           <span>Back to Games</span>
         </Link>
         <span>/</span>
-        <span className="text-foreground font-semibold">Secure Checkout</span>
+        <span className="text-[#172033] font-semibold">Secure Checkout</span>
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+        <h1 className="text-2xl sm:text-3xl font-black text-[#172033] tracking-tight">
           Confirm & Pay
         </h1>
-        <p className="text-sm leading-relaxed text-secondary-foreground">
+        <p className="text-sm leading-relaxed text-[#64748B]">
           Review your in-game UID and select your preferred payment method.
         </p>
       </div>
@@ -216,22 +216,22 @@ function CheckoutContent() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
         {/* Left Column: Payment Selection */}
         <div className="min-w-0 lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 space-y-4">
+          <div className="rounded-2xl border border-[#BBF7D0] bg-white p-4 sm:p-6 space-y-4 shadow-xs">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-extrabold uppercase tracking-wider text-secondary-foreground flex items-center gap-2">
-                <QrCode className="h-4 w-4 text-primary" />
+              <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#172033] flex items-center gap-2">
+                <QrCode className="h-4 w-4 text-[#16A34A]" />
                 <span>Payment Method</span>
               </h2>
-              <span className="text-[11px] font-bold text-[#EC168C] bg-[#FFF1F7] border border-[#F4C7DD] px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <span className="text-[11px] font-bold text-[#15803D] bg-[#F0FDF4] border border-[#BBF7D0] px-2.5 py-1 rounded-full flex items-center gap-1.5">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" />
                 Official Gateway
               </span>
             </div>
 
             {/* Single Payment Card: ABA Pay / KHQR */}
-            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-[#EC168C] bg-[#FFF1F7] ring-2 ring-[#EC168C]/20 shadow-xs flex items-center justify-between gap-4">
+            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-[#16A34A] bg-[#F0FDF4] ring-2 ring-[#16A34A]/20 shadow-xs flex items-center justify-between gap-4">
               <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#F4C7DD] bg-[#004B87]">
+                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#BBF7D0] bg-[#004B87]">
                   <Image
                     src="/images/aba-logo.png"
                     alt="ABA Bank"
@@ -242,9 +242,9 @@ function CheckoutContent() {
                   />
                 </div>
                 <div className="space-y-0.5 min-w-0">
-                  <div className="text-base sm:text-lg font-black text-[#1E293B] tracking-tight flex flex-wrap items-center gap-2">
+                  <div className="text-base sm:text-lg font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
                     <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-white text-[#EC168C] border border-[#F4C7DD] shrink-0">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-white text-[#16A34A] border border-[#BBF7D0] shrink-0">
                       KHQR
                     </span>
                   </div>
@@ -253,7 +253,7 @@ function CheckoutContent() {
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground shadow-sm">
+                <div className="h-6 w-6 rounded-full bg-[#16A34A] flex items-center justify-center text-white shadow-xs">
                   <CheckCircle2 className="h-4 w-4" />
                 </div>
               </div>
@@ -261,8 +261,8 @@ function CheckoutContent() {
           </div>
 
           {/* Guarantee Note */}
-          <div className="p-4 rounded-xl bg-success/10 border border-emerald-500/20 flex items-center gap-3 text-xs text-success">
-            <ShieldCheck className="h-5 w-5 text-success shrink-0" />
+          <div className="p-4 rounded-xl bg-emerald-50 border border-[#10B981]/30 flex items-center gap-3 text-xs text-[#10B981]">
+            <ShieldCheck className="h-5 w-5 text-[#10B981] shrink-0" />
             <span>
               Official Direct Top-Up Delivery. Secure KHQR checkout with automated fulfillment.
             </span>
@@ -271,52 +271,52 @@ function CheckoutContent() {
 
         {/* Right Column: Order Summary */}
         <div className="min-w-0 lg:col-span-5 space-y-6">
-          <div className="rounded-2xl border border-border bg-card p-4 sm:p-6 space-y-5 lg:sticky lg:top-32">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-secondary-foreground">
+          <div className="rounded-2xl border border-[#BBF7D0] bg-white p-4 sm:p-6 space-y-5 lg:sticky lg:top-32 shadow-xs">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#172033]">
               Order Summary
             </h2>
 
-            <div className="p-4 rounded-xl bg-muted border border-border space-y-3 text-sm [&>div]:gap-4 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
+            <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7] space-y-3 text-sm [&>div]:gap-4 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Game:</span>
-                <span className="font-bold text-foreground">{game}</span>
+                <span className="text-[#64748B]">Game:</span>
+                <span className="font-bold text-[#172033]">{game}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Package:</span>
-                <span className="font-bold text-primary">{packageName}</span>
+                <span className="text-[#64748B]">Package:</span>
+                <span className="font-bold text-[#16A34A]">{packageName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Player ID:</span>
-                <span className="font-mono text-foreground font-bold">{playerId}</span>
+                <span className="text-[#64748B]">Player ID:</span>
+                <span className="font-mono text-[#172033] font-bold">{playerId}</span>
               </div>
               {serverId && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Server ID:</span>
-                  <span className="font-mono text-foreground">{serverId}</span>
+                  <span className="text-[#64748B]">Server ID:</span>
+                  <span className="font-mono text-[#172033]">{serverId}</span>
                 </div>
               )}
               {playerName && (
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Nickname:</span>
-                  <span className="text-success font-semibold">{playerName}</span>
+                  <span className="text-[#64748B]">Nickname:</span>
+                  <span className="text-[#10B981] font-semibold">{playerName}</span>
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Payment:</span>
-                <span className="font-bold text-foreground">ABA Pay / KHQR</span>
+                <span className="text-[#64748B]">Payment:</span>
+                <span className="font-bold text-[#172033]">ABA Pay / KHQR</span>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-border space-y-2">
+            <div className="pt-2 border-t border-[#DCFCE7] space-y-2">
               <div className="flex justify-between items-baseline">
-                <span className="text-xs text-muted-foreground">Total USD:</span>
-                <span className="text-2xl font-black text-primary">
+                <span className="text-xs text-[#64748B]">Total USD:</span>
+                <span className="text-2xl font-black text-[#16A34A]">
                   ${price.toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between text-xs text-muted-foreground">
+              <div className="flex justify-between text-xs text-[#64748B]">
                 <span>Total Riel (KHR):</span>
-                <span className="font-mono font-bold text-primary">
+                <span className="font-mono font-bold text-[#64748B]">
                   {priceKHR.toLocaleString()} ៛
                 </span>
               </div>
@@ -325,7 +325,7 @@ function CheckoutContent() {
             <button
               onClick={handleCreateOrder}
               disabled={isProcessing}
-              className="public-button w-full py-3.5 px-4 rounded-xl text-primary-foreground font-bold text-sm shadow-[0_0_25px_rgba(255,46,147,0.35)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition-all"
+              className="w-full py-3.5 px-4 rounded-xl text-white font-bold text-sm bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none transition-colors active:scale-98"
             >
               {isProcessing ? (
                 <>
@@ -340,7 +340,7 @@ function CheckoutContent() {
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
+            <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#64748B]">
               <Lock className="h-3 w-3" />
               <span>256-Bit Encrypted Payment Rail</span>
             </div>
@@ -351,48 +351,48 @@ function CheckoutContent() {
       {/* Confirmation Modal */}
       {orderComplete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-[#F8DCE9] bg-white p-6 sm:p-8 space-y-5 text-center shadow-md">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-success/10 text-success border border-emerald-500/30">
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-[#BBF7D0] bg-white p-6 sm:p-8 space-y-5 text-center shadow-md">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#10B981] border border-[#10B981]/30">
               <CheckCircle2 className="h-8 w-8" />
             </div>
 
             <div className="space-y-1">
-              <h3 className="text-xl font-black text-foreground">Order Registered!</h3>
-              <p className="text-xs text-secondary-foreground">
+              <h3 className="text-xl font-black text-[#172033]">Order Registered!</h3>
+              <p className="text-xs text-[#64748B]">
                 Scan KHQR code to fulfill diamonds automatically.
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-muted border border-border text-xs font-mono space-y-2 text-left">
+            <div className="p-4 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7] text-xs font-mono space-y-2 text-left">
               <div className="flex justify-between items-center">
-                <span className="text-muted-foreground font-sans">Order #:</span>
+                <span className="text-[#64748B] font-sans">Order #:</span>
                 <div className="flex items-center gap-1">
-                  <span className="text-primary font-bold">{orderComplete.orderNumber}</span>
-                  <button type="button" onClick={handleCopyOrder} aria-label={copied ? "Order number copied" : "Copy order number"} className="p-2 text-muted-foreground hover:text-foreground">
-                    {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+                  <span className="text-[#16A34A] font-bold">{orderComplete.orderNumber}</span>
+                  <button type="button" onClick={handleCopyOrder} aria-label={copied ? "Order number copied" : "Copy order number"} className="p-2 text-[#64748B] hover:text-[#16A34A]">
+                    {copied ? <Check className="h-3 w-3 text-[#10B981]" /> : <Copy className="h-3 w-3" />}
                   </button>
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Amount Due:</span>
-                <span className="text-foreground font-bold">${orderComplete.amount.toFixed(2)} USD</span>
+                <span className="text-[#64748B] font-sans">Amount Due:</span>
+                <span className="text-[#172033] font-bold">${orderComplete.amount.toFixed(2)} USD</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-sans">Target UID:</span>
-                <span className="text-foreground">{orderComplete.playerId}</span>
+                <span className="text-[#64748B] font-sans">Target UID:</span>
+                <span className="text-[#172033]">{orderComplete.playerId}</span>
               </div>
             </div>
 
             <div className="pt-2 flex flex-col gap-2">
               <Link
                 href={`/orders?orderNumber=${orderComplete.orderNumber}`}
-                className="w-full py-3 rounded-xl bg-primary hover:bg-primary text-xs font-bold text-primary-foreground transition-all shadow-md"
+                className="w-full py-3 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-xs font-bold text-white transition-colors shadow-xs"
               >
                 Track Fulfillment Status &rarr;
               </Link>
               <button
                 onClick={() => setOrderComplete(null)}
-                className="w-full py-2.5 rounded-xl border border-border hover:bg-muted text-xs font-semibold text-muted-foreground"
+                className="w-full py-2.5 rounded-xl border border-[#BBF7D0] hover:bg-[#F0FDF4] active:bg-[#F0FDF4] text-xs font-semibold text-[#172033] transition-colors cursor-pointer"
               >
                 Close
               </button>
@@ -408,8 +408,8 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-muted-foreground">
-          <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-[#64748B]">
+          <RefreshCw className="h-6 w-6 animate-spin text-[#16A34A]" />
           <span className="text-xs">Loading checkout...</span>
         </div>
       }

@@ -112,50 +112,50 @@ export default function MLBBTestPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 space-y-8 animate-in fade-in">
+    <div className="max-w-5xl mx-auto py-6 px-4 sm:px-6 space-y-6 animate-in fade-in duration-300">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-xs text-slate-400 mb-1">
-            <Link href="/admin/games" className="hover:text-pink-400 flex items-center gap-1">
+          <div className="flex items-center gap-2 text-xs text-[#94A3B8] mb-1">
+            <Link href="/admin/games" className="hover:text-[#22C55E] flex items-center gap-1">
               <ChevronLeft className="h-3.5 w-3.5" />
               <span>Back to Games Catalog</span>
             </Link>
             <span>/</span>
-            <span className="text-white font-semibold">MLBB Cambodian Verification</span>
+            <span className="text-[#F8FAFC] font-semibold">MLBB Cambodian Verification</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2.5">
-            <Gamepad2 className="h-7 w-7 text-pink-500" />
+          <h1 className="text-xl sm:text-2xl font-bold text-[#F8FAFC] tracking-tight flex items-center gap-2">
+            <Gamepad2 className="h-6 w-6 text-[#22C55E]" />
             <span>Mobile Legends: Cambodian Account Compatibility</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Direct real-time comparison between G2Bulk products <strong className="text-pink-400 font-mono">mlbb</strong> and <strong className="text-cyan-400 font-mono">mlbb_global</strong>. Validates account compatibility without spending wallet balance or creating real orders.
+          <p className="text-xs text-[#94A3B8] mt-1 max-w-2xl leading-relaxed">
+            Direct real-time comparison between G2Bulk products <strong className="text-[#22C55E] font-mono">mlbb</strong> and <strong className="text-[#38BDF8] font-mono">mlbb_global</strong>. Validates account compatibility without spending wallet balance or creating real orders.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 font-bold shrink-0">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-xs text-[#22C55E] font-semibold shrink-0">
+          <ShieldCheck className="h-4 w-4 text-[#22C55E]" />
           <span>Zero Balance Spent</span>
         </div>
       </div>
 
       {/* Test Form */}
-      <div className="rounded-3xl border border-white/10 bg-[#0c0e24] p-6 sm:p-8 space-y-6 shadow-xl">
+      <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 sm:p-6 space-y-4 shadow-sm">
         <div className="space-y-1">
-          <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
             <span>Secure Local Test Form</span>
-            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-pink-500/15 text-pink-400 border border-pink-500/30">
+            <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/30">
               Sandboxed Check
             </span>
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#94A3B8]">
             Enter your Cambodian Mobile Legends account details below. Both G2Bulk products will be queried simultaneously.
           </p>
         </div>
 
-        <form onSubmit={handleRunTest} className="grid grid-cols-1 sm:grid-cols-12 gap-4">
-          <div className="sm:col-span-5 space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
+        <form onSubmit={handleRunTest} className="grid grid-cols-1 sm:grid-cols-12 gap-3">
+          <div className="sm:col-span-5 space-y-1">
+            <label className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
               User ID
             </label>
             <input
@@ -163,12 +163,12 @@ export default function MLBBTestPage() {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               placeholder="e.g. 123456789"
-              className="w-full rounded-xl border border-white/10 bg-[#08091a] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none font-mono"
+              className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3.5 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20 font-mono"
             />
           </div>
 
-          <div className="sm:col-span-4 space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-slate-300">
+          <div className="sm:col-span-4 space-y-1">
+            <label className="text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
               Zone ID / Server ID
             </label>
             <input
@@ -176,7 +176,7 @@ export default function MLBBTestPage() {
               value={serverId}
               onChange={(e) => setServerId(e.target.value)}
               placeholder="e.g. 1234"
-              className="w-full rounded-xl border border-white/10 bg-[#08091a] px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none font-mono"
+              className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3.5 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20 font-mono"
             />
           </div>
 
@@ -184,16 +184,16 @@ export default function MLBBTestPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 text-white font-bold text-xs shadow-[0_0_20px_rgba(255,46,147,0.3)] transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full h-9 px-4 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-slate-950 font-semibold text-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {isLoading ? (
                 <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                   <span>Validating...</span>
                 </>
               ) : (
                 <>
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-3.5 w-3.5" />
                   <span>Test Compatibility</span>
                 </>
               )}
@@ -227,53 +227,53 @@ export default function MLBBTestPage() {
           </div>
 
           {/* Side-by-Side Product Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Card 1: mlbb (Standard) */}
             <div
-              className={`rounded-3xl border p-6 space-y-5 bg-[#0c0e24] ${
+              className={`rounded-xl border p-5 space-y-4 bg-[#111A2B] ${
                 report.mlbb.validation.success
-                  ? "border-emerald-500/40 shadow-[0_0_30px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/30"
-                  : "border-white/10"
+                  ? "border-[#22C55E]/40"
+                  : "border-[#243047]"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-pink-400 text-sm">
+                    <span className="font-mono font-bold text-[#22C55E] text-xs">
                       mlbb
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/30">
                       Standard / International
                     </span>
                   </div>
-                  <h4 className="text-lg font-black text-white mt-1">
+                  <h4 className="text-base font-bold text-[#F8FAFC] mt-1">
                     {report.mlbb.name}
                   </h4>
                 </div>
 
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl border shrink-0 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg border shrink-0 ${
                     report.mlbb.validation.success
-                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
-                      : "bg-rose-500/20 text-rose-400 border-rose-500/40"
+                      ? "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/30"
+                      : "bg-rose-500/10 text-rose-400 border-rose-500/30"
                   }`}
                 >
                   {report.mlbb.validation.success ? (
-                    <CheckCircle2 className="h-5 w-5" />
+                    <CheckCircle2 className="h-4 w-4" />
                   ) : (
-                    <XCircle className="h-5 w-5" />
+                    <XCircle className="h-4 w-4" />
                   )}
                 </div>
               </div>
 
               {/* Account Validation Status */}
-              <div className="rounded-2xl bg-[#08091a] p-4 text-xs font-mono space-y-2 border border-white/5">
+              <div className="rounded-lg bg-[#0C1322] p-3 text-xs font-mono space-y-1.5 border border-[#243047]">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 font-sans">Validation:</span>
+                  <span className="text-[#94A3B8] font-sans">Validation:</span>
                   <span
-                    className={`font-bold ${
+                    className={`font-semibold ${
                       report.mlbb.validation.success
-                        ? "text-emerald-400"
+                        ? "text-[#22C55E]"
                         : "text-rose-400"
                     }`}
                   >
@@ -284,16 +284,16 @@ export default function MLBBTestPage() {
                 </div>
                 {report.mlbb.validation.playerName && (
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-sans">IGN (Nickname):</span>
-                    <span className="text-white font-sans font-bold">
+                    <span className="text-[#94A3B8] font-sans">IGN (Nickname):</span>
+                    <span className="text-[#F8FAFC] font-sans font-bold">
                       {report.mlbb.validation.playerName}
                     </span>
                   </div>
                 )}
                 {report.mlbb.validation.message && (
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-slate-400 font-sans shrink-0">Supplier Msg:</span>
-                    <span className="text-slate-300 text-[11px] text-right font-sans">
+                    <span className="text-[#94A3B8] font-sans shrink-0">Supplier Msg:</span>
+                    <span className="text-[#94A3B8] text-[11px] text-right font-sans">
                       {report.mlbb.validation.message}
                     </span>
                   </div>
@@ -301,11 +301,11 @@ export default function MLBBTestPage() {
               </div>
 
               {/* Regional Restriction Notes */}
-              <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs space-y-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400">
+              <div className="p-3 rounded-lg bg-[#0C1322]/50 border border-[#243047] text-xs space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[#64748B]">
                   Regional Restriction Policy
                 </span>
-                <p className="text-slate-300 text-[11px] leading-relaxed">
+                <p className="text-[#94A3B8] text-[11px] leading-relaxed">
                   {report.mlbb.regionalNotes}
                 </p>
               </div>
@@ -313,21 +313,21 @@ export default function MLBBTestPage() {
               {/* Packages Catalogue */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-slate-300 flex items-center gap-1.5">
-                    <Package className="h-3.5 w-3.5 text-pink-400" />
+                  <span className="font-semibold text-[#F8FAFC] flex items-center gap-1.5">
+                    <Package className="h-3.5 w-3.5 text-[#22C55E]" />
                     <span>Eligible Packages ({report.mlbb.packageCount})</span>
                   </span>
-                  <span className="text-[10px] text-emerald-400 font-bold">
+                  <span className="text-[10px] text-[#22C55E] font-semibold">
                     106 Active Packs
                   </span>
                 </div>
-                <div className="max-h-36 overflow-y-auto rounded-xl bg-[#08091a] p-3 text-xs space-y-1.5 border border-white/5 font-mono">
+                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0C1322] p-2.5 text-xs space-y-1 border border-[#243047] font-mono">
                   {report.mlbb.samplePackages.map((pkg) => (
                     <div key={pkg.id} className="flex justify-between text-[11px]">
-                      <span className="text-slate-300 truncate max-w-[180px]">
+                      <span className="text-[#94A3B8] truncate max-w-[180px]">
                         {pkg.name}
                       </span>
-                      <span className="text-emerald-400 font-bold">
+                      <span className="text-[#22C55E] font-semibold">
                         ${pkg.wholesaleCost.toFixed(3)}
                       </span>
                     </div>
@@ -341,12 +341,12 @@ export default function MLBBTestPage() {
                   type="button"
                   onClick={() => handleApplyConfiguration("mlbb")}
                   disabled={isConfiguring}
-                  className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  className="w-full h-9 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-slate-950 font-semibold text-xs transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   {isConfiguring ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <RefreshCw className="h-3.5 w-3.5 animate-spin" />
                   ) : (
-                    <Check className="h-4 w-4" />
+                    <Check className="h-3.5 w-3.5" />
                   )}
                   <span>Configure &apos;mlbb&apos; as Main Mobile Legends Game</span>
                 </button>
@@ -355,50 +355,50 @@ export default function MLBBTestPage() {
 
             {/* Card 2: mlbb_global */}
             <div
-              className={`rounded-3xl border p-6 space-y-5 bg-[#0c0e24] ${
+              className={`rounded-xl border p-5 space-y-4 bg-[#111A2B] ${
                 report.mlbb_global.validation.success
-                  ? "border-cyan-500/40"
-                  : "border-white/10 opacity-75"
+                  ? "border-[#38BDF8]/40"
+                  : "border-[#243047] opacity-80"
               }`}
             >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-black text-cyan-400 text-sm">
+                    <span className="font-mono font-bold text-[#38BDF8] text-xs">
                       mlbb_global
                     </span>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
                       Indonesia Only
                     </span>
                   </div>
-                  <h4 className="text-lg font-black text-white mt-1">
+                  <h4 className="text-base font-bold text-[#F8FAFC] mt-1">
                     {report.mlbb_global.name}
                   </h4>
                 </div>
 
                 <div
-                  className={`flex h-10 w-10 items-center justify-center rounded-xl border shrink-0 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-lg border shrink-0 ${
                     report.mlbb_global.validation.success
-                      ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40"
-                      : "bg-rose-500/20 text-rose-400 border-rose-500/40"
+                      ? "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/30"
+                      : "bg-rose-500/10 text-rose-400 border-rose-500/30"
                   }`}
                 >
                   {report.mlbb_global.validation.success ? (
-                    <CheckCircle2 className="h-5 w-5" />
+                    <CheckCircle2 className="h-4 w-4" />
                   ) : (
-                    <XCircle className="h-5 w-5" />
+                    <XCircle className="h-4 w-4" />
                   )}
                 </div>
               </div>
 
               {/* Account Validation Status */}
-              <div className="rounded-2xl bg-[#08091a] p-4 text-xs font-mono space-y-2 border border-white/5">
+              <div className="rounded-lg bg-[#0C1322] p-3 text-xs font-mono space-y-1.5 border border-[#243047]">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 font-sans">Validation:</span>
+                  <span className="text-[#94A3B8] font-sans">Validation:</span>
                   <span
-                    className={`font-bold ${
+                    className={`font-semibold ${
                       report.mlbb_global.validation.success
-                        ? "text-emerald-400"
+                        ? "text-[#22C55E]"
                         : "text-rose-400"
                     }`}
                   >
@@ -409,16 +409,16 @@ export default function MLBBTestPage() {
                 </div>
                 {report.mlbb_global.validation.playerName && (
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-400 font-sans">IGN:</span>
-                    <span className="text-white font-sans font-bold">
+                    <span className="text-[#94A3B8] font-sans">IGN:</span>
+                    <span className="text-[#F8FAFC] font-sans font-bold">
                       {report.mlbb_global.validation.playerName}
                     </span>
                   </div>
                 )}
                 {report.mlbb_global.validation.message && (
                   <div className="flex justify-between items-start gap-2">
-                    <span className="text-slate-400 font-sans shrink-0">Supplier Msg:</span>
-                    <span className="text-slate-300 text-[11px] text-right font-sans">
+                    <span className="text-[#94A3B8] font-sans shrink-0">Supplier Msg:</span>
+                    <span className="text-[#94A3B8] text-[11px] text-right font-sans">
                       {report.mlbb_global.validation.message}
                     </span>
                   </div>
@@ -426,11 +426,11 @@ export default function MLBBTestPage() {
               </div>
 
               {/* Regional Restriction Notes */}
-              <div className="p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/20 text-xs space-y-1">
+              <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-xs space-y-1">
                 <span className="text-[10px] uppercase font-bold text-amber-400">
                   Regional Restriction Policy
                 </span>
-                <p className="text-amber-200 text-[11px] leading-relaxed">
+                <p className="text-amber-200/90 text-[11px] leading-relaxed">
                   {report.mlbb_global.regionalNotes}
                 </p>
               </div>
@@ -438,21 +438,21 @@ export default function MLBBTestPage() {
               {/* Packages Catalogue */}
               <div className="space-y-2">
                 <div className="flex justify-between items-center text-xs">
-                  <span className="font-bold text-slate-300 flex items-center gap-1.5">
-                    <Package className="h-3.5 w-3.5 text-cyan-400" />
+                  <span className="font-semibold text-[#F8FAFC] flex items-center gap-1.5">
+                    <Package className="h-3.5 w-3.5 text-[#38BDF8]" />
                     <span>Eligible Packages ({report.mlbb_global.packageCount})</span>
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[10px] text-[#64748B]">
                     24 Active Packs
                   </span>
                 </div>
-                <div className="max-h-36 overflow-y-auto rounded-xl bg-[#08091a] p-3 text-xs space-y-1.5 border border-white/5 font-mono">
+                <div className="max-h-36 overflow-y-auto rounded-lg bg-[#0C1322] p-2.5 text-xs space-y-1 border border-[#243047] font-mono">
                   {report.mlbb_global.samplePackages.map((pkg) => (
                     <div key={pkg.id} className="flex justify-between text-[11px]">
-                      <span className="text-slate-300 truncate max-w-[180px]">
+                      <span className="text-[#94A3B8] truncate max-w-[180px]">
                         {pkg.name}
                       </span>
-                      <span className="text-cyan-400 font-bold">
+                      <span className="text-[#38BDF8] font-semibold">
                         ${pkg.wholesaleCost.toFixed(3)}
                       </span>
                     </div>
@@ -466,23 +466,23 @@ export default function MLBBTestPage() {
 
       {/* Success Notification */}
       {configuredSuccess && (
-        <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs space-y-2 animate-in fade-in">
-          <div className="font-extrabold text-white text-sm flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+        <div className="p-4 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] text-xs space-y-2 animate-in fade-in">
+          <div className="font-bold text-[#F8FAFC] text-sm flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />
             <span>Mobile Legends Successfully Configured!</span>
           </div>
           <p>{configuredSuccess}</p>
-          <div className="pt-2 flex gap-3">
+          <div className="pt-1.5 flex gap-2.5">
             <Link
               href="/admin/games"
-              className="px-4 py-2 rounded-xl bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs"
+              className="px-3.5 py-1.5 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-slate-950 font-semibold text-xs"
             >
               Return to Games Management
             </Link>
             <Link
               href="/games/g2bulk/mlbb"
               target="_blank"
-              className="px-4 py-2 rounded-xl border border-white/10 hover:bg-white/5 text-slate-300 font-bold text-xs"
+              className="px-3.5 py-1.5 rounded-lg border border-[#243047] hover:bg-[#151F31] text-[#94A3B8] hover:text-[#F8FAFC] font-medium text-xs"
             >
               Preview Public Storefront &rarr;
             </Link>

@@ -169,7 +169,7 @@ export default function AdminSuppliersPage() {
           <button
             onClick={() => void fetchTelemetry(true)}
             disabled={checking}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border border-[#243047] bg-[#151F31] hover:bg-[#111A2B] text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${checking ? "animate-spin" : ""}`} />
             <span>{checking ? "Checking..." : "Verify Connections"}</span>
@@ -178,7 +178,7 @@ export default function AdminSuppliersPage() {
           <button
             onClick={handleSyncGames}
             disabled={syncingGames}
-            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-[0_0_15px_rgba(255,46,147,0.3)] transition-all cursor-pointer disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold text-[#080D18] bg-[#22C55E] hover:bg-[#16A34A] transition-colors cursor-pointer disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${syncingGames ? "animate-spin" : ""}`} />
             <span>{syncingGames ? "Syncing..." : "Sync All Games"}</span>
@@ -186,18 +186,18 @@ export default function AdminSuppliersPage() {
         </div>
       </div>
 
-      {error && <div role="alert" className="admin-error">{error}</div>}
-      {loading && <div className="admin-skeleton h-20 rounded-2xl" aria-label="Loading supplier configuration" />}
+      {error && <div role="alert" className="p-3.5 rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 text-xs text-[#EF4444]">{error}</div>}
+      {loading && <div className="h-20 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" aria-label="Loading supplier configuration" />}
       {/* Supplier Cards Grid */}
-      {data && <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {data && <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* ========================================================= */}
         {/* VIZO SUPPLIER CARD */}
         {/* ========================================================= */}
-        <div className="admin-supplier-detail-card rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-5 relative overflow-hidden shadow-sm">
-          <div className="admin-supplier-detail-header flex items-start justify-between gap-4">
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4 relative overflow-hidden">
+          <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-lg font-black text-white">Vizo Direct API</span>
+                <span className="text-base font-bold text-[#F8FAFC]">Vizo Direct API</span>
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                     vizo?.status === "connected"
@@ -258,7 +258,7 @@ export default function AdminSuppliersPage() {
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Username
               </span>
-              <div className="text-sm font-mono font-bold text-pink-400 mt-0.5 truncate">
+              <div className="text-sm font-mono font-bold text-[#22C55E] mt-0.5 truncate">
                 {vizo?.reseller?.username || "—"}
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function AdminSuppliersPage() {
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Lifetime Spent
               </span>
-              <div className="text-sm font-mono font-bold text-purple-400 mt-0.5">
+              <div className="text-sm font-mono font-bold text-[#F8FAFC] mt-0.5">
                 {vizo?.status === "connected" && vizo.reseller?.total_spent != null ? `$${Number(vizo.reseller.total_spent).toFixed(2)}` : "—"}
               </div>
             </div>
@@ -278,7 +278,7 @@ export default function AdminSuppliersPage() {
               <span className="text-slate-400">Supplier Order Delivery History:</span>
               <span className="font-bold text-white">
                 {vizo?.reseller ? <>{vizo.reseller.total_orders ?? "—"} total (
-                <span className="text-emerald-400 font-bold">{vizo.reseller.success_orders ?? "—"} success</span>
+                <span className="text-[#22C55E] font-bold">{vizo.reseller.success_orders ?? "—"} success</span>
                 {(vizo.reseller.failed_orders ?? 0) > 0 && (
                   <span className="text-rose-400 font-bold ml-1">
                     , {vizo.reseller.failed_orders} failed
@@ -301,10 +301,10 @@ export default function AdminSuppliersPage() {
           </div>
 
           {/* Card Actions */}
-          <div className="admin-supplier-links pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+          <div className="admin-supplier-links pt-2 border-t border-[#243047] flex items-center justify-between gap-2">
             <Link
               href="/admin/packages?supplier=vizo"
-              className="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1"
+              className="text-xs font-semibold text-[#22C55E] hover:underline flex items-center gap-1"
             >
               <span>Manage Vizo Packages</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -324,15 +324,15 @@ export default function AdminSuppliersPage() {
         {/* ========================================================= */}
         {/* G2BULK SUPPLIER CARD */}
         {/* ========================================================= */}
-        <div className="admin-supplier-detail-card rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-5 relative overflow-hidden shadow-sm">
-          <div className="admin-supplier-detail-header flex items-start justify-between gap-4">
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4 relative overflow-hidden">
+          <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-lg font-black text-white">G2Bulk Direct API</span>
+                <span className="text-base font-bold text-[#F8FAFC]">G2Bulk Direct API</span>
                 <span
                   className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                     g2bulk?.status === "connected"
-                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                      ? "bg-[rgba(34,197,94,0.12)] text-[#22C55E] border border-[rgba(34,197,94,0.3)]"
                       : g2bulk?.status === "failed"
                       ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
                       : "bg-slate-500/15 text-slate-300 border border-slate-500/30"
@@ -340,7 +340,7 @@ export default function AdminSuppliersPage() {
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
-                      g2bulk?.status === "connected" ? "bg-emerald-400" : g2bulk?.status === "failed" ? "bg-rose-400" : "bg-slate-400"
+                      g2bulk?.status === "connected" ? "bg-[#22C55E]" : g2bulk?.status === "failed" ? "bg-rose-400" : "bg-slate-400"
                     }`}
                   />
                   {g2bulk?.status === "connected" ? "Connected" : g2bulk?.status === "failed" ? "Failed" : g2bulk?.status === "configured" ? "Configured" : "Unavailable"}
@@ -361,19 +361,19 @@ export default function AdminSuppliersPage() {
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Ping Latency
               </span>
-              <div className="text-sm font-mono font-bold text-emerald-400">
+              <div className="text-sm font-mono font-bold text-[#22C55E]">
                 {g2bulk?.latencyMs != null ? `${g2bulk.latencyMs} ms` : "—"}
               </div>
             </div>
           </div>
 
           {/* G2Bulk Balance & Account Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-xl bg-[#08091a] border border-white/5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-3.5 rounded-lg bg-[#151F31] border border-[#243047]">
             <div>
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Wallet Balance
               </span>
-              <div className="text-lg font-black text-emerald-400 mt-0.5">
+              <div className="text-lg font-black text-[#22C55E] mt-0.5">
                 {g2bulk?.status === "connected" && g2bulk.reseller?.balance != null ? `$${Number(g2bulk.reseller.balance).toFixed(2)}` : "—"}
               </div>
             </div>
@@ -389,7 +389,7 @@ export default function AdminSuppliersPage() {
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Username
               </span>
-              <div className="text-sm font-mono font-bold text-pink-400 mt-0.5 truncate">
+              <div className="text-sm font-mono font-bold text-[#22C55E] mt-0.5 truncate">
                 {g2bulk?.reseller?.username || "—"}
               </div>
             </div>
@@ -397,7 +397,7 @@ export default function AdminSuppliersPage() {
               <span className="text-[10px] uppercase font-bold text-slate-400">
                 Account Name
               </span>
-              <div className="text-sm font-mono font-bold text-purple-400 mt-0.5 truncate">
+              <div className="text-sm font-mono font-bold text-slate-200 mt-0.5 truncate">
                 {g2bulk?.reseller?.first_name || "—"}
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function AdminSuppliersPage() {
           <div className="admin-supplier-facts space-y-2 text-xs">
             <div className="flex justify-between text-slate-300">
               <span className="text-slate-400">Direct Catalogue Sync:</span>
-              <span className="font-bold text-emerald-400">
+              <span className="font-bold text-[#22C55E]">
                 Automated Direct Integration
               </span>
             </div>
@@ -426,10 +426,10 @@ export default function AdminSuppliersPage() {
           </div>
 
           {/* Card Actions */}
-          <div className="admin-supplier-links pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+          <div className="admin-supplier-links pt-2 border-t border-[#243047] flex items-center justify-between gap-2">
             <Link
               href="/admin/packages?supplier=g2bulk"
-              className="text-xs font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1"
+              className="text-xs font-semibold text-[#22C55E] hover:underline flex items-center gap-1"
             >
               <span>Manage G2Bulk Packages</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -448,10 +448,10 @@ export default function AdminSuppliersPage() {
       </div>}
 
       {/* Synchronization Tools Hub */}
-      <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-4">
+      <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
         <div>
-          <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-            <Database className="h-4 w-4 text-pink-400" />
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <Database className="h-4 w-4 text-[#22C55E]" />
             <span>Supplier Synchronization Controls</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -459,9 +459,9 @@ export default function AdminSuppliersPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-          <div className="p-4 rounded-xl bg-[#08091a] border border-white/5 space-y-3">
-            <h3 className="font-bold text-white text-xs">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          <div className="p-4 rounded-lg bg-[#151F31] border border-[#243047] space-y-3">
+            <h3 className="font-bold text-[#F8FAFC] text-xs">
               1. Synchronize Games Catalogue
             </h3>
             <p className="text-xs text-slate-400">
@@ -470,15 +470,15 @@ export default function AdminSuppliersPage() {
             <button
               onClick={handleSyncGames}
               disabled={syncingGames}
-              className="admin-sync-action w-full py-2.5 px-4 rounded-xl bg-pink-500/20 hover:bg-pink-500 text-pink-300 hover:text-white border border-pink-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-2 px-3 rounded-lg bg-[rgba(34,197,94,0.12)] hover:bg-[#22C55E] text-[#22C55E] hover:text-[#080D18] border border-[rgba(34,197,94,0.3)] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${syncingGames ? "animate-spin" : ""}`} />
               <span>{syncingGames ? "Synchronizing Games..." : "Run Games Sync"}</span>
             </button>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#08091a] border border-white/5 space-y-3">
-            <h3 className="font-bold text-white text-xs">
+          <div className="p-4 rounded-lg bg-[#151F31] border border-[#243047] space-y-3">
+            <h3 className="font-bold text-[#F8FAFC] text-xs">
               2. Synchronize Packages & Wholesale Pricing
             </h3>
             <p className="text-xs text-slate-400">
@@ -487,7 +487,7 @@ export default function AdminSuppliersPage() {
             <button
               onClick={handleSyncPackages}
               disabled={syncingPackages}
-              className="admin-sync-action w-full py-2.5 px-4 rounded-xl bg-purple-500/20 hover:bg-purple-500 text-purple-300 hover:text-white border border-purple-500/30 text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-2 px-3 rounded-lg bg-[#111A2B] hover:bg-[#0C1322] text-[#F8FAFC] border border-[#243047] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
             >
               <RefreshCw className={`h-3.5 w-3.5 ${syncingPackages ? "animate-spin" : ""}`} />
               <span>{syncingPackages ? "Synchronizing Packages..." : "Run Packages Sync"}</span>

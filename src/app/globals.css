@@ -32,7 +32,16 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-card-border: var(--card-border);
-  --shadow-soft: 0 8px 30px -12px rgb(71 85 105 / 0.18);
+  --color-green-primary: #16a34a;
+  --color-green-hover: #22c55e;
+  --color-green-soft: #f0fdf4;
+  --color-page-bg: #f7fff9;
+  --color-card-bg: #ffffff;
+  --color-text-primary: #172033;
+  --color-text-secondary: #64748b;
+  --color-main-border: #bbf7d0;
+  --color-soft-border: #dcfce7;
+  --shadow-soft: 0 2px 8px -2px rgb(23 32 51 / 0.06);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -42,30 +51,30 @@
 
 :root {
   color-scheme: light;
-  --background: #fff8fc;
-  --foreground: #1e293b;
+  --background: #f7fff9;
+  --foreground: #172033;
   --card: #ffffff;
-  --card-foreground: #1e293b;
+  --card-foreground: #172033;
   --popover: #ffffff;
-  --popover-foreground: #1e293b;
-  --primary: #ec168c;
+  --popover-foreground: #172033;
+  --primary: #16a34a;
   --primary-foreground: #ffffff;
-  --secondary: #fff1f7;
-  --secondary-foreground: #1e293b;
-  --muted: #fff1f7;
+  --secondary: #f0fdf4;
+  --secondary-foreground: #172033;
+  --muted: #f0fdf4;
   --muted-foreground: #64748b;
-  --accent: #fff1f7;
-  --accent-foreground: #ec168c;
+  --accent: #f0fdf4;
+  --accent-foreground: #16a34a;
   --destructive: #ef4444;
-  --border: #f4c7dd;
-  --border-soft: #f8dce9;
-  --input: #f4c7dd;
-  --ring: #ec168c;
-  --brand-purple: #ec168c;
-  --brand-blue: #ec168c;
+  --border: #bbf7d0;
+  --border-soft: #dcfce7;
+  --input: #bbf7d0;
+  --ring: #16a34a;
+  --brand-purple: #16a34a;
+  --brand-blue: #16a34a;
   --success: #10b981;
   --warning: #f59e0b;
-  --card-border: #f4c7dd;
+  --card-border: #bbf7d0;
   --radius: 0.75rem;
   --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-ui: 180ms;
@@ -146,8 +155,8 @@
     inset: 0;
     z-index: 0;
     pointer-events: none;
-    background: radial-gradient(ellipse at 85% 0%, rgba(255, 241, 247, 0.6), transparent 50%),
-      radial-gradient(ellipse at 10% 25%, rgba(248, 220, 233, 0.35), transparent 50%);
+    background: radial-gradient(ellipse at 85% 0%, rgba(240, 253, 244, 0.7), transparent 50%),
+      radial-gradient(ellipse at 10% 25%, rgba(220, 252, 231, 0.4), transparent 50%);
   }
   .skip-link {
     position: fixed;
@@ -171,7 +180,66 @@
   .game-card { transition: transform 220ms var(--ease-ui), box-shadow 220ms ease, border-color 220ms ease; }
   .game-card-image { transition: transform 350ms var(--ease-ui); }
   .game-card:active { transform: scale(.99); }
-  .public-navbar .saksuuu-brand-text-light { animation: none; filter: none; }
+  @keyframes border-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .game-card-border {
+    animation: border-spin 8s linear infinite;
+    will-change: transform;
+  }
+  @keyframes romdul-fall {
+    0% {
+      transform: translate3d(0, -15vh, 0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: var(--flower-op, 0.5);
+    }
+    50% {
+      transform: translate3d(var(--flower-drift, 25px), 50vh, 0) rotate(calc(var(--flower-rot, 240deg) * 0.5));
+    }
+    90% {
+      opacity: calc(var(--flower-op, 0.5) * 0.9);
+    }
+    100% {
+      transform: translate3d(calc(var(--flower-drift, 25px) * -0.8), 115vh, 0) rotate(var(--flower-rot, 240deg));
+      opacity: 0;
+    }
+  }
+
+  .falling-flowers-background {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .dreamy-falling-flower,
+  .romdul-falling-flower {
+    position: absolute;
+    top: 0;
+    width: var(--flower-mobile-size, 16px);
+    height: var(--flower-mobile-size, 16px);
+    opacity: 0;
+    pointer-events: none;
+    animation-name: romdul-fall !important;
+    animation-duration: var(--flower-dur, 12s) !important;
+    animation-timing-function: linear !important;
+    animation-delay: var(--flower-delay, 0s) !important;
+    animation-iteration-count: infinite !important;
+    animation-fill-mode: both !important;
+    will-change: transform, opacity;
+  }
+
+  @media (min-width: 768px) {
+    .dreamy-falling-flower,
+    .romdul-falling-flower {
+      width: var(--flower-size, 26px);
+      height: var(--flower-size, 26px);
+    }
+  }
   .public-theme :where(section) { scroll-margin-top: 10rem; }
   .public-theme :where(input:not([type="checkbox"]):not([type="radio"]), select) { min-height: 2.75rem; }
   .public-surface {
@@ -183,48 +251,55 @@
 
   .public-button {
     color: #ffffff;
-    background-color: #ec168c;
-    box-shadow: 0 2px 8px rgb(236 22 140 / 0.16);
+    background-color: #16a34a;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08);
     transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .public-button:hover:not(:disabled),
   .group:hover .public-button {
-    background-color: #ff3aa2;
-    box-shadow: 0 4px 12px rgb(255 58 162 / 0.22);
+    background-color: #22c55e;
+    box-shadow: 0 2px 6px 0 rgb(22 163 74 / 0.18);
     transform: translateY(-1px);
   }
 
+  .public-button:active:not(:disabled),
+  .group:active .public-button {
+    background-color: #15803d;
+    transform: scale(0.98);
+  }
+
   .public-button:disabled {
-    color: #64748b;
-    background-color: #f8dce9;
+    color: #94a3b8;
+    background-color: #dcfce7;
     box-shadow: none;
-    opacity: 1;
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   .game-action-button {
     color: #ffffff;
-    background-color: #ec168c;
-    box-shadow: 0 2px 8px rgb(236 22 140 / 0.16);
+    background-color: #16a34a;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .game-action-button:hover:not(:disabled),
   .group:hover .game-action-button {
-    background-color: #ff3aa2;
-    box-shadow: 0 4px 12px rgb(255 58 162 / 0.22);
+    background-color: #22c55e;
+    box-shadow: 0 2px 6px 0 rgb(22 163 74 / 0.18);
   }
 
   .game-action-button:active:not(:disabled),
   .group:active .game-action-button {
-    background-color: #ec168c;
-    box-shadow: 0 1px 4px rgb(236 22 140 / 0.15);
+    background-color: #15803d;
+    box-shadow: 0 1px 3px 0 rgb(22 163 74 / 0.15);
     transform: scale(0.98);
   }
 
   .game-action-button:disabled {
-    color: #ffffff;
-    background-color: #ec168c;
+    color: #94a3b8;
+    background-color: #dcfce7;
     box-shadow: none;
     opacity: 0.6;
     transform: none;
@@ -333,59 +408,12 @@
   filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.65)) drop-shadow(0 0 20px rgba(2, 132, 199, 0.35));
 }
 
-/* Light-theme variant for the navbar brand text */
-.saksuuu-brand-text-light {
-  background: linear-gradient(
-    110deg,
-    #2563eb 0%,
-    #0369a1 25%,
-    #7c3aed 50%,
-    #0369a1 75%,
-    #2563eb 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: brand-shimmer 4s linear infinite;
-  filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.3)) drop-shadow(0 0 16px rgba(124, 58, 237, 0.2));
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .saksuuu-brand-text,
-  .saksuuu-brand-text-light {
-    animation: none;
-    background-position: 0% 50%;
-  }
-}
-
-/* Floating Capsule Navbar Animations */
-@keyframes navbar-float-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-18px) scale(0.96);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.animate-navbar-float {
-  animation: navbar-float-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto !important;
   }
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+  *:not(.falling-flowers-background):not(.dreamy-falling-flower):not(.romdul-falling-flower):not(.dreamy-falling-flower *):not(.romdul-falling-flower *) {
     transition-duration: 0.01ms !important;
-  }
-  .animate-navbar-float {
-    animation: none;
-    transform: none;
   }
 }
 
@@ -411,6 +439,72 @@
   }
 }
 
+/* SakSuuu Brand Typing Cursor Animation */
+@keyframes sak-cursor-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.sak-cursor-blink {
+  animation: sak-cursor-blink 520ms step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sak-cursor-blink {
+    animation: none;
+    display: none;
+  }
+}
+
+/* SakSuuu Active Games Marquee Scroll Animation */
+@keyframes sak-ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ticker-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+  animation: sak-ticker-scroll 25s linear infinite;
+  will-change: transform;
+}
+
+@media (max-width: 639px) {
+  .ticker-track {
+    animation-duration: 20s;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ticker-wrapper:hover .ticker-track {
+    animation-play-state: paused;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track[data-reduced-motion="true"],
+  .ticker-track.motion-reduced {
+    animation: none;
+    transform: none;
+  }
+}
+
 /* Custom modern scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -424,7 +518,7 @@
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #ec4899;
+  background: #16a34a;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -442,4 +536,5 @@
 @media (prefers-reduced-motion: reduce) {
   .game-card:hover, .game-card:active, .game-card:hover .game-card-image,
   .public-nav-link:active, .package-option:active:not(:disabled) { transform: none; }
+  .game-card-border { animation: none; }
 }

@@ -6,10 +6,10 @@ const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/s
 
 export function CustomerFooter() {
   return (
-    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-[#F4C7DD]">
+    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-[#BBF7D0]">
       {/* Background Ambient Glow Accents */}
-      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-[#FFF1F7]/50 blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-[#FFF1F7]/40 blur-2xl pointer-events-none" />
+      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-[#F0FDF4]/60 blur-2xl pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-[#DCFCE7]/40 blur-2xl pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-7 sm:pt-12 pb-6">
         {/* Responsive 3-Section Grid: Desktop (3 cols), Tablet (2 cols), Mobile (1 col) */}
@@ -19,7 +19,7 @@ export function CustomerFooter() {
           <div className="flex flex-col items-start space-y-3.5">
             <Link
               href="/"
-              className="inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-[#EC168C] focus-visible:ring-2 focus-visible:ring-[#EC168C]/20 rounded-xl"
+              className="inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-[#16A34A] focus-visible:ring-2 focus-visible:ring-[#16A34A]/20 rounded-xl"
             >
               <Image
                 src="/images/logo.png"
@@ -46,14 +46,14 @@ export function CustomerFooter() {
           <div className="flex flex-col space-y-4">
             <div>
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#EC168C]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
                 Quick Links
               </h3>
               <ul className="space-y-2 text-sm font-medium">
                 <li>
                   <Link
                     href="/"
-                    className="text-[#64748B] hover:text-[#EC168C] hover:translate-x-1 inline-flex items-center transition-all duration-200"
+                    className="text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] hover:translate-x-1 inline-flex items-center transition-all duration-200"
                   >
                     Home
                   </Link>
@@ -61,7 +61,7 @@ export function CustomerFooter() {
                 <li>
                   <Link
                     href="/games"
-                    className="text-[#64748B] hover:text-[#EC168C] hover:translate-x-1 inline-flex items-center transition-all duration-200"
+                    className="text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] hover:translate-x-1 inline-flex items-center transition-all duration-200"
                   >
                     Games
                   </Link>
@@ -70,21 +70,21 @@ export function CustomerFooter() {
             </div>
 
             {/* Small Payment-Method Section */}
-            <div className="pt-3 border-t border-[#F8DCE9]">
+            <div className="pt-3 border-t border-[#DCFCE7]">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-2">
                 Payment Methods
               </p>
               <div className="flex flex-wrap items-center gap-2">
                 <div
                   title="KHQR Universal Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF1F7] border border-[#F4C7DD] text-xs font-medium text-[#1E293B] hover:border-[#EC168C] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] text-xs font-medium text-[#1E293B] hover:border-[#16A34A] transition-colors"
                 >
-                  <QrCode className="h-3.5 w-3.5 text-[#EC168C]" />
+                  <QrCode className="h-3.5 w-3.5 text-[#16A34A]" />
                   <span>KHQR</span>
                 </div>
                 <div
                   title="ABA Mobile Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FFF1F7] border border-[#F4C7DD] text-xs font-medium text-[#1E293B] hover:border-[#EC168C] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] text-xs font-medium text-[#1E293B] hover:border-[#16A34A] transition-colors"
                 >
                   <CreditCard className="h-3.5 w-3.5 text-[#004B87]" />
                   <span>ABA</span>
@@ -96,7 +96,7 @@ export function CustomerFooter() {
           {/* Section 3: Support (Right) */}
           <div className="flex flex-col space-y-3.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#EC168C]" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
               Support
             </h3>
             <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-sm">
@@ -108,7 +108,7 @@ export function CustomerFooter() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Contact support on Telegram"
-                className="public-button group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-sm shadow-xs hover:bg-[#FF3AA2] active:scale-[0.98] transition-all duration-200 border border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C]"
+                className="group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-sm shadow-xs bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] active:scale-[0.98] transition-all duration-200 border border-[#16A34A] focus-visible:outline-2 focus-visible:outline-[#16A34A]"
               >
                 {/* Official Telegram Icon */}
                 <svg
@@ -127,7 +127,7 @@ export function CustomerFooter() {
         </div>
 
         {/* Thin Divider */}
-        <div className="w-full h-px bg-[#F8DCE9] mt-10 sm:mt-12 mb-6" />
+        <div className="w-full h-px bg-[#DCFCE7] mt-10 sm:mt-12 mb-6" />
 
         {/* Copyright Section */}
         <div className="text-center">

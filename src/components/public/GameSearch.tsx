@@ -5,6 +5,7 @@ import { Search, X, RotateCcw, AlertCircle } from "lucide-react";
 import { ClientGame } from "@/types/game";
 import { GameCard } from "./GameCard";
 import { GameGridSkeleton } from "./HomeSkeletons";
+import { ActiveGamesTicker } from "./ActiveGamesTicker";
 
 interface GameSearchProps {
   initialGames: ClientGame[];
@@ -120,7 +121,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
     <section id="games" className="w-full min-w-0 space-y-4 sm:space-y-6 scroll-mt-28">
       {/* 1. Heading: Exact Khmer heading "ហ្គេមទាំងអស់" */}
       <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-xl sm:text-3xl font-extrabold text-[#1E293B] tracking-tight">
+        <h2 className="text-xl sm:text-3xl font-extrabold text-[#172033] tracking-tight">
           ហ្គេមទាំងអស់
         </h2>
 
@@ -133,7 +134,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
         >
           {/* Search Input Container */}
           <div className="relative min-w-0 flex-1 group">
-            <Search className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#EC168C] pointer-events-none transition-colors group-focus-within:text-[#EC168C]" />
+            <Search className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#16A34A] pointer-events-none transition-colors group-focus-within:text-[#16A34A]" />
             <input
               type="text"
               name="gameQuery"
@@ -148,14 +149,14 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
                 setActiveQuery(e.target.value); // Real-time searching while typing
               }}
               placeholder="ស្វែងរកហ្គេម"
-              className="h-11 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-[#F4C7DD] bg-white pl-9 sm:pl-11 pr-11 text-xs sm:text-sm text-[#1E293B] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#64748B] focus:border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C] focus:ring-2 focus:ring-[#EC168C]/20 transition-all shadow-xs"
+              className="h-10 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-[#BBF7D0] bg-white pl-9 sm:pl-11 pr-11 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#64748B] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#16A34A]/20 transition-all shadow-xs"
             />
             {/* Quick in-input clear button */}
             {searchTerm && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg text-[#64748B] hover:text-[#EC168C] hover:bg-[#FFF1F7] transition-colors cursor-pointer"
+                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg text-[#64748B] hover:text-[#16A34A] hover:bg-[#F0FDF4] active:text-[#22C55E] transition-colors cursor-pointer"
                 aria-label="Clear search input"
               >
                 <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -167,9 +168,9 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           <div className="flex items-center gap-2">
             <button
               type="submit"
-              className="game-action-button flex h-11 sm:h-12 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold whitespace-nowrap text-white sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm shadow-xs"
+              className="flex h-10 sm:h-12 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold whitespace-nowrap text-white bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] transition-colors sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm shadow-xs cursor-pointer"
             >
-              <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-white" />
+              <Search className="h-4 w-4 sm:h-4 sm:w-4 text-white" />
               <span>ស្វែងរក</span>
             </button>
 
@@ -177,7 +178,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
               <button
                 type="button"
                 onClick={handleClear}
-                className="flex h-11 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#F4C7DD] bg-white hover:bg-[#FFF1F7] px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-[#64748B] hover:text-[#EC168C] transition-all cursor-pointer"
+                className="flex h-10 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#BBF7D0] bg-white hover:bg-[#F0FDF4] px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] transition-colors cursor-pointer"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -186,6 +187,11 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
             )}
           </div>
         </form>
+
+        {/* Active Games Ticker */}
+        <div className="pt-2 sm:pt-3">
+          <ActiveGamesTicker games={games} />
+        </div>
       </div>
 
       {/* 3. Games Grid or Skeleton / Error / Empty States */}
@@ -194,35 +200,35 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
       {isLoading ? (
         <GameGridSkeleton count={10} />
       ) : fetchError && games.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-[#F8DCE9] bg-white px-5 py-10 text-center sm:py-16 shadow-xs">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#FFF1F7] text-[#EC168C] mb-3">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-[#BBF7D0] bg-white px-5 py-10 text-center sm:py-16 shadow-xs">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F0FDF4] text-[#16A34A] mb-3">
             <AlertCircle className="h-5 w-5" />
           </div>
-          <h3 className="text-sm sm:text-base font-bold text-[#1E293B]">មិនអាចផ្ទុកទិន្នន័យហ្គេមបានទេ</h3>
+          <h3 className="text-sm sm:text-base font-bold text-[#172033]">មិនអាចផ្ទុកទិន្នន័យហ្គេមបានទេ</h3>
           <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-[#64748B] max-w-md break-words">
             {fetchError}. សូមពិនិត្យការតភ្ជាប់អ៊ីនធឺណិត ឬចុចប៊ូតុងខាងក្រោមដើម្បីព្យាយាមម្តងទៀត។
           </p>
           <button
             type="button"
             onClick={fetchClientGames}
-            className="public-button mt-4 inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-xs transition-all cursor-pointer active:scale-95"
+            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors cursor-pointer"
           >
             <RotateCcw className="h-3.5 w-3.5" />
             <span>ព្យាយាមម្តងទៀត (Retry)</span>
           </button>
         </div>
       ) : filteredGames.length > 0 ? (
-        <div className="grid grid-cols-2 min-[360px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-5">
+        <div className="grid grid-cols-2 min-[340px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-5">
           {filteredGames.map((game) => (
             <GameCard key={game.id || game.slug} game={game} />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#F4C7DD] bg-white px-5 py-12 text-center sm:py-16">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#FFF1F7] border border-[#F4C7DD] text-[#EC168C] mb-3">
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#BBF7D0] bg-white px-5 py-12 text-center sm:py-16">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] text-[#16A34A] mb-3">
             <Search className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-bold text-[#1E293B]">រកមិនឃើញហ្គេមទេ</h3>
+          <h3 className="text-base font-bold text-[#172033]">រកមិនឃើញហ្គេមទេ</h3>
           <p className="mt-2 text-sm leading-relaxed text-[#64748B] max-w-sm break-words">
             {activeQuery
               ? `មិនមានលទ្ធផលសម្រាប់ "${activeQuery}"។ សូមព្យាយាមស្វែងរក Free Fire, PUBG Mobile ឬ Mobile Legends។`
@@ -232,7 +238,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
             <button
               type="button"
               onClick={handleClear}
-              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#FFF1F7] border border-[#F4C7DD] px-4 py-2.5 text-xs font-bold text-[#EC168C] hover:bg-[#EC168C] hover:text-white transition-all cursor-pointer"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#F0FDF4] border border-[#BBF7D0] px-4 py-2.5 text-xs font-bold text-[#16A34A] hover:bg-[#16A34A] hover:text-white active:bg-[#22C55E] transition-colors cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>សម្អាតការស្វែងរក (Clear)</span>
@@ -241,7 +247,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
             <button
               type="button"
               onClick={fetchClientGames}
-              className="public-button mt-5 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-all cursor-pointer active:scale-95"
+              className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-xs transition-colors cursor-pointer"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               <span>ផ្ទុកឡើងវិញ (Reload)</span>

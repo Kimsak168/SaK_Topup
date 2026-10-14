@@ -117,12 +117,12 @@ export default function AdminPaymentsPage() {
   };
 
   return (
-    <div className="admin-page animate-in fade-in duration-300">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="admin-page-heading">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">Payment Gateways</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">Payment Gateways</h1>
+          <p className="text-xs sm:text-sm text-[#94A3B8] mt-0.5">
             AnajakPay KHQR credentials, settlement telemetry, and live payment processing.
           </p>
         </div>
@@ -130,7 +130,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={fetchPayments}
           disabled={loading}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold border border-white/10 bg-white/5 hover:bg-white/10 transition-all cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold border border-[#243047] bg-[#151F31] hover:bg-[#111A2B] text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           <span>Refresh Gateways</span>
@@ -139,8 +139,8 @@ export default function AdminPaymentsPage() {
 
       {/* Payment Gateway Cards */}
       <div className="space-y-3">
-        <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+        <h2 className="text-xs font-bold uppercase tracking-wider text-[#94A3B8] flex items-center gap-2">
+          <ShieldCheck className="h-4 w-4 text-[#22C55E]" />
           <span>Configured Payment Rails</span>
         </h2>
 
@@ -148,10 +148,10 @@ export default function AdminPaymentsPage() {
           {gateways.map((gw) => (
             <div
               key={gw.id}
-              className="rounded-2xl p-5 border border-white/10 bg-[#0c0e24] shadow-sm space-y-3 relative overflow-hidden group"
+              className="rounded-xl p-4 border border-[#243047] bg-[#111A2B] space-y-3 relative overflow-hidden"
             >
               <div className="flex items-center justify-between">
-                <div className="h-9 w-9 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400">
+                <div className="h-8 w-8 rounded-lg bg-[rgba(34,197,94,0.10)] border border-[rgba(34,197,94,0.25)] flex items-center justify-center text-[#22C55E]">
                   {gw.id === "anajakpay" ? (
                     <QrCode className="h-4 w-4" />
                   ) : gw.id === "aba" ? (
@@ -166,13 +166,13 @@ export default function AdminPaymentsPage() {
                 <span
                   className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     gw.status === "active"
-                      ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                      : "bg-slate-500/15 text-slate-400 border border-slate-500/30"
+                      ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.28)]"
+                      : "bg-[#151F31] text-[#94A3B8] border border-[#243047]"
                   }`}
                 >
                   <span
                     className={`h-1.5 w-1.5 rounded-full ${
-                      gw.status === "active" ? "bg-emerald-400" : "bg-slate-400"
+                      gw.status === "active" ? "bg-[#22C55E]" : "bg-[#64748B]"
                     }`}
                   />
                   {gw.status === "active" ? "Active Live" : "Unconfigured"}
@@ -180,18 +180,18 @@ export default function AdminPaymentsPage() {
               </div>
 
               <div>
-                <h3 className="font-extrabold text-white text-sm">{gw.name}</h3>
-                <p className="text-[11px] text-slate-400 mt-0.5">{gw.type}</p>
+                <h3 className="font-bold text-[#F8FAFC] text-sm">{gw.name}</h3>
+                <p className="text-[11px] text-[#94A3B8] mt-0.5">{gw.type}</p>
               </div>
 
-              <div className="pt-2 border-t border-white/5 space-y-1 text-xs font-mono">
+              <div className="pt-2 border-t border-[#243047] space-y-1 text-xs font-mono">
                 <div className="flex justify-between">
-                  <span className="text-slate-400 font-sans">Identifier:</span>
-                  <span className="text-pink-400">{gw.profileId}</span>
+                  <span className="text-[#94A3B8] font-sans">Identifier:</span>
+                  <span className="text-[#22C55E] font-medium">{gw.profileId}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400 font-sans">Currency:</span>
-                  <span className="text-slate-300">{gw.currency}</span>
+                  <span className="text-[#94A3B8] font-sans">Currency:</span>
+                  <span className="text-[#F8FAFC]">{gw.currency}</span>
                 </div>
               </div>
             </div>
@@ -201,63 +201,63 @@ export default function AdminPaymentsPage() {
 
       {/* KPI Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-xl p-4 border border-white/10 bg-[#0c0e24]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="rounded-xl p-4 border border-[#243047] bg-[#111A2B]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#94A3B8]">
             Total Settled Volume
           </span>
-          <div className="text-2xl font-black text-white mt-1">
+          <div className="text-2xl font-bold tracking-tight text-[#F8FAFC] mt-1">
             ${kpi.totalVolume.toFixed(2)}
           </div>
         </div>
-        <div className="rounded-xl p-4 border border-white/10 bg-[#0c0e24]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+        <div className="rounded-xl p-4 border border-[#243047] bg-[#111A2B]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#22C55E]">
             Successful Payments
           </span>
-          <div className="text-2xl font-black text-emerald-400 mt-1">
+          <div className="text-2xl font-bold tracking-tight text-[#22C55E] mt-1">
             {kpi.totalSuccess}
           </div>
         </div>
-        <div className="rounded-xl p-4 border border-white/10 bg-[#0c0e24]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+        <div className="rounded-xl p-4 border border-[#243047] bg-[#111A2B]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#F59E0B]">
             Pending Processing
           </span>
-          <div className="text-2xl font-black text-amber-400 mt-1">
+          <div className="text-2xl font-bold tracking-tight text-[#F59E0B] mt-1">
             {kpi.totalPending}
           </div>
         </div>
-        <div className="rounded-xl p-4 border border-white/10 bg-[#0c0e24]">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-rose-400">
+        <div className="rounded-xl p-4 border border-[#243047] bg-[#111A2B]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#EF4444]">
             Failed / Expired
           </span>
-          <div className="text-2xl font-black text-rose-400 mt-1">
+          <div className="text-2xl font-bold tracking-tight text-[#EF4444] mt-1">
             {kpi.totalFailed}
           </div>
         </div>
       </div>
 
       {/* Transaction Verifier Tool */}
-      <div className="rounded-2xl p-6 border border-white/10 bg-[#0c0e24]">
+      <div className="rounded-xl p-5 border border-[#243047] bg-[#111A2B]">
         <div className="max-w-xl space-y-3">
-          <h2 className="text-base font-extrabold text-white flex items-center gap-2">
-            <Search className="h-4 w-4 text-pink-400" />
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <Search className="h-4 w-4 text-[#22C55E]" />
             <span>Manual Transaction Inquiry Tool</span>
           </h2>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-[#94A3B8]">
             Query AnajakPay or bank transaction reference to audit payment receipt status.
           </p>
 
-          <form onSubmit={handleVerifyLookup} className="flex gap-2 pt-2">
+          <form onSubmit={handleVerifyLookup} className="flex gap-2 pt-1">
             <input
               type="text"
               value={lookupId}
               onChange={(e) => setLookupId(e.target.value)}
               placeholder="Enter Transaction ID / KHQR reference..."
-              className="flex-1 rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+              className="flex-1 rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
             />
             <button
               type="submit"
               disabled={isVerifying || !lookupId.trim()}
-              className="px-4 py-2.5 rounded-xl bg-pink-500 hover:bg-pink-600 disabled:opacity-50 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-md"
+              className="px-4 py-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] disabled:opacity-50 text-[#080D18] font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
             >
               {isVerifying ? (
                 <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -269,24 +269,24 @@ export default function AdminPaymentsPage() {
           </form>
 
           {verifyResult && (
-            <div className="mt-3 p-3.5 rounded-xl bg-[#08091a] border border-white/10 text-xs font-mono space-y-1">
+            <div className="mt-3 p-3.5 rounded-lg bg-[#151F31] border border-[#243047] text-xs font-mono space-y-1">
               <div className="flex justify-between">
-                <span className="text-slate-400">Result:</span>
-                <span className="text-pink-400 font-bold">{verifyResult.message}</span>
+                <span className="text-[#94A3B8]">Result:</span>
+                <span className="text-[#22C55E] font-bold">{verifyResult.message}</span>
               </div>
               {verifyResult.record && (
                 <>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Payment ID:</span>
-                    <span className="text-white">{verifyResult.record.paymentId}</span>
+                    <span className="text-[#94A3B8]">Payment ID:</span>
+                    <span className="text-[#F8FAFC]">{verifyResult.record.paymentId}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Order:</span>
-                    <span className="text-white">{verifyResult.record.orderNumber}</span>
+                    <span className="text-[#94A3B8]">Order:</span>
+                    <span className="text-[#F8FAFC]">{verifyResult.record.orderNumber}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Status:</span>
-                    <span className="text-emerald-400 font-bold uppercase">
+                    <span className="text-[#94A3B8]">Status:</span>
+                    <span className="text-[#22C55E] font-bold uppercase">
                       {verifyResult.record.status}
                     </span>
                   </div>
@@ -298,68 +298,68 @@ export default function AdminPaymentsPage() {
       </div>
 
       {/* Transaction Logs Table */}
-      <div className="rounded-2xl border border-white/10 bg-[#0c0e24] overflow-hidden">
-        <div className="p-5 border-b border-white/10">
-          <h2 className="text-base font-extrabold text-white">Payment Transaction Logs</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+      <div className="rounded-xl border border-[#243047] bg-[#111A2B] overflow-hidden">
+        <div className="p-4 border-b border-[#243047]">
+          <h2 className="text-sm font-bold text-[#F8FAFC]">Payment Transaction Logs</h2>
+          <p className="text-xs text-[#94A3B8] mt-0.5">
             Real MongoDB payment transactions recorded via KHQR & online checkouts.
           </p>
         </div>
 
         {payments.length === 0 ? (
-          <div className="p-16 text-center text-slate-400">
-            <CreditCard className="h-10 w-10 text-slate-600 mx-auto mb-2" />
-            <p className="text-sm font-bold text-slate-300">No payment records yet</p>
-            <p className="text-xs text-slate-500 mt-1">
+          <div className="p-12 text-center text-[#94A3B8]">
+            <CreditCard className="h-10 w-10 text-[#64748B] mx-auto mb-2" />
+            <p className="text-sm font-semibold text-[#F8FAFC]">No payment records yet</p>
+            <p className="text-xs text-[#64748B] mt-1">
               As customers complete purchases through AnajakPay KHQR or mobile banking, records are logged here.
             </p>
           </div>
         ) : (
-          <div className="admin-table-scroll">
+          <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
-              <thead className="bg-[#090b1c] text-slate-400 uppercase text-[10px] font-bold border-b border-white/5">
+              <thead className="bg-[#151F31] text-[#94A3B8] uppercase text-[10px] font-bold border-b border-[#243047]">
                 <tr>
-                  <th className="py-3 px-4">Payment ID</th>
-                  <th className="py-3 px-4">Order #</th>
-                  <th className="py-3 px-4">Gateway</th>
-                  <th className="py-3 px-4">Transaction Ref</th>
-                  <th className="py-3 px-4">Amount</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Date</th>
+                  <th className="py-2.5 px-3.5">Payment ID</th>
+                  <th className="py-2.5 px-3.5">Order #</th>
+                  <th className="py-2.5 px-3.5">Gateway</th>
+                  <th className="py-2.5 px-3.5">Transaction Ref</th>
+                  <th className="py-2.5 px-3.5">Amount</th>
+                  <th className="py-2.5 px-3.5">Status</th>
+                  <th className="py-2.5 px-3.5 text-right">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[#243047]">
                 {payments.map((p) => (
-                  <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-pink-400">
+                  <tr key={p.id} className="hover:bg-[#151F31]/50 transition-colors">
+                    <td className="py-2.5 px-3.5 font-mono text-[#F8FAFC] font-medium">
                       {p.paymentId}
                     </td>
-                    <td className="py-3 px-4 font-mono text-white">
+                    <td className="py-2.5 px-3.5 font-mono text-[#F8FAFC]">
                       {p.orderNumber}
                     </td>
-                    <td className="py-3 px-4 uppercase font-bold text-slate-300">
+                    <td className="py-2.5 px-3.5 uppercase font-semibold text-[#94A3B8]">
                       {p.gateway}
                     </td>
-                    <td className="py-3 px-4 font-mono text-slate-400">
+                    <td className="py-2.5 px-3.5 font-mono text-[#64748B]">
                       {p.transactionId || "—"}
                     </td>
-                    <td className="py-3 px-4 font-bold text-white">
+                    <td className="py-2.5 px-3.5 font-bold text-[#F8FAFC]">
                       ${p.amount.toFixed(2)} {p.currency}
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="py-2.5 px-3.5">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           p.status === "successful"
-                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.28)]"
                             : p.status === "failed"
-                            ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                            : "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                            ? "bg-[#EF4444]/10 text-[#EF4444] border border-[#EF4444]/30"
+                            : "bg-[#F59E0B]/10 text-[#F59E0B] border border-[#F59E0B]/30"
                         }`}
                       >
                         {p.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right text-slate-400">
+                    <td className="py-2.5 px-3.5 text-right text-[#64748B]">
                       {new Date(p.createdAt).toLocaleDateString()}
                     </td>
                   </tr>

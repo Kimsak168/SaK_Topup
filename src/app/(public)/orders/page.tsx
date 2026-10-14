@@ -85,11 +85,11 @@ function OrderTrackingContent() {
     <div className="max-w-4xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 space-y-8 animate-in fade-in">
       {/* Page Header */}
       <div className="text-center max-w-2xl mx-auto space-y-3">
-        <div className="inline-flex items-center gap-2 rounded-full border border-[#F4C7DD] bg-[#FFF1F7] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#EC168C]">
-          <ShoppingBag className="h-3.5 w-3.5 text-[#EC168C]" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-[#15803D]">
+          <ShoppingBag className="h-3.5 w-3.5 text-[#16A34A]" />
           <span>Real-Time Tracking</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-black text-[#1E293B] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-[#172033] tracking-tight">
           Track Your Top-Up Order
         </h1>
         <p className="text-sm leading-relaxed text-[#64748B]">
@@ -117,13 +117,13 @@ function OrderTrackingContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter Order # or Player ID..."
-            className="h-10 sm:h-11 w-full rounded-xl border border-[#F4C7DD] bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-[#1E293B] placeholder:text-[#64748B] focus:border-[#EC168C] focus-visible:outline-2 focus-visible:outline-[#EC168C] focus:ring-2 focus:ring-[#EC168C]/20 shadow-xs"
+            className="h-10 sm:h-11 w-full rounded-xl border border-[#BBF7D0] bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-[#172033] placeholder:text-[#64748B] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#16A34A]/20 shadow-xs"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="public-button shrink-0 h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-all shadow-xs"
+          className="shrink-0 h-10 sm:h-11 px-4 sm:px-5 rounded-xl text-white font-bold text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-xs bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D]"
         >
           {loading ? (
             <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -135,27 +135,31 @@ function OrderTrackingContent() {
       </form>
 
       {/* Results Section */}
-      {loading && <div role="status" className="min-h-64 space-y-4 rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground"><RefreshCw className="h-4 w-4 animate-spin" />Finding your orders...</div>
-        <div className="h-5 w-1/3 rounded bg-secondary animate-pulse" />
-        <div className="h-20 rounded-xl bg-secondary animate-pulse" />
-      </div>}
-      {!loading && searchError && <div role="alert" className="min-h-48 rounded-2xl border border-destructive/20 bg-card p-6 text-center">
-        <AlertCircle className="mx-auto mb-3 h-6 w-6 text-destructive" />
-        <h2 className="font-bold">We couldn&apos;t load your orders</h2>
-        <p className="mt-2 text-sm text-muted-foreground">{searchError}</p>
-        <button type="button" onClick={() => handleSearch(submittedQuery)} className="public-button mt-4 min-h-11 rounded-xl px-5 text-sm font-semibold">Try again</button>
-      </div>}
+      {loading && (
+        <div role="status" className="min-h-64 space-y-4 rounded-2xl border border-[#BBF7D0] bg-white p-6 shadow-xs">
+          <div className="flex items-center gap-2 text-sm font-medium text-[#64748B]"><RefreshCw className="h-4 w-4 animate-spin text-[#16A34A]" />Finding your orders...</div>
+          <div className="h-5 w-1/3 rounded bg-[#F0FDF4] animate-pulse" />
+          <div className="h-20 rounded-xl bg-[#F0FDF4] animate-pulse" />
+        </div>
+      )}
+      {!loading && searchError && (
+        <div role="alert" className="min-h-48 rounded-2xl border border-[#EF4444]/30 bg-white p-6 text-center shadow-xs">
+          <AlertCircle className="mx-auto mb-3 h-6 w-6 text-[#EF4444]" />
+          <h2 className="font-bold text-[#172033]">We couldn&apos;t load your orders</h2>
+          <p className="mt-2 text-sm text-[#64748B]">{searchError}</p>
+          <button type="button" onClick={() => handleSearch(submittedQuery)} className="mt-4 min-h-11 rounded-xl px-5 text-sm font-semibold text-white bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] shadow-xs cursor-pointer">Try again</button>
+        </div>
+      )}
       {searched && !loading && !searchError && (
         <div aria-live="polite" className="space-y-4 pt-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-secondary-foreground">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#172033]">
             Order Results ({orders.length})
           </h2>
 
           {orders.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-card px-5 py-10 sm:p-12 text-center text-muted-foreground space-y-3">
-              <AlertCircle className="h-10 w-10 text-secondary-foreground mx-auto" />
-              <h3 className="font-bold text-foreground text-base">No orders found</h3>
+            <div className="rounded-2xl border border-[#BBF7D0] bg-white px-5 py-10 sm:p-12 text-center text-[#64748B] space-y-3 shadow-xs">
+              <AlertCircle className="h-10 w-10 text-[#64748B] mx-auto" />
+              <h3 className="font-bold text-[#172033] text-base">No orders found</h3>
               <p className="text-xs max-w-sm mx-auto">
                 No top-up record matched &quot;{submittedQuery}&quot;. Please verify your Player ID or Order Number, or contact our 24/7 support.
               </p>
@@ -163,7 +167,7 @@ function OrderTrackingContent() {
                 href="https://t.me/saksuuu_support"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary underline underline-offset-4"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16A34A] hover:text-[#22C55E] underline underline-offset-4"
               >
                 <span>Telegram Support 24/7</span>
                 <ExternalLink className="h-3 w-3" />
@@ -174,81 +178,81 @@ function OrderTrackingContent() {
               {orders.map((order) => (
                 <div
                   key={order.orderNumber}
-                  className="min-w-0 rounded-2xl border border-border bg-card p-4 sm:p-6 space-y-4 shadow-sm"
+                  className="min-w-0 rounded-2xl border border-[#BBF7D0] bg-white p-4 sm:p-6 space-y-4 shadow-xs"
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#DCFCE7] pb-4">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="break-all font-mono font-bold text-primary text-base">
+                        <span className="break-all font-mono font-bold text-[#16A34A] text-base">
                           {order.orderNumber}
                         </span>
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             order.fulfillmentStatus === "completed"
-                              ? "bg-success/10 text-success border border-emerald-500/30"
+                              ? "bg-emerald-50 text-[#10B981] border border-[#10B981]/30"
                               : order.fulfillmentStatus === "failed"
-                              ? "bg-destructive/10 text-destructive border border-rose-500/30"
-                              : "bg-warning/10 text-warning border border-amber-500/30"
+                              ? "bg-rose-50 text-[#EF4444] border border-[#EF4444]/30"
+                              : "bg-amber-50 text-[#F59E0B] border border-[#F59E0B]/30"
                           }`}
                         >
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${
                               order.fulfillmentStatus === "completed"
-                                ? "bg-emerald-400"
+                                ? "bg-[#10B981]"
                                 : order.fulfillmentStatus === "failed"
-                                ? "bg-rose-400"
-                                : "bg-amber-400"
+                                ? "bg-[#EF4444]"
+                                : "bg-[#F59E0B]"
                             }`}
                           />
                           Fulfillment: {order.fulfillmentStatus}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs text-[#64748B] mt-0.5">
                         Placed on {new Date(order.createdAt).toLocaleString()}
                       </p>
                     </div>
 
                     <div className="text-left sm:text-right">
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground">
+                      <span className="text-[10px] uppercase font-bold text-[#64748B]">
                         Paid Amount
                       </span>
-                      <div className="text-lg font-black text-foreground">
+                      <div className="text-lg font-black text-[#172033]">
                         ${order.amount.toFixed(2)} {order.currency}
                       </div>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs [&>div]:min-w-0 [&_p]:break-words">
-                    <div className="p-3 rounded-xl bg-muted border border-border">
-                      <span className="text-muted-foreground text-[10px]">Game & Denomination:</span>
-                      <p className="font-bold text-foreground mt-0.5">{order.gameName}</p>
-                      <p className="text-secondary-foreground text-[11px]">{order.packageName}</p>
+                    <div className="p-3 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7]">
+                      <span className="text-[#64748B] text-[10px]">Game & Denomination:</span>
+                      <p className="font-bold text-[#172033] mt-0.5">{order.gameName}</p>
+                      <p className="text-[#16A34A] text-[11px] font-semibold">{order.packageName}</p>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-muted border border-border">
-                      <span className="text-muted-foreground text-[10px]">Target Account:</span>
-                      <p className="font-mono font-bold text-foreground mt-0.5">
+                    <div className="p-3 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7]">
+                      <span className="text-[#64748B] text-[10px]">Target Account:</span>
+                      <p className="font-mono font-bold text-[#172033] mt-0.5">
                         UID: {order.playerId}
                       </p>
                       {order.serverId && (
-                        <p className="font-mono text-muted-foreground text-[10px]">
+                        <p className="font-mono text-[#64748B] text-[10px]">
                           Zone: {order.serverId}
                         </p>
                       )}
                       {order.playerName && (
-                        <p className="text-success font-semibold text-[11px]">
+                        <p className="text-[#10B981] font-semibold text-[11px]">
                           IGN: {order.playerName}
                         </p>
                       )}
                     </div>
 
-                    <div className="p-3 rounded-xl bg-muted border border-border">
-                      <span className="text-muted-foreground text-[10px]">Payment Status:</span>
-                      <p className="font-bold text-foreground uppercase mt-0.5">
+                    <div className="p-3 rounded-xl bg-[#F0FDF4] border border-[#DCFCE7]">
+                      <span className="text-[#64748B] text-[10px]">Payment Status:</span>
+                      <p className="font-bold text-[#172033] uppercase mt-0.5">
                         {order.paymentMethod} (
-                        <span className="text-success">{order.paymentStatus}</span>)
+                        <span className="text-[#10B981]">{order.paymentStatus}</span>)
                       </p>
-                      <p className="text-muted-foreground text-[11px] mt-0.5">
+                      <p className="text-[#64748B] text-[11px] mt-0.5">
                         Automated Direct API Delivery
                       </p>
                     </div>
@@ -267,8 +271,8 @@ export default function OrderTrackingPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-muted-foreground">
-          <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+        <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-[#64748B]">
+          <RefreshCw className="h-6 w-6 animate-spin text-[#16A34A]" />
           <span className="text-xs">Loading order tracker...</span>
         </div>
       }

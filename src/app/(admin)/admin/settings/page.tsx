@@ -92,28 +92,42 @@ export default function AdminSettingsPage() {
 
   if (loading) {
     return (
-      <div className="admin-page max-w-4xl" aria-label="Loading website settings">
-        <div className="admin-page-heading"><div><p className="admin-eyebrow">Platform</p><h1>Website Settings</h1></div></div>
-        <div className="admin-skeleton h-40 rounded-2xl" />
-        <div className="admin-skeleton h-40 rounded-2xl" />
-        <div className="admin-skeleton h-40 rounded-2xl" />
+      <div className="space-y-4 max-w-4xl" aria-label="Loading website settings">
+        <div className="flex justify-between items-center pb-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#F8FAFC]">Website Settings</h1>
+        </div>
+        <div className="h-40 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" />
+        <div className="h-40 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" />
+        <div className="h-40 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" />
       </div>
     );
   }
 
-  if (loadError) return <div className="admin-page max-w-4xl">
-    <div className="admin-page-heading"><div><p className="admin-eyebrow">Platform</p><h1>Website Settings</h1></div></div>
-    <div className="admin-error" role="alert">Settings could not be loaded: {loadError}
-      <button type="button" onClick={() => void fetchSettings()}>Try again</button></div>
-  </div>;
+  if (loadError) {
+    return (
+      <div className="space-y-4 max-w-4xl">
+        <h1 className="text-xl sm:text-2xl font-bold text-[#F8FAFC]">Website Settings</h1>
+        <div className="p-4 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/10 text-xs text-[#EF4444] flex items-center justify-between" role="alert">
+          <span>Settings could not be loaded: {loadError}</span>
+          <button
+            type="button"
+            onClick={() => void fetchSettings()}
+            className="px-3 py-1 rounded-md bg-[#EF4444] text-white font-semibold hover:bg-[#DC2626] transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="admin-page animate-in fade-in duration-300 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
       {/* Top Header */}
-      <div className="admin-page-heading">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black tracking-tight">Website Settings</h1>
-          <p className="text-xs text-slate-400 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">Website Settings</h1>
+          <p className="text-xs sm:text-sm text-[#94A3B8] mt-0.5">
             Global store configuration, support links, default pricing markups, and payment toggles.
           </p>
         </div>
@@ -121,7 +135,7 @@ export default function AdminSettingsPage() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-[0_0_15px_rgba(255,46,147,0.3)] transition-all cursor-pointer disabled:opacity-50"
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold text-[#080D18] bg-[#22C55E] hover:bg-[#16A34A] transition-colors cursor-pointer disabled:opacity-50"
         >
           {saving ? (
             <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -132,90 +146,90 @@ export default function AdminSettingsPage() {
         </button>
       </div>
 
-      <form onSubmit={handleSave} className="space-y-6">
+      <form onSubmit={handleSave} className="space-y-5">
         {/* Section 1: General Branding */}
-        <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-4">
-          <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <Sliders className="h-4 w-4 text-pink-400" />
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <Sliders className="h-4 w-4 text-[#22C55E]" />
             <span>Store Branding & Details</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">Website Name</label>
+              <label className="font-semibold text-[#F8FAFC]">Website Name</label>
               <input
                 type="text"
                 value={form.siteName}
                 onChange={(e) => setForm({ ...form, siteName: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">Tagline / Slogan</label>
+              <label className="font-semibold text-[#F8FAFC]">Tagline / Slogan</label>
               <input
                 type="text"
                 value={form.siteTagline}
                 onChange={(e) => setForm({ ...form, siteTagline: e.target.value })}
-                className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
               />
             </div>
           </div>
 
           <div className="space-y-1.5 text-xs">
-            <label className="font-bold text-slate-300">Storefront Announcement Banner</label>
+            <label className="font-semibold text-[#F8FAFC]">Storefront Announcement Banner</label>
             <input
               type="text"
               value={form.announcement}
               onChange={(e) => setForm({ ...form, announcement: e.target.value })}
               placeholder="Notice shown to customers atop the website..."
-              className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+              className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
             />
           </div>
         </div>
 
         {/* Section 2: Support & Contact Channels */}
-        <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-4">
-          <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <Send className="h-4 w-4 text-purple-400" />
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <Send className="h-4 w-4 text-[#22C55E]" />
             <span>Customer Support & Inquiries</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">Telegram Support URL</label>
+              <label className="font-semibold text-[#F8FAFC]">Telegram Support URL</label>
               <input
                 type="text"
                 value={form.telegramSupport}
                 onChange={(e) => setForm({ ...form, telegramSupport: e.target.value })}
                 placeholder="https://t.me/saksuuu_support"
-                className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none font-mono text-[11px]"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E] font-mono text-xs"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">WhatsApp / Secondary Contact</label>
+              <label className="font-semibold text-[#F8FAFC]">WhatsApp / Secondary Contact</label>
               <input
                 type="text"
                 value={form.whatsappSupport}
                 onChange={(e) => setForm({ ...form, whatsappSupport: e.target.value })}
                 placeholder="https://wa.me/... or phone number"
-                className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none font-mono text-[11px]"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E] font-mono text-xs"
               />
             </div>
           </div>
         </div>
 
         {/* Section 3: Pricing Defaults & Currency Conversion */}
-        <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-4">
-          <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <DollarSign className="h-4 w-4 text-emerald-400" />
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <DollarSign className="h-4 w-4 text-[#22C55E]" />
             <span>Pricing Automation & Currency Rates</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">
+              <label className="font-semibold text-[#F8FAFC]">
                 Default Wholesale Markup (%)
               </label>
               <div className="relative">
@@ -230,19 +244,19 @@ export default function AdminSettingsPage() {
                       defaultMarginPercent: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white focus:border-pink-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
                 />
-                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#64748B]">
                   %
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-[#94A3B8]">
                 Applied automatically to newly imported packages when calculating customer retail prices.
               </p>
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-bold text-slate-300">
+              <label className="font-semibold text-[#F8FAFC]">
                 Exchange Rate: $1.00 USD to KHR (Riel)
               </label>
               <input
@@ -255,9 +269,9 @@ export default function AdminSettingsPage() {
                     currencyRateKHR: parseInt(e.target.value) || 4100,
                   })
                 }
-                className="w-full rounded-xl border border-white/10 bg-[#08091a] px-3.5 py-2.5 text-white focus:border-pink-500 focus:outline-none font-mono"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E] font-mono"
               />
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-[#94A3B8]">
                 Used to render live KHQR payment amounts for Cambodian bank transfers.
               </p>
             </div>
@@ -265,9 +279,9 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Section 4: Payment Gateways Toggles */}
-        <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-4">
-          <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-            <CreditCard className="h-4 w-4 text-pink-400" />
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-4">
+          <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+            <CreditCard className="h-4 w-4 text-[#22C55E]" />
             <span>Storefront Checkout Gateways</span>
           </h2>
 
@@ -304,33 +318,33 @@ export default function AdminSettingsPage() {
                 <div
                   key={gw.id}
                   onClick={() => toggleGateway(gw.id)}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                  className={`p-3.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between ${
                     isEnabled
-                      ? "bg-pink-500/10 border-pink-500/30"
-                      : "bg-[#08091a] border-white/5 opacity-60"
+                      ? "bg-[rgba(34,197,94,0.10)] border-[rgba(34,197,94,0.3)]"
+                      : "bg-[#151F31] border-[#243047] opacity-60"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className={`h-8 w-8 rounded-lg flex items-center justify-center ${
                         isEnabled
-                          ? "bg-pink-500/20 text-pink-400"
-                          : "bg-white/5 text-slate-500"
+                          ? "bg-[rgba(34,197,94,0.2)] text-[#22C55E]"
+                          : "bg-[#111A2B] text-[#64748B]"
                       }`}
                     >
                       <Icon className="h-4 w-4" />
                     </div>
                     <div>
-                      <p className="font-bold text-white">{gw.name}</p>
-                      <p className="text-[10px] text-slate-400">{gw.desc}</p>
+                      <p className="font-semibold text-[#F8FAFC]">{gw.name}</p>
+                      <p className="text-[11px] text-[#94A3B8]">{gw.desc}</p>
                     </div>
                   </div>
 
                   <span
-                    className={`h-5 w-5 rounded-full flex items-center justify-center border ${
+                    className={`h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold border ${
                       isEnabled
-                        ? "bg-pink-500 border-pink-400 text-white"
-                        : "border-slate-600 bg-slate-800 text-transparent"
+                        ? "bg-[#22C55E] border-[#22C55E] text-[#080D18]"
+                        : "border-[#243047] bg-[#111A2B] text-transparent"
                     }`}
                   >
                     ✓
@@ -342,14 +356,14 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Section 5: Maintenance Mode */}
-        <div className="rounded-2xl border border-white/10 bg-[#0c0e24] p-6 space-y-3">
+        <div className="rounded-xl border border-[#243047] bg-[#111A2B] p-5 space-y-3">
           <div className="flex items-start justify-between">
             <div className="space-y-1">
-              <h2 className="text-sm font-extrabold text-white flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-400" />
+              <h2 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-[#F59E0B]" />
                 <span>Storefront Maintenance Mode</span>
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#94A3B8]">
                 When enabled, customer checkout is temporarily paused for catalogue maintenance while keeping admin portal access open.
               </p>
             </div>
@@ -363,11 +377,11 @@ export default function AdminSettingsPage() {
                 }))
               }
               className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                form.maintenanceMode ? "bg-amber-500" : "bg-slate-700"
+                form.maintenanceMode ? "bg-[#F59E0B]" : "bg-[#243047]"
               }`}
             >
               <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
                   form.maintenanceMode ? "translate-x-5" : "translate-x-0"
                 }`}
               />
@@ -376,16 +390,16 @@ export default function AdminSettingsPage() {
         </div>
 
         {/* Save Bar */}
-        <div className="flex justify-end pt-2">
+        <div className="flex justify-end pt-1">
           <button
             type="submit"
             disabled={saving}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 via-purple-600 to-indigo-600 hover:from-pink-600 text-white font-bold text-xs flex items-center gap-2 shadow-[0_0_20px_rgba(255,46,147,0.35)] disabled:opacity-50 cursor-pointer"
+            className="px-5 py-2.5 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-[#080D18] font-bold text-xs flex items-center gap-2 cursor-pointer disabled:opacity-50 transition-colors"
           >
             {saving ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Save className="h-4 w-4" />
+              <Save className="h-3.5 w-3.5" />
             )}
             <span>Save All Website Settings</span>
           </button>

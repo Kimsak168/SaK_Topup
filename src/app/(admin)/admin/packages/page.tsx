@@ -407,12 +407,12 @@ export default function AdminPackagesPage() {
 
         {/* Sync Packages Button */}
         <div className="flex items-center gap-3">
-          <label className="hidden sm:flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
+          <label className="hidden sm:flex items-center gap-2 text-xs text-[#94A3B8] cursor-pointer">
             <input
               type="checkbox"
               checked={syncOnlyActive}
               onChange={(e) => setSyncOnlyActive(e.target.checked)}
-              className="rounded border-white/20 bg-[#090b1c] text-pink-500"
+              className="rounded border-[#243047] bg-[#151F31] text-[#22C55E] focus:ring-[#22C55E]"
             />
             <span>Active Games Only</span>
           </label>
@@ -421,7 +421,7 @@ export default function AdminPackagesPage() {
             type="button"
             onClick={handleSyncPackages}
             disabled={isSyncing}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-[0_0_25px_rgba(168,85,247,0.3)] hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] px-4 py-2 text-xs sm:text-sm font-bold text-[#080D18] transition-colors disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
             <span>{isSyncing ? "Syncing Packages..." : "Sync Packages from APIs"}</span>
@@ -431,46 +431,46 @@ export default function AdminPackagesPage() {
 
       {/* KPI Cards Bar */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-white/5 space-y-1">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
             Total Synced Packages
           </span>
-          <div className="text-2xl font-black text-white">{kpi.totalPkgs}</div>
-          <span className="text-[10px] text-slate-500">From Vizo &amp; G2Bulk APIs</span>
+          <div className="text-2xl font-bold tracking-tight text-[#F8FAFC]">{kpi.totalPkgs}</div>
+          <span className="text-[10px] text-[#64748B]">From Vizo &amp; G2Bulk APIs</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-emerald-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#22C55E] uppercase tracking-wider flex items-center gap-1">
             <CheckCircle2 className="h-3 w-3" /> Ready For Customers
           </span>
-          <div className="text-2xl font-black text-emerald-400">{kpi.configuredPkgs}</div>
-          <span className="text-[10px] text-slate-500">Customer selling price set</span>
+          <div className="text-2xl font-bold tracking-tight text-[#22C55E]">{kpi.configuredPkgs}</div>
+          <span className="text-[10px] text-[#64748B]">Customer selling price set</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-amber-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1">
+        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#F59E0B] uppercase tracking-wider flex items-center gap-1">
             <AlertCircle className="h-3 w-3" /> Needs Customer Price
           </span>
-          <div className="text-2xl font-black text-amber-400">{kpi.unconfiguredPkgs}</div>
-          <span className="text-[10px] text-slate-500">Hidden from buyers until price is set</span>
+          <div className="text-2xl font-bold tracking-tight text-[#F59E0B]">{kpi.unconfiguredPkgs}</div>
+          <span className="text-[10px] text-[#64748B]">Hidden from buyers until price is set</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-purple-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider">
+        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
             Packages By Supplier
           </span>
-          <div className="text-lg font-black text-slate-200">
-            <span className="text-pink-400">{kpi.vizoPkgs} Vizo</span> /{" "}
-            <span className="text-purple-400">{kpi.g2bulkPkgs} G2Bulk</span>
+          <div className="text-lg font-bold text-[#F8FAFC]">
+            <span className="text-[#22C55E]">{kpi.vizoPkgs} Vizo</span> /{" "}
+            <span className="text-[#F8FAFC]">{kpi.g2bulkPkgs} G2Bulk</span>
           </div>
-          <span className="text-[10px] text-slate-500">Original supplier codes preserved</span>
+          <span className="text-[10px] text-[#64748B]">Original supplier codes preserved</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#0c0e24] border border-white/10">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-[#111A2B] border border-[#243047]">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B] pointer-events-none" />
           <input
             type="text"
             placeholder="Search package name, code or ID..."
@@ -479,7 +479,7 @@ export default function AdminPackagesPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-white/10 bg-[#090b1c] pl-10 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none"
+            className="w-full rounded-lg border border-[#243047] bg-[#151F31] pl-10 pr-4 py-2 text-xs sm:text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]"
           />
         </div>
 
@@ -491,7 +491,7 @@ export default function AdminPackagesPage() {
               setGameFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs font-semibold text-slate-300 focus:border-purple-500 focus:outline-none max-w-[180px]"
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none max-w-[180px]"
           >
             <option value="all">All Games</option>
             {availableGames.map((g) => (
@@ -508,7 +508,7 @@ export default function AdminPackagesPage() {
               setSupplierFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs font-semibold text-slate-300 focus:border-purple-500 focus:outline-none"
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
             <option value="all">All Suppliers</option>
             <option value="vizo">Vizo (Free Fire)</option>
@@ -522,7 +522,7 @@ export default function AdminPackagesPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs font-semibold text-slate-300 focus:border-purple-500 focus:outline-none"
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
             <option value="all">All Packages</option>
             <option value="unconfigured">Needs Price Setup</option>
@@ -538,7 +538,7 @@ export default function AdminPackagesPage() {
               setPageSize(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-2.5 py-2 text-xs font-semibold text-slate-300 focus:border-purple-500 focus:outline-none"
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-2.5 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
             title="Items per page"
           >
             <option value="50">50 / page</option>
@@ -550,11 +550,11 @@ export default function AdminPackagesPage() {
       </div>
 
       {/* Packages Pricing Table */}
-      <div className="rounded-2xl border border-white/10 bg-[#0c0e24] overflow-hidden">
+      <div className="rounded-xl border border-[#243047] bg-[#111A2B] overflow-hidden">
         {loading ? (
           <div className="p-12 text-center text-slate-400">
-            <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-purple-400" />
-            <p className="text-xs">Loading packages from MongoDB Atlas...</p>
+            <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-[#22C55E]" />
+            <p className="text-xs text-[#94A3B8]">Loading packages from MongoDB Atlas...</p>
           </div>
         ) : packages.length === 0 ? (
           <div className="p-12 text-center text-slate-400 space-y-3">
@@ -565,24 +565,24 @@ export default function AdminPackagesPage() {
             </p>
           </div>
         ) : (
-          <div className="admin-table-scroll">
+          <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-white/10 bg-[#090b1c] text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+              <thead className="border-b border-[#243047] bg-[#151F31] text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
                 <tr>
-                  <th className="py-3 px-4">Image</th>
-                  <th className="py-3 px-4">Package</th>
-                  <th className="py-3 px-4">Game / Supplier</th>
-                  <th className="py-3 px-4">Product Code</th>
-                  <th className="py-3 px-4">
-                    <span className="flex items-center gap-1 text-slate-300">
-                      <Lock className="h-3 w-3 text-pink-400" /> Wholesale Cost (Private)
+                  <th className="py-2.5 px-3.5">Image</th>
+                  <th className="py-2.5 px-3.5">Package</th>
+                  <th className="py-2.5 px-3.5">Game / Supplier</th>
+                  <th className="py-2.5 px-3.5">Product Code</th>
+                  <th className="py-2.5 px-3.5">
+                    <span className="flex items-center gap-1 text-[#F8FAFC]">
+                      <Lock className="h-3 w-3 text-[#22C55E]" /> Wholesale Cost (Private)
                     </span>
                   </th>
-                  <th className="py-3 px-4">Customer Selling Price ($)</th>
-                  <th className="py-3 px-4">Profit Margin</th>
-                  <th className="py-3 px-4">Badge</th>
-                  <th className="py-3 px-4">Available</th>
-                  <th className="py-3 px-4 text-right">Save</th>
+                  <th className="py-2.5 px-3.5">Customer Selling Price ($)</th>
+                  <th className="py-2.5 px-3.5">Profit Margin</th>
+                  <th className="py-2.5 px-3.5">Badge</th>
+                  <th className="py-2.5 px-3.5">Available</th>
+                  <th className="py-2.5 px-3.5 text-right">Save</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -607,13 +607,13 @@ export default function AdminPackagesPage() {
                   }
 
                   return (
-                    <tr key={pkg.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={pkg.id} className="hover:bg-[#151F31]/50 transition-colors">
                       {/* Image Thumbnail & Upload Button */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         <button
                           type="button"
                           onClick={() => openImageModal(pkg)}
-                          className="group relative flex items-center justify-center h-9 w-9 rounded-lg border border-white/10 bg-[#090b1c] hover:border-pink-500/50 overflow-hidden cursor-pointer transition-all"
+                          className="group relative flex items-center justify-center h-8 w-8 rounded-lg border border-[#243047] bg-[#151F31] hover:border-[#22C55E]/50 overflow-hidden cursor-pointer transition-all"
                           title={pkg.customImage ? "Click to change custom image" : "Click to upload custom image"}
                         >
                           {pkg.customImage ? (
@@ -624,26 +624,26 @@ export default function AdminPackagesPage() {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <ImageIcon className="h-4 w-4 text-slate-500 group-hover:text-pink-400 transition-colors" />
+                            <ImageIcon className="h-4 w-4 text-[#64748B] group-hover:text-[#22C55E] transition-colors" />
                           )}
                         </button>
                       </td>
 
                       {/* Package Name */}
-                      <td className="py-3 px-4 font-semibold text-white">
+                      <td className="py-2.5 px-3.5 font-semibold text-[#F8FAFC]">
                         <div className="max-w-[180px] truncate">{pkg.name}</div>
                       </td>
 
                       {/* Game / Supplier */}
-                      <td className="py-3 px-4">
-                        <div className="font-semibold text-slate-200">
+                      <td className="py-2.5 px-3.5">
+                        <div className="font-semibold text-[#94A3B8]">
                           {pkg.gameSlug.toUpperCase()}
                         </div>
                         <span
                           className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
                             pkg.supplier === "vizo"
-                              ? "bg-pink-500/10 text-pink-400 border border-pink-500/30"
-                              : "bg-purple-500/10 text-purple-400 border border-purple-500/30"
+                              ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.3)]"
+                              : "bg-[#151F31] text-[#94A3B8] border border-[#243047]"
                           }`}
                         >
                           {pkg.supplier}
@@ -651,25 +651,25 @@ export default function AdminPackagesPage() {
                       </td>
 
                       {/* Product Code */}
-                      <td className="py-3 px-4 font-mono text-[11px] text-slate-400">
+                      <td className="py-2.5 px-3.5 font-mono text-[11px] text-[#64748B]">
                         {pkg.supplierProductCode}
                       </td>
 
                       {/* Wholesale Cost (Private to Admin) */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         {pkg.buyingPrice !== null ? (
-                          <span className="font-mono font-semibold text-slate-300 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                          <span className="font-mono font-semibold text-[#F8FAFC] bg-[#151F31] px-2 py-0.5 rounded border border-[#243047]">
                             ${pkg.buyingPrice.toFixed(2)}
                           </span>
                         ) : (
-                          <span className="text-slate-500 text-[10px]">Unlisted</span>
+                          <span className="text-[#64748B] text-[10px]">Unlisted</span>
                         )}
                       </td>
 
                       {/* Editable Selling Price Input */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         <div className="relative w-28">
-                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#64748B] font-bold">
                             $
                           </span>
                           <input
@@ -679,11 +679,11 @@ export default function AdminPackagesPage() {
                             placeholder="Set price"
                             value={row.sellingPrice}
                             onChange={(e) => handleFieldChange(pkg.id, "sellingPrice", e.target.value)}
-                            className={`w-full rounded-lg border pl-6 pr-2 py-1.5 font-mono text-xs font-bold text-white focus:outline-none transition-all ${
+                            className={`w-full rounded-lg border pl-6 pr-2 py-1.5 font-mono text-xs font-bold text-[#F8FAFC] focus:outline-none transition-all ${
                               row.isDirty
-                                ? "border-pink-500 bg-pink-500/10"
+                                ? "border-[#22C55E] bg-[rgba(34,197,94,0.10)]"
                                 : row.sellingPrice
-                                ? "border-white/10 bg-[#090b1c]"
+                                ? "border-[#243047] bg-[#151F31]"
                                 : "border-amber-500/40 bg-amber-500/5 text-amber-200 placeholder-amber-400/60"
                             }`}
                           />
@@ -691,42 +691,42 @@ export default function AdminPackagesPage() {
                       </td>
 
                       {/* Profit Margin Preview */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         {marginPercent !== null && profitAmount !== null ? (
-                          <div className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1">
+                          <div className="text-[11px] font-semibold text-[#22C55E] flex items-center gap-1">
                             <TrendingUp className="h-3 w-3" />
                             <span>+{marginPercent}%</span>
-                            <span className="text-[9px] text-slate-500 font-mono">
+                            <span className="text-[9px] text-[#64748B] font-mono">
                               (+${profitAmount.toFixed(2)})
                             </span>
                           </div>
                         ) : !row.sellingPrice ? (
-                          <span className="text-[10px] text-amber-400 font-semibold">Price Unset</span>
+                          <span className="text-[10px] text-[#F59E0B] font-semibold">Price Unset</span>
                         ) : (
-                          <span className="text-[10px] text-slate-500 font-mono">No Margin</span>
+                          <span className="text-[10px] text-[#64748B] font-mono">No Margin</span>
                         )}
                       </td>
 
                       {/* Badge Input */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         <input
                           type="text"
                           placeholder="e.g. POPULAR"
                           value={row.badge}
                           onChange={(e) => handleFieldChange(pkg.id, "badge", e.target.value)}
-                          className="w-24 rounded-lg border border-white/10 bg-[#090b1c] px-2 py-1 text-[10px] uppercase font-bold text-white focus:border-purple-500 focus:outline-none"
+                          className="w-24 rounded-lg border border-[#243047] bg-[#151F31] px-2 py-1 text-[10px] uppercase font-bold text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
                         />
                       </td>
 
                       {/* Active Toggle Switch */}
-                      <td className="py-3 px-4">
+                      <td className="py-2.5 px-3.5">
                         <button
                           type="button"
                           onClick={() => handleFieldChange(pkg.id, "isActive", !row.isActive)}
                           className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold cursor-pointer transition-all ${
                             row.isActive
-                              ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                              : "bg-slate-800 text-slate-400 border border-white/10"
+                              ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.28)]"
+                              : "bg-[#151F31] text-[#64748B] border border-[#243047]"
                           }`}
                         >
                           {row.isActive ? "Available" : "Disabled"}
@@ -734,15 +734,15 @@ export default function AdminPackagesPage() {
                       </td>
 
                       {/* Save Button */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-2.5 px-3.5 text-right">
                         <button
                           type="button"
                           disabled={savingId === pkg.id || !row.isDirty}
                           onClick={() => handleSavePackage(pkg)}
                           className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             row.isDirty
-                              ? "bg-pink-600 hover:bg-pink-500 text-white shadow-md animate-pulse"
-                              : "bg-white/5 text-slate-500 hover:text-slate-300 disabled:opacity-30"
+                              ? "bg-[#22C55E] hover:bg-[#16A34A] text-[#080D18] shadow-md"
+                              : "bg-[#151F31] text-[#64748B] hover:text-[#F8FAFC] disabled:opacity-30"
                           }`}
                           title="Save price change"
                         >
@@ -788,33 +788,33 @@ export default function AdminPackagesPage() {
       {/* Custom Image Upload Modal */}
       {imageModalPkg && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div role="dialog" aria-modal="true" aria-label="Custom package image" className="admin-modal-panel relative w-full max-w-md p-6 space-y-5">
+          <div role="dialog" aria-modal="true" aria-label="Custom package image" className="relative w-full max-w-md p-6 space-y-5 rounded-xl bg-[#111A2B] border border-[#243047] shadow-2xl">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+            <div className="flex items-center justify-between pb-3 border-b border-[#243047]">
               <div className="flex items-center gap-2">
-                <ImageIcon className="h-5 w-5 text-pink-400" />
-                <h3 className="text-base font-bold text-white">Custom Package Image</h3>
+                <ImageIcon className="h-5 w-5 text-[#22C55E]" />
+                <h3 className="text-base font-bold text-[#F8FAFC]">Custom Package Image</h3>
               </div>
               <button
                 type="button"
                 onClick={closeImageModal}
-                className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 rounded-lg hover:bg-[#151F31] text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Package details */}
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-[#94A3B8]">
               Editing image for:{" "}
-              <span className="font-bold text-white">{imageModalPkg.name}</span>{" "}
-              <span className="font-mono text-purple-400">({imageModalPkg.supplierProductCode})</span>
+              <span className="font-bold text-[#F8FAFC]">{imageModalPkg.name}</span>{" "}
+              <span className="font-mono text-[#22C55E]">({imageModalPkg.supplierProductCode})</span>
             </div>
 
             {/* Image Preview */}
-            <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-white/10 bg-[#090b1c]">
+            <div className="flex flex-col items-center justify-center p-4 rounded-lg border border-[#243047] bg-[#151F31]">
               {previewUrl ? (
-                <div className="relative h-28 w-28 rounded-xl overflow-hidden border border-pink-500/30 shadow-lg">
+                <div className="relative h-28 w-28 rounded-lg overflow-hidden border border-[#243047] shadow-lg">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={previewUrl}
@@ -823,7 +823,7 @@ export default function AdminPackagesPage() {
                   />
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-28 w-28 rounded-xl border border-dashed border-white/20 text-slate-500 text-center p-2">
+                <div className="flex flex-col items-center justify-center h-28 w-28 rounded-lg border border-dashed border-[#243047] text-[#64748B] text-center p-2">
                   <ImageIcon className="h-8 w-8 mb-1" />
                   <span className="text-[10px]">No Custom Image</span>
                 </div>
@@ -832,7 +832,7 @@ export default function AdminPackagesPage() {
 
             {/* Upload File Input */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
                 Upload New File (PNG, JPG, WebP)
               </label>
               <input
@@ -840,13 +840,13 @@ export default function AdminPackagesPage() {
                 type="file"
                 accept="image/png,image/jpeg,image/webp,image/gif"
                 onChange={handleFileChange}
-                className="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-purple-600/30 file:text-purple-300 hover:file:bg-purple-600/50 cursor-pointer"
+                className="w-full text-xs text-[#94A3B8] file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#151F31] file:text-[#22C55E] file:border file:border-[#243047] hover:file:bg-[#111A2B] cursor-pointer"
               />
             </div>
 
             {/* Or Enter Image URL */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-300">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#94A3B8]">
                 Or External Image URL
               </label>
               <input
@@ -860,18 +860,18 @@ export default function AdminPackagesPage() {
                     setSelectedFile(null);
                   }
                 }}
-                className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-purple-500 focus:outline-none font-mono"
+                className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none font-mono"
               />
             </div>
 
             {/* Modal Actions */}
-            <div className="flex items-center justify-between pt-2 border-t border-white/10">
+            <div className="flex items-center justify-between pt-2 border-t border-[#243047]">
               {imageModalPkg.customImage ? (
                 <button
                   type="button"
                   onClick={handleRemoveImage}
                   disabled={isUploadingImage}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-[#EF4444] bg-[#EF4444]/10 hover:bg-[#EF4444]/20 border border-[#EF4444]/30 transition-colors cursor-pointer"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                   <span>Remove Image</span>
@@ -885,7 +885,7 @@ export default function AdminPackagesPage() {
                   type="button"
                   onClick={closeImageModal}
                   disabled={isUploadingImage}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] bg-[#151F31] hover:bg-[#111A2B] border border-[#243047] transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -893,7 +893,7 @@ export default function AdminPackagesPage() {
                   type="button"
                   onClick={handleSaveImage}
                   disabled={isUploadingImage || (!selectedFile && !urlInput.trim() && !previewUrl)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-pink-600 to-purple-600 hover:opacity-90 shadow-md transition-all cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold text-[#080D18] bg-[#22C55E] hover:bg-[#16A34A] transition-colors cursor-pointer disabled:opacity-50"
                 >
                   {isUploadingImage ? (
                     <>

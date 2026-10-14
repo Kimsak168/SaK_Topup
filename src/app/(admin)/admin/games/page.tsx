@@ -286,29 +286,29 @@ export default function AdminGamesPage() {
   };
 
   return (
-    <div className="admin-page">
+    <div className="admin-page animate-in fade-in duration-300">
       {/* Top Header & Sync Games Action */}
       <div className="admin-page-heading">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-pink-400 mb-1">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#22C55E] mb-1">
             <Layers className="h-3.5 w-3.5" />
             <span>Catalogue Control Center</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#F8FAFC] tracking-tight">
             Game Management & Supplier Sync
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs text-[#94A3B8] mt-1">
             Import real games from Vizo and G2Bulk APIs, configure website visibility, and manage thumbnails.
           </p>
         </div>
 
         {/* Header Action Buttons */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link
             href="/admin/games/mlbb-test"
-            className="inline-flex items-center gap-2 rounded-xl border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 px-4 py-2.5 text-xs sm:text-sm font-bold text-pink-300 transition-all shadow-[0_0_15px_rgba(255,46,147,0.15)]"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#243047] bg-[#111A2B] hover:bg-[#151F31] px-3.5 text-xs font-semibold text-[#F8FAFC] transition-colors"
           >
-            <Gamepad2 className="h-4 w-4 text-pink-400" />
+            <Gamepad2 className="h-3.5 w-3.5 text-[#22C55E]" />
             <span>MLBB Cambodian Verification</span>
           </Link>
 
@@ -316,61 +316,61 @@ export default function AdminGamesPage() {
             type="button"
             onClick={handleSyncGames}
             disabled={isSyncing}
-            className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 px-5 py-2.5 text-xs sm:text-sm font-bold text-white shadow-[0_0_25px_rgba(255,46,147,0.3)] hover:opacity-95 transition-all disabled:opacity-50 cursor-pointer"
+            className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#22C55E] px-4 text-xs font-semibold text-slate-950 hover:bg-[#16A34A] transition-colors disabled:opacity-50 cursor-pointer"
           >
-            <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
+            <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`} />
             <span>{isSyncing ? "Syncing from APIs..." : "Sync Games from APIs"}</span>
           </button>
         </div>
       </div>
 
       {/* KPI Cards Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5">
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-white/5 space-y-1">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
             Total Catalogue
           </span>
-          <div className="text-2xl font-black text-white">{kpi.totalAll}</div>
-          <span className="text-[10px] text-slate-500">Real supplier games</span>
+          <div className="text-xl font-bold text-[#F8FAFC]">{kpi.totalAll}</div>
+          <span className="text-[10px] text-[#64748B]">Real supplier games</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-emerald-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#22C55E]/20 space-y-1">
+          <span className="text-[11px] font-semibold text-[#22C55E] uppercase tracking-wider flex items-center gap-1">
             <Eye className="h-3 w-3" /> Live on Store
           </span>
-          <div className="text-2xl font-black text-emerald-400">{kpi.activeCount}</div>
-          <span className="text-[10px] text-slate-500">Customer visible</span>
+          <div className="text-xl font-bold text-[#22C55E]">{kpi.activeCount}</div>
+          <span className="text-[10px] text-[#64748B]">Customer visible</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-white/5 space-y-1">
-          <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#243047] space-y-1">
+          <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider flex items-center gap-1">
             <EyeOff className="h-3 w-3" /> Hidden / Disabled
           </span>
-          <div className="text-2xl font-black text-slate-300">{kpi.disabledCount}</div>
-          <span className="text-[10px] text-slate-500">Not shown on store</span>
+          <div className="text-xl font-bold text-[#94A3B8]">{kpi.disabledCount}</div>
+          <span className="text-[10px] text-[#64748B]">Not shown on store</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-pink-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-pink-400 uppercase tracking-wider">
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#38BDF8]/20 space-y-1">
+          <span className="text-[11px] font-semibold text-[#38BDF8] uppercase tracking-wider">
             Vizo (Free Fire)
           </span>
-          <div className="text-2xl font-black text-pink-400">{kpi.vizoCount}</div>
-          <span className="text-[10px] text-slate-500">Exclusively Vizo</span>
+          <div className="text-xl font-bold text-[#38BDF8]">{kpi.vizoCount}</div>
+          <span className="text-[10px] text-[#64748B]">Exclusively Vizo</span>
         </div>
 
-        <div className="rounded-2xl p-4 bg-[#0d0f22] border border-purple-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-purple-400 uppercase tracking-wider">
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-indigo-500/20 space-y-1">
+          <span className="text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">
             G2Bulk Games
           </span>
-          <div className="text-2xl font-black text-purple-400">{kpi.g2bulkCount}</div>
-          <span className="text-[10px] text-slate-500">PUBG, MLBB, etc.</span>
+          <div className="text-xl font-bold text-indigo-400">{kpi.g2bulkCount}</div>
+          <span className="text-[10px] text-[#64748B]">PUBG, MLBB, etc.</span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-4 rounded-2xl bg-[#0c0e24] border border-white/10">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 rounded-xl bg-[#111A2B] border border-[#243047]">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#64748B] pointer-events-none" />
           <input
             type="text"
             placeholder="Search game name, code or slug..."
@@ -379,7 +379,7 @@ export default function AdminGamesPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full rounded-xl border border-white/10 bg-[#090b1c] pl-10 pr-4 py-2 text-xs sm:text-sm text-white placeholder-slate-500 focus:border-pink-500 focus:outline-none"
+            className="w-full rounded-lg border border-[#243047] bg-[#0C1322] pl-9 pr-3.5 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20"
           />
         </div>
 
@@ -391,7 +391,7 @@ export default function AdminGamesPage() {
               setSupplierFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs font-semibold text-slate-300 focus:border-pink-500 focus:outline-none"
+            className="rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
             <option value="all">All Suppliers</option>
             <option value="vizo">Vizo (Free Fire)</option>
@@ -405,7 +405,7 @@ export default function AdminGamesPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-xs font-semibold text-slate-300 focus:border-pink-500 focus:outline-none"
+            className="rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
             <option value="all">All Statuses</option>
             <option value="active">Live on Website Only</option>
@@ -415,40 +415,40 @@ export default function AdminGamesPage() {
       </div>
 
       {/* Games Table */}
-      <div className="rounded-2xl border border-white/10 bg-[#0c0e24] overflow-hidden">
+      <div className="rounded-xl border border-[#243047] bg-[#111A2B] overflow-hidden">
         {loading ? (
-          <div className="p-12 text-center text-slate-400">
-            <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-pink-400" />
+          <div className="p-12 text-center text-[#94A3B8]">
+            <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2 text-[#22C55E]" />
             <p className="text-xs">Loading game records from MongoDB Atlas...</p>
           </div>
         ) : games.length === 0 ? (
-          <div className="p-12 text-center text-slate-400 space-y-3">
-            <AlertTriangle className="h-8 w-8 text-amber-400 mx-auto" />
-            <p className="text-sm font-semibold text-white">No games found matching your filters</p>
-            <p className="text-xs text-slate-500">
+          <div className="p-12 text-center text-[#94A3B8] space-y-2">
+            <AlertTriangle className="h-6 w-6 text-amber-400 mx-auto" />
+            <p className="text-xs font-semibold text-[#F8FAFC]">No games found matching your filters</p>
+            <p className="text-[11px] text-[#64748B]">
               Try adjusting your search or click &quot;Sync Games from APIs&quot; above to import.
             </p>
           </div>
         ) : (
           <div className="admin-table-scroll">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-white/10 bg-[#090b1c] text-slate-400 font-bold uppercase tracking-wider text-[11px]">
+              <thead className="border-b border-[#243047] bg-[#0C1322] text-[#94A3B8] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
-                  <th className="py-3 px-4">Game</th>
-                  <th className="py-3 px-4">Supplier</th>
-                  <th className="py-3 px-4">Supplier Code</th>
-                  <th className="py-3 px-4">Category</th>
-                  <th className="py-3 px-4">Storefront Visibility</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+                  <th className="py-2.5 px-3.5">Game</th>
+                  <th className="py-2.5 px-3.5">Supplier</th>
+                  <th className="py-2.5 px-3.5">Supplier Code</th>
+                  <th className="py-2.5 px-3.5">Category</th>
+                  <th className="py-2.5 px-3.5">Storefront Visibility</th>
+                  <th className="py-2.5 px-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-[#243047]">
                 {games.map((game) => (
                   <tr key={game.id} className="hover:bg-white/[0.02] transition-colors">
                     {/* Game Name & Image */}
-                    <td className="py-3 px-4">
+                    <td className="py-2.5 px-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="relative h-10 w-10 shrink-0 rounded-lg overflow-hidden border border-white/10 bg-[#090b1c]">
+                        <div className="relative h-9 w-9 shrink-0 rounded-lg overflow-hidden border border-[#243047] bg-[#0C1322]">
                           <Image
                             src={game.customImage || game.image || "/images/hero-banner.jpg"}
                             alt={game.name}
@@ -461,15 +461,15 @@ export default function AdminGamesPage() {
                           />
                         </div>
                         <div>
-                          <div className="font-bold text-white text-sm flex items-center gap-2">
+                          <div className="font-semibold text-[#F8FAFC] text-xs flex items-center gap-1.5">
                             <span>{game.name}</span>
                             {game.badge && (
-                              <span className="rounded bg-pink-500/20 border border-pink-500/30 px-1.5 py-0.2 text-[9px] font-extrabold text-pink-300 uppercase">
+                              <span className="rounded border border-[#22C55E]/30 bg-[#22C55E]/10 px-1.5 py-0.2 text-[9px] font-bold text-[#22C55E] uppercase">
                                 {game.badge}
                               </span>
                             )}
                           </div>
-                          <span className="text-[11px] text-slate-400 font-mono">
+                          <span className="text-[10px] text-[#64748B] font-mono">
                             /{game.supplier}/{game.supplierGameCode}
                           </span>
                         </div>
@@ -477,59 +477,59 @@ export default function AdminGamesPage() {
                     </td>
 
                     {/* Supplier */}
-                    <td className="py-3 px-4">
+                    <td className="py-2.5 px-3.5">
                       {game.supplier === "vizo" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-pink-500/10 border border-pink-500/30 px-2.5 py-0.5 text-[10px] font-bold text-pink-400">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/20 px-2 py-0.5 text-[10px] font-semibold text-[#38BDF8]">
                           ⚡ VIZO API
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-500/10 border border-purple-500/30 px-2.5 py-0.5 text-[10px] font-bold text-purple-400">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 text-[10px] font-semibold text-indigo-400">
                           🚀 G2BULK API
                         </span>
                       )}
                     </td>
 
                     {/* Supplier Game Code */}
-                    <td className="py-3 px-4 font-mono text-slate-300">
+                    <td className="py-2.5 px-3.5 font-mono text-xs text-[#94A3B8]">
                       {game.supplierGameCode}
                     </td>
 
                     {/* Category */}
-                    <td className="py-3 px-4 text-slate-400">
+                    <td className="py-2.5 px-3.5 text-xs text-[#94A3B8]">
                       {game.category}
                     </td>
 
                     {/* Storefront Active Toggle */}
-                    <td className="py-3 px-4">
+                    <td className="py-2.5 px-3.5">
                       <button
                         type="button"
                         onClick={() => handleToggleActive(game)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors cursor-pointer ${
                           game.isActive
-                            ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30"
-                            : "bg-slate-800 text-slate-400 border border-white/10 hover:bg-slate-700"
+                            ? "bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/30 hover:bg-[#22C55E]/20"
+                            : "bg-[#151F31] text-[#64748B] border border-[#243047] hover:text-[#94A3B8]"
                         }`}
                       >
                         {game.isActive ? (
                           <>
                             <Check className="h-3 w-3" />
-                            <span>Enabled (Visible)</span>
+                            <span>Enabled</span>
                           </>
                         ) : (
                           <>
                             <X className="h-3 w-3" />
-                            <span>Disabled (Hidden)</span>
+                            <span>Disabled</span>
                           </>
                         )}
                       </button>
                     </td>
 
                     {/* Actions */}
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-2.5 px-3.5 text-right">
                       <button type="button" onClick={(event) => toggleActionMenu(event, game)}
                         aria-label={`Actions for ${game.name}`} aria-expanded={actionMenu?.game.id === game.id}
                         title="More actions" className="admin-table-action cursor-pointer">
-                        <Ellipsis className="h-4 w-4" />
+                        <Ellipsis className="h-3.5 w-3.5" />
                       </button>
                     </td>
                   </tr>
@@ -540,10 +540,10 @@ export default function AdminGamesPage() {
         )}
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between p-4 border-t border-white/10 text-xs text-slate-400">
+        <div className="flex items-center justify-between p-3.5 border-t border-[#243047] text-xs text-[#94A3B8]">
           <div>
-            Page <span className="font-bold text-white">{page}</span> of{" "}
-            <span className="font-bold text-white">{totalPages}</span>
+            Page <span className="font-semibold text-[#F8FAFC]">{page}</span> of{" "}
+            <span className="font-semibold text-[#F8FAFC]">{totalPages}</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -551,7 +551,7 @@ export default function AdminGamesPage() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 disabled:opacity-40 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#151F31] border border-[#243047] text-[#94A3B8] hover:text-[#F8FAFC] disabled:opacity-40 cursor-pointer"
             >
               Previous
             </button>
@@ -559,7 +559,7 @@ export default function AdminGamesPage() {
               type="button"
               disabled={page >= totalPages}
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-slate-300 disabled:opacity-40 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg bg-[#151F31] border border-[#243047] text-[#94A3B8] hover:text-[#F8FAFC] disabled:opacity-40 cursor-pointer"
             >
               Next
             </button>
@@ -588,44 +588,44 @@ export default function AdminGamesPage() {
       {/* Sync Summary Modal */}
       {showSyncModal && syncSummary && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div role="dialog" aria-modal="true" aria-label="API synchronization report" className="admin-modal-panel relative w-full max-w-lg p-6 sm:p-7 space-y-5">
+          <div role="dialog" aria-modal="true" aria-label="API synchronization report" className="admin-modal-panel relative w-full max-w-lg p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-pink-400 font-bold text-sm">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+              <div className="flex items-center gap-2 text-[#22C55E] font-bold text-sm">
+                <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />
                 <span>API Synchronization Report</span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowSyncModal(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
+                className="p-1 rounded-lg text-[#94A3B8] hover:text-[#F8FAFC]"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-[#94A3B8]">
               Real catalogue endpoints were queried. Administrator settings and custom configurations were safely preserved.
             </p>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                <div className="font-bold text-pink-400">Vizo (Free Fire)</div>
-                <div className="text-slate-300">Imported: {syncSummary.vizo.imported}</div>
-                <div className="text-slate-300">Updated: {syncSummary.vizo.updated}</div>
-                <div className="text-slate-400">Total Vizo: {syncSummary.vizo.total}</div>
+              <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1">
+                <div className="font-semibold text-[#38BDF8]">Vizo (Free Fire)</div>
+                <div className="text-[#94A3B8]">Imported: {syncSummary.vizo.imported}</div>
+                <div className="text-[#94A3B8]">Updated: {syncSummary.vizo.updated}</div>
+                <div className="text-[#64748B]">Total Vizo: {syncSummary.vizo.total}</div>
               </div>
 
-              <div className="p-3 rounded-xl bg-white/5 border border-white/5 space-y-1">
-                <div className="font-bold text-purple-400">G2Bulk Catalogue</div>
-                <div className="text-slate-300">Imported: {syncSummary.g2bulk.imported}</div>
-                <div className="text-slate-300">Updated: {syncSummary.g2bulk.updated}</div>
-                <div className="text-slate-400">Total G2Bulk: {syncSummary.g2bulk.total}</div>
+              <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1">
+                <div className="font-semibold text-indigo-400">G2Bulk Catalogue</div>
+                <div className="text-[#94A3B8]">Imported: {syncSummary.g2bulk.imported}</div>
+                <div className="text-[#94A3B8]">Updated: {syncSummary.g2bulk.updated}</div>
+                <div className="text-[#64748B]">Total G2Bulk: {syncSummary.g2bulk.total}</div>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-center justify-between">
+            <div className="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-xs text-[#22C55E] flex items-center justify-between">
               <span>Total Imported &amp; Updated:</span>
-              <span className="font-extrabold text-sm">
+              <span className="font-bold text-sm">
                 {syncSummary.totalImported + syncSummary.totalUpdated} Games
               </span>
             </div>
@@ -639,7 +639,7 @@ export default function AdminGamesPage() {
             <button
               type="button"
               onClick={() => setShowSyncModal(false)}
-              className="w-full py-2.5 rounded-xl bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs transition-colors"
+              className="w-full py-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-slate-950 font-semibold text-xs transition-colors"
             >
               Done &amp; View Games
             </button>
@@ -650,34 +650,34 @@ export default function AdminGamesPage() {
       {/* Edit Game Modal */}
       {editingGame && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-          <div role="dialog" aria-modal="true" aria-label="Edit game" className="admin-modal-panel relative w-full max-w-md p-6 sm:p-7 space-y-4">
+          <div role="dialog" aria-modal="true" aria-label="Edit game" className="admin-modal-panel relative w-full max-w-md p-5 sm:p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Edit2 className="h-4 w-4 text-pink-400" />
+              <h3 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-2">
+                <Edit2 className="h-4 w-4 text-[#22C55E]" />
                 <span>Edit {editingGame.name}</span>
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingGame(null)}
-                className="p-1 text-slate-400 hover:text-white"
+                className="p-1 text-[#94A3B8] hover:text-[#F8FAFC]"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Display Name</label>
+                <label className="block text-[#94A3B8] font-semibold mb-1">Display Name</label>
                 <input
                   type="text"
                   value={editForm.name}
                   onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-[#F8FAFC] text-xs focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">
+                <label className="block text-[#94A3B8] font-semibold mb-1">
                   Custom Thumbnail Image URL (Overrides Supplier)
                 </label>
                 <input
@@ -685,52 +685,52 @@ export default function AdminGamesPage() {
                   placeholder="https://... or /images/..."
                   value={editForm.customImage}
                   onChange={(e) => setEditForm({ ...editForm, customImage: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none"
+                  className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-[#F8FAFC] text-xs focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 font-semibold mb-1">Description</label>
+                <label className="block text-[#94A3B8] font-semibold mb-1">Description</label>
                 <textarea
                   rows={3}
                   value={editForm.description}
                   onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
-                  className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none leading-relaxed"
+                  className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-[#F8FAFC] text-xs focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20 leading-relaxed"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Promotional Badge</label>
+                  <label className="block text-[#94A3B8] font-semibold mb-1">Promotional Badge</label>
                   <input
                     type="text"
                     placeholder="HOT DEAL / POPULAR"
                     value={editForm.badge}
                     onChange={(e) => setEditForm({ ...editForm, badge: e.target.value })}
-                    className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none"
+                    className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-[#F8FAFC] text-xs focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 font-semibold mb-1">Sort Order (Lower = 1st)</label>
+                  <label className="block text-[#94A3B8] font-semibold mb-1">Sort Order (Lower = 1st)</label>
                   <input
                     type="number"
                     value={editForm.sortOrder}
                     onChange={(e) => setEditForm({ ...editForm, sortOrder: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full rounded-xl border border-white/10 bg-[#090b1c] px-3 py-2 text-white text-xs focus:border-pink-500 focus:outline-none"
+                    className="w-full rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-[#F8FAFC] text-xs focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E]/20"
                   />
                 </div>
               </div>
 
-              <div className="pt-2 flex items-center justify-between border-t border-white/10">
-                <span className="text-slate-300 font-semibold">Storefront Visibility</span>
+              <div className="pt-2 flex items-center justify-between border-t border-[#243047]">
+                <span className="text-[#94A3B8] font-semibold">Storefront Visibility</span>
                 <button
                   type="button"
                   onClick={() => setEditForm({ ...editForm, isActive: !editForm.isActive })}
-                  className={`px-3 py-1 rounded-full text-xs font-bold ${
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold ${
                     editForm.isActive
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                      : "bg-slate-800 text-slate-400 border border-white/10"
+                      ? "bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/30"
+                      : "bg-[#151F31] text-[#64748B] border border-[#243047]"
                   }`}
                 >
                   {editForm.isActive ? "Visible" : "Hidden"}
@@ -738,11 +738,11 @@ export default function AdminGamesPage() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 pt-3">
+            <div className="flex items-center gap-2 pt-2 border-t border-[#243047]">
               <button
                 type="button"
                 onClick={() => setEditingGame(null)}
-                className="flex-1 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold"
+                className="flex-1 py-2 rounded-lg bg-transparent border border-[#243047] hover:bg-[#151F31] text-[#94A3B8] hover:text-[#F8FAFC] text-xs font-medium"
               >
                 Cancel
               </button>
@@ -750,7 +750,7 @@ export default function AdminGamesPage() {
                 type="button"
                 disabled={isSavingGame}
                 onClick={handleSaveEdit}
-                className="flex-1 py-2 rounded-xl bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold shadow-md disabled:opacity-50"
+                className="flex-1 py-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] text-slate-950 text-xs font-semibold disabled:opacity-50"
               >
                 {isSavingGame ? "Saving..." : "Save Settings"}
               </button>
