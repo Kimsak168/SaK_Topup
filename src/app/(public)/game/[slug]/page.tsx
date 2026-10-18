@@ -16,9 +16,9 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
   const { slug } = await params;
   const normalized = (slug || "").trim().toLowerCase();
 
-  // 1. Direct Free Fire alias handling -> always Vizo
-  if (normalized.includes("freefire") || normalized === "free-fire" || normalized === "ff") {
-    redirect("/games/vizo/freefire_global");
+  // 1. Direct Free Fire alias handling -> WebBuilder
+  if (normalized.includes("freefire") || normalized.startsWith("free-fire") || normalized === "ff") {
+    redirect("/games/webbuilder/freefire_sgmy");
   }
 
   // 2. Direct PUBG Mobile alias handling -> always G2Bulk
@@ -26,15 +26,13 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
     redirect("/games/g2bulk/pubgm");
   }
 
-  // 3. Direct MLBB alias handling -> G2Bulk mlbb
-  if (normalized === "mobile-legends" || normalized === "mlbb") {
-    redirect("/games/g2bulk/mlbb");
-  }
-  if (normalized === "mlbb_global") {
-    redirect("/games/g2bulk/mlbb_global");
+  // 3. Direct MLBB alias handling -> WebBuilder mlbb
+  if (normalized === "mobile-legends" || normalized === "mlbb" || normalized === "mlbb_global") {
+    redirect("/games/webbuilder/mlbb");
   }
 
   // 4. Check DB for other games
+  let targetPath = `/games/g2bulk/${encodeURIComponent(normalized)}`;
   try {
     await connectDB();
     const game = await Game.findOne({
@@ -45,12 +43,12 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
     if (game) {
       const supplier = game.supplier;
       const code = game.supplierGameCode || game.slug;
-      redirect(`/games/${supplier}/${code}`);
+      targetPath = `/games/${supplier}/${encodeURIComponent(code)}`;
     }
   } catch (err) {
     console.error("Legacy redirect error:", err);
   }
 
   // Default fallback to G2Bulk
-  redirect(`/games/g2bulk/${normalized}`);
+  redirect(targetPath);
 }

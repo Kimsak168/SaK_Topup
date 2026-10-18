@@ -28,11 +28,11 @@ export async function GET(
 
     // 1. Validate supplier parameter
     const normalizedSupplier = supplier?.trim().toLowerCase();
-    if (!normalizedSupplier || (normalizedSupplier !== "vizo" && normalizedSupplier !== "g2bulk")) {
+    if (!normalizedSupplier || (normalizedSupplier !== "vizo" && normalizedSupplier !== "g2bulk" && normalizedSupplier !== "webbuilder")) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid supplier. Supported suppliers are 'vizo' and 'g2bulk'.",
+          error: "Invalid supplier. Supported suppliers are 'vizo', 'g2bulk', and 'webbuilder'.",
         },
         { status: 400 }
       );
@@ -45,20 +45,6 @@ export async function GET(
         {
           success: false,
           error: "Missing game code parameter.",
-        },
-        { status: 400 }
-      );
-    }
-
-    // 3. Prohibit Free Fire via G2Bulk
-    if (
-      normalizedSupplier === "g2bulk" &&
-      (rawCode.toLowerCase().includes("freefire") || rawCode.toLowerCase() === "ff")
-    ) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Free Fire is only supported via the Vizo supplier. Please request '/api/games/vizo/freefire_global/packages'.",
         },
         { status: 400 }
       );

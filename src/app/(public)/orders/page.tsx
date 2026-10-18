@@ -42,7 +42,7 @@ function OrderTrackingContent() {
   const handleSearch = useCallback(async (targetQuery: string) => {
     const q = targetQuery.trim();
     if (!q) {
-      toast.error("Please enter an Order Number or Player ID");
+      toast.error("Please enter an Order Number or Player ID", { id: "order-search" });
       return;
     }
 
@@ -61,7 +61,7 @@ function OrderTrackingContent() {
       if (res.ok && data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
         if (data.orders.length === 0) {
-          toast.info("No matching orders found. Double-check your details.");
+          toast.info("No matching orders found. Double-check your details.", { id: "order-search" });
         }
       } else {
         setSearchError(data.error || "Lookup failed. Please try again.");
@@ -117,7 +117,7 @@ function OrderTrackingContent() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter Order # or Player ID..."
-            className="h-10 sm:h-11 w-full rounded-xl border border-[#BBF7D0] bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-[#172033] placeholder:text-[#64748B] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#16A34A]/20 shadow-xs"
+            className="h-10 sm:h-11 w-full rounded-xl border border-[#BBF7D0] bg-white pl-9 sm:pl-10 pr-4 text-xs sm:text-sm text-[#172033] placeholder:text-[#94A3B8] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#22C55E]/20 shadow-xs"
           />
         </div>
         <button
@@ -189,7 +189,7 @@ function OrderTrackingContent() {
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             order.fulfillmentStatus === "completed"
-                              ? "bg-emerald-50 text-[#10B981] border border-[#10B981]/30"
+                              ? "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"
                               : order.fulfillmentStatus === "failed"
                               ? "bg-rose-50 text-[#EF4444] border border-[#EF4444]/30"
                               : "bg-amber-50 text-[#F59E0B] border border-[#F59E0B]/30"
@@ -198,7 +198,7 @@ function OrderTrackingContent() {
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${
                               order.fulfillmentStatus === "completed"
-                                ? "bg-[#10B981]"
+                                ? "bg-[#22C55E]"
                                 : order.fulfillmentStatus === "failed"
                                 ? "bg-[#EF4444]"
                                 : "bg-[#F59E0B]"
@@ -240,7 +240,7 @@ function OrderTrackingContent() {
                         </p>
                       )}
                       {order.playerName && (
-                        <p className="text-[#10B981] font-semibold text-[11px]">
+                        <p className="text-[#22C55E] font-semibold text-[11px]">
                           IGN: {order.playerName}
                         </p>
                       )}
@@ -250,7 +250,7 @@ function OrderTrackingContent() {
                       <span className="text-[#64748B] text-[10px]">Payment Status:</span>
                       <p className="font-bold text-[#172033] uppercase mt-0.5">
                         {order.paymentMethod} (
-                        <span className="text-[#10B981]">{order.paymentStatus}</span>)
+                        <span className="text-[#22C55E]">{order.paymentStatus}</span>)
                       </p>
                       <p className="text-[#64748B] text-[11px] mt-0.5">
                         Automated Direct API Delivery

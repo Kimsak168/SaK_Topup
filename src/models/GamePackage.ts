@@ -3,8 +3,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IGamePackage extends Document {
   gameSlug: string;
   gameCode?: string;
-  supplier: "vizo" | "g2bulk";
-  supplierProductCode: string; // Vizo product_code or G2Bulk catalogue id
+  supplier: "vizo" | "g2bulk" | "webbuilder";
+  supplierProductCode: string; // Vizo product_code, G2Bulk catalogue id, or WebBuilder product id
   name: string;
   diamondsOrPoints?: string;
   bonus?: string;
@@ -12,7 +12,8 @@ export interface IGamePackage extends Document {
   imageData?: Buffer;
   imageContentType?: string;
   packageType?: "direct" | "voucher";
-  buyingPrice?: number | null; // Server-only supplier cost. NEVER EXPOSE TO CLIENT.
+  buyingPrice?: number | null; // Server-only supplier cost in USD. NEVER EXPOSE TO CLIENT.
+  priceCents?: number | null; // Wholesale cost in integer USD cents (from WebBuilder)
   sellingPrice: number | null; // Admin-configured selling price. Null if not configured.
   originalPrice?: number | null;
   currency: string;
@@ -42,7 +43,7 @@ const GamePackageSchema = new Schema<IGamePackage>(
     },
     supplier: {
       type: String,
-      enum: ["vizo", "g2bulk"],
+      enum: ["vizo", "g2bulk", "webbuilder"],
       required: true,
       index: true,
     },
@@ -85,6 +86,11 @@ const GamePackageSchema = new Schema<IGamePackage>(
       type: Number,
       default: null,
       // supplier cost in USD (kept private)
+    },
+    priceCents: {
+      type: Number,
+      default: null,
+      // supplier cost in integer USD cents
     },
     sellingPrice: {
       type: Number,

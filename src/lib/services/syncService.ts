@@ -225,6 +225,27 @@ export async function syncGamesFromSuppliers(): Promise<FullSyncResult["games"]>
         continue;
       }
 
+      // STRICT REQUIREMENT: Exclude Honor of Kings from G2Bulk (it belongs to WebBuilder!)
+      if (
+        rawCode.toLowerCase() === "hok" ||
+        rawCode.toLowerCase().includes("honor") ||
+        g.name.toLowerCase().includes("honor of king")
+      ) {
+        g2bulkStats.skipped++;
+        continue;
+      }
+
+      // STRICT REQUIREMENT: Exclude Mobile Legends from G2Bulk (it belongs to WebBuilder!)
+      if (
+        rawCode.toLowerCase() === "mlbb" ||
+        rawCode.toLowerCase().startsWith("mlbb_") ||
+        rawCode.toLowerCase() === "mobile-legends" ||
+        g.name.toLowerCase().includes("mobile legends")
+      ) {
+        g2bulkStats.skipped++;
+        continue;
+      }
+
       try {
         const existing = await Game.findOne({ supplier: "g2bulk", supplierGameCode: rawCode });
 
@@ -435,8 +456,20 @@ export async function syncPackagesFromSuppliers(options: {
       for (const game of targetGames) {
         const code = game.supplierGameCode;
 
-        // Skip Free Fire on G2Bulk
+        // Skip Free Fire on G2Bulk (belongs to Vizo)
         if (code.toLowerCase().includes("freefire") || code === "ff") {
+          g2bulkStats.skipped++;
+          continue;
+        }
+
+        // Skip Honor of Kings on G2Bulk (belongs to WebBuilder)
+        if (code.toLowerCase() === "hok" || code.toLowerCase().includes("honor") || game.name?.toLowerCase().includes("honor of king")) {
+          g2bulkStats.skipped++;
+          continue;
+        }
+
+        // Skip Mobile Legends on G2Bulk (belongs to WebBuilder)
+        if (code.toLowerCase() === "mlbb" || code.toLowerCase().startsWith("mlbb_") || code.toLowerCase() === "mobile-legends" || game.name?.toLowerCase().includes("mobile legends")) {
           g2bulkStats.skipped++;
           continue;
         }

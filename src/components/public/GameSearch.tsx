@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useDeferredValue } from "react";
 import { Search, X, RotateCcw, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 import { ClientGame } from "@/types/game";
 import { GameCard } from "./GameCard";
 import { GameGridSkeleton } from "./HomeSkeletons";
@@ -10,6 +11,7 @@ import { ActiveGamesTicker } from "./ActiveGamesTicker";
 interface GameSearchProps {
   initialGames: ClientGame[];
   initialError?: string | null;
+  heading?: string;
 }
 
 // Strictly check if game is marked popular by administrator
@@ -35,7 +37,15 @@ const SEARCH_ALIASES: Record<string, string[]> = {
   wr: ["wild rift", "league of legends"],
 };
 
-export function GameSearch({ initialGames, initialError }: GameSearchProps) {
+function matchesSearch(game: ClientGame, query: string): boolean {
+  const terms = [query, ...(SEARCH_ALIASES[query] || [])];
+  const name = game.name.toLowerCase();
+  const slug = (game.slug || "").toLowerCase();
+  const publisher = (game.publisher || "").toLowerCase();
+  return terms.some((term) => name.includes(term) || slug.includes(term) || publisher.includes(term));
+}
+
+export function GameSearch({ initialGames, initialError, heading = "ហ្គេមពេញនិយម" }: GameSearchProps) {
   const [games, setGames] = useState<ClientGame[]>(() => initialGames || []);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<string | null>(initialError || null);
@@ -76,7 +86,11 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setActiveQuery(searchTerm.trim());
+    const query = searchTerm.trim();
+    setActiveQuery(query);
+    if (query && !isLoading && !fetchError && games.length > 0 && !games.some((game) => matchesSearch(game, query.toLowerCase()))) {
+      toast.info("No games found", { id: "game-search", description: `No results for "${query}"` });
+    }
   };
 
   const handleClear = () => {
@@ -99,99 +113,51 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
     const rawQuery = deferredQuery.trim().toLowerCase();
     if (!rawQuery) return sortedGames;
 
-    // Expand search terms with aliases if any
-    const aliasTerms = SEARCH_ALIASES[rawQuery] || [];
-    const searchTerms = [rawQuery, ...aliasTerms];
-
-    return sortedGames.filter((game) => {
-      const name = game.name.toLowerCase();
-      const slug = (game.slug || "").toLowerCase();
-      const publisher = (game.publisher || "").toLowerCase();
-
-      return searchTerms.some(
-        (term) =>
-          name.includes(term) ||
-          slug.includes(term) ||
-          publisher.includes(term)
-      );
-    });
+    return sortedGames.filter((game) => matchesSearch(game, rawQuery));
   }, [deferredQuery, sortedGames]);
 
   return (
-    <section id="games" className="w-full min-w-0 space-y-4 sm:space-y-6 scroll-mt-28">
-      {/* 1. Heading: Exact Khmer heading "ហ្គេមទាំងអស់" */}
-      <div className="space-y-3 sm:space-y-4">
-        <h2 className="text-xl sm:text-3xl font-extrabold text-[#172033] tracking-tight">
-          ហ្គេមទាំងអស់
-        </h2>
-
-        {/* 2. Prominent Game Search directly below heading */}
-        <form
-          onSubmit={handleSearchSubmit}
-          role="search"
-          aria-label="ស្វែងរកហ្គេម"
-          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 max-w-2xl w-full"
-        >
-          {/* Search Input Container */}
-          <div className="relative min-w-0 flex-1 group">
-            <Search className="absolute left-3 sm:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-4.5 sm:w-4.5 text-[#16A34A] pointer-events-none transition-colors group-focus-within:text-[#16A34A]" />
-            <input
-              type="text"
-              name="gameQuery"
-              autoComplete="off"
-              spellCheck={false}
-              enterKeyHint="search"
-              aria-controls="game-results"
-              aria-label="ស្វែងរកហ្គេម"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setActiveQuery(e.target.value); // Real-time searching while typing
-              }}
-              placeholder="ស្វែងរកហ្គេម"
-              className="h-10 sm:h-12 w-full rounded-xl sm:rounded-2xl border border-[#BBF7D0] bg-white pl-9 sm:pl-11 pr-11 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#64748B] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#16A34A]/20 transition-all shadow-xs"
-            />
-            {/* Quick in-input clear button */}
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="absolute right-1 sm:right-2 top-1/2 -translate-y-1/2 flex h-7.5 w-7.5 sm:h-8 sm:w-8 items-center justify-center rounded-lg text-[#64748B] hover:text-[#16A34A] hover:bg-[#F0FDF4] active:text-[#22C55E] transition-colors cursor-pointer"
-                aria-label="Clear search input"
-              >
-                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Action Buttons: Search button and Clear button */}
-          <div className="flex items-center gap-2">
-            <button
-              type="submit"
-              className="flex h-10 sm:h-12 flex-1 shrink-0 items-center justify-center gap-1.5 rounded-xl px-4 text-xs font-bold whitespace-nowrap text-white bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] transition-colors sm:h-12 sm:flex-initial sm:gap-2 sm:rounded-2xl sm:px-6 sm:text-sm shadow-xs cursor-pointer"
-            >
-              <Search className="h-4 w-4 sm:h-4 sm:w-4 text-white" />
-              <span>ស្វែងរក</span>
+    <section id="games" className="storefront-catalogue" aria-labelledby="games-heading">
+      <form onSubmit={handleSearchSubmit} role="search" aria-label="Search games" className="storefront-search">
+        <div className="storefront-search-field">
+          <Search aria-hidden="true" className="storefront-search-icon" />
+          <label htmlFor="game-search" className="sr-only">Search for games</label>
+          <input
+            id="game-search"
+            type="search"
+            name="gameQuery"
+            autoComplete="off"
+            spellCheck={false}
+            enterKeyHint="search"
+            aria-controls="game-results"
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setActiveQuery(e.target.value);
+            }}
+            placeholder="Search for games..."
+          />
+          {searchTerm && (
+            <button type="button" onClick={handleClear} className="storefront-search-clear" aria-label="Clear search input">
+              <X aria-hidden="true" size={16} />
             </button>
-
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={handleClear}
-                className="flex h-10 sm:h-12 shrink-0 items-center justify-center gap-1.5 rounded-xl sm:rounded-2xl border border-[#BBF7D0] bg-white hover:bg-[#F0FDF4] px-3.5 sm:px-4 text-xs sm:text-sm font-semibold text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] transition-colors cursor-pointer"
-                aria-label="Clear search"
-              >
-                <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                <span>សម្អាត</span>
-              </button>
-            )}
-          </div>
-        </form>
-
-        {/* Active Games Ticker */}
-        <div className="pt-2 sm:pt-3">
-          <ActiveGamesTicker games={games} />
+          )}
         </div>
+        <button type="submit" className="storefront-search-submit">
+          <Search aria-hidden="true" size={16} />
+          Search
+        </button>
+      </form>
+
+      <div className="storefront-ticker">
+        <ActiveGamesTicker games={games} />
+      </div>
+
+      <div className="storefront-catalogue-heading">
+        <div>
+          <h2 id="games-heading">{heading}</h2>
+        </div>
+        <span aria-hidden="true" className="storefront-game-count">{filteredGames.length} games</span>
       </div>
 
       {/* 3. Games Grid or Skeleton / Error / Empty States */}
@@ -218,7 +184,7 @@ export function GameSearch({ initialGames, initialError }: GameSearchProps) {
           </button>
         </div>
       ) : filteredGames.length > 0 ? (
-        <div className="grid grid-cols-2 min-[340px]:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-5">
+        <div className="storefront-grid">
           {filteredGames.map((game) => (
             <GameCard key={game.id || game.slug} game={game} />
           ))}

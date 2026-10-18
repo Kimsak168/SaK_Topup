@@ -88,6 +88,7 @@ export async function GET(req: NextRequest) {
       suppliers: {
         vizo: { configured: Boolean(process.env.VIZO_API_KEY) },
         g2bulk: { configured: Boolean(process.env.G2BULK_API_KEY) },
+        webbuilder: { configured: Boolean(process.env.WEBBUILDER_API_KEY) },
       },
     });
   } catch (error) {

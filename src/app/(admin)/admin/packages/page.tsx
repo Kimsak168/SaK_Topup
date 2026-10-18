@@ -22,7 +22,7 @@ interface AdminPackage {
   id: string;
   gameSlug: string;
   gameCode: string;
-  supplier: "vizo" | "g2bulk";
+  supplier: "vizo" | "g2bulk" | "webbuilder";
   supplierProductCode: string;
   name: string;
   buyingPrice: number | null; // Private supplier wholesale cost
@@ -512,6 +512,7 @@ export default function AdminPackagesPage() {
           >
             <option value="all">All Suppliers</option>
             <option value="vizo">Vizo (Free Fire)</option>
+            <option value="webbuilder">WebBuilder (Honor of Kings)</option>
             <option value="g2bulk">G2Bulk</option>
           </select>
 
@@ -643,6 +644,8 @@ export default function AdminPackagesPage() {
                           className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
                             pkg.supplier === "vizo"
                               ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.3)]"
+                              : pkg.supplier === "webbuilder"
+                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                               : "bg-[#151F31] text-[#94A3B8] border border-[#243047]"
                           }`}
                         >

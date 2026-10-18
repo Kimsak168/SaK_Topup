@@ -54,7 +54,7 @@ try {
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
   await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
 
-  const gameUrl = `${base}/games/vizo/freefire_sgmy`;
+  const gameUrl = `${base}/games/webbuilder/freefire_sgmy`;
   await send('Page.navigate', { url: gameUrl });
   await waitFor(`document.readyState === 'complete' && document.querySelectorAll('.package-option').length > 0 && (document.querySelector('.package-option')?.getBoundingClientRect().height || 0) > 0`);
 

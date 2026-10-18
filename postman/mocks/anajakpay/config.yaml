@@ -1,0 +1,7 @@
+version: 1
+name: anajakpay-verification
+description: Local verification fixtures based on the response contract used by anajakPayService.ts.
+interceptRequests: true
+scenarios:
+  - name: default
+    path: default.js

@@ -3,7 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { Payment } from "@/models/Payment";
 import { requireAdminAuth } from "@/lib/auth";
-import { queryAnajakPayTransactionStatus } from "@/lib/services/anajakPayService";
+import { queryAnajakPayTransactionStatus, formatAnajakAmount } from "@/lib/services/anajakPayService";
 import {
   triggerAutomaticFulfillment,
   reconcileSupplierFulfillment,
@@ -50,6 +50,10 @@ export async function POST(req: NextRequest) {
       const check = await queryAnajakPayTransactionStatus(order.transactionId);
 
       if (check.verified) {
+        if (typeof check.amount !== "number" || !Number.isFinite(check.amount) || check.amount <= 0 ||
+          formatAnajakAmount(check.amount) !== formatAnajakAmount(order.amount)) {
+          return NextResponse.json({ success: false, error: "Verified payment amount does not match the order" }, { status: 400 });
+        }
         order.paymentStatus = "PAID";
         order.paidAt = new Date();
         await order.save();

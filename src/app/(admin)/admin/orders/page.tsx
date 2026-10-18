@@ -181,8 +181,8 @@ export default function AdminOrdersPage() {
 
   const handleOpenDetail = (order: AdminOrder) => {
     setSelectedOrder(order);
-    setEditFulfillment(order.fulfillmentStatus);
-    setEditPayment(order.paymentStatus);
+    setEditFulfillment(order.fulfillmentStatus === "NOT_STARTED" ? "NOT_STARTED" : order.fulfillmentStatus.toLowerCase());
+    setEditPayment(order.paymentStatus.toLowerCase() === "refunded" ? "refunded" : order.paymentStatus.toUpperCase());
     setEditNotes(order.adminNotes || "");
   };
 
@@ -196,7 +196,7 @@ export default function AdminOrdersPage() {
         body: JSON.stringify({
           orderId: selectedOrder.id,
           fulfillmentStatus: editFulfillment,
-          paymentStatus: editPayment,
+          paymentStatus: editPayment.toUpperCase() === selectedOrder.paymentStatus.toUpperCase() ? undefined : editPayment,
           adminNotes: editNotes,
         }),
       });

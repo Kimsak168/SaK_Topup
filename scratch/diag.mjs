@@ -29,7 +29,7 @@ async function test() {
     await new Promise(r => ws.addEventListener('open', r, { once: true }));
 
     let id = 0;
-    const send = (method, params = {}) => new Promise((resolve, reject) => {
+    const send = (method, params = {}) => new Promise((resolve) => {
       const curId = ++id;
       const handler = (evt) => {
         const msg = JSON.parse(evt.data);

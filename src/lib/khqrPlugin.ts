@@ -75,49 +75,38 @@ export function loadKhqrPluginScript(): Promise<boolean> {
   }
 
   scriptLoadingPromise = new Promise((resolve) => {
-    // Check if script element already exists
     const existing = document.querySelector<HTMLScriptElement>(
       `script[src*="khqrcc-plugin.js"]`
     );
-
-    if (existing) {
-      if (window.KhqrPayway) {
-        patchPluginCloseBehavior();
-        resolve(true);
-        return;
-      }
-      existing.addEventListener(
-        "load",
-        () => {
-          patchPluginCloseBehavior();
-          resolve(true);
-        },
-        { once: true }
-      );
-      existing.addEventListener("error", () => resolve(false), { once: true });
-      return;
+    const script = existing || document.createElement("script");
+    const finish = (loaded: boolean) => {
+      clearTimeout(timer);
+      script.removeEventListener("load", onLoad);
+      script.removeEventListener("error", onError);
+      if (!loaded) script.remove();
+      resolve(loaded);
+    };
+    const onLoad = () => {
+      const loaded = Boolean(window.KhqrPayway);
+      if (loaded) patchPluginCloseBehavior();
+      finish(loaded);
+    };
+    const onError = () => finish(false);
+    const timer = setTimeout(onError, 15000);
+    script.addEventListener("load", onLoad, { once: true });
+    script.addEventListener("error", onError, { once: true });
+    if (!existing) {
+      script.src = PLUGIN_SCRIPT_URL;
+      script.async = true;
+      document.head.appendChild(script);
     }
-
-    const script = document.createElement("script");
-    script.src = PLUGIN_SCRIPT_URL;
-    script.async = true;
-
-    script.onload = () => {
-      console.log("[AnajakPay] KHQRcc checkout plugin loaded successfully.");
-      patchPluginCloseBehavior();
-      resolve(true);
-    };
-
-    script.onerror = (err) => {
-      console.error("[AnajakPay] Failed to load official KHQRcc checkout plugin:", err);
-      scriptLoadingPromise = null;
-      resolve(false);
-    };
-
-    document.head.appendChild(script);
   });
 
-  return scriptLoadingPromise;
+  const pending = scriptLoadingPromise;
+  void pending.then((loaded) => {
+    if (!loaded && scriptLoadingPromise === pending) scriptLoadingPromise = null;
+  });
+  return pending;
 }
 
 /**

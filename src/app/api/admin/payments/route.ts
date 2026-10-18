@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
-import { Payment } from "@/models/Payment";
+import { Payment, type IPayment } from "@/models/Payment";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
 import { queryAnajakPayTransactionStatus } from "@/lib/services/anajakPayService";
+import { getAdminPagination } from "@/lib/adminQuery";
 
 export const dynamic = "force-dynamic";
+const SUCCESS_STATUSES: IPayment["status"][] = ["successful", "SUCCESSFUL", "paid", "PAID"];
+const PENDING_STATUSES: IPayment["status"][] = ["pending", "PENDING"];
+const FAILED_STATUSES: IPayment["status"][] = ["failed", "FAILED"];
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdminAuth(req);
@@ -17,12 +21,15 @@ export async function GET(req: NextRequest) {
 
     const gateway = searchParams.get("gateway")?.trim() || "all";
     const status = searchParams.get("status")?.trim() || "all";
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "25", 10)));
+    const { page, limit } = getAdminPagination(searchParams);
 
     const filter: Record<string, unknown> = {};
     if (gateway !== "all") filter.gateway = gateway;
-    if (status !== "all") filter.status = status;
+    if (status !== "all") {
+      const normalized = status.toLowerCase();
+      filter.status = { $in: normalized === "successful" || normalized === "paid" ? SUCCESS_STATUSES
+        : [normalized, normalized.toUpperCase()] };
+    }
 
     const total = await Payment.countDocuments(filter).catch(() => 0);
     const payments = await Payment.find(filter)
@@ -35,11 +42,11 @@ export async function GET(req: NextRequest) {
     // Summary stats
     const [totalSuccess, totalPending, totalFailed, successfulVolumeAgg] =
       await Promise.all([
-        Payment.countDocuments({ status: "successful" }).catch(() => 0),
-        Payment.countDocuments({ status: "pending" }).catch(() => 0),
-        Payment.countDocuments({ status: "failed" }).catch(() => 0),
+        Payment.countDocuments({ status: { $in: SUCCESS_STATUSES } }).catch(() => 0),
+        Payment.countDocuments({ status: { $in: PENDING_STATUSES } }).catch(() => 0),
+        Payment.countDocuments({ status: { $in: FAILED_STATUSES } }).catch(() => 0),
         Payment.aggregate([
-          { $match: { status: "successful" } },
+          { $match: { status: { $in: SUCCESS_STATUSES } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]).catch(() => []),
       ]);
@@ -95,7 +102,7 @@ export async function GET(req: NextRequest) {
         transactionId: p.transactionId || null,
         amount: p.amount,
         currency: p.currency,
-        status: p.status,
+        status: SUCCESS_STATUSES.includes(p.status) ? "successful" : p.status.toLowerCase(),
         payerAccount: p.payerAccount || null,
         createdAt: p.createdAt,
       })),

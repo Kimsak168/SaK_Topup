@@ -343,8 +343,12 @@ test('concurrent serverless connection requests reuse a single pending connectio
 
 function matches(doc, filter) {
   return Object.entries(filter).every(([key, value]) => {
+    if (key === '$and') return value.every(condition => matches(doc, condition));
     if (key === '$or') return value.some(condition => matches(doc, condition));
     if (value && typeof value === 'object' && '$in' in value) return value.$in.includes(doc[key]);
+    if (value && typeof value === 'object' && '$exists' in value) return (doc[key] !== undefined) === value.$exists;
+    if (value && typeof value === 'object' && '$gt' in value) return doc[key] > value.$gt;
+    if (value && typeof value === 'object' && '$regex' in value) return new RegExp(value.$regex, value.$options).test(doc[key] || '');
     return doc[key] === value;
   });
 }
@@ -356,22 +360,22 @@ function model(documents) {
 
 test('legacy slugs retain configured prices, isolate games, and never expose supplier costs', async () => {
   const games = ['free-fire', 'pubg-mobile', 'mlbb'].map((slug, i) => ({
-    _id: slug, slug, supplier: i === 0 ? 'vizo' : 'g2bulk', supplierGameCode: ['freefire_global', 'pubgm', 'mlbb'][i],
+    _id: slug, slug, supplier: i === 1 ? 'g2bulk' : 'webbuilder', supplierGameCode: ['freefire_sgmy', 'pubgm', 'mlbb'][i],
     name: ['Free Fire', 'PUBG Mobile', 'Mobile Legends'][i], isActive: true,
     category: 'Action', publisher: 'Publisher',
   }));
   const packages = [
-    { gameSlug: 'free-fire', supplier: 'vizo', supplierProductCode: 'same-id', name: '100', sellingPrice: 2.73, isActive: true, buyingPrice: 1, customImage: '/api/packages/image/image?v=old', updatedAt: new Date(1000) },
+    { gameSlug: 'free-fire-sgmy', gameCode: 'freefire_sgmy', supplier: 'webbuilder', supplierProductCode: 'same-id', name: '100', sellingPrice: 2.73, isActive: true, buyingPrice: 1, customImage: '/api/packages/image/image?v=old', updatedAt: new Date(1000) },
     { gameSlug: 'pubg-mobile', supplier: 'g2bulk', supplierProductCode: 'same-id', name: '60 UC', sellingPrice: 3.41, isActive: true },
-    { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'g2bulk', supplierProductCode: 'disabled', name: '200', sellingPrice: 5, isActive: false },
-    { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'g2bulk', supplierProductCode: 'unpriced', name: '300', sellingPrice: null, isActive: true },
+    { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'webbuilder', supplierProductCode: 'disabled', name: '200', sellingPrice: 5, isActive: false },
+    { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'webbuilder', supplierProductCode: 'unpriced', name: '300', sellingPrice: null, isActive: true },
   ];
   const service = loader({
     react: { cache: fn => fn }, 'next/cache': sharedDataCache(),
     '@/lib/mongodb': { connectDB: async () => {} },
     '@/models/Game': { Game: model(games) }, '@/models/GamePackage': { GamePackage: model(packages) },
   })('src/lib/services/gameService.ts');
-  const ff = await service.getNormalizedPackages('vizo', 'freefire_global');
+  const ff = await service.getNormalizedPackages('webbuilder', 'freefire_sgmy');
   assert.equal(ff.length, 1);
   assert.equal(ff[0].sellingPrice, 2.73);
   assert.equal(ff[0].group, 'diamonds');
@@ -380,11 +384,11 @@ test('legacy slugs retain configured prices, isolate games, and never expose sup
   const pubg = await service.getNormalizedPackages('g2bulk', 'pubgm');
   assert.equal(pubg.length, 1);
   assert.equal(pubg[0].sellingPrice, 3.41);
-  const mlbb = await service.getNormalizedPackages('g2bulk', 'mlbb');
+  const mlbb = await service.getNormalizedPackages('webbuilder', 'mlbb');
   assert.equal(mlbb.length, 2);
   assert.ok(mlbb.every(p => !p.isAvailable));
   assert.equal((await service.getNormalizedPackages('vizo', 'free-fire'))[0].sellingPrice, 2.73);
-  assert.equal((await service.getGameBySupplierAndCode('g2bulk', 'freefire_global')).shouldRedirect, '/games/vizo/freefire_global');
+  assert.equal((await service.getGameBySupplierAndCode('g2bulk', 'freefire_global')).shouldRedirect, '/games/webbuilder/freefire_sgmy');
 });
 
 function checkout(sellingPrice, isActive = true, existing = false) {
@@ -489,4 +493,218 @@ test('payment callbacks cannot downgrade paid orders and duplicate callbacks nev
   const malformed = webhook();
   assert.equal((await malformed.call(null)).status, 400);
   assert.equal(malformed.inquiries(), 0);
+});
+
+test('legacy game redirects preserve the database supplier and regional Free Fire code', async () => {
+  const page = loader({
+    'next/navigation': { redirect: path => { throw new Error(`REDIRECT:${path}`); } },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ supplier: 'vizo', supplierGameCode: 'custom-game' }) }) } },
+  }, { console: { error() {} } })('src/app/(public)/game/[slug]/page.tsx').default;
+  await assert.rejects(page({ params: Promise.resolve({ slug: 'custom-game' }) }), /REDIRECT:\/games\/vizo\/custom-game/);
+  await assert.rejects(page({ params: Promise.resolve({ slug: 'freefire_sgmy' }) }), /REDIRECT:\/games\/webbuilder\/freefire_sgmy/);
+});
+
+test('malformed checkout and payment-check bodies fail validation before database access', async () => {
+  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/anajakpay/create/route.ts', 'src/app/api/payment/anajakpay/check/route.ts']) {
+    const { POST } = loader({
+      'next/server': { NextResponse: Response },
+      '@/lib/mongodb': { connectDB: () => assert.fail('Invalid input must not access the database') },
+      '@/models/Order': {}, '@/models/Game': {}, '@/models/GamePackage': {}, '@/models/Payment': {},
+      '@/lib/services/anajakPayService': { AnajakPayConfigError: class extends Error {} },
+      '@/lib/services/fulfillmentService': {},
+    }, { console: { error() {} } })(filename);
+    for (const body of [null, [], 'invalid', { playerId: {}, supplierProductCode: [] }, { orderNumber: { $ne: null } }]) {
+      assert.equal((await POST({ json: async () => body })).status, 400, `${filename}: ${JSON.stringify(body)}`);
+    }
+    assert.equal((await POST({ json: async () => { throw new SyntaxError('Invalid JSON'); } })).status, 400, filename);
+  }
+});
+
+function providerVerification(body, status = 200) {
+  return loader({}, {
+    process: { env: { ANAJAKPAY_PROFILE_ID: 'test-profile', ANAJAKPAY_SECRET_KEY: 'test-secret' } },
+    URLSearchParams, AbortSignal,
+    fetch: async () => Response.json(body, { status }),
+    console: { error() {}, warn() {} },
+  })('src/lib/services/anajakPayService.ts').checkAnajakPayTransactionV2('TXN-test');
+}
+
+test('payment verification requires a successful HTTP response, an exact response code, and a valid paid amount', async () => {
+  const valid = { responseCode: 0, status: 'paid', amount: '9.25' };
+  assert.equal((await providerVerification(valid)).status, 'PAID');
+  assert.equal((await providerVerification({ responseCode: '0', data: { status: 'success', amount: 9.25 } })).amount, 9.25);
+  for (const amount of [undefined, null, '', '9.25USD', 'Infinity', -1, {}, true]) {
+    assert.equal((await providerVerification({ ...valid, amount })).status, 'ERROR', String(amount));
+  }
+  assert.equal((await providerVerification(valid, 500)).status, 'ERROR');
+  assert.equal((await providerVerification({ message: 'Not found' }, 404)).status, 'NOT_FOUND');
+  assert.equal((await providerVerification({ ...valid, responseCode: '0invalid' })).status, 'ERROR');
+});
+
+test('payment checks cannot settle missing amounts and return the actual fulfillment status', async () => {
+  for (const amount of [undefined, null, NaN, Infinity, 0.01, 9.25]) {
+    let settled = false;
+    const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, paymentStatus: 'PENDING', fulfillmentStatus: 'NOT_STARTED' };
+    const { POST } = loader({
+      'next/server': { NextResponse: Response },
+      '@/lib/mongodb': { connectDB: async () => {} },
+      '@/models/Order': { Order: { findOne: async () => order, findOneAndUpdate: async () => { settled = true; return order; } } },
+      '@/models/Payment': { Payment: { findOneAndUpdate: async () => {} } },
+      '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => ({ fulfillmentStatus: 'completed' }) },
+      '@/lib/services/anajakPayService': {
+        checkAnajakPayTransactionV2: async () => ({ status: 'PAID', amount }),
+        formatAnajakAmount: loader()('src/lib/services/anajakPayService.ts').formatAnajakAmount,
+      },
+    }, { console: { error() {}, warn() {} } })('src/app/api/payment/anajakpay/check/route.ts');
+    const res = await POST({ json: async () => ({ orderNumber: order.orderNumber }) });
+    if (amount === 9.25) {
+      assert.equal(settled, true);
+      assert.equal((await res.json()).fulfillmentStatus, 'COMPLETED');
+    } else {
+      assert.equal(settled, false, String(amount));
+      assert.equal((await res.json()).success, false);
+    }
+  }
+});
+
+test('admin payment statistics and filters include current and legacy status values', async () => {
+  const documents = ['PAID', 'paid', 'successful', 'SUCCESSFUL', 'PENDING', 'pending', 'FAILED', 'failed'].map((status, i) => ({ _id: i, status, amount: 2 }));
+  const { GET } = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/Order': {}, '@/lib/services/anajakPayService': {},
+    '@/models/Payment': { Payment: {
+      countDocuments: async filter => documents.filter(doc => matches(doc, filter)).length,
+      aggregate: async pipeline => [{ total: documents.filter(doc => matches(doc, pipeline[0].$match)).reduce((sum, doc) => sum + doc.amount, 0) }],
+      find: filter => ({ sort() { return this; }, skip() { return this; }, limit() { return this; }, lean: async () => documents.filter(doc => matches(doc, filter)) }),
+    } },
+  }, { URL })('src/app/api/admin/payments/route.ts');
+  const res = await GET({ url: 'http://localhost/api/admin/payments?status=successful' });
+  const data = await res.json();
+  assert.equal(data.kpi.totalSuccess, 4);
+  assert.equal(data.kpi.totalPending, 2);
+  assert.equal(data.kpi.totalFailed, 2);
+  assert.equal(data.kpi.totalVolume, 8);
+  assert.equal(data.payments.length, 4);
+  assert.ok(data.payments.every(payment => payment.status === 'successful'));
+});
+
+test('admin order search retains the selected status filter and accepts current status values', async () => {
+  const documents = [
+    { _id: 'a', orderNumber: 'ORD-a', playerId: 'player[1]', paymentStatus: 'PENDING', fulfillmentStatus: 'NOT_STARTED' },
+    { _id: 'b', orderNumber: 'ORD-b', playerId: 'player[1]', paymentStatus: 'PAID', fulfillmentStatus: 'completed' },
+    { _id: 'c', orderNumber: 'ORD-c', playerId: 'player1', paymentStatus: 'PENDING', fulfillmentStatus: 'NOT_STARTED' },
+  ];
+  const { GET } = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/Order': { Order: {
+      countDocuments: async (filter = {}) => documents.filter(doc => matches(doc, filter)).length,
+      aggregate: async () => [],
+      find: filter => ({ sort() { return this; }, skip() { return this; }, limit() { return this; }, lean: async () => documents.filter(doc => matches(doc, filter)) }),
+    } },
+  }, { URL })('src/app/api/admin/orders/route.ts');
+  const data = await (await GET({ url: 'http://localhost/api/admin/orders?status=pending&search=player%5B1%5D' })).json();
+  assert.deepEqual(data.orders.map(order => order.id), ['a']);
+  assert.equal(data.kpi.pendingCount, 2);
+});
+
+test('admin package filters combine game, price configuration, and literal search', async () => {
+  const documents = [
+    { _id: 'a', name: 'Package[1]', gameSlug: 'mlbb', sellingPrice: 0 },
+    { _id: 'b', name: 'Package[1]', gameSlug: 'mlbb', sellingPrice: 2 },
+    { _id: 'c', name: 'Package[1]', gameSlug: 'pubgm', sellingPrice: 0 },
+    { _id: 'd', name: 'Package1', gameSlug: 'mlbb', sellingPrice: 0 },
+  ];
+  const { GET } = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/lib/services/cacheService': {},
+    '@/models/Game': { Game: model([]) },
+    '@/models/GamePackage': { GamePackage: {
+      countDocuments: async (filter = {}) => documents.filter(doc => matches(doc, filter)).length,
+      find: filter => ({ sort() { return this; }, skip() { return this; }, limit() { return this; }, lean: async () => documents.filter(doc => matches(doc, filter)) }),
+    } },
+  }, { URL })('src/app/api/admin/packages/route.ts');
+  const res = await GET({ url: 'http://localhost/api/admin/packages?game=mlbb&status=unconfigured&search=Package%5B1%5D' });
+  assert.equal(res.status, 200);
+  assert.deepEqual((await res.json()).packages.map(pkg => pkg.id), ['a']);
+});
+
+test('invalid admin pagination uses finite defaults and keeps per-page limits', () => {
+  const { getAdminPagination } = loader()('src/lib/adminQuery.ts');
+  for (const query of ['', 'page=invalid&limit=NaN', 'page=-5&limit=-3', 'page=Infinity&limit=Infinity', 'page=1.5&limit=2.5']) {
+    const result = getAdminPagination(new URLSearchParams(query));
+    assert.equal(result.page, 1, query);
+    assert.equal(result.limit, 25, query);
+  }
+  assert.equal(getAdminPagination(new URLSearchParams('page=2&limit=500')).limit, 100);
+  assert.equal(getAdminPagination(new URLSearchParams(), 50, 250).limit, 50);
+});
+
+test('failed payment plugin loads can retry and a missing plugin never reports success', async () => {
+  const scripts = [];
+  const window = { addEventListener() {} };
+  const document = {
+    querySelector: () => scripts[0] || null,
+    getElementById: () => null,
+    createElement: () => {
+      const script = new EventTarget();
+      script.remove = () => scripts.splice(scripts.indexOf(script), 1);
+      return script;
+    },
+    head: { appendChild: script => scripts.push(script) },
+  };
+  const { loadKhqrPluginScript } = loader({}, { window, document })('src/lib/khqrPlugin.ts');
+  const first = loadKhqrPluginScript();
+  assert.equal(loadKhqrPluginScript(), first);
+  scripts[0].dispatchEvent(new Event('error'));
+  assert.equal(await first, false);
+  assert.equal(scripts.length, 0);
+  const second = loadKhqrPluginScript();
+  scripts[0].dispatchEvent(new Event('load'));
+  assert.equal(await second, false);
+  assert.equal(scripts.length, 0);
+  const third = loadKhqrPluginScript();
+  window.KhqrPayway = {};
+  scripts[0].dispatchEvent(new Event('load'));
+  assert.equal(await third, true);
+});
+
+test('proxy preserves regional game routes and lets the legacy page resolve unknown suppliers', async () => {
+  const { proxy } = loader({
+    'next/server': { NextResponse: { next: () => ({ next: true }), redirect: url => ({ location: url.pathname }) } },
+    '@/lib/auth': {}, '@/lib/adminRedirect': {},
+  }, { URL })('src/proxy.ts');
+  const request = path => ({ nextUrl: new URL(path, 'http://localhost'), url: `http://localhost${path}` });
+  for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy', '/games/g2bulk/freefire_sgmy']) {
+    assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_sgmy');
+  }
+  assert.equal((await proxy(request('/game/custom-game'))).next, true);
+});
+
+test('admin payment reconciliation requires the provider amount to match the order', async () => {
+  for (const amount of [undefined, null, NaN, Infinity, 0.01, 9.25]) {
+    const writes = [];
+    const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, paymentStatus: 'PENDING', save: async () => writes.push('order') };
+    const { POST } = loader({
+      'next/server': { NextResponse: Response },
+      '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+      '@/lib/mongodb': { connectDB: async () => {} },
+      '@/models/Order': { Order: { findOne: async () => order, findById: () => ({ lean: async () => order }) } },
+      '@/models/Payment': { Payment: { findOneAndUpdate: async () => writes.push('payment') } },
+      '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => { writes.push('fulfill'); return { message: 'Dispatched' }; } },
+      '@/lib/services/anajakPayService': {
+        queryAnajakPayTransactionStatus: async () => ({ verified: true, amount }),
+        formatAnajakAmount: loader()('src/lib/services/anajakPayService.ts').formatAnajakAmount,
+      },
+    })('src/app/api/admin/orders/reconcile/route.ts');
+    const res = await POST({ json: async () => ({ orderNumber: order.orderNumber }) });
+    assert.equal(res.status, amount === 9.25 ? 200 : 400, String(amount));
+    assert.equal(writes.length, amount === 9.25 ? 3 : 0, String(amount));
+  }
 });

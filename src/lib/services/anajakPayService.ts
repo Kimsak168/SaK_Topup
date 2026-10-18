@@ -208,7 +208,8 @@ export async function checkAnajakPayTransactionV2(
     const dataToSign = `${secretKey}${cleanTxnId}`;
     const hash = crypto.createHash("sha1").update(dataToSign).digest("hex");
 
-    const endpoint = `https://anajakpay.com/api/${encodeURIComponent(
+    const apiBaseUrl = (process.env.ANAJAKPAY_API_BASE_URL || "https://anajakpay.com").replace(/\/+$/, "");
+    const endpoint = `${apiBaseUrl}/api/${encodeURIComponent(
       profileId
     )}/payment-gateway/v1/payments/check-transv2-khqrcc`;
 
@@ -228,10 +229,10 @@ export async function checkAnajakPayTransactionV2(
 
     const data = (await res.json().catch(() => null)) as Record<string, unknown> | null;
 
-    if (!data) {
+    if (!data || typeof data !== "object" || Array.isArray(data) || !res.ok) {
       return {
         success: false,
-        status: "ERROR",
+        status: res.status === 404 ? "NOT_FOUND" : "ERROR",
         responseCode: 1,
         responseMessage: `Provider response format error (HTTP ${res.status})`,
       };
@@ -240,7 +241,8 @@ export async function checkAnajakPayTransactionV2(
     const responseCode =
       typeof data.responseCode === "number"
         ? data.responseCode
-        : parseInt(String(data.responseCode ?? 1), 10);
+        : typeof data.responseCode === "string" && /^\d+$/.test(data.responseCode.trim())
+          ? Number(data.responseCode.trim()) : 1;
     const responseMsg = String(data.responseMessage || data.message || "");
 
     // responseCode 0: success or pending
@@ -257,10 +259,9 @@ export async function checkAnajakPayTransactionV2(
         data.amount ??
         (data.data as Record<string, unknown> | undefined)?.amount;
       if (rawAmt !== undefined && rawAmt !== null) {
-        const parsed =
-          typeof rawAmt === "number" ? rawAmt : parseFloat(String(rawAmt));
-        if (!isNaN(parsed)) {
-          amountReturned = parsed;
+        if ((typeof rawAmt === "number" || (typeof rawAmt === "string" && /^\d+(?:\.\d+)?$/.test(rawAmt.trim()))) &&
+          Number.isFinite(Number(rawAmt)) && Number(rawAmt) > 0) {
+          amountReturned = Number(rawAmt);
         }
       }
 
@@ -269,6 +270,13 @@ export async function checkAnajakPayTransactionV2(
         statusRaw === "paid" ||
         statusRaw === "completed"
       ) {
+        if (amountReturned === undefined) {
+          return {
+            success: false, status: "ERROR", responseCode: 1,
+            responseMessage: "Payment verification did not provide a valid amount",
+            transactionId: cleanTxnId, raw: data,
+          };
+        }
         return {
           success: true,
           status: "PAID",
@@ -347,11 +355,12 @@ export async function checkAnajakPayTransactionV2(
  */
 export async function queryAnajakPayTransactionStatus(
   transactionId: string
-): Promise<{ verified: boolean; status?: string; details?: unknown }> {
+): Promise<{ verified: boolean; status?: string; amount?: number; details?: unknown }> {
   const result = await checkAnajakPayTransactionV2(transactionId);
   return {
     verified: result.status === "PAID",
     status: result.status,
+    amount: result.amount,
     details: result.raw,
   };
 }

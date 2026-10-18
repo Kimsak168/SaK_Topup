@@ -3,7 +3,7 @@ import { getClientGames } from "@/lib/services/gameService";
 import { getPublicBanners } from "@/lib/services/bannerService";
 import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { GameSearch } from "@/components/public/GameSearch";
-import { BannerSkeleton, GameGridSkeleton } from "@/components/public/HomeSkeletons";
+import { BannerSkeleton, CatalogueSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 
 // Public shell + catalogue are cacheable; admin writes invalidate the page.
@@ -33,31 +33,16 @@ async function GamesSection() {
 
 export default function HomePage() {
   return (
-    <div className="relative w-full overflow-x-clip text-[#172033]">
-      {/* Main Content Container — flows naturally into footer */}
-      <div className="w-[92%] max-w-[1500px] mx-auto px-1 sm:px-2 pt-1 pb-8 sm:pt-2 sm:pb-12 space-y-6 sm:space-y-8 relative z-10">
-        {/* 1. Promotional Banner Carousel directly below navbar with Suspense streaming */}
+    <div className="storefront-home storefront-container">
+      <div className="storefront-banner-wrap">
         <Suspense fallback={<BannerSkeleton />}>
           <BannerSection />
         </Suspense>
-
-        {/* 2. All Games Section: "ហ្គេមទាំងអស់", search bar, and 5-col game cards */}
-        <Suspense
-          fallback={
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#172033] tracking-tight">
-                  ហ្គេមទាំងអស់
-                </h2>
-                <div className="h-12 max-w-2xl w-full rounded-2xl bg-white border border-[#BBF7D0] animate-pulse" />
-              </div>
-              <GameGridSkeleton count={10} />
-            </div>
-          }
-        >
-          <GamesSection />
-        </Suspense>
       </div>
+
+      <Suspense fallback={<CatalogueSkeleton />}>
+        <GamesSection />
+      </Suspense>
     </div>
   );
 }

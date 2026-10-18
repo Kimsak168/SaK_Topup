@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Game } from "@/models/Game";
 import { requireAdminAuth } from "@/lib/auth";
+import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
 
 export const dynamic = "force-dynamic";
 
@@ -14,11 +15,10 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const { searchParams } = new URL(req.url);
 
-    const search = searchParams.get("search")?.trim() || "";
+    const search = escapeSearchRegex(searchParams.get("search")?.trim() || "");
     const supplier = searchParams.get("supplier")?.trim().toLowerCase() || "all";
     const status = searchParams.get("status")?.trim().toLowerCase() || "all";
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "25", 10)));
+    const { page, limit } = getAdminPagination(searchParams);
 
     const filter: Record<string, unknown> = {};
 

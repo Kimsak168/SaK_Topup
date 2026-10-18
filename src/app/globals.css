@@ -32,15 +32,15 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-card-border: var(--card-border);
-  --color-green-primary: #16a34a;
-  --color-green-hover: #22c55e;
-  --color-green-soft: #f0fdf4;
-  --color-page-bg: #f7fff9;
+  --color-green-primary: #16A34A;
+  --color-green-hover: #22C55E;
+  --color-green-soft: #F0FDF4;
+  --color-page-bg: #F7FFF9;
   --color-card-bg: #ffffff;
   --color-text-primary: #172033;
   --color-text-secondary: #64748b;
-  --color-main-border: #bbf7d0;
-  --color-soft-border: #dcfce7;
+  --color-main-border: #BBF7D0;
+  --color-soft-border: #DCFCE7;
   --shadow-soft: 0 2px 8px -2px rgb(23 32 51 / 0.06);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -51,30 +51,30 @@
 
 :root {
   color-scheme: light;
-  --background: #f7fff9;
+  --background: #F7FFF9;
   --foreground: #172033;
   --card: #ffffff;
   --card-foreground: #172033;
   --popover: #ffffff;
   --popover-foreground: #172033;
-  --primary: #16a34a;
+  --primary: #16A34A;
   --primary-foreground: #ffffff;
-  --secondary: #f0fdf4;
+  --secondary: #F0FDF4;
   --secondary-foreground: #172033;
-  --muted: #f0fdf4;
+  --muted: #F0FDF4;
   --muted-foreground: #64748b;
-  --accent: #f0fdf4;
-  --accent-foreground: #16a34a;
+  --accent: #F0FDF4;
+  --accent-foreground: #16A34A;
   --destructive: #ef4444;
-  --border: #bbf7d0;
-  --border-soft: #dcfce7;
-  --input: #bbf7d0;
-  --ring: #16a34a;
-  --brand-purple: #16a34a;
-  --brand-blue: #16a34a;
-  --success: #10b981;
+  --border: #BBF7D0;
+  --border-soft: #DCFCE7;
+  --input: #BBF7D0;
+  --ring: #16A34A;
+  --brand-purple: #16A34A;
+  --brand-blue: #16A34A;
+  --success: #10B981;
   --warning: #f59e0b;
-  --card-border: #bbf7d0;
+  --card-border: #BBF7D0;
   --radius: 0.75rem;
   --ease-ui: cubic-bezier(0.2, 0.7, 0.2, 1);
   --duration-ui: 180ms;
@@ -177,17 +177,6 @@
       transform var(--duration-ui) var(--ease-ui);
   }
   .public-nav-link:active, .package-option:active:not(:disabled) { transform: scale(.98); }
-  .game-card { transition: transform 220ms var(--ease-ui), box-shadow 220ms ease, border-color 220ms ease; }
-  .game-card-image { transition: transform 350ms var(--ease-ui); }
-  .game-card:active { transform: scale(.99); }
-  @keyframes border-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  .game-card-border {
-    animation: border-spin 8s linear infinite;
-    will-change: transform;
-  }
   @keyframes romdul-fall {
     0% {
       transform: translate3d(0, -15vh, 0) rotate(0deg);
@@ -251,27 +240,27 @@
 
   .public-button {
     color: #ffffff;
-    background-color: #16a34a;
+    background-color: #16A34A;
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08);
     transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .public-button:hover:not(:disabled),
   .group:hover .public-button {
-    background-color: #22c55e;
+    background-color: #22C55E;
     box-shadow: 0 2px 6px 0 rgb(22 163 74 / 0.18);
     transform: translateY(-1px);
   }
 
   .public-button:active:not(:disabled),
   .group:active .public-button {
-    background-color: #15803d;
+    background-color: #15803D;
     transform: scale(0.98);
   }
 
   .public-button:disabled {
     color: #94a3b8;
-    background-color: #dcfce7;
+    background-color: #DCFCE7;
     box-shadow: none;
     opacity: 0.6;
     cursor: not-allowed;
@@ -279,27 +268,27 @@
 
   .game-action-button {
     color: #ffffff;
-    background-color: #16a34a;
+    background-color: #16A34A;
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     transition: background-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
   .game-action-button:hover:not(:disabled),
   .group:hover .game-action-button {
-    background-color: #22c55e;
+    background-color: #22C55E;
     box-shadow: 0 2px 6px 0 rgb(22 163 74 / 0.18);
   }
 
   .game-action-button:active:not(:disabled),
   .group:active .game-action-button {
-    background-color: #15803d;
+    background-color: #15803D;
     box-shadow: 0 1px 3px 0 rgb(22 163 74 / 0.15);
     transform: scale(0.98);
   }
 
   .game-action-button:disabled {
     color: #94a3b8;
-    background-color: #dcfce7;
+    background-color: #DCFCE7;
     box-shadow: none;
     opacity: 0.6;
     transform: none;
@@ -382,30 +371,28 @@
   transform: translateY(-1px);
 }
 
-/* Animated Shimmer & Neon Glow for SakSuuu Brand Logo */
-@keyframes brand-shimmer {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 200% 50%;
-  }
-}
+/* Tailwind animation utilities used only by the public navbar brand. */
+@theme {
+  --animate-sak-brand-gradient: sak-brand-gradient 10s ease-in-out infinite alternate;
+  --animate-sak-cursor-blink: sak-cursor-blink 520ms step-end infinite;
 
-.saksuuu-brand-text {
-  background: linear-gradient(
-    110deg,
-    #38bdf8 0%,
-    #00f2fe 25%,
-    #ffffff 50%,
-    #00f2fe 75%,
-    #38bdf8 100%
-  );
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: brand-shimmer 4s linear infinite;
-  filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.65)) drop-shadow(0 0 20px rgba(2, 132, 199, 0.35));
+  @keyframes sak-brand-gradient {
+    from {
+      background-position: 0% 50%;
+    }
+    to {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes sak-cursor-blink {
+    0%, 49% {
+      opacity: 1;
+    }
+    50%, 100% {
+      opacity: 0;
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -436,27 +423,6 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-popular-card {
     animation: none;
-  }
-}
-
-/* SakSuuu Brand Typing Cursor Animation */
-@keyframes sak-cursor-blink {
-  0%, 49% {
-    opacity: 1;
-  }
-  50%, 100% {
-    opacity: 0;
-  }
-}
-
-.sak-cursor-blink {
-  animation: sak-cursor-blink 520ms step-end infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sak-cursor-blink {
-    animation: none;
-    display: none;
   }
 }
 
@@ -518,23 +484,19 @@
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #16a34a;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .game-card:hover { transform: translateY(-3px); }
-  .game-card:hover .game-card-image { transform: scale(1.035); }
+  background: #16A34A;
 }
 
 @media (max-width: 639px) {
   /* Prevent mobile browsers zooming the viewport when a form receives focus. */
   .public-theme :is(input, select, textarea),
   .admin-theme :is(input, select, textarea) { font-size: 16px; }
-  .public-navbar { padding-top: env(safe-area-inset-top, 0px); }
+  .public-navbar {
+    padding-top: calc(0.5rem + env(safe-area-inset-top, 0px));
+    padding-bottom: 0.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .game-card:hover, .game-card:active, .game-card:hover .game-card-image,
   .public-nav-link:active, .package-option:active:not(:disabled) { transform: none; }
-  .game-card-border { animation: none; }
 }

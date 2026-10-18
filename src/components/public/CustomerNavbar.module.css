@@ -1,0 +1,189 @@
+.header {
+  position: fixed;
+  z-index: 50;
+  top: max(5px, env(safe-area-inset-top, 0px));
+  left: 50%;
+  width: calc(100% - 10px);
+  max-width: 1384px;
+  padding: 0;
+  transform: translateX(-50%);
+}
+
+.shell {
+  position: relative;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  height: 50px;
+  padding: 0 6px;
+  border: 1px solid #D1FAE5;
+  border-radius: 18px;
+  background: #FFFFFF;
+  box-shadow: 0 5px 18px rgb(15 23 42 / 0.07);
+}
+
+.brand {
+  display: inline-flex;
+  min-width: max-content;
+  align-items: center;
+  gap: 3px;
+  border-radius: 8px;
+  color: #0F172A;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.brand:focus-visible,
+.navLink:focus-visible {
+  outline: 2px solid #16A34A;
+  outline-offset: 2px;
+}
+
+.logo {
+  display: block;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  object-fit: contain;
+}
+
+.wordmark {
+  display: inline-block;
+  min-width: max-content;
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1;
+}
+
+.wordmarkText {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.wordmarkTyping {
+  animation: type-saksuuu 820ms steps(7, end) both;
+}
+
+.wordmarkDark { color: #0F172A; }
+.wordmarkGreen { color: #16A34A; }
+
+@keyframes type-saksuuu {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.primaryNav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(3px, 1vw, 5px);
+  height: 100%;
+  white-space: nowrap;
+}
+
+.navLink {
+  position: relative;
+  display: inline-flex;
+  min-height: 32px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 2px;
+  border-radius: 7px;
+  color: #64748B;
+  font-size: 10px;
+  font-weight: 550;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.navLink::after {
+  position: absolute;
+  right: 50%;
+  bottom: 1px;
+  left: 50%;
+  height: 2px;
+  border-radius: 999px;
+  background: #16A34A;
+  content: "";
+  transition: left 180ms ease, right 180ms ease;
+}
+
+.navLink:hover,
+.navLinkActive { color: #16A34A; }
+.navLink:hover { background: #F0FDF4; }
+.navLinkActive { font-weight: 650; }
+
+.navLinkActive::after {
+  right: 2px;
+  left: 2px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+}
+
+@media (min-width: 360px) {
+  .shell { height: 52px; padding-inline: 7px; }
+  .logo { width: 21px; height: 21px; }
+  .wordmark { font-size: 14px; }
+  .primaryNav { gap: clamp(4px, 1.1vw, 6px); }
+  .navLink { padding-inline: 3px; font-size: 10.5px; }
+}
+
+@media (min-width: 431px) and (max-width: 767px) {
+  .header { top: max(7px, env(safe-area-inset-top, 0px)); width: calc(100% - 16px); }
+  .shell { height: 56px; gap: clamp(6px, 1.4vw, 12px); padding-inline: 12px; }
+  .brand { gap: 5px; }
+  .logo { width: 26px; height: 26px; }
+  .wordmark { font-size: 16px; }
+  .primaryNav { gap: clamp(5px, 1.4vw, 11px); }
+  .navLink { padding-inline: clamp(3px, 0.75vw, 6px); font-size: clamp(11px, 1.7vw, 13px); }
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .shell { height: 60px; padding-inline: 16px; }
+  .brand { gap: 7px; }
+  .logo { width: 30px; height: 30px; }
+  .wordmark { font-size: 18px; }
+  .primaryNav { gap: clamp(12px, 2vw, 20px); }
+  .navLink { font-size: 13px; }
+}
+
+@media (min-width: 768px) {
+  .header { top: max(12px, env(safe-area-inset-top, 0px)); width: calc(100% - 16px); }
+  .shell {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 16px;
+    height: 80px;
+    padding-inline: 26px;
+    border-radius: 21px;
+  }
+
+  .logo { width: 42px; height: 42px; }
+  .brand { gap: 9px; }
+  .wordmark { font-size: 23px; }
+  .primaryNav { gap: clamp(22px, 3vw, 42px); }
+  .navLink { min-height: 48px; padding-inline: 6px; font-size: 15px; }
+  .navLink::after { bottom: 1px; }
+  .navLinkActive::after { right: 6px; left: 6px; }
+}
+
+@media (min-width: 1200px) {
+  .shell { padding-inline: 32px; }
+  .primaryNav { gap: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmarkTyping { animation: none; }
+  .navLink,
+  .navLink::after { transition: none; }
+}

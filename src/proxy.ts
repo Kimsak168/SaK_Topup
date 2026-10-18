@@ -67,14 +67,20 @@ export async function proxy(request: NextRequest) {
       const supplier = parts[1].toLowerCase();
       const code = parts[2].toLowerCase();
 
-      // Free Fire must use Vizo exclusively
-      if (supplier === "g2bulk" && (code.includes("freefire") || code === "free-fire" || code === "ff")) {
-        return NextResponse.redirect(new URL("/games/vizo/freefire_global", request.url));
+      // Free Fire routing to WebBuilder (Canonical game code: freefire_sgmy)
+      if (
+        (supplier === "g2bulk" || supplier === "vizo") &&
+        (code.includes("freefire") || code.startsWith("free-fire") || code === "ff")
+      ) {
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
       }
 
-      // Canonical Free Fire path
-      if (supplier === "vizo" && (code === "free-fire" || code === "freefire" || code === "ff")) {
-        return NextResponse.redirect(new URL("/games/vizo/freefire_global", request.url));
+      // Canonical Free Fire path on WebBuilder
+      if (
+        supplier === "webbuilder" &&
+        (code === "free-fire" || code === "freefire" || code === "ff" || code === "freefire_global")
+      ) {
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
       }
 
       // PUBG Mobile routing to G2Bulk
@@ -85,12 +91,23 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/games/g2bulk/pubgm", request.url));
       }
 
-      // Mobile Legends routing to G2Bulk (Canonical game code: mlbb)
-      if (supplier === "vizo" && (code === "mlbb" || code === "mobile-legends")) {
-        return NextResponse.redirect(new URL("/games/g2bulk/mlbb", request.url));
+      // Mobile Legends routing to WebBuilder (Canonical game code: mlbb)
+      if (
+        (supplier === "vizo" || supplier === "g2bulk") &&
+        (code === "mlbb" || code === "mobile-legends" || code === "mlbb_global")
+      ) {
+        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
       }
-      if (supplier === "g2bulk" && code === "mobile-legends") {
-        return NextResponse.redirect(new URL("/games/g2bulk/mlbb", request.url));
+      if (supplier === "webbuilder" && (code === "mobile-legends" || code === "mlbb_global")) {
+        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
+      }
+
+      // Honor of Kings routing to WebBuilder (Canonical game code: hok)
+      if (supplier !== "webbuilder" && (code === "honor-of-kings" || code === "hok" || code === "honor_of_kings")) {
+        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
+      }
+      if (supplier === "webbuilder" && (code === "honor-of-kings" || code === "honor_of_kings")) {
+        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
       }
     }
   }
@@ -101,20 +118,16 @@ export async function proxy(request: NextRequest) {
     if (parts.length >= 2) {
       const slug = parts[1].toLowerCase();
 
-      if (slug.includes("freefire") || slug === "free-fire" || slug === "ff") {
-        return NextResponse.redirect(new URL("/games/vizo/freefire_global", request.url));
+      if (slug.includes("freefire") || slug.startsWith("free-fire") || slug === "ff") {
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
       }
 
       if (slug === "pubg-mobile" || slug === "pubgm") {
         return NextResponse.redirect(new URL("/games/g2bulk/pubgm", request.url));
       }
 
-      if (slug === "mobile-legends" || slug === "mlbb") {
-        return NextResponse.redirect(new URL("/games/g2bulk/mlbb", request.url));
-      }
-
-      if (slug === "mlbb_global") {
-        return NextResponse.redirect(new URL("/games/g2bulk/mlbb_global", request.url));
+      if (slug === "mobile-legends" || slug === "mlbb" || slug === "mlbb_global") {
+        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
       }
 
       if (slug === "valorant") {
@@ -125,8 +138,12 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/games/g2bulk/bloodstrike", request.url));
       }
 
-      // Default fallback for legacy routes
-      return NextResponse.redirect(new URL(`/games/g2bulk/${slug}`, request.url));
+      if (slug === "honor-of-kings" || slug === "hok" || slug === "honor_of_kings") {
+        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
+      }
+
+      // Let the legacy page resolve the configured supplier from the database.
+      return NextResponse.next();
     }
   }
 

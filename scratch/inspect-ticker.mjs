@@ -68,7 +68,7 @@ async function main() {
     await send('Page.navigate', { url: 'http://localhost:3000' });
     await delay(2000);
 
-    const layoutInfo = await evaluate(`(() => {
+    await evaluate(`(() => {
       const ticker = document.querySelector('.active-games-ticker');
       const track = document.querySelector('.active-games-track');
       const searchForm = document.querySelector('form[role="search"]');

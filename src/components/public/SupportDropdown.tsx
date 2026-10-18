@@ -1,15 +1,26 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
-import { ChevronDown, Headset, Menu } from "lucide-react";
+import { useEffect, useId, useRef, useState, type ReactElement } from "react";
+import { createPortal } from "react-dom";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUp, ChevronDown, Headphones, Moon, SlidersHorizontal, Sun } from "lucide-react";
+import { Tooltip } from "@base-ui/react/tooltip";
+import { useTheme } from "next-themes";
+import { toast } from "sonner";
 import { SOCIAL_URLS } from "@/lib/socialLinks";
+import styles from "./SupportDropdown.module.css";
 
-const menuLinks = [
-  {
-    label: "Support",
-    href: SOCIAL_URLS.telegram,
-    icon: Headset,
-  },
+function validSocialUrl(value: string): string | undefined {
+  try {
+    const url = new URL(value);
+    if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+  } catch {
+    // Missing or malformed social destinations are omitted.
+  }
+}
+
+const socialLinks = [
   {
     label: "Telegram",
     href: SOCIAL_URLS.telegram,
@@ -25,96 +36,272 @@ const menuLinks = [
     href: SOCIAL_URLS.tiktok,
     path: "M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2H12.3v13.967a2.955 2.955 0 0 1-2.95 2.658 2.953 2.953 0 0 1-2.955-2.95 2.953 2.953 0 0 1 2.955-2.95c.305 0 .6.048.879.135V9.286a6.46 6.46 0 0 0-.879-.06 6.45 6.45 0 0 0-6.45 6.45 6.45 6.45 0 0 0 6.45 6.45 6.45 6.45 0 0 0 6.45-6.45V8.54a8.27 8.27 0 0 0 4.834 1.55V6.638c-.35 0-.7-.035-1.045-.104Z",
   },
-];
+  {
+    label: "Discord",
+    href: SOCIAL_URLS.discord,
+    path: "M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515c-.211.379-.457.889-.626 1.295a18.27 18.27 0 0 0-5.416 0 12.64 12.64 0 0 0-.634-1.295A19.736 19.736 0 0 0 3.87 4.37C.78 8.936-.056 13.39.362 17.78a19.9 19.9 0 0 0 5.993 3.03c.483-.658.914-1.352 1.286-2.084a12.98 12.98 0 0 1-2.025-.975c.17-.124.337-.255.498-.39a14.2 14.2 0 0 0 12.075 0c.162.135.329.266.498.39a13 13 0 0 1-2.029.977c.373.731.803 1.425 1.286 2.083a19.84 19.84 0 0 0 5.996-3.03c.491-5.09-.838-9.503-3.623-13.41ZM8.02 15.095c-1.182 0-2.153-1.085-2.153-2.419 0-1.333.95-2.419 2.153-2.419 1.203 0 2.175 1.096 2.154 2.419 0 1.334-.951 2.419-2.154 2.419Zm7.96 0c-1.183 0-2.154-1.085-2.154-2.419 0-1.333.95-2.419 2.154-2.419 1.203 0 2.174 1.096 2.153 2.419 0 1.334-.95 2.419-2.153 2.419Z",
+  },
+  {
+    label: "YouTube",
+    href: SOCIAL_URLS.youtube,
+    path: "M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.016 3.016 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.121 2.136c1.872.505 9.377.505 9.377.505s7.505 0 9.376-.505a3.016 3.016 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z",
+  },
+].flatMap((link) => {
+  const href = validSocialUrl(link.href);
+  return href ? [{ ...link, href }] : [];
+});
 
-export function SupportDropdown() {
-  const [open, setOpen] = useState(false);
+const supportLinks = socialLinks.filter(({ label }) =>
+  label === "Telegram" || label === "Facebook" || label === "TikTok",
+);
+
+function ToolbarTooltip({ label, open, children }: { label: string; open: boolean; children: ReactElement }) {
+  const tooltipId = useId();
+
+  return (
+    <Tooltip.Root disabled={!open}>
+      <Tooltip.Trigger aria-describedby={tooltipId} render={children} />
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="left" sideOffset={12} collisionPadding={8} className={styles.tooltipPositioner}>
+          <Tooltip.Popup id={tooltipId} role="tooltip" className={styles.tooltip}>{label}</Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+}
+
+export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
+  const [toolbarOpen, setToolbarOpen] = useState(false);
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [activeAction, setActiveAction] = useState<string | null>(null);
+  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
+  const { resolvedTheme, setTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const panelId = useId();
+  const settingsButtonRef = useRef<HTMLButtonElement>(null);
+  const supportButtonRef = useRef<HTMLButtonElement>(null);
+  const railRef = useRef<HTMLElement>(null);
+  const toolbarId = useId();
+  const supportMenuId = useId();
+  const supportUrl = validSocialUrl(SOCIAL_URLS.telegram);
 
   useEffect(() => {
-    if (!open) return;
+    setPortalContainer(document.body);
+  }, []);
 
-    function handlePointerDown(event: PointerEvent) {
-      if (event.target instanceof Node && !containerRef.current?.contains(event.target)) {
-        setOpen(false);
+  useEffect(() => {
+    if (!toolbarOpen && !supportOpen) return;
+
+    function closeIfOutside(event: PointerEvent | FocusEvent) {
+      if (
+        event.target instanceof Node &&
+        !containerRef.current?.contains(event.target) &&
+        !railRef.current?.contains(event.target)
+      ) {
+        setToolbarOpen(false);
+        setSupportOpen(false);
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
-        setOpen(false);
-        buttonRef.current?.focus();
+        event.preventDefault();
+        setToolbarOpen(false);
+        setSupportOpen(false);
+        (toolbarOpen ? settingsButtonRef : supportButtonRef).current?.focus({ preventScroll: true });
       }
     }
 
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
+    if (toolbarOpen) {
+      railRef.current?.querySelector<HTMLAnchorElement>("a[href]")?.focus({ preventScroll: true });
+    }
+
+    document.addEventListener("pointerdown", closeIfOutside);
+    document.addEventListener("focusin", closeIfOutside);
+    document.addEventListener("keydown", handleKeyDown, true);
     return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("pointerdown", closeIfOutside);
+      document.removeEventListener("focusin", closeIfOutside);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
-  }, [open]);
+  }, [toolbarOpen, supportOpen]);
 
   return (
-    <div
-      ref={containerRef}
-      className="relative flex items-center justify-self-end sm:block"
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
-    >
+    <div ref={containerRef} className={styles.controls}>
       <button
-        ref={buttonRef}
+        ref={settingsButtonRef}
         type="button"
-        aria-expanded={open}
-        aria-controls={panelId}
-        aria-label={open ? "Close menu" : "Open menu"}
-        onClick={() => setOpen((current) => !current)}
-        className="flex h-8 w-8 shrink-0 items-center justify-center justify-self-end rounded-[10px] border border-[#BBF7D0] bg-[#F0FDF4] text-[#15803D] transition-colors duration-200 hover:border-[#16A34A] hover:bg-[#16A34A] hover:text-white active:bg-[#15803D] active:border-[#15803D] outline-none focus:outline-none focus-visible:outline-none cursor-pointer sm:h-[40px] lg:h-[42px] sm:w-auto sm:gap-2 sm:rounded-[12px] sm:px-[18px] sm:text-xs lg:text-[13px] sm:font-semibold"
+        aria-expanded={toolbarOpen}
+        aria-controls={toolbarId}
+        aria-label={toolbarOpen ? "Close social toolbar" : "Open social toolbar"}
+        title={toolbarOpen ? "Close social toolbar" : "Open social toolbar"}
+        onClick={() => {
+          setSupportOpen(false);
+          setToolbarOpen((current) => !current);
+        }}
+        className={`${styles.controlButton} ${styles.settingsButton}`}
       >
-        <span className="hidden sm:inline">Support</span>
-        <Menu aria-hidden="true" className="h-4 w-4 sm:hidden" />
-        <ChevronDown aria-hidden="true" className={`hidden h-3 w-3 sm:h-3.5 sm:w-3.5 transition-transform duration-200 motion-reduce:transition-none sm:block ${open ? "rotate-180" : ""}`} />
+        <SlidersHorizontal aria-hidden="true" />
       </button>
-      <div
-        id={panelId}
-        inert={!open}
-        aria-hidden={!open}
-        className={`absolute right-0 top-full z-10 mt-2 grid w-44 origin-top-right transition-[grid-template-rows,opacity,transform,margin] duration-200 ease-out motion-reduce:transition-none sm:w-44 ${open ? "grid-rows-[1fr] opacity-100 translate-y-0" : "pointer-events-none grid-rows-[0fr] opacity-0 -translate-y-1"}`}
-      >
-        <div className="min-h-0 overflow-hidden rounded-[12px] border border-[#BBF7D0] bg-white shadow-[0_8px_24px_rgba(22,163,74,0.07)]">
-          <nav aria-label="Support social links" className="p-1">
-            <ul className="flex flex-col gap-0.5 sm:grid sm:grid-cols-1">
-              {menuLinks.map(({ label, href, icon: Icon, path }) => (
+
+      <div className={styles.supportControl}>
+        <button
+          ref={supportButtonRef}
+          type="button"
+          aria-haspopup="true"
+          aria-expanded={supportOpen}
+          aria-controls={supportMenuId}
+          aria-label="Support"
+          onClick={() => {
+            setToolbarOpen(false);
+            setSupportOpen((current) => !current);
+          }}
+          className={`${styles.controlButton} ${styles.supportButton}`}
+        >
+          <Headphones aria-hidden="true" />
+          <span className={styles.supportLabel}>Support</span>
+          <ChevronDown aria-hidden="true" className={supportOpen ? styles.chevronOpen : ""} />
+        </button>
+
+        <div
+          id={supportMenuId}
+          data-open={supportOpen}
+          aria-hidden={!supportOpen}
+          inert={!supportOpen}
+          className={styles.supportMenu}
+        >
+          <p className={styles.menuHeading}>Contact us</p>
+          {supportLinks.length > 0 ? (
+            <ul className={styles.supportList}>
+              {supportLinks.map(({ label, href, path }) => (
                 <li key={label}>
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${label} (opens in a new tab)`}
-                    onClick={() => {
-                      setOpen(false);
-                      buttonRef.current?.focus();
-                    }}
-                    className="flex min-h-9 items-center gap-2.5 rounded-[8px] px-2.5 py-1.5 text-xs font-semibold text-[#172033] transition-colors hover:bg-[#F0FDF4] hover:text-[#16A34A] active:bg-[#F0FDF4] active:text-[#22C55E] focus-visible:bg-[#F0FDF4] focus-visible:text-[#16A34A] motion-reduce:transition-none sm:px-3 sm:text-sm"
+                    aria-label={`${label} support (opens in a new tab)`}
+                    onClick={() => setSupportOpen(false)}
+                    className={styles.supportLink}
                   >
-                    {Icon ? (
-                      <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-[#16A34A]" />
-                    ) : (
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4 shrink-0 text-[#16A34A]">
-                        <path d={path} />
-                      </svg>
-                    )}
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={styles.supportIcon}>
+                      <path d={path} />
+                    </svg>
                     <span>{label}</span>
                   </a>
                 </li>
               ))}
             </ul>
-          </nav>
+          ) : (
+            <p className={styles.noSupportLinks}>Support links are not configured yet.</p>
+          )}
         </div>
       </div>
+
+      {portalContainer && createPortal(
+        <Tooltip.Provider delay={150}>
+          <nav
+            ref={railRef}
+            id={toolbarId}
+            aria-label="Social and settings toolbar"
+            inert={!toolbarOpen}
+            aria-hidden={!toolbarOpen}
+            data-open={toolbarOpen}
+            className={styles.rail}
+          >
+            <ToolbarTooltip label="SakSuuu Home" open={toolbarOpen}>
+              <Link href="/" aria-label="SakSuuu Home" className={styles.action + " " + styles.logo}>
+                <Image
+                  src={logoUrl || "/images/logo.png"}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className={styles.logoImage}
+                />
+              </Link>
+            </ToolbarTooltip>
+            {socialLinks.length > 0 && (
+              <ul aria-label="Social links" className={styles.section + " " + styles.socials}>
+                {socialLinks.map(({ label, href, path }) => (
+                  <li key={label}>
+                    <ToolbarTooltip label={label} open={toolbarOpen}>
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={label + " (opens in a new tab)"}
+                        data-active={activeAction === label}
+                        onClick={() => setActiveAction(label)}
+                        className={styles.action}
+                      >
+                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={styles.icon}>
+                          <path d={path} />
+                        </svg>
+                      </a>
+                    </ToolbarTooltip>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div aria-hidden="true" className={styles.divider} />
+            <ul aria-label="Toolbar utilities" className={styles.section}>
+              <li>
+                <ToolbarTooltip label="Support" open={toolbarOpen}>
+                  {supportUrl ? (
+                    <a
+                      href={supportUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Support (opens in a new tab)"
+                      data-active={activeAction === "Support"}
+                      onClick={() => setActiveAction("Support")}
+                      className={styles.action}
+                    >
+                      <Headphones aria-hidden="true" className={styles.icon} />
+                    </a>
+                  ) : (
+                    <button type="button" aria-label="Support" className={styles.action} onClick={() => toast.error("Link unavailable", { id: "support-link" })}>
+                      <Headphones aria-hidden="true" className={styles.icon} />
+                    </button>
+                  )}
+                </ToolbarTooltip>
+              </li>
+              <li>
+                <ToolbarTooltip label="Change Theme" open={toolbarOpen}>
+                  <button
+                    type="button"
+                    aria-label={isDark ? "Change Theme (dark mode, switch to light)" : "Change Theme (light mode, switch to dark)"}
+                    data-active={activeAction === "Theme"}
+                    onClick={() => {
+                      setTheme(isDark ? "light" : "dark");
+                      setActiveAction("Theme");
+                    }}
+                    className={styles.action}
+                  >
+                    {isDark ? <Moon aria-hidden="true" className={styles.icon} /> : <Sun aria-hidden="true" className={styles.icon} />}
+                  </button>
+                </ToolbarTooltip>
+              </li>
+              <li>
+                <ToolbarTooltip label="Back to Top" open={toolbarOpen}>
+                  <button
+                    type="button"
+                    aria-label="Back to Top"
+                    data-active={activeAction === "Top"}
+                    onClick={() => {
+                      window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+                      setActiveAction("Top");
+                    }}
+                    className={styles.action}
+                  >
+                    <ArrowUp aria-hidden="true" className={styles.icon} />
+                  </button>
+                </ToolbarTooltip>
+              </li>
+            </ul>
+          </nav>
+        </Tooltip.Provider>,
+        portalContainer,
+      )}
     </div>
   );
 }

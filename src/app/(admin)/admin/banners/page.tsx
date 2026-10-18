@@ -244,7 +244,7 @@ export default function AdminBannersPage() {
             const isBlob = banner.imageUrl.includes(".blob.vercel-storage.com");
             return (
               <article key={banner.id} className="min-w-0 overflow-hidden rounded-xl border border-[#243047] bg-[#111A2B]">
-                <div className="relative aspect-video overflow-hidden border-b border-[#243047] bg-[#111A2B]">
+                <div className="relative aspect-video overflow-hidden border-b border-[#243047]" style={{ aspectRatio: "16 / 9" }}>
                   <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
                     <Image
                       src={banner.imageUrl}
@@ -252,7 +252,15 @@ export default function AdminBannersPage() {
                       fill
                       unoptimized
                       aria-hidden="true"
-                      className="object-cover scale-105 blur-xl opacity-45"
+                      className="object-cover scale-125 blur-2xl opacity-60"
+                    />
+                    <Image
+                      src={banner.imageUrl}
+                      alt=""
+                      fill
+                      unoptimized
+                      aria-hidden="true"
+                      className="object-cover scale-110 blur-xl opacity-50 brightness-95"
                     />
                   </div>
                   <Image
@@ -312,7 +320,7 @@ export default function AdminBannersPage() {
               <div className="space-y-1.5">
                 <label htmlFor="banner-image" className="text-xs font-semibold text-[#94A3B8]">Banner image</label>
                 {currentImage && (
-                  <div className="relative aspect-video overflow-hidden rounded-lg border border-[#243047] bg-[#111A2B]">
+                  <div className="relative aspect-video overflow-hidden rounded-lg border border-[#243047]" style={{ aspectRatio: "16 / 9" }}>
                     <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
                       <Image
                         src={currentImage}
@@ -320,7 +328,15 @@ export default function AdminBannersPage() {
                         fill
                         unoptimized
                         aria-hidden="true"
-                        className="object-cover scale-105 blur-xl opacity-45"
+                        className="object-cover scale-125 blur-2xl opacity-60"
+                      />
+                      <Image
+                        src={currentImage}
+                        alt=""
+                        fill
+                        unoptimized
+                        aria-hidden="true"
+                        className="object-cover scale-110 blur-xl opacity-50 brightness-95"
                       />
                     </div>
                     <Image
@@ -335,15 +351,20 @@ export default function AdminBannersPage() {
                 )}
                 <div className="rounded-lg border border-dashed border-[#243047] bg-[#0C1322]/50 p-3.5">
                   <input id="banner-image" type="file" accept="image/png,image/jpeg,image/webp" required={!editingBanner && !imageFile} onChange={selectImage} aria-describedby="banner-image-help" className="w-full min-w-0 text-xs text-[#94A3B8] file:mr-3 file:cursor-pointer file:rounded-lg file:border-0 file:bg-[#22C55E]/10 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#22C55E] hover:file:bg-[#22C55E]/20" />
-                  <div id="banner-image-help" className="mt-2.5 space-y-1">
-                    <p className="text-[11px] font-medium text-[#F8FAFC]">
-                      <span className="font-semibold text-[#22C55E]">Recommended banner ratio:</span> 16:9
+                  <div id="banner-image-help" className="mt-2.5 space-y-1.5 rounded-lg border border-[#243047] bg-[#0C1322]/80 p-3">
+                    <p className="text-xs font-semibold text-[#22C55E]">
+                      Recommended banner ratio: 16:9
                     </p>
-                    <p className="text-[11px] text-[#94A3B8]">
-                      <span className="font-semibold text-[#F8FAFC]">Recommended:</span> 1920×1080, 1600×900, or 1280×720
+                    <p className="text-[11px] font-semibold text-[#F8FAFC]">
+                      Best sizes:
                     </p>
-                    <p className="text-[11px] text-[#64748B]">
-                      For best results, upload a 16:9 image. PNG, JPG, or WebP up to 25 MB. All aspect ratios are supported and display cleanly without cropping.
+                    <ul className="space-y-0.5 font-mono text-[11px] text-[#94A3B8]">
+                      <li>1920 × 1080</li>
+                      <li>1600 × 900</li>
+                      <li>1280 × 720</li>
+                    </ul>
+                    <p className="text-[11px] text-[#64748B] pt-0.5">
+                      All image ratios are accepted. Non-16:9 images display seamlessly with matching ambient background.
                     </p>
                   </div>
                 </div>

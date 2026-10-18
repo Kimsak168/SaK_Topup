@@ -20,17 +20,16 @@ function GameList({ games, ariaHidden }: { games: ClientGame[]; ariaHidden?: boo
         >
           <Link
             href={game.path || `/games/${game.supplier}/${game.code || game.slug}`}
+            prefetch={false}
             tabIndex={ariaHidden ? -1 : 0}
-            className="text-xs sm:text-[13.5px] font-semibold text-[#16A34A] hover:text-[#22C55E] active:text-[#22C55E] transition-colors whitespace-nowrap outline-none focus:outline-none focus-visible:outline-none"
+            className="rounded-sm text-[11.5px] sm:text-[12px] font-medium text-[#16A34A] hover:text-[#22C55E] transition-colors whitespace-nowrap focus-visible:outline-2 focus-visible:outline-[#22C55E] focus-visible:outline-offset-2"
           >
             {game.name}
           </Link>
           <span
             aria-hidden="true"
-            className="mx-3 sm:mx-3.5 text-[8px] sm:text-[9px] text-[#BBF7D0] select-none"
-          >
-            •
-          </span>
+            className="mx-3 size-[3px] shrink-0 rounded-full bg-[#22C55E] select-none sm:mx-4"
+          />
         </span>
       ))}
     </div>
@@ -59,18 +58,8 @@ export function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
     <div
       role="region"
       aria-label="Active Games"
-      className="ticker-wrapper relative w-full h-[34px] sm:h-[36px] flex items-center overflow-hidden select-none"
+      className="ticker-wrapper relative isolate flex h-9 w-full min-w-0 items-center overflow-hidden rounded-[10px] px-1 select-none sm:h-10"
     >
-      {/* Subtle edge fade gradient masks */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-r from-[#F7FFF9] to-transparent z-10"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 sm:w-14 bg-gradient-to-l from-[#F7FFF9] to-transparent z-10"
-      />
-
       {/* Moving track with duplicated GameList for seamless loop */}
       <div className="ticker-track">
         <GameList games={fullGameList} />

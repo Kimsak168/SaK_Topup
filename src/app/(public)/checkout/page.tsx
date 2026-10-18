@@ -47,6 +47,7 @@ function CheckoutContent() {
 
   useEffect(() => {
     return () => {
+      toast.dismiss("checkout");
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
       }
@@ -82,7 +83,7 @@ function CheckoutContent() {
         stopPolling();
         closeKhqrInPageCheckout();
         setOrderComplete(orderSnapshot);
-        toast.success("Payment verified! Top-up has been dispatched.");
+        toast.success("Payment verified", { id: `payment-status-${orderNumber}`, description: "Your top-up has been dispatched." });
         return true;
       }
       return false;
@@ -118,6 +119,7 @@ function CheckoutContent() {
   const handleCreateOrder = async () => {
     try {
       setIsProcessing(true);
+      toast.loading("Preparing secure checkout...", { id: "checkout" });
       const res = await fetch("/api/payment/anajakpay/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -134,7 +136,7 @@ function CheckoutContent() {
       const data = await res.json();
 
       if (!res.ok || !data.success || !data.checkoutUrl) {
-        toast.error(data.error || "Unable to initialize secure checkout. Please try again.");
+        toast.error("Unable to start payment", { id: "checkout", description: "Please try again or contact support if the problem continues." });
         return;
       }
 
@@ -147,6 +149,7 @@ function CheckoutContent() {
         serverId: serverId || undefined,
         paymentMethod: "ABA Pay / KHQR",
       };
+      toast.success("Order created successfully", { id: "order-creation" });
 
       // Open official AnajakPay checkout in-page modal without leaving the website
       const openResult = await openKhqrInPageCheckout({
@@ -157,38 +160,39 @@ function CheckoutContent() {
         },
         onError: (err) => {
           console.warn("[Checkout] Plugin error or closed:", err);
+          toast.error("Unable to start payment", { id: "checkout", description: "Please try again or contact support if the problem continues." });
         },
         onClose: () => {
           stopPolling();
           verifyPaymentStatus(data.orderNumber, data.transactionId, completedOrderSnapshot);
-          toast.info("Payment window closed. Order remains pending.");
+          toast.info("Payment window closed", { id: "checkout", description: "Your pending order is saved." });
         },
       });
 
       if (!openResult.opened) {
-        toast.error(
-          openResult.diagnostic ||
-          openResult.error ||
-          "Unable to open in-page KHQR checkout. Your pending order is saved."
-        );
+        toast.error("Unable to start payment", { id: "checkout", description: "Your pending order is saved. Please contact support if checkout does not open." });
         return;
       }
 
-      toast.success("KHQR payment window opened. Scan with ABA Mobile or any KHQR app.");
+      toast.success("Checkout ready", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
       startPaymentVerificationPolling(data.orderNumber, data.transactionId, completedOrderSnapshot);
     } catch {
-      toast.error("Network error connecting to payment gateway");
+      toast.error("Unable to start payment", { id: "checkout", description: "Check your connection and try again." });
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleCopyOrder = () => {
+  const handleCopyOrder = async () => {
     if (orderComplete?.orderNumber) {
-      navigator.clipboard.writeText(orderComplete.orderNumber);
-      setCopied(true);
-      toast.success("Order number copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(orderComplete.orderNumber);
+        setCopied(true);
+        toast.success("Copied to clipboard", { id: "clipboard" });
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        toast.error("Unable to copy", { id: "clipboard", description: "Please copy the order number manually." });
+      }
     }
   };
 
@@ -223,7 +227,7 @@ function CheckoutContent() {
                 <span>Payment Method</span>
               </h2>
               <span className="text-[11px] font-bold text-[#15803D] bg-[#F0FDF4] border border-[#BBF7D0] px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#10B981] animate-pulse" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
                 Official Gateway
               </span>
             </div>
@@ -261,8 +265,8 @@ function CheckoutContent() {
           </div>
 
           {/* Guarantee Note */}
-          <div className="p-4 rounded-xl bg-emerald-50 border border-[#10B981]/30 flex items-center gap-3 text-xs text-[#10B981]">
-            <ShieldCheck className="h-5 w-5 text-[#10B981] shrink-0" />
+          <div className="p-4 rounded-xl bg-emerald-50 border border-[#22C55E]/30 flex items-center gap-3 text-xs text-[#22C55E]">
+            <ShieldCheck className="h-5 w-5 text-[#22C55E] shrink-0" />
             <span>
               Official Direct Top-Up Delivery. Secure KHQR checkout with automated fulfillment.
             </span>
@@ -298,7 +302,7 @@ function CheckoutContent() {
               {playerName && (
                 <div className="flex justify-between">
                   <span className="text-[#64748B]">Nickname:</span>
-                  <span className="text-[#10B981] font-semibold">{playerName}</span>
+                  <span className="text-[#22C55E] font-semibold">{playerName}</span>
                 </div>
               )}
               <div className="flex justify-between">
@@ -352,7 +356,7 @@ function CheckoutContent() {
       {orderComplete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl border border-[#BBF7D0] bg-white p-6 sm:p-8 space-y-5 text-center shadow-md">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#10B981] border border-[#10B981]/30">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
               <CheckCircle2 className="h-8 w-8" />
             </div>
 
@@ -369,7 +373,7 @@ function CheckoutContent() {
                 <div className="flex items-center gap-1">
                   <span className="text-[#16A34A] font-bold">{orderComplete.orderNumber}</span>
                   <button type="button" onClick={handleCopyOrder} aria-label={copied ? "Order number copied" : "Copy order number"} className="p-2 text-[#64748B] hover:text-[#16A34A]">
-                    {copied ? <Check className="h-3 w-3 text-[#10B981]" /> : <Copy className="h-3 w-3" />}
+                    {copied ? <Check className="h-3 w-3 text-[#22C55E]" /> : <Copy className="h-3 w-3" />}
                   </button>
                 </div>
               </div>

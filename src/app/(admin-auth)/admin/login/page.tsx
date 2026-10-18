@@ -13,7 +13,6 @@ import {
   ShieldCheck,
   ArrowRight,
   RefreshCw,
-  Sparkles,
   Server,
 } from "lucide-react";
 

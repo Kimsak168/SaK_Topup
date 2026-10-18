@@ -1,10 +1,10 @@
-import { GameGridSkeleton } from "@/components/public/HomeSkeletons";
+import { CatalogueSkeleton } from "@/components/public/HomeSkeletons";
 
 export default function CatalogueLoading() {
   return (
-    <div role="status" aria-label="Loading games" className="max-w-7xl mx-auto px-4 py-10 space-y-10">
-      <div aria-hidden="true" className="mx-auto h-32 max-w-3xl rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] animate-pulse motion-reduce:animate-none" />
-      <GameGridSkeleton count={10} />
+    <div className="storefront-container storefront-catalogue-page">
+      <div aria-hidden="true" className="mb-5 h-20 max-w-xl rounded-xl bg-[#DCFCE7]/40 motion-safe:animate-pulse" />
+      <CatalogueSkeleton />
     </div>
   );
 }

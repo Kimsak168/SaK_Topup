@@ -18,8 +18,12 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(req: NextRequest) {
   try {
-    await connectDB();
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body) ||
+      ["orderNumber", "transactionId"].some(key => body[key] !== undefined &&
+        (typeof body[key] !== "string" || body[key].length > 256))) {
+      return NextResponse.json({ success: false, error: "Invalid payment reference" }, { status: 400 });
+    }
     const { orderNumber, transactionId } = body;
 
     const queryKey = String(orderNumber || transactionId || "").trim();
@@ -30,6 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    await connectDB();
     const order = await Order.findOne({
       $or: [{ orderNumber: queryKey }, { transactionId: queryKey }],
     });
@@ -47,7 +52,7 @@ export async function POST(req: NextRequest) {
         success: true,
         orderNumber: order.orderNumber,
         paymentStatus: "PAID",
-        fulfillmentStatus: order.fulfillmentStatus,
+        fulfillmentStatus: String(order.fulfillmentStatus).toUpperCase(),
         message: "Payment already confirmed",
       });
     }
@@ -63,11 +68,14 @@ export async function POST(req: NextRequest) {
     const checkResult = await checkAnajakPayTransactionV2(order.transactionId);
 
     if (checkResult.status === "PAID") {
+      if (typeof checkResult.amount !== "number" || !Number.isFinite(checkResult.amount) || checkResult.amount <= 0) {
+        return NextResponse.json(
+          { success: false, error: "Payment verification did not provide a valid amount" },
+          { status: 503 }
+        );
+      }
       const expectedAmount = formatAnajakAmount(order.amount);
-      const callbackAmount =
-        checkResult.amount !== undefined
-          ? formatAnajakAmount(checkResult.amount)
-          : expectedAmount;
+      const callbackAmount = formatAnajakAmount(checkResult.amount);
 
       if (expectedAmount === callbackAmount) {
         // Atomic update to prevent duplicate processing
@@ -100,13 +108,13 @@ export async function POST(req: NextRequest) {
           );
 
           // Submit top-up exactly once to supplier
-          await triggerAutomaticFulfillment(order.orderNumber);
+          const fulfillment = await triggerAutomaticFulfillment(order.orderNumber);
 
           return NextResponse.json({
             success: true,
             orderNumber: order.orderNumber,
             paymentStatus: "PAID",
-            fulfillmentStatus: updated.fulfillmentStatus,
+            fulfillmentStatus: String(fulfillment?.fulfillmentStatus || updated.fulfillmentStatus).toUpperCase(),
             message: "Payment successfully verified and top-up queued",
           });
         }
@@ -121,12 +129,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Still pending or not confirmed
+    // Another request may have confirmed payment while this inquiry was running.
+    const latest = await Order.findOne({ orderNumber: order.orderNumber });
     return NextResponse.json({
       success: true,
       orderNumber: order.orderNumber,
-      paymentStatus: "PENDING",
-      fulfillmentStatus: order.fulfillmentStatus,
+      paymentStatus: String(latest?.paymentStatus || order.paymentStatus).toUpperCase(),
+      fulfillmentStatus: String(latest?.fulfillmentStatus || order.fulfillmentStatus).toUpperCase(),
       message: checkResult.responseMessage || "Payment pending verification",
     });
   } catch (error) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getVerificationGame } from "@/lib/services/verificationGameService";
 import { checkVizoPlayer } from "@/lib/suppliers/vizo";
 import { checkG2BulkPlayer } from "@/lib/suppliers/g2bulk";
+import { checkWebBuilderPlayer } from "@/lib/suppliers/webbuilder";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
     timed("vizo", () => checkVizoPlayer(game, id, server, signal()));
   const verifyG2Bulk = (game: string, id: string, server?: string) =>
     timed(game === "mlbb_global" ? "g2bulk_global" : "g2bulk", () => checkG2BulkPlayer(game, id, server, signal()));
+  const verifyWebBuilder = (productId: string, id: string, server?: string) =>
+    timed("webbuilder", () => checkWebBuilderPlayer(productId, id, server, signal()));
   try {
     const body = await req.json().catch(() => ({}));
     const { supplier, code, slug, userId, serverId } = body;
@@ -61,9 +64,16 @@ export async function POST(req: NextRequest) {
       gameIdentifier === "ff" ||
       gameIdentifier === "free-fire";
 
-    let targetSupplier = supplier ? String(supplier).trim().toLowerCase() : (isFreeFire ? "vizo" : "g2bulk");
+    const isHonorOfKings =
+      gameIdentifier === "hok" ||
+      gameIdentifier.includes("honor") ||
+      supplier === "webbuilder";
+
+    let targetSupplier = supplier ? String(supplier).trim().toLowerCase() : (isFreeFire ? "vizo" : isHonorOfKings ? "webbuilder" : "g2bulk");
     if (isFreeFire) {
       targetSupplier = "vizo";
+    } else if (isHonorOfKings) {
+      targetSupplier = "webbuilder";
     }
 
     let game = null;
@@ -80,8 +90,65 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (game?.supplier) {
+      targetSupplier = game.supplier;
+    }
+
     // Determine normalized supplier game code
-    const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_sgmy" : gameIdentifier);
+    const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_sgmy" : isHonorOfKings ? "hok" : gameIdentifier);
+
+    // ==========================================
+    // 0. WEBBUILDER API VERIFICATION (HoK, MLBB, Free Fire)
+    // ==========================================
+    if (targetSupplier === "webbuilder" || isHonorOfKings) {
+      let productId = String(body.productId || body.product_id || body.packageId || "").trim();
+      if (!productId || productId === "hok" || productId === "mlbb" || productId === "freefire") {
+        if (isFreeFire) {
+          productId = "web_product_103a2718a7b2b49990fb0388"; // Free Fire SGMY 25
+        } else if (gameIdentifier.includes("mlbb") || gameIdentifier.includes("mobile-legends")) {
+          productId = "web_product_bdd61202860568f9c8c564bc"; // MLBB 55
+        } else {
+          productId = "web_product_5d5a074e928d4dbff6bebd6f"; // HoK 16
+        }
+      }
+
+      const wbRes = await verifyWebBuilder(productId, cleanUserId, cleanServerId);
+      const duration = Date.now() - startTime;
+
+      if (wbRes.success) {
+        console.log(
+          `[PlayerVerify] ${game?.supplierGameCode || gameIdentifier} via WebBuilder: SUCCESS (IGN: ${wbRes.username}, Region: ${wbRes.region || "N/A"}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond({
+          success: true,
+          playerName: wbRes.username,
+          username: wbRes.username,
+          region: wbRes.region,
+          zone_name: wbRes.zone_name,
+          message: `Verified: ${wbRes.username}${wbRes.region ? ` (${wbRes.region})` : ""}`,
+        });
+      }
+
+      if (wbRes.isInvalidId) {
+        console.log(
+          `[PlayerVerify] ${game?.supplierGameCode || gameIdentifier} via WebBuilder: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(
+          {
+            success: false,
+            isInvalidId: true,
+            message: wbRes.message || "Player account not found. Please verify your Player ID and Zone ID.",
+          },
+          { status: 400 }
+        );
+      }
+
+      return respond({
+        success: false,
+        isUnavailable: true,
+        message: wbRes.message || "Verification service is temporarily busy. You can still proceed.",
+      });
+    }
 
     // ==========================================
     // 1. FREE FIRE (Primary: Vizo, Fallback: G2Bulk)

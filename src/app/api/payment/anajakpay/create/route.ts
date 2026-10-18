@@ -14,8 +14,13 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    await connectDB();
-    const body = await req.json().catch(() => ({}));
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body) ||
+      ["orderNumber", "gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName"].some(
+        key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
+      ) || (body.supplier !== undefined && !["vizo", "g2bulk", "webbuilder"].includes(body.supplier))) {
+      return NextResponse.json({ success: false, error: "Invalid checkout details" }, { status: 400 });
+    }
     const {
       orderNumber,
       gameSlug,
@@ -26,6 +31,11 @@ export async function POST(req: NextRequest) {
       serverId,
       playerName,
     } = body;
+
+    if (!orderNumber && (!String(playerId || "").trim() || !String(supplierProductCode || "").trim())) {
+      return NextResponse.json({ success: false, error: "Player ID and package selection are required" }, { status: 400 });
+    }
+    await connectDB();
 
     let targetOrder = null;
 
@@ -75,8 +85,22 @@ export async function POST(req: NextRequest) {
       // Create pending order flow directly
       const cleanPlayerId = String(playerId || "").trim();
       const cleanProductCode = String(supplierProductCode || "").trim();
-      const cleanGameSlug = String(gameSlug || "freefire_global").trim();
-      const cleanSupplier = (supplier === "g2bulk" ? "g2bulk" : "vizo") as "vizo" | "g2bulk";
+      const cleanGameSlug = String(gameSlug || "freefire_sgmy").trim();
+      let cleanSupplier = (supplier === "g2bulk" ? "g2bulk" : supplier === "webbuilder" ? "webbuilder" : supplier === "vizo" ? "vizo" : undefined) as "vizo" | "g2bulk" | "webbuilder" | undefined;
+      if (!cleanSupplier) {
+        const isFreeFire = cleanGameSlug.includes("freefire") || cleanGameSlug.includes("free-fire") || cleanGameSlug === "ff";
+        const isMlbb = cleanGameSlug.includes("mlbb") || cleanGameSlug.includes("mobile-legends");
+        const isHok = cleanGameSlug.includes("hok") || cleanGameSlug.includes("honor-of-kings");
+        if (isFreeFire || isMlbb || isHok) {
+          cleanSupplier = "webbuilder";
+        } else {
+          const activeGame = await Game.findOne({
+            $or: [{ slug: cleanGameSlug }, { supplierGameCode: cleanGameSlug }],
+            isActive: true,
+          }).lean();
+          cleanSupplier = (activeGame?.supplier as "vizo" | "g2bulk" | "webbuilder") || "vizo";
+        }
+      }
 
       if (!cleanPlayerId) {
         return NextResponse.json(

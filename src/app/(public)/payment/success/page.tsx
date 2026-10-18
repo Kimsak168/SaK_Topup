@@ -96,11 +96,15 @@ function SuccessContent() {
     }
   }, [order, pollCount, fetchStatus]);
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    toast.success("Order ID copied");
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      toast.success("Copied to clipboard", { id: "clipboard" });
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Unable to copy", { id: "clipboard", description: "Please copy the value manually." });
+    }
   };
 
   if (loading) {
@@ -160,7 +164,7 @@ function SuccessContent() {
         <div
           className={`absolute top-0 left-1/2 -translate-x-1/2 w-72 h-36 blur-3xl pointer-events-none rounded-full ${
             isPaid
-              ? "bg-[#10B981]/5"
+              ? "bg-[#22C55E]/5"
               : isPending
               ? "bg-[#F59E0B]/5"
               : "bg-[#EF4444]/5"
@@ -170,7 +174,7 @@ function SuccessContent() {
         {/* Status Icon */}
         <div className="relative z-10 flex justify-center">
           {isPaid && (
-            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50 text-[#10B981] border border-[#10B981]/30 shadow-xs">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30 shadow-xs">
               <CheckCircle2 className="h-10 w-10" />
             </div>
           )}
@@ -195,7 +199,7 @@ function SuccessContent() {
               </h1>
               <p className="text-xs sm:text-sm text-[#64748B] max-w-md mx-auto leading-relaxed">
                 Thank you! Your payment of{" "}
-                <strong className="text-[#10B981]">
+                <strong className="text-[#22C55E]">
                   ${order.amount.toFixed(2)} USD
                 </strong>{" "}
                 was cryptographically verified with AnajakPay KHQR.
@@ -270,7 +274,7 @@ function SuccessContent() {
               <span
                 className={`font-bold px-2.5 py-0.5 rounded-full text-[11px] border ${
                   order.fulfillmentStatus === "COMPLETED"
-                    ? "bg-emerald-50 text-[#10B981] border-[#10B981]/30"
+                    ? "bg-emerald-50 text-[#22C55E] border-[#22C55E]/30"
                     : order.fulfillmentStatus === "FAILED"
                     ? "bg-rose-50 text-[#EF4444] border-[#EF4444]/30"
                     : "bg-[#F0FDF4] text-[#16A34A] border-[#BBF7D0] animate-pulse"
@@ -306,7 +310,7 @@ function SuccessContent() {
                 title="Copy Order ID"
               >
                 {copied ? (
-                  <Check className="h-3 w-3 text-[#10B981]" />
+                  <Check className="h-3 w-3 text-[#22C55E]" />
                 ) : (
                   <Copy className="h-3 w-3" />
                 )}
@@ -363,7 +367,7 @@ function SuccessContent() {
         </div>
 
         <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#64748B]">
-          <ShieldCheck className="h-3.5 w-3.5 text-[#10B981]" />
+          <ShieldCheck className="h-3.5 w-3.5 text-[#22C55E]" />
           <span>Official Anti-Ban Delivery Guarantee</span>
         </div>
       </div>

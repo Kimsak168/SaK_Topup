@@ -1,0 +1,5 @@
+simulation: payment-verification
+routing: path
+mocks:
+  - routeKey: anajakpay
+    path: ../mocks/anajakpay/config.yaml

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
+import "./storefront-theme.css";
 import { cn } from "@/lib/utils";
 import { ThemeToaster } from "@/components/ThemeToaster";
+import { StorefrontThemeProvider } from "@/components/StorefrontThemeProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,6 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="km"
+      suppressHydrationWarning
       className={cn(
         "h-full antialiased scroll-smooth",
         inter.variable,
@@ -57,8 +60,10 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
-        {children}
-        <ThemeToaster />
+        <StorefrontThemeProvider>
+          {children}
+          <ThemeToaster />
+        </StorefrontThemeProvider>
       </body>
     </html>
   );

@@ -95,21 +95,26 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
     }
   }, [order, fetchOrder]);
 
-  const copyToClipboard = (text: string, isTxn = false) => {
-    navigator.clipboard.writeText(text);
-    if (isTxn) {
-      setCopiedTxn(true);
-      setTimeout(() => setCopiedTxn(false), 2000);
-    } else {
-      setCopiedOrder(true);
-      setTimeout(() => setCopiedOrder(false), 2000);
+  const copyToClipboard = async (text: string, isTxn = false) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      if (isTxn) {
+        setCopiedTxn(true);
+        setTimeout(() => setCopiedTxn(false), 2000);
+      } else {
+        setCopiedOrder(true);
+        setTimeout(() => setCopiedOrder(false), 2000);
+      }
+      toast.success("Copied to clipboard", { id: "clipboard" });
+    } catch {
+      toast.error("Unable to copy", { id: "clipboard", description: "Please copy the value manually." });
     }
-    toast.success("Copied to clipboard");
   };
 
   const handleOpenInPageCheckout = async () => {
     if (!order?.checkoutUrl) return;
 
+    toast.loading("Preparing secure checkout...", { id: "checkout" });
     const res = await openKhqrInPageCheckout({
       checkoutUrl: order.checkoutUrl,
       onSuccess: () => {
@@ -117,14 +122,18 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       },
       onError: (err) => {
         console.warn("[Orders] In-page checkout event:", err);
+        toast.error("Unable to start payment", { id: "checkout", description: "Please try again or contact support if the problem continues." });
       },
       onClose: () => {
         fetchOrder();
+        toast.info("Payment window closed", { id: "checkout", description: "Your pending order is saved." });
       },
     });
 
     if (!res.opened) {
-      toast.error(res.diagnostic || res.error || "Unable to open in-page checkout.");
+      toast.error("Unable to start payment", { id: "checkout", description: "Your pending order is saved. Please contact support if checkout does not open." });
+    } else {
+      toast.success("Checkout ready", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
     }
   };
 
@@ -201,7 +210,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 title="Copy Order ID"
               >
                 {copiedOrder ? (
-                  <Check className="h-4 w-4 text-[#10B981]" />
+                  <Check className="h-4 w-4 text-[#22C55E]" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
@@ -217,7 +226,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <span
               className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${
                 isPaid
-                  ? "bg-emerald-50 text-[#10B981] border border-[#10B981]/30"
+                  ? "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"
                   : isPending
                   ? "bg-amber-50 text-[#F59E0B] border border-[#F59E0B]/30 animate-pulse"
                   : "bg-rose-50 text-[#EF4444] border border-[#EF4444]/30"
@@ -245,7 +254,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             <span
               className={`font-bold px-2.5 py-0.5 rounded-full text-[11px] border ${
                 isFulfilled
-                  ? "bg-emerald-50 text-[#10B981] border border-[#10B981]/30"
+                  ? "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"
                   : order.fulfillmentStatus === "PROCESSING"
                   ? "bg-[#F0FDF4] text-[#16A34A] border border-[#BBF7D0] animate-pulse"
                   : order.fulfillmentStatus === "FAILED"
@@ -284,7 +293,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             </div>
             <div className="flex justify-between">
               <span className="text-[#64748B] font-sans">Amount:</span>
-              <span className="text-[#10B981] font-bold text-sm">
+              <span className="text-[#16A34A] font-bold text-sm">
                 ${order.amount.toFixed(2)} USD
               </span>
             </div>
@@ -307,7 +316,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
             {order.playerName && (
               <div className="flex justify-between">
                 <span className="text-[#64748B] font-sans">IGN / Nickname:</span>
-                <span className="text-[#10B981] font-sans font-bold">{order.playerName}</span>
+                <span className="text-[#22C55E] font-sans font-bold">{order.playerName}</span>
               </div>
             )}
             {order.transactionId && (
@@ -319,11 +328,12 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                   </span>
                   <button
                     type="button"
+                    aria-label="Copy transaction ID"
                     onClick={() => copyToClipboard(order.transactionId!, true)}
                     className="p-0.5 text-[#64748B] hover:text-[#16A34A]"
                   >
                     {copiedTxn ? (
-                      <Check className="h-3 w-3 text-[#10B981]" />
+                      <Check className="h-3 w-3 text-[#22C55E]" />
                     ) : (
                       <Copy className="h-3 w-3" />
                     )}

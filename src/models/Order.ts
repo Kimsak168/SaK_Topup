@@ -4,7 +4,7 @@ export interface IOrder extends Document {
   orderNumber: string;
   gameSlug: string;
   gameName: string;
-  supplier: "vizo" | "g2bulk";
+  supplier: "vizo" | "g2bulk" | "webbuilder";
   packageId?: string;
   packageName: string;
   supplierProductCode: string;
@@ -42,6 +42,11 @@ export interface IOrder extends Document {
   transactionId?: string;
   checkoutUrl?: string;
   supplierOrderId?: string;
+  idempotencyKey?: string;
+  requestHash?: string;
+  priceSnapshotCents?: number;
+  lastSupplierStatus?: string;
+  webhookEvents?: string[];
   customerContact?: string;
   adminNotes?: string;
   errorLog?: string;
@@ -73,7 +78,7 @@ const OrderSchema = new Schema<IOrder>(
     },
     supplier: {
       type: String,
-      enum: ["vizo", "g2bulk"],
+      enum: ["vizo", "g2bulk", "webbuilder"],
       required: true,
       index: true,
     },
@@ -173,6 +178,27 @@ const OrderSchema = new Schema<IOrder>(
     supplierOrderId: {
       type: String,
       trim: true,
+      index: true,
+    },
+    idempotencyKey: {
+      type: String,
+      trim: true,
+      index: true,
+    },
+    requestHash: {
+      type: String,
+      trim: true,
+    },
+    priceSnapshotCents: {
+      type: Number,
+    },
+    lastSupplierStatus: {
+      type: String,
+      trim: true,
+    },
+    webhookEvents: {
+      type: [String],
+      default: [],
     },
     customerContact: {
       type: String,

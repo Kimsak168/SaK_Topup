@@ -2,8 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
+import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
 
 export const dynamic = "force-dynamic";
+const COMPLETED = { fulfillmentStatus: { $in: ["completed", "COMPLETED", "delivered", "DELIVERED"] as const } };
+const PENDING = { $or: [
+  { fulfillmentStatus: { $in: ["NOT_STARTED", "pending", "processing", "PROCESSING"] as const } },
+  { paymentStatus: { $in: ["pending", "PENDING"] as const } },
+] };
+const FAILED = { $or: [
+  { fulfillmentStatus: { $in: ["failed", "FAILED"] as const } },
+  { paymentStatus: { $in: ["failed", "FAILED"] as const } },
+] };
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdminAuth(req);
@@ -16,8 +26,7 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search")?.trim() || "";
     const status = searchParams.get("status")?.trim().toLowerCase() || "all";
     const supplier = searchParams.get("supplier")?.trim().toLowerCase() || "all";
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.max(1, Math.min(100, parseInt(searchParams.get("limit") || "25", 10)));
+    const { page, limit } = getAdminPagination(searchParams);
 
     const filter: Record<string, unknown> = {};
 
@@ -25,30 +34,22 @@ export async function GET(req: NextRequest) {
       filter.supplier = supplier;
     }
 
-    if (status === "completed") {
-      filter.fulfillmentStatus = "completed";
-    } else if (status === "pending") {
-      filter.$or = [
-        { fulfillmentStatus: "pending" },
-        { fulfillmentStatus: "processing" },
-        { paymentStatus: "pending" },
-      ];
-    } else if (status === "failed") {
-      filter.$or = [
-        { fulfillmentStatus: "failed" },
-        { paymentStatus: "failed" },
-      ];
-    }
+    const conditions: Record<string, unknown>[] = [];
+    if (status === "completed") conditions.push(COMPLETED);
+    else if (status === "pending") conditions.push(PENDING);
+    else if (status === "failed") conditions.push(FAILED);
 
     if (search) {
-      filter.$or = [
-        { orderNumber: { $regex: search, $options: "i" } },
-        { playerId: { $regex: search, $options: "i" } },
-        { gameName: { $regex: search, $options: "i" } },
-        { packageName: { $regex: search, $options: "i" } },
-        { playerName: { $regex: search, $options: "i" } },
-      ];
+      const literalSearch = escapeSearchRegex(search);
+      conditions.push({ $or: [
+        { orderNumber: { $regex: literalSearch, $options: "i" } },
+        { playerId: { $regex: literalSearch, $options: "i" } },
+        { gameName: { $regex: literalSearch, $options: "i" } },
+        { packageName: { $regex: literalSearch, $options: "i" } },
+        { playerName: { $regex: literalSearch, $options: "i" } },
+      ] });
     }
+    if (conditions.length) filter.$and = conditions;
 
     const total = await Order.countDocuments(filter).catch(() => 0);
     const orders = await Order.find(filter)
@@ -62,19 +63,11 @@ export async function GET(req: NextRequest) {
     const [totalOrders, completedCount, pendingCount, failedCount, revenueAgg] =
       await Promise.all([
         Order.countDocuments().catch(() => 0),
-        Order.countDocuments({ fulfillmentStatus: "completed" }).catch(() => 0),
-        Order.countDocuments({
-          $or: [
-            { fulfillmentStatus: "pending" },
-            { fulfillmentStatus: "processing" },
-            { paymentStatus: "pending" },
-          ],
-        }).catch(() => 0),
-        Order.countDocuments({
-          $or: [{ fulfillmentStatus: "failed" }, { paymentStatus: "failed" }],
-        }).catch(() => 0),
+        Order.countDocuments(COMPLETED).catch(() => 0),
+        Order.countDocuments(PENDING).catch(() => 0),
+        Order.countDocuments(FAILED).catch(() => 0),
         Order.aggregate([
-          { $match: { fulfillmentStatus: "completed" } },
+          { $match: COMPLETED },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]).catch(() => []),
       ]);

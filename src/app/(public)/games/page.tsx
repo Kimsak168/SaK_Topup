@@ -1,6 +1,5 @@
 import { getClientGames } from "@/lib/services/gameService";
 import { GameSearch } from "@/components/public/GameSearch";
-import { Gamepad2 } from "lucide-react";
 import { Metadata } from "next";
 
 export const revalidate = 300;
@@ -15,23 +14,13 @@ export default async function GamesCataloguePage() {
   const games = await getClientGames(undefined, undefined, { throwOnError: true });
 
   return (
-    <div className="min-h-screen py-3 sm:py-10 px-2.5 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-5 sm:space-y-10">
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-2 sm:space-y-3">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#BBF7D0] bg-[#F0FDF4] px-3 sm:px-3.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#15803D] shadow-xs">
-          <Gamepad2 className="h-3.5 w-3.5 text-[#16A34A]" />
-          <span>Full Catalogue</span>
-        </div>
-        <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-[#172033] tracking-tight">
-          Browse All Games & Top-Up Options
-        </h1>
-        <p className="text-xs sm:text-sm text-[#64748B]">
-          Instant automated fulfillment direct to your Player ID. Select your game below to begin.
-        </p>
+    <div className="storefront-container storefront-catalogue-page">
+      <div className="storefront-page-heading">
+        <p className="storefront-eyebrow">The game top-up catalogue</p>
+        <h1>Find your next top-up.</h1>
+        <p>Diamonds, UC, passes and more. Choose a game to get started.</p>
       </div>
-
-      {/* Game Search & Filter Grid */}
-      <GameSearch initialGames={games} />
+      <GameSearch initialGames={games} heading="All Games" />
     </div>
   );
 }

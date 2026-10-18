@@ -12,7 +12,7 @@ interface RouteParams {
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
     const { id } = await params;
-    const cleanId = decodeURIComponent(id || "").trim();
+    const cleanId = (id || "").trim();
 
     if (!cleanId) {
       return NextResponse.json(
@@ -59,11 +59,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         const checkResult = await checkAnajakPayTransactionV2(order.transactionId);
 
         if (checkResult.status === "PAID") {
+          if (typeof checkResult.amount !== "number" || !Number.isFinite(checkResult.amount) || checkResult.amount <= 0) {
+            throw new Error("Payment verification did not provide a valid amount");
+          }
           const expectedAmount = formatAnajakAmount(order.amount);
-          const callbackAmount =
-            checkResult.amount !== undefined
-              ? formatAnajakAmount(checkResult.amount)
-              : expectedAmount;
+          const callbackAmount = formatAnajakAmount(checkResult.amount);
 
           if (expectedAmount === callbackAmount) {
             const updated = await Order.findOneAndUpdate(
@@ -95,10 +95,11 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
               );
 
               // Submit top-up to correct supplier exactly once
-              await triggerAutomaticFulfillment(order.orderNumber);
+              const fulfillment = await triggerAutomaticFulfillment(order.orderNumber);
 
               order.paymentStatus = "PAID";
               order.paidAt = updated.paidAt;
+              if (fulfillment) order.fulfillmentStatus = fulfillment.fulfillmentStatus as typeof order.fulfillmentStatus;
             }
           } else {
             console.warn(

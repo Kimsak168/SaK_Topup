@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { GamePackage } from "@/models/GamePackage";
 import { Game } from "@/models/Game";
 import { requireAdminAuth } from "@/lib/auth";
+import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
 
 export const dynamic = "force-dynamic";
 
@@ -15,21 +16,21 @@ export async function GET(req: NextRequest) {
     await connectDB();
     const { searchParams } = new URL(req.url);
 
-    const search = searchParams.get("search")?.trim() || "";
+    const search = escapeSearchRegex(searchParams.get("search")?.trim() || "");
     const game = searchParams.get("game")?.trim() || "";
     const supplier = searchParams.get("supplier")?.trim().toLowerCase() || "all";
     const status = searchParams.get("status")?.trim().toLowerCase() || "all"; // all | active | inactive | unconfigured | configured
-    const page = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
-    const limit = Math.max(1, Math.min(250, parseInt(searchParams.get("limit") || "50", 10)));
+    const { page, limit } = getAdminPagination(searchParams, 50, 250);
 
     const filter: Record<string, unknown> = {};
+    const conditions: Record<string, unknown>[] = [];
 
     if (supplier !== "all") {
       filter.supplier = supplier;
     }
 
     if (game && game !== "all") {
-      filter.$or = [{ gameSlug: game }, { gameCode: game }];
+      conditions.push({ $or: [{ gameSlug: game }, { gameCode: game }] });
     }
 
     if (status === "active") {
@@ -37,19 +38,20 @@ export async function GET(req: NextRequest) {
     } else if (status === "inactive") {
       filter.isActive = false;
     } else if (status === "unconfigured") {
-      filter.$or = [{ sellingPrice: null }, { sellingPrice: { $exists: false } }, { sellingPrice: 0 }];
+      conditions.push({ $or: [{ sellingPrice: null }, { sellingPrice: { $exists: false } }, { sellingPrice: 0 }] });
     } else if (status === "configured") {
       filter.sellingPrice = { $gt: 0 };
     }
 
     if (search) {
-      filter.$or = [
+      conditions.push({ $or: [
         { name: { $regex: search, $options: "i" } },
         { supplierProductCode: { $regex: search, $options: "i" } },
         { gameSlug: { $regex: search, $options: "i" } },
         { gameCode: { $regex: search, $options: "i" } },
-      ];
+      ] });
     }
+    if (conditions.length) filter.$and = conditions;
 
     const total = await GamePackage.countDocuments(filter);
     const packages = await GamePackage.find(filter)

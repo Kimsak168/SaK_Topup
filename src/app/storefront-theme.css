@@ -1,0 +1,74 @@
+/* The storefront preference is independent of the existing admin theme. */
+:root[data-storefront-theme="dark"]:has(.public-theme) {
+  color-scheme: dark;
+  --background: #0B1710;
+  --foreground: #F1F5F9;
+  --card: #122018;
+  --card-foreground: #F1F5F9;
+  --popover: #122018;
+  --popover-foreground: #F1F5F9;
+  --secondary: #1A3022;
+  --secondary-foreground: #E2E8F0;
+  --muted: #1A3022;
+  --muted-foreground: #A8B8CE;
+  --accent: #1E3A29;
+  --accent-foreground: #4ADE80;
+  --border: #31513A;
+  --border-soft: #253E2D;
+  --input: #31513A;
+  --card-border: #31513A;
+  --ring: #4ADE80;
+}
+
+:root[data-storefront-theme="dark"] .public-theme {
+  background: #0B1710;
+  color: var(--foreground);
+}
+
+:root[data-storefront-theme="dark"] .public-ambient {
+  background: radial-gradient(ellipse at 85% 0%, rgb(22 163 74 / 0.08), transparent 50%),
+    radial-gradient(ellipse at 10% 25%, rgb(34 197 94 / 0.05), transparent 50%);
+}
+
+/* Map the storefront's existing light palette so all public routes stay legible. */
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="bg-white"], [class~="bg-[#F7FFF9]"]
+) { background-color: var(--card); }
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="bg-[#F0FDF4]"], [class~="bg-[#DCFCE7]"]
+) { background-color: var(--secondary); }
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="bg-[#F0FDF4]/50"], [class~="bg-[#F0FDF4]/60"],
+  [class~="bg-[#DCFCE7]/40"], [class~="bg-[#DCFCE7]/60"], [class~="bg-[#BBF7D0]/60"]
+) { background-color: rgb(34 197 94 / 0.08); }
+
+:root[data-storefront-theme="dark"] .public-theme [class~="bg-[#DCFCE7]"] {
+  background-color: var(--border-soft);
+}
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="border-[#BBF7D0]"], [class~="border-[#DCFCE7]"]
+) { border-color: var(--border); }
+
+:root[data-storefront-theme="dark"] .public-theme [class~="text-[#172033]"] {
+  color: var(--foreground);
+}
+
+:root[data-storefront-theme="dark"] .public-theme [class~="text-[#64748B]"] {
+  color: var(--muted-foreground);
+}
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="text-[#16A34A]"], [class~="text-[#15803D]"], [class~="text-[#004B87]"]
+) { color: #4ADE80; }
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="hover:bg-[#F0FDF4]"]:hover, [class~="active:bg-[#F0FDF4]"]:active,
+  [class~="aria-expanded:bg-[#F0FDF4]"][aria-expanded="true"]
+) { background-color: var(--secondary); }
+
+:root[data-storefront-theme="dark"] .public-theme :is(
+  [class~="hover:text-[#16A34A]"]:hover, [class~="active:text-[#16A34A]"]:active
+) { color: #86EFAC; }

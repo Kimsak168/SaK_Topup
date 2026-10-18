@@ -13,9 +13,8 @@ const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Pr
       .select("slug name supplier supplierGameCode category image customImage banner publisher currencyName description requiresServer serverLabel userIdLabel instruction badge isPopular isTrending sortOrder")
       .sort({ isPopular: -1, sortOrder: 1, name: 1 }).maxTimeMS(4000).lean();
     return games.map(g => {
-      const isFreeFire = g.name.toLowerCase().includes("free fire") || g.slug.includes("freefire") || g.supplierGameCode?.includes("freefire");
-      const supplier = isFreeFire ? "vizo" : g.supplier;
-      const code = g.supplierGameCode || (isFreeFire ? "freefire_global" : g.slug);
+      const supplier = g.supplier;
+      const code = g.supplierGameCode || g.slug;
       return {
         id: String(g._id), slug: g.slug, name: g.name, code, supplier,
         path: `/games/${supplier}/${code}`, category: g.category,
@@ -57,15 +56,20 @@ export const getGameBySupplierAndCode = cache(async (
 ): Promise<{ game: ClientGame | null; shouldRedirect?: string }> => {
   const supplier = rawSupplier.toLowerCase().trim();
   const aliases: Record<string, string> = {
-    "free-fire": "freefire_global", freefire: "freefire_global", ff: "freefire_global",
+    "free-fire": "freefire_sgmy", freefire: "freefire_sgmy", ff: "freefire_sgmy",
     "free-fire-sgmy": "freefire_sgmy", "freefire-sgmy": "freefire_sgmy", "ff-sgmy": "freefire_sgmy",
-    "pubg-mobile": "pubgm", "mobile-legends": "mlbb",
+    "freefire_global": "freefire_sgmy", "free-fire-global": "freefire_sgmy",
+    "pubg-mobile": "pubgm", "mobile-legends": "mlbb", "mlbb_global": "mlbb",
+    "honor-of-kings": "hok", "honor_of_kings": "hok",
   };
   const raw = rawCode.toLowerCase().trim();
   const code = aliases[raw] || raw;
-  const targetSupplier = code.includes("freefire") ? "vizo"
-    : ["pubgm", "mlbb", "mlbb_global"].includes(code) ? "g2bulk" : supplier;
-  if (!["vizo", "g2bulk"].includes(targetSupplier)) return { game: null };
+  const targetSupplier = (code.includes("freefire") || code === "free-fire" || code === "ff") ? "webbuilder"
+    : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
+    : ["pubgm"].includes(code) ? "g2bulk"
+    : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
+    : supplier;
+  if (!["vizo", "g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
   if (targetSupplier !== supplier || raw !== code) {
     return { game: null, shouldRedirect: `/games/${targetSupplier}/${code}` };
   }
@@ -100,7 +104,7 @@ export async function updatePackageSellingPrice(
 // Supplier sync is an explicit admin action. Failed reads throw and are never
 // cached as a successful empty catalogue. Only customer fields leave the server.
 const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
-  supplier: "vizo" | "g2bulk", code: string, slug: string
+  supplier: "vizo" | "g2bulk" | "webbuilder", code: string, slug: string
 ): Promise<ClientPackage[]> => withCatalogueTimeout(catalogueQuery("packages", async () => {
   const configs = await GamePackage.find({
     supplier,

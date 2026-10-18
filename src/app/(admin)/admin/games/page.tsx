@@ -27,7 +27,7 @@ interface AdminGame {
   id: string;
   slug: string;
   name: string;
-  supplier: "vizo" | "g2bulk";
+  supplier: "vizo" | "g2bulk" | "webbuilder";
   supplierGameCode: string;
   category: string;
   image: string;
@@ -395,6 +395,7 @@ export default function AdminGamesPage() {
           >
             <option value="all">All Suppliers</option>
             <option value="vizo">Vizo (Free Fire)</option>
+            <option value="webbuilder">WebBuilder (Honor of Kings)</option>
             <option value="g2bulk">G2Bulk</option>
           </select>
 
@@ -481,6 +482,10 @@ export default function AdminGamesPage() {
                       {game.supplier === "vizo" ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/20 px-2 py-0.5 text-[10px] font-semibold text-[#38BDF8]">
                           ⚡ VIZO API
+                        </span>
+                      ) : game.supplier === "webbuilder" ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                          🛡️ WEBBUILDER API
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 text-[10px] font-semibold text-indigo-400">

@@ -1,139 +1,95 @@
 import Image from "next/image";
 import Link from "next/link";
-import { QrCode, CreditCard } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { SOCIAL_URLS } from "@/lib/socialLinks";
 
-const TELEGRAM_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
+const socialLinks = [
+  {
+    label: "Facebook",
+    href: SOCIAL_URLS.facebook,
+    color: "#1877F2",
+    path: "M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.931-1.956 1.887v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z",
+  },
+  {
+    label: "TikTok",
+    href: SOCIAL_URLS.tiktok,
+    color: "#111827",
+    path: "M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2H12.3v13.967a2.955 2.955 0 0 1-2.95 2.658 2.953 2.953 0 0 1-2.955-2.95 2.953 2.953 0 0 1 2.955-2.95c.305 0 .6.048.879.135V9.286a6.46 6.46 0 0 0-.879-.06 6.45 6.45 0 0 0-6.45 6.45 6.45 6.45 0 0 0 6.45 6.45 6.45 6.45 0 0 0 6.45-6.45V8.54a8.27 8.27 0 0 0 4.834 1.55V6.638c-.35 0-.7-.035-1.045-.104Z",
+  },
+  {
+    label: "Telegram",
+    href: SOCIAL_URLS.telegram,
+    color: "#229ED9",
+    path: "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 5.29 3.87c.97.54 1.67.26 1.91-.9L23.67 4c.35-1.44-.55-2.09-1.48-1.67L1.84 10.18c-1.39.56-1.38 1.33-.25 1.67l5.22 1.63L18.9 5.86c.57-.35 1.09-.16.66.23Z",
+  },
+].filter(({ href }) => {
+  try {
+    const url = new URL(href);
+    return url.protocol === "https:" || url.protocol === "http:";
+  } catch {
+    return false;
+  }
+});
 
 export function CustomerFooter() {
   return (
-    <footer className="relative z-10 w-full bg-white overflow-hidden border-t border-[#BBF7D0]">
-      {/* Background Ambient Glow Accents */}
-      <div className="absolute -top-32 -left-32 w-72 h-72 rounded-full bg-[#F0FDF4]/60 blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-72 h-72 rounded-full bg-[#DCFCE7]/40 blur-2xl pointer-events-none" />
-
-      <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-7 sm:pt-12 pb-6">
-        {/* Responsive 3-Section Grid: Desktop (3 cols), Tablet (2 cols), Mobile (1 col) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 items-start">
-          
-          {/* Section 1: Branding (Left) */}
-          <div className="flex flex-col items-start space-y-3.5">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-3 group focus-visible:outline-2 focus-visible:outline-[#16A34A] focus-visible:ring-2 focus-visible:ring-[#16A34A]/20 rounded-xl"
-            >
-              <Image
-                src="/images/logo.png"
-                alt="SakSuuu Logo"
-                width={55}
-                height={55}
-                className="h-[55px] w-[55px] object-contain group-hover:scale-105 transition-transform duration-300"
-              />
-              <div className="flex flex-col">
-                <span className="text-xl sm:text-2xl font-black tracking-wide text-[#1E293B]">
-                  SakSuuu
-                </span>
-                <span className="text-xs font-semibold text-[#64748B] tracking-wider uppercase">
-                  Game Top-Up Store
-                </span>
+    <footer className="storefront-footer relative z-10">
+      <div className="storefront-container">
+        <div className="storefront-footer-grid">
+          <div className="storefront-footer-brand">
+            <Link href="/" className="inline-flex items-center gap-2.5 rounded-lg">
+              <Image src="/images/logo.png" alt="" width={40} height={40} className="size-10 object-contain" />
+              <div>
+                <span className="block text-lg font-bold tracking-tight text-[#172033]">SakSuuu</span>
+                <span className="block text-[11px] text-[#64748B]">Your game top-up store</span>
               </div>
             </Link>
-            <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-sm">
-              Instant, secure game recharges with automated delivery 24/7. Top up diamonds, passes, and UC at competitive rates.
+            <p className="storefront-footer-copy mt-3 max-w-sm">
+              Less time waiting, more time playing. Top up diamonds, passes and UC with secure checkout and direct delivery.
             </p>
           </div>
 
-          {/* Section 2: Quick Links & Payment Methods (Middle) */}
-          <div className="flex flex-col space-y-4">
-            <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] mb-3 flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
-                Quick Links
-              </h3>
-              <ul className="space-y-2 text-sm font-medium">
-                <li>
-                  <Link
-                    href="/"
-                    className="text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] hover:translate-x-1 inline-flex items-center transition-all duration-200"
-                  >
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/games"
-                    className="text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] hover:translate-x-1 inline-flex items-center transition-all duration-200"
-                  >
-                    Games
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Small Payment-Method Section */}
-            <div className="pt-3 border-t border-[#DCFCE7]">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-[#64748B] mb-2">
-                Payment Methods
-              </p>
-              <div className="flex flex-wrap items-center gap-2">
-                <div
-                  title="KHQR Universal Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] text-xs font-medium text-[#1E293B] hover:border-[#16A34A] transition-colors"
-                >
-                  <QrCode className="h-3.5 w-3.5 text-[#16A34A]" />
-                  <span>KHQR</span>
-                </div>
-                <div
-                  title="ABA Mobile Pay"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F0FDF4] border border-[#BBF7D0] text-xs font-medium text-[#1E293B] hover:border-[#16A34A] transition-colors"
-                >
-                  <CreditCard className="h-3.5 w-3.5 text-[#004B87]" />
-                  <span>ABA</span>
-                </div>
-              </div>
-            </div>
+          <div>
+            <h2 className="storefront-footer-title">Explore SakSuuu</h2>
+            <ul className="space-y-0.5">
+              <li><Link href="/" className="storefront-footer-link">Home</Link></li>
+              <li><Link href="/games" className="storefront-footer-link">Browse games</Link></li>
+              <li><Link href="/orders" className="storefront-footer-link">Track your order</Link></li>
+            </ul>
           </div>
 
-          {/* Section 3: Support (Right) */}
-          <div className="flex flex-col space-y-3.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-[#1E293B] flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#16A34A]" />
-              Support
-            </h3>
-            <p className="text-xs sm:text-sm text-[#64748B] leading-relaxed max-w-sm">
-              Have questions or need assistance with your order? Our support team is ready to help on Telegram.
-            </p>
-            <div className="pt-1">
-              <Link
-                href={TELEGRAM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Contact support on Telegram"
-                className="group inline-flex items-center justify-center gap-2.5 px-5 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-sm shadow-xs bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] active:scale-[0.98] transition-all duration-200 border border-[#16A34A] focus-visible:outline-2 focus-visible:outline-[#16A34A]"
-              >
-                {/* Official Telegram Icon */}
-                <svg
-                  className="h-4.5 w-4.5 transition-transform duration-300 group-hover:scale-110"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.75-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z" />
-                </svg>
-                <span>Contact on Telegram</span>
-              </Link>
-            </div>
+          <div>
+            <h2 className="storefront-footer-title">Need a hand?</h2>
+            <p className="storefront-footer-copy">Our support team is here for your top-up questions.</p>
+            <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+              {socialLinks.map(({ label, href, color, path }) => (
+                <li key={label}>
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Visit us on ${label} (opens in a new tab)`}
+                    className="flex size-9 items-center justify-center rounded-full transition-colors hover:bg-[#F0FDF4]"
+                    style={{ color }}
+                  >
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-5">
+                      <path d={path} />
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-
         </div>
 
-        {/* Thin Divider */}
-        <div className="w-full h-px bg-[#DCFCE7] mt-10 sm:mt-12 mb-6" />
-
-        {/* Copyright Section */}
-        <div className="text-center">
-          <p className="text-xs text-[#64748B] tracking-wide font-normal">
-            © 2026 SakSuuu. All rights reserved.
-          </p>
+        <div className="storefront-footer-bottom">
+          <p>&copy; 2026 SakSuuu. All rights reserved.</p>
+          <span className="inline-flex items-center gap-2">
+            <ShieldCheck aria-hidden="true" size={14} className="text-[#22C55E]" />
+            Secure payments
+            <Image src="/images/aba-logo.png" alt="ABA Pay" width={24} height={24} className="size-6 rounded-md" loading="lazy" />
+            <span className="font-semibold text-[#172033]">KHQR</span>
+          </span>
         </div>
       </div>
     </footer>

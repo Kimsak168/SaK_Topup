@@ -31,6 +31,20 @@ payments, or database records. The build uses the configured environment and
 may read catalogue data and download Google fonts. Local backups and generated
 artifacts are excluded from linting and type checking.
 
+To verify the payment client over real HTTP without a provider account, start
+the local fixtures with Postman CLI 1.70 or later:
+
+```sh
+postman simulation run postman/simulations/payments.sim.yaml --port 4900 --no-history
+```
+
+In another terminal, run `node scripts/verify-payments.mjs`. The eight scenarios
+cover paid and pending responses, missing or invalid amounts, malformed response
+codes, HTTP errors, and unknown transactions. Fixtures follow the response shapes
+consumed by this repository; they do not establish live provider compatibility.
+`ANAJAKPAY_API_BASE_URL` optionally overrides the verification host for local
+simulation; production defaults to `https://anajakpay.com`.
+
 Run the production build locally with `npm start`. Configure the same environment
 variables on your hosting platform, including `NEXT_PUBLIC_APP_URL` for payment
 return URLs. Administrator route protection uses `src/proxy.ts`, the Next.js 16

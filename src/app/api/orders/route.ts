@@ -11,7 +11,13 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => null);
+    if (!body || typeof body !== "object" || Array.isArray(body) ||
+      ["gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName", "paymentMethod", "orderNumber"].some(
+        key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
+      ) || (body.supplier !== undefined && !["vizo", "g2bulk", "webbuilder"].includes(body.supplier))) {
+      return NextResponse.json({ success: false, error: "Invalid order details" }, { status: 400 });
+    }
     const {
       gameSlug = "freefire_global",
       supplier = "vizo",
@@ -25,7 +31,13 @@ export async function POST(req: NextRequest) {
     const cleanPlayerId = String(playerId || "").trim();
     const cleanProductCode = String(supplierProductCode || "").trim();
     const cleanGameSlug = String(gameSlug || "freefire_global").trim();
-    const cleanSupplier = (supplier === "g2bulk" ? "g2bulk" : "vizo") as "vizo" | "g2bulk";
+    let cleanSupplier = (body.supplier === "g2bulk" ? "g2bulk" : body.supplier === "webbuilder" ? "webbuilder" : body.supplier === "vizo" ? "vizo" : undefined) as "vizo" | "g2bulk" | "webbuilder" | undefined;
+    if (!cleanSupplier) {
+      const isFreeFire = cleanGameSlug.includes("freefire") || cleanGameSlug.includes("free-fire") || cleanGameSlug === "ff";
+      const isMlbb = cleanGameSlug.includes("mlbb") || cleanGameSlug.includes("mobile-legends");
+      const isHok = cleanGameSlug.includes("hok") || cleanGameSlug.includes("honor-of-kings");
+      cleanSupplier = (isFreeFire || isMlbb || isHok) ? "webbuilder" : "vizo";
+    }
 
     if (!cleanPlayerId) {
       return NextResponse.json(
@@ -114,6 +126,7 @@ export async function POST(req: NextRequest) {
       playerName: playerName ? String(playerName).trim() : undefined,
       amount: pkg.sellingPrice, // Authoritative price from MongoDB
       buyingPrice: pkg.buyingPrice || 0,
+      priceSnapshotCents: typeof pkg.priceCents === "number" ? pkg.priceCents : Math.round((pkg.buyingPrice || 0) * 100),
       profit: pkg.sellingPrice - (pkg.buyingPrice || 0),
       currency: "USD",
       paymentMethod,
