@@ -62,7 +62,7 @@ export async function syncHonorOfKingsCatalog(options?: {
   // 2. Ensure Honor of Kings Game entity exists in database
   let hokGame = await Game.findOne({
     supplier: "webbuilder",
-    $or: [{ slug: HOK_GAME_SLUG }, { supplierGameCode: HOK_GAME_CODE }],
+    $or: [{ slug: HOK_GAME_SLUG }, { slug: "hok" }, { supplierGameCode: HOK_GAME_CODE }],
   });
 
   if (!hokGame) {
@@ -78,11 +78,10 @@ export async function syncHonorOfKingsCatalog(options?: {
       currencyName: "Tokens",
       description:
         "Official Honor of Kings Tokens instant top-up via WebBuilder API. Automated 24/7 delivery to your player ID.",
-      requiresServer: true,
-      serverLabel: "Server / Zone ID",
+      requiresServer: false,
       userIdLabel: "Player ID (UID)",
       instruction:
-        "Open Honor of Kings, tap your avatar to open profile. Locate your numeric UID and Zone ID.",
+        "Open Honor of Kings, tap your avatar to open profile. Locate your numeric UID.",
       badge: "POPULAR",
       isPopular: true,
       isTrending: true,
@@ -92,6 +91,22 @@ export async function syncHonorOfKingsCatalog(options?: {
     });
     stats.gameCreated = true;
     console.log("[WebBuilder Sync] Created Honor of Kings game document in database.");
+  } else {
+    await Game.updateOne(
+      { _id: hokGame._id },
+      {
+        $set: {
+          requiresServer: false,
+          userIdLabel: "Player ID (UID)",
+          instruction:
+            "Open Honor of Kings, tap your avatar to open profile. Locate your numeric UID.",
+          updatedAt: new Date(),
+        },
+        $unset: {
+          serverLabel: "",
+        },
+      }
+    );
   }
 
   // 3. Fetch products from WebBuilder (filtered strictly for Honor of Kings)
