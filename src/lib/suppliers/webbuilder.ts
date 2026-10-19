@@ -487,9 +487,12 @@ export function isFreeFireProduct(prod: WebBuilderProduct): boolean {
   return (
     game.includes("free fire") ||
     game.includes("freefire") ||
+    game.includes("khsgmy") ||
     name.includes("free fire") ||
     name.includes("freefire") ||
-    id.includes("freefire")
+    name.includes("khsgmy") ||
+    id.includes("freefire") ||
+    id.includes("khsgmy")
   );
 }
 
@@ -550,7 +553,12 @@ export async function getWebBuilderProducts(options?: {
   // Filter based on gameCode or honorOfKingsOnly flag
   const targetCode = options?.gameCode?.toLowerCase().trim();
   if (targetCode) {
-    if (targetCode.includes("freefire") || targetCode.includes("free-fire") || targetCode === "ff") {
+    if (
+      targetCode.includes("freefire") ||
+      targetCode.includes("free-fire") ||
+      targetCode === "ff" ||
+      targetCode.includes("khsgmy")
+    ) {
       return rawList.filter(isFreeFireProduct);
     }
     if (targetCode.includes("mlbb") || targetCode.includes("mobile-legends")) {
@@ -595,9 +603,9 @@ export async function getWebBuilderBalance(): Promise<WebBuilderBalance> {
 }
 
 /**
- * Check Honor of Kings player info before payment
+ * Check Free Fire, MLBB, or Honor of Kings player info before payment
  * Sends product_id, player_id, and zone_id when required.
- * Returns verified username and region.
+ * Returns verified username, detected_region, and status.
  */
 export async function checkWebBuilderPlayer(
   productId: string,
@@ -607,11 +615,14 @@ export async function checkWebBuilderPlayer(
 ): Promise<WebBuilderPlayerCheckResponse> {
   try {
     const res = await executeRequest<{
+      found?: boolean;
       username?: string;
       player_name?: string;
       region?: string;
+      detected_region?: string;
       zone_name?: string;
       valid?: boolean;
+      message?: string;
     }>({
       method: "POST",
       path: "/players/check",
@@ -624,14 +635,14 @@ export async function checkWebBuilderPlayer(
     });
 
     const username = res.data.username || res.data.player_name || "";
-    const region = res.data.region || res.data.zone_name;
+    const region = res.data.detected_region || res.data.region || res.data.zone_name;
 
-    if (!username && res.data.valid === false) {
+    if (res.data.found === false || (!username && res.data.valid === false)) {
       return {
         success: false,
         isInvalidId: true,
         username: "",
-        message: "Honor of Kings player account not found. Check your Player ID / Zone ID.",
+        message: res.data.message || "Player account not found. Please verify your Player ID.",
       };
     }
 
@@ -640,6 +651,7 @@ export async function checkWebBuilderPlayer(
       username,
       region,
       zone_name: region,
+      message: res.data.message,
     };
   } catch (err: unknown) {
     if (err instanceof WebBuilderNotFoundError || err instanceof WebBuilderBadRequestError) {
@@ -647,7 +659,7 @@ export async function checkWebBuilderPlayer(
         success: false,
         isInvalidId: true,
         username: "",
-        message: err.message || "Invalid Player ID or Zone ID.",
+        message: err.detail || err.message || "Invalid Player ID or Zone ID.",
       };
     }
 
@@ -661,12 +673,11 @@ export async function checkWebBuilderPlayer(
     }
 
     const msg = err instanceof Error ? err.message : String(err);
-    logRedacted("warn", `Player check exception for UID ${maskPlayerUid(playerId)}: ${msg}`);
     return {
       success: false,
       isUnavailable: true,
       username: "",
-      message: "Verification service temporarily unavailable.",
+      message: msg || "Player verification service is temporarily busy.",
     };
   }
 }

@@ -4,6 +4,7 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import { getVizoCategories, getVizoPackages, VizoProduct } from "@/lib/suppliers/vizo";
 import { getG2BulkGames, getG2BulkCatalogue, G2BulkCatalogueItem } from "@/lib/suppliers/g2bulk";
+import { syncFreeFireCatalog, syncHonorOfKingsCatalog } from "./webbuilderSyncService";
 
 export interface SyncStats {
   supplier: string;
@@ -20,6 +21,7 @@ export interface FullSyncResult {
   games: {
     vizo: SyncStats;
     g2bulk: SyncStats;
+    webbuilder?: SyncStats;
     totalImported: number;
     totalUpdated: number;
     totalSkipped: number;
@@ -28,6 +30,7 @@ export interface FullSyncResult {
   packages?: {
     vizo: SyncStats;
     g2bulk: SyncStats;
+    webbuilder?: SyncStats;
     totalImported: number;
     totalUpdated: number;
     totalSkipped: number;
@@ -332,7 +335,7 @@ export async function syncGamesFromSuppliers(): Promise<FullSyncResult["games"]>
  */
 export async function syncPackagesFromSuppliers(options: {
   gameCode?: string;
-  supplier?: "vizo" | "g2bulk";
+  supplier?: "vizo" | "g2bulk" | "webbuilder";
   onlyActiveGames?: boolean;
 } = {}): Promise<FullSyncResult["packages"]> {
   await connectDB();
@@ -357,8 +360,19 @@ export async function syncPackagesFromSuppliers(options: {
     errors: [],
   };
 
+  const webbuilderStats: SyncStats = {
+    supplier: "webbuilder",
+    imported: 0,
+    updated: 0,
+    skipped: 0,
+    failed: 0,
+    total: 0,
+    errors: [],
+  };
+
   const syncVizo = !options.supplier || options.supplier === "vizo";
   const syncG2Bulk = !options.supplier || options.supplier === "g2bulk";
+  const syncWebBuilder = !options.supplier || options.supplier === "webbuilder";
 
   // ==========================================
   // 1. SYNC VIZO PACKAGES (Free Fire Global & Free Fire SGMY)
@@ -547,12 +561,54 @@ export async function syncPackagesFromSuppliers(options: {
     }
   }
 
+  // ==========================================
+  // 3. SYNC WEBBUILDER PACKAGES (Free Fire KHSGMY & Honor of Kings)
+  // ==========================================
+  if (syncWebBuilder) {
+    const code = (options.gameCode || "").toLowerCase().trim();
+    const shouldSyncFF = !code || code.includes("freefire") || code.includes("ff") || code.includes("khsgmy");
+    const shouldSyncHoK = !code || code.includes("hok") || code.includes("honor");
+
+    if (shouldSyncFF) {
+      try {
+        const ffStats = await syncFreeFireCatalog({ forceRefresh: true });
+        webbuilderStats.imported += ffStats.importedPackages;
+        webbuilderStats.updated += ffStats.updatedPackages;
+        webbuilderStats.skipped += ffStats.skippedPackages;
+        webbuilderStats.failed += ffStats.failedPackages;
+        webbuilderStats.total += ffStats.total;
+        if (ffStats.errors.length) webbuilderStats.errors.push(...ffStats.errors);
+      } catch (ffErr: unknown) {
+        const msg = ffErr instanceof Error ? ffErr.message : String(ffErr);
+        webbuilderStats.failed++;
+        webbuilderStats.errors.push(`Free Fire KHSGMY sync failed: ${msg}`);
+      }
+    }
+
+    if (shouldSyncHoK) {
+      try {
+        const hokStats = await syncHonorOfKingsCatalog({ forceRefresh: true });
+        webbuilderStats.imported += hokStats.importedPackages;
+        webbuilderStats.updated += hokStats.updatedPackages;
+        webbuilderStats.skipped += hokStats.skippedPackages;
+        webbuilderStats.failed += hokStats.failedPackages;
+        webbuilderStats.total += hokStats.total;
+        if (hokStats.errors.length) webbuilderStats.errors.push(...hokStats.errors);
+      } catch (hokErr: unknown) {
+        const msg = hokErr instanceof Error ? hokErr.message : String(hokErr);
+        webbuilderStats.failed++;
+        webbuilderStats.errors.push(`Honor of Kings sync failed: ${msg}`);
+      }
+    }
+  }
+
   return {
     vizo: vizoStats,
     g2bulk: g2bulkStats,
-    totalImported: vizoStats.imported + g2bulkStats.imported,
-    totalUpdated: vizoStats.updated + g2bulkStats.updated,
-    totalSkipped: vizoStats.skipped + g2bulkStats.skipped,
-    totalFailed: vizoStats.failed + g2bulkStats.failed,
+    webbuilder: webbuilderStats,
+    totalImported: vizoStats.imported + g2bulkStats.imported + webbuilderStats.imported,
+    totalUpdated: vizoStats.updated + g2bulkStats.updated + webbuilderStats.updated,
+    totalSkipped: vizoStats.skipped + g2bulkStats.skipped + webbuilderStats.skipped,
+    totalFailed: vizoStats.failed + g2bulkStats.failed + webbuilderStats.failed,
   };
 }

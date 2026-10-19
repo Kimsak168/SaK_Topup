@@ -17,8 +17,13 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
   const normalized = (slug || "").trim().toLowerCase();
 
   // 1. Direct Free Fire alias handling -> WebBuilder
-  if (normalized.includes("freefire") || normalized.startsWith("free-fire") || normalized === "ff") {
-    redirect("/games/webbuilder/freefire_sgmy");
+  if (
+    normalized.includes("freefire") ||
+    normalized.startsWith("free-fire") ||
+    normalized === "ff" ||
+    normalized.includes("khsgmy")
+  ) {
+    redirect("/games/webbuilder/freefire_khsgmy");
   }
 
   // 2. Direct PUBG Mobile alias handling -> always G2Bulk

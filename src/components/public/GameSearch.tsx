@@ -22,9 +22,11 @@ function isGamePopular(game: ClientGame): boolean {
 
 // Aliases mapping for common gaming search shortcuts
 const SEARCH_ALIASES: Record<string, string[]> = {
-  ff: ["free fire", "freefire"],
-  sgmy: ["free fire (sgmy)", "sgmy"],
-  ffsgmy: ["free fire (sgmy)", "freefire_sgmy"],
+  ff: ["free fire", "freefire", "free fire (khsgmy)"],
+  sgmy: ["free fire (sgmy)", "free fire (khsgmy)", "sgmy"],
+  ffsgmy: ["free fire (sgmy)", "free fire (khsgmy)", "freefire_sgmy"],
+  khsgmy: ["free fire", "free fire (khsgmy)", "freefire_sgmy", "khsgmy"],
+  ffkhsgmy: ["free fire", "free fire (khsgmy)", "freefire_sgmy"],
   pubg: ["pubg mobile", "pubgm"],
   pubgm: ["pubg mobile", "pubgm"],
   ml: ["mobile legends", "mlbb"],

@@ -56,15 +56,18 @@ export const getGameBySupplierAndCode = cache(async (
 ): Promise<{ game: ClientGame | null; shouldRedirect?: string }> => {
   const supplier = rawSupplier.toLowerCase().trim();
   const aliases: Record<string, string> = {
-    "free-fire": "freefire_sgmy", freefire: "freefire_sgmy", ff: "freefire_sgmy",
-    "free-fire-sgmy": "freefire_sgmy", "freefire-sgmy": "freefire_sgmy", "ff-sgmy": "freefire_sgmy",
-    "freefire_global": "freefire_sgmy", "free-fire-global": "freefire_sgmy",
+    "free-fire": "freefire_khsgmy", freefire: "freefire_khsgmy", ff: "freefire_khsgmy",
+    "free-fire-sgmy": "freefire_khsgmy", "freefire-sgmy": "freefire_khsgmy", "ff-sgmy": "freefire_khsgmy",
+    "freefire_sgmy": "freefire_khsgmy",
+    "freefire_global": "freefire_khsgmy", "free-fire-global": "freefire_khsgmy",
+    "freefire_khsgmy": "freefire_khsgmy", "free-fire-khsgmy": "freefire_khsgmy", "ff-khsgmy": "freefire_khsgmy",
+    khsgmy: "freefire_khsgmy",
     "pubg-mobile": "pubgm", "mobile-legends": "mlbb", "mlbb_global": "mlbb",
     "honor-of-kings": "hok", "honor_of_kings": "hok",
   };
   const raw = rawCode.toLowerCase().trim();
   const code = aliases[raw] || raw;
-  const targetSupplier = (code.includes("freefire") || code === "free-fire" || code === "ff") ? "webbuilder"
+  const targetSupplier = (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
     : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
     : ["pubgm"].includes(code) ? "g2bulk"
     : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"

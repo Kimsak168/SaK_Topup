@@ -74,10 +74,13 @@ async function run() {
   console.log("\n--- Configuring WebBuilder Free Fire Game ---");
   const existingFF = await gamesColl.findOne({
     $or: [
+      { supplier: "webbuilder", supplierGameCode: "freefire_khsgmy" },
       { supplier: "webbuilder", supplierGameCode: "freefire_sgmy" },
+      { supplier: "webbuilder", slug: "free-fire-khsgmy" },
       { supplier: "webbuilder", slug: "free-fire-sgmy" },
+      { slug: "free-fire-khsgmy" },
       { slug: "free-fire-sgmy" },
-      { name: "Free Fire (SGMY)" },
+      { name: /free fire/i },
     ],
   });
 
@@ -87,10 +90,10 @@ async function run() {
       { _id: existingFF._id },
       {
         $set: {
-          name: "Free Fire (SGMY)",
-          slug: "free-fire-sgmy",
+          name: "Free Fire (KHSGMY)",
+          slug: "free-fire-khsgmy",
           supplier: "webbuilder",
-          supplierGameCode: "freefire_sgmy",
+          supplierGameCode: "freefire_khsgmy",
           category: "Battle Royale",
           currencyName: "Diamonds",
           requiresServer: false,
@@ -108,13 +111,13 @@ async function run() {
         },
       }
     );
-    console.log("Updated existing game to WebBuilder Free Fire (SGMY).");
+    console.log("Updated existing game to WebBuilder Free Fire (KHSGMY).");
   } else {
     await gamesColl.insertOne({
-      name: "Free Fire (SGMY)",
-      slug: "free-fire-sgmy",
+      name: "Free Fire (KHSGMY)",
+      slug: "free-fire-khsgmy",
       supplier: "webbuilder",
-      supplierGameCode: "freefire_sgmy",
+      supplierGameCode: "freefire_khsgmy",
       category: "Battle Royale",
       publisher: "Garena",
       currencyName: "Diamonds",
@@ -204,8 +207,25 @@ async function run() {
 
   // 6. Upsert WebBuilder Free Fire Packages
   console.log("\n--- Upserting WebBuilder Free Fire Packages ---");
-  const ffProducts = allProducts.filter((p) => p.game === "Free Fire SGMY");
-  console.log(`Found ${ffProducts.length} Free Fire SGMY products from WebBuilder.`);
+  const ffProducts = allProducts.filter(
+    (p) =>
+      p.game === "Free Fire KHSGMY" ||
+      p.game === "Free Fire SGMY" ||
+      (p.game && p.game.toLowerCase().includes("free fire"))
+  );
+  console.log(`Found ${ffProducts.length} Free Fire KHSGMY products from WebBuilder.`);
+
+  // Deactivate any stale WebBuilder Free Fire packages not in the live list
+  const validCodes = ffProducts.map((p) => String(p.id).trim());
+  const deactivatedStale = await pkgsColl.updateMany(
+    {
+      supplier: "webbuilder",
+      $or: [{ gameCode: /freefire/i }, { gameSlug: /free-fire/i }],
+      supplierProductCode: { $nin: validCodes },
+    },
+    { $set: { isActive: false, updatedAt: new Date() } }
+  );
+  console.log(`Deactivated ${deactivatedStale.modifiedCount} stale WebBuilder Free Fire packages.`);
 
   let ffImported = 0;
   let ffUpdated = 0;
@@ -217,11 +237,44 @@ async function run() {
     const isOrderable = p.orderable !== false && p.status !== "inactive";
 
     const isNumeric = /^\d+$/.test(p.name.trim());
-    const displayName = isNumeric ? `${p.name} Diamonds` : p.name;
-    const diamondsOrPoints = isNumeric ? `${p.name} Diamonds` : p.name;
+    const displayName = isNumeric
+      ? `${p.name} Diamonds`
+      : p.name === "Weekly"
+      ? "Weekly Membership"
+      : p.name === "Monthly"
+      ? "Monthly Membership"
+      : p.name;
+    const diamondsOrPoints = isNumeric ? p.name : p.name;
 
     // Default 12% margin selling price
     const defaultSellingPrice = buyingPriceUsd ? Math.round(buyingPriceUsd * 1.12 * 100) / 100 : null;
+
+    let badge = "";
+    if (p.name === "100") badge = "POPULAR";
+    else if (p.name === "Weekly") badge = "HOT";
+    else if (p.name === "Monthly") badge = "BEST VALUE";
+
+    let sortOrder = i + 1;
+    if (isNumeric) {
+      const num = parseInt(p.name, 10);
+      if (num === 25) sortOrder = 1;
+      else if (num === 100) sortOrder = 2;
+      else if (num === 310) sortOrder = 3;
+      else if (num === 520) sortOrder = 4;
+      else if (num === 1060) sortOrder = 5;
+      else if (num === 2180) sortOrder = 6;
+      else if (num === 5600) sortOrder = 7;
+      else if (num === 11500) sortOrder = 8;
+      else sortOrder = 9;
+    } else if (p.name.includes("Weekly Lite")) {
+      sortOrder = 10;
+    } else if (p.name === "Weekly") {
+      sortOrder = 11;
+    } else if (p.name === "Monthly") {
+      sortOrder = 12;
+    } else {
+      sortOrder = 20 + i;
+    }
 
     const existingPkg = await pkgsColl.findOne({
       supplier: "webbuilder",
@@ -230,8 +283,8 @@ async function run() {
 
     if (!existingPkg) {
       await pkgsColl.insertOne({
-        gameSlug: "free-fire-sgmy",
-        gameCode: "freefire_sgmy",
+        gameSlug: "free-fire-khsgmy",
+        gameCode: "freefire_khsgmy",
         supplier: "webbuilder",
         supplierProductCode,
         name: displayName,
@@ -241,10 +294,10 @@ async function run() {
         sellingPrice: defaultSellingPrice,
         originalPrice: defaultSellingPrice ? Math.round(defaultSellingPrice * 1.15 * 100) / 100 : null,
         currency: p.currency || "USD",
-        badge: p.name === "100" ? "POPULAR" : p.name.includes("Weekly") ? "BEST VALUE" : "",
+        badge,
         isActive: isOrderable,
         adminConfigured: true,
-        sortOrder: i + 1,
+        sortOrder,
         syncedAt: new Date(),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -255,6 +308,8 @@ async function run() {
         { _id: existingPkg._id },
         {
           $set: {
+            gameSlug: "free-fire-khsgmy",
+            gameCode: "freefire_khsgmy",
             buyingPrice: buyingPriceUsd,
             priceCents: p.price_cents,
             isActive: isOrderable,

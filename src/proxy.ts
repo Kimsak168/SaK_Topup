@@ -67,20 +67,29 @@ export async function proxy(request: NextRequest) {
       const supplier = parts[1].toLowerCase();
       const code = parts[2].toLowerCase();
 
-      // Free Fire routing to WebBuilder (Canonical game code: freefire_sgmy)
+      // Free Fire routing to WebBuilder (Canonical game code: freefire_khsgmy)
       if (
         (supplier === "g2bulk" || supplier === "vizo") &&
-        (code.includes("freefire") || code.startsWith("free-fire") || code === "ff")
+        (code.includes("freefire") || code.startsWith("free-fire") || code === "ff" || code.includes("khsgmy") || code.includes("sgmy"))
       ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
       }
 
       // Canonical Free Fire path on WebBuilder
       if (
         supplier === "webbuilder" &&
-        (code === "free-fire" || code === "freefire" || code === "ff" || code === "freefire_global")
+        (code === "free-fire" ||
+          code === "freefire" ||
+          code === "ff" ||
+          code === "freefire_global" ||
+          code === "freefire_sgmy" ||
+          code === "free-fire-sgmy" ||
+          code === "freefire-sgmy" ||
+          code === "sgmy" ||
+          code === "free-fire-khsgmy" ||
+          code === "khsgmy")
       ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
       }
 
       // PUBG Mobile routing to G2Bulk
@@ -118,8 +127,14 @@ export async function proxy(request: NextRequest) {
     if (parts.length >= 2) {
       const slug = parts[1].toLowerCase();
 
-      if (slug.includes("freefire") || slug.startsWith("free-fire") || slug === "ff") {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_sgmy", request.url));
+      if (
+        slug.includes("freefire") ||
+        slug.startsWith("free-fire") ||
+        slug === "ff" ||
+        slug.includes("khsgmy") ||
+        slug.includes("sgmy")
+      ) {
+        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
       }
 
       if (slug === "pubg-mobile" || slug === "pubgm") {

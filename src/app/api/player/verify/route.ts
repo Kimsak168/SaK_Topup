@@ -62,18 +62,24 @@ export async function POST(req: NextRequest) {
     const isFreeFire =
       gameIdentifier.includes("freefire") ||
       gameIdentifier === "ff" ||
-      gameIdentifier === "free-fire";
+      gameIdentifier === "free-fire" ||
+      gameIdentifier.includes("khsgmy");
 
     const isHonorOfKings =
       gameIdentifier === "hok" ||
       gameIdentifier.includes("honor") ||
       supplier === "webbuilder";
 
-    let targetSupplier = supplier ? String(supplier).trim().toLowerCase() : (isFreeFire ? "vizo" : isHonorOfKings ? "webbuilder" : "g2bulk");
-    if (isFreeFire) {
-      targetSupplier = "vizo";
-    } else if (isHonorOfKings) {
-      targetSupplier = "webbuilder";
+    let targetSupplier = supplier
+      ? String(supplier).trim().toLowerCase()
+      : isFreeFire
+      ? "webbuilder"
+      : isHonorOfKings
+      ? "webbuilder"
+      : "g2bulk";
+
+    if (supplier) {
+      targetSupplier = String(supplier).trim().toLowerCase();
     }
 
     let game = null;
@@ -95,16 +101,22 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine normalized supplier game code
-    const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_sgmy" : isHonorOfKings ? "hok" : gameIdentifier);
+    const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_khsgmy" : isHonorOfKings ? "hok" : gameIdentifier);
 
     // ==========================================
     // 0. WEBBUILDER API VERIFICATION (HoK, MLBB, Free Fire)
     // ==========================================
-    if (targetSupplier === "webbuilder" || isHonorOfKings) {
+    if (targetSupplier === "webbuilder" || isHonorOfKings || isFreeFire) {
       let productId = String(body.productId || body.product_id || body.packageId || "").trim();
-      if (!productId || productId === "hok" || productId === "mlbb" || productId === "freefire") {
+      if (
+        !productId ||
+        productId === "hok" ||
+        productId === "mlbb" ||
+        productId === "freefire" ||
+        productId === "web_product_103a2718a7b2b49990fb0388"
+      ) {
         if (isFreeFire) {
-          productId = "web_product_103a2718a7b2b49990fb0388"; // Free Fire SGMY 25
+          productId = "web_product_9c49381bdfe8553e36e8e506"; // Free Fire KHSGMY 25
         } else if (gameIdentifier.includes("mlbb") || gameIdentifier.includes("mobile-legends")) {
           productId = "web_product_bdd61202860568f9c8c564bc"; // MLBB 55
         } else {
@@ -143,11 +155,17 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      return respond({
-        success: false,
-        isUnavailable: true,
-        message: wbRes.message || "Verification service is temporarily busy. You can still proceed.",
-      });
+      if (isFreeFire && wbRes.isUnavailable) {
+        console.warn(
+          `[PlayerVerify] WebBuilder Free Fire check was unavailable (${wbRes.message}). Attempting Vizo fallback...`
+        );
+      } else {
+        return respond({
+          success: false,
+          isUnavailable: true,
+          message: wbRes.message || "Verification service is temporarily busy. You can still proceed.",
+        });
+      }
     }
 
     // ==========================================

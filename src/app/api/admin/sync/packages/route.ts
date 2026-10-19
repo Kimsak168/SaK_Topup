@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   if (!auth.authorized) return auth.response;
 
   try {
-    let body: { gameCode?: string; supplier?: "vizo" | "g2bulk"; onlyActiveGames?: boolean } = {};
+    let body: { gameCode?: string; supplier?: "vizo" | "g2bulk" | "webbuilder"; onlyActiveGames?: boolean } = {};
     try {
       body = await req.json();
     } catch {

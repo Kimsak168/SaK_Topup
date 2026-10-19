@@ -17,6 +17,6 @@ export const getVerificationGame = cachePublicQuery(
         { supplierGameCode: identifier },
         { slug: identifier },
       ],
-    } as QueryFilter<IGame>).select("supplierGameCode requiresServer serverLabel -_id").maxTimeMS(4000).lean())
+    } as QueryFilter<IGame>).select("supplier supplierGameCode requiresServer serverLabel -_id").maxTimeMS(4000).lean())
   )
 );
