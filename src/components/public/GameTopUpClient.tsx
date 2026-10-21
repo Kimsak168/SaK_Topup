@@ -43,6 +43,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [verifying, setVerifying] = useState(false);
   const [verifiedName, setVerifiedName] = useState<string | null>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ userId?: string; serverId?: string }>({});
   const [verifyStatusType, setVerifyStatusType] = useState<"success" | "invalid" | "unsupported" | "unavailable" | null>(null);
   const verificationRequestRef = useRef(0);
   const [showIdGuide, setShowIdGuide] = useState(false);
@@ -54,26 +55,41 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     const deselected = selectedPackage?.id === pkg.id;
     setSelectedPackage(deselected ? null : pkg);
     if (deselected) {
-      toast("Package deselected", { id: "package-selection", description: pkg.name });
+      toast("Package deselected", { id: "package-selection", description: pkg.name, duration: 3000 });
     } else {
       const price = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(pkg.sellingPrice ?? 0);
-      toast.success("Package selected", { id: "package-selection", description: `${pkg.name} • ${price}` });
+      toast.success("Package selected", { id: "package-selection", description: `${pkg.name} • ${price}`, duration: 3000 });
     }
   }, [selectedPackage]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"khqr" | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"khqr" | null>("khqr");
   const isAccountReady = Boolean(userId.trim()) &&
     (!game.requiresServer || Boolean(serverId.trim())) &&
     !verifying &&
     (verifyStatusType === "success" || verifyStatusType === "unsupported" || verifyStatusType === "unavailable");
+  const selectedTotal = selectedPackage?.sellingPrice ?? null;
+  const selectedSubtotal = selectedPackage && selectedPackage.originalPrice !== null && selectedPackage.originalPrice > (selectedTotal ?? 0)
+    ? selectedPackage.originalPrice
+    : selectedTotal;
+  const selectedDiscount = selectedSubtotal !== null && selectedTotal !== null
+    ? Math.max(0, selectedSubtotal - selectedTotal)
+    : 0;
 
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [activeOrder, setActiveOrder] = useState<ActiveOrderInfo | null>(null);
   const [copiedOrderNo, setCopiedOrderNo] = useState(false);
+  const checkoutPendingRef = useRef(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const hasValidPayableSelection = Boolean(
+    selectedPackage?.isAvailable &&
+    selectedTotal !== null &&
+    Number.isFinite(selectedTotal) &&
+    selectedTotal > 0,
+  );
+  const canStartCheckout = !isCheckingOut && isAccountReady && hasValidPayableSelection && selectedPaymentMethod === "khqr";
 
-  // Cleanup polling and modal on unmount
+  // Cleanup polling on unmount
   useEffect(() => {
     return () => {
       verificationRequestRef.current += 1;
@@ -90,15 +106,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const handleVerify = async () => {
     const cleanUserId = userId.trim();
     const cleanServerId = serverId.trim();
+    const nextFieldErrors: { userId?: string; serverId?: string } = {};
     if (!cleanUserId) {
-      toast.error(`Please enter your ${game.userIdLabel}`, { id: "player-verification" });
-      return;
+      nextFieldErrors.userId = `Enter your ${game.userIdLabel}.`;
     }
     if (game.requiresServer && !cleanServerId) {
-      toast.error(`Please enter your ${game.serverLabel}`, { id: "player-verification" });
+      nextFieldErrors.serverId = `Enter your ${game.serverLabel}.`;
+    }
+    setFieldErrors(nextFieldErrors);
+    if (Object.keys(nextFieldErrors).length) {
+      if (!cleanUserId) {
+        document.getElementById("player-id")?.focus();
+      } else {
+        document.getElementById("server-id")?.focus();
+      }
       return;
     }
-
     const requestId = ++verificationRequestRef.current;
     setVerifying(true);
     setVerifyError(null);
@@ -228,34 +251,42 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     }, 3000);
   };
 
-  const handleCheckout = async () => {
+  const validateCheckout = () => {
     if (!userId.trim()) {
+      setFieldErrors((current) => ({ ...current, userId: `Enter your ${game.userIdLabel}.` }));
+      document.getElementById("player-id")?.focus();
       toast.error(`Please provide your ${game.userIdLabel} before checking out`, { id: "checkout" });
-      return;
+      return false;
     }
     if (game.requiresServer && !serverId.trim()) {
+      setFieldErrors((current) => ({ ...current, serverId: `Enter your ${game.serverLabel}.` }));
+      document.getElementById("server-id")?.focus();
       toast.error(`Please enter your ${game.serverLabel}`, { id: "checkout" });
-      return;
+      return false;
     }
     if (!isAccountReady) {
       toast.error("Please check and verify your account before checking out", { id: "checkout" });
-      return;
+      return false;
     }
     if (!selectedPackage) {
       toast.error("Please select a top-up package", { id: "checkout" });
-      return;
+      return false;
     }
     if (!selectedPackage.isAvailable || selectedPackage.sellingPrice === null) {
       toast.error("This package is currently unavailable. Please choose another package.", { id: "checkout" });
-      return;
+      return false;
     }
-    if (!selectedPaymentMethod) {
-      toast.error("Please select ABA Pay / KHQR before checking out", { id: "checkout" });
-      return;
-    }
+    return true;
+  };
 
+  const handleConfirmCheckout = async () => {
+    if (checkoutPendingRef.current) return;
+    if (!validateCheckout() || !selectedPackage) return;
+
+    const packageToPurchase = selectedPackage;
+    checkoutPendingRef.current = true;
+    setIsCheckingOut(true);
     try {
-      setIsCheckingOut(true);
       toast.loading("Preparing secure checkout...", { id: "checkout" });
       const res = await fetch("/api/payment/anajakpay/create", {
         method: "POST",
@@ -265,8 +296,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         body: JSON.stringify({
           gameSlug: game.slug || game.code,
           supplier: game.supplier,
-          supplierProductCode: selectedPackage.supplierProductCode || selectedPackage.id,
-          expectedPrice: selectedPackage.sellingPrice,
+          supplierProductCode: packageToPurchase.supplierProductCode || packageToPurchase.id,
+          expectedPrice: packageToPurchase.sellingPrice,
           playerId: userId.trim(),
           serverId: serverId.trim() || undefined,
           playerName: verifiedName || undefined,
@@ -284,7 +315,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         orderNumber: data.orderNumber,
         transactionId: data.transactionId,
         amount: data.amount,
-        packageName: selectedPackage.name,
+        packageName: packageToPurchase.name,
         playerId: userId.trim(),
         serverId: serverId.trim() || undefined,
         playerName: verifiedName || undefined,
@@ -324,15 +355,16 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     } catch {
       toast.error("Unable to start payment", { id: "checkout", description: "Check your connection and try again." });
     } finally {
+      checkoutPendingRef.current = false;
       setIsCheckingOut(false);
     }
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="topup-page-shell space-y-4 sm:space-y-5">
       {/* Simplified Game Header Card */}
-      <div className="rounded-[14px] border border-[#DCFCE7] bg-white px-3 py-3 sm:px-5 sm:py-4">
-        <div className="topup-game-header">
+      <div className="topup-game-card rounded-[14px] border border-[#DCFCE7] bg-white px-3 py-3 sm:px-5 sm:py-4">
+        <div className="topup-game-header flex items-center justify-between gap-3">
           {/* Left: Game picture and name */}
           <div className="flex items-center gap-2.5 sm:gap-4 min-w-0">
             <div className="relative h-12 w-12 min-[360px]:h-14 min-[360px]:w-14 sm:h-16 sm:w-16 shrink-0 rounded-xl overflow-hidden border border-[#DCFCE7] shadow-xs bg-[#F0FDF4] group">
@@ -355,19 +387,19 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </div>
           </div>
 
-          {/* Right: Back to All Games button */}
+          {/* Right: Back Home button */}
           <Link
-            href="/games"
-            aria-label="Back to all games"
-            className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1.5 px-2 sm:px-3 rounded-lg text-xs font-semibold text-[#16A34A] hover:bg-[#F0FDF4] transition-colors group shrink-0"
+            href="/"
+            aria-label="Back to home"
+            className="topup-back-home group inline-flex items-center gap-1.5 shrink-0 rounded-xl border border-[#DCFCE7] bg-[#F0FDF4] px-2.5 py-1.5 sm:px-3.5 sm:py-2 text-[11px] sm:text-xs font-bold text-[#172033] hover:text-[#16A34A] hover:border-[#16A34A] transition-colors shadow-xs"
           >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="sr-only sm:not-sr-only">Back to All Games</span>
+            <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5 text-[#16A34A]" />
+            <span>Back Home</span>
           </Link>
         </div>
       </div>
 
-      {/* Main Grid: Left Steps (1, 2, 3) vs Right Summary Drawer */}
+      {/* Main Grid: Account and package selection with an order summary */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
         {/* Left Column: Top-Up Process */}
         <div className="min-w-0 lg:col-span-8 space-y-4 sm:space-y-5">
@@ -420,14 +452,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     verificationRequestRef.current += 1;
                     toast.dismiss("player-verification");
                     setUserId(e.target.value);
+                    setFieldErrors((current) => ({ ...current, userId: undefined }));
                     setVerifying(false);
                     setVerifiedName(null);
                     setVerifyError(null);
                     setVerifyStatusType(null);
                   }}
                   placeholder="Enter Player ID"
-                  className="h-11 w-full rounded-xl border border-[#DCFCE7] bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#22C55E]/20 transition-all font-mono shadow-xs"
+                  aria-invalid={Boolean(fieldErrors.userId || (verifyError && verifyStatusType === "invalid"))}
+                  aria-describedby={fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "player-id-error" : undefined}
+                  className={`h-11 w-full rounded-xl border bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus-visible:outline-none focus:ring-2 transition-all font-mono shadow-xs ${fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "border-rose-300 focus:border-rose-400 focus:ring-rose-200" : "border-[#DCFCE7] focus:border-[#22C55E] focus:ring-[#22C55E]/20"}`}
                 />
+                {(fieldErrors.userId || (verifyError && verifyStatusType === "invalid")) && (
+                  <p id="player-id-error" role="alert" className="mt-1.5 text-xs font-medium text-rose-600">
+                    {fieldErrors.userId || verifyError}
+                  </p>
+                )}
               </div>
 
               {game.requiresServer && (
@@ -445,14 +485,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                       verificationRequestRef.current += 1;
                       toast.dismiss("player-verification");
                       setServerId(e.target.value);
+                      setFieldErrors((current) => ({ ...current, serverId: undefined }));
                       setVerifying(false);
                       setVerifiedName(null);
                       setVerifyError(null);
                       setVerifyStatusType(null);
                     }}
                     placeholder="Enter Zone ID"
-                    className="h-11 w-full rounded-xl border border-[#DCFCE7] bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus:border-[#22C55E] focus-visible:outline-none focus:ring-2 focus:ring-[#22C55E]/20 transition-all font-mono shadow-xs"
+                    aria-invalid={Boolean(fieldErrors.serverId)}
+                    aria-describedby={fieldErrors.serverId ? "server-id-error" : undefined}
+                    className={`h-11 w-full rounded-xl border bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus-visible:outline-none focus:ring-2 transition-all font-mono shadow-xs ${fieldErrors.serverId ? "border-rose-300 focus:border-rose-400 focus:ring-rose-200" : "border-[#DCFCE7] focus:border-[#22C55E] focus:ring-[#22C55E]/20"}`}
                   />
+                  {fieldErrors.serverId && (
+                    <p id="server-id-error" role="alert" className="mt-1.5 text-xs font-medium text-rose-600">
+                      {fieldErrors.serverId}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -462,7 +510,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <button
                 type="button"
                 onClick={handleVerify}
-                disabled={verifying || !userId.trim() || (game.requiresServer && !serverId.trim())}
+                disabled={verifying}
                 className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-[#16A34A] px-4 text-xs font-semibold text-white hover:bg-[#22C55E] disabled:opacity-50 disabled:pointer-events-none transition-colors cursor-pointer"
               >
                 {verifying ? (
@@ -485,13 +533,6 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 </div>
               )}
 
-              {verifyError && verifyStatusType === "invalid" && (
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#EF4444] bg-rose-50 border border-[#EF4444]/30 px-2.5 py-1.5 rounded-lg">
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[#EF4444]" />
-                  <span>{verifyError}</span>
-                </div>
-              )}
-
               {verifyError && (verifyStatusType === "unsupported" || verifyStatusType === "unavailable") && (
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-[#F59E0B] bg-amber-50 border border-[#F59E0B]/30 px-2.5 py-1.5 rounded-lg">
                   <AlertCircle className="h-3.5 w-3.5 shrink-0 text-[#F59E0B]" />
@@ -503,148 +544,133 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
           {/* STEP 2: Select Package */}
           <section data-topup-step="2" className="topup-step rounded-[14px] bg-white p-3 min-[360px]:p-3.5 sm:p-5 space-y-3 sm:space-y-4">
-            <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} onSelect={handlePackageSelect} />
+            <PackageOptions packages={initialPackages} selectedId={selectedPackage?.id} currencyName={game.currencyName} gameSlug={game.slug} onSelect={handlePackageSelect} />
           </section>
 
-          {/* STEP 3: Select Payment Method */}
+          {/* STEP 3: Payment Method */}
           <section data-topup-step="3" className="topup-step rounded-[14px] bg-white p-3 min-[360px]:p-3.5 sm:p-5 space-y-3 sm:space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2.5">
               <div className="topup-step-title">
-                <span className="topup-step-number">
-                  3
-                </span>
-                <h2 className="text-sm sm:text-base font-bold text-[#172033]">Payment</h2>
+                <span className="topup-step-number">3</span>
+                <h2 className="text-sm sm:text-base font-bold">Payment method</h2>
               </div>
-              <span className="topup-payment-assurance"><ShieldCheck aria-hidden="true" size={14} />Secure KHQR Checkout</span>
+              <span className="text-xs font-semibold text-[#64748B]">Choose one</span>
             </div>
 
-            {/* ONE payment card: ABA Pay / KHQR */}
             <button
               type="button"
               aria-pressed={selectedPaymentMethod === "khqr"}
-              onClick={() => {
-                const nextMethod = selectedPaymentMethod === "khqr" ? null : "khqr";
-                setSelectedPaymentMethod(nextMethod);
-                if (nextMethod) {
-                  toast.success("Payment method selected", { id: "payment-selection", description: "ABA Pay / KHQR" });
-                }
-              }}
-              className={`relative w-full p-3 sm:p-4 rounded-xl border shadow-xs flex items-center justify-between gap-3 text-left cursor-pointer transition-all ${selectedPaymentMethod === "khqr" ? "border-[#16A34A] bg-[#F0FDF4] ring-1 ring-[#16A34A]/30" : "border-[#DCFCE7] bg-white hover:border-[#16A34A] active:bg-[#F0FDF4]"}`}
+              onClick={() => setSelectedPaymentMethod("khqr")}
+              className="topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#16A34A]"
             >
-              <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
-                <div className="relative h-10 w-10 sm:h-12 sm:w-12 shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#BBF7D0] bg-[#004B87]">
-                  <Image
-                    src="/images/aba-logo.png"
-                    alt="ABA Bank"
-                    width={48}
-                    height={48}
-                    className="h-full w-full object-cover rounded-xl"
-                    loading="lazy"
-                  />
-                </div>
-                <div className="space-y-0.5 min-w-0">
-                  <div className="text-sm sm:text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-1.5">
-                    <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-extrabold uppercase bg-white text-[#16A34A] border border-[#DCFCE7] shrink-0">
-                      KHQR
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[#64748B] font-medium">Scan with ABA Mobile or any KHQR app</p>
-                </div>
-              </div>
-
-              {selectedPaymentMethod === "khqr" && (
-                <div className="flex shrink-0 items-center gap-2">
-                  <div className="h-5 w-5 rounded-full bg-[#16A34A] flex items-center justify-center text-white shadow-xs">
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                  </div>
-                </div>
-              )}
+              <span className="flex min-w-0 items-center gap-3">
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
+                  <Image src="/images/aba-logo.png" alt="" fill sizes="48px" className="object-cover" />
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-bold">ABA Pay / KHQR</span>
+                  <span className="mt-0.5 block text-xs text-[#A8B8CE]">Pay with ABA Mobile or any KHQR app</span>
+                </span>
+              </span>
+              <span className="topup-payment-method-check flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                {selectedPaymentMethod === "khqr" ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+              </span>
             </button>
           </section>
+
         </div>
 
         {/* Right Column: Order Summary Drawer / Sticky Card */}
         <div className="min-w-0 lg:col-span-4 lg:sticky lg:top-28 space-y-3.5 sm:space-y-4">
-          <div className="topup-summary rounded-[14px] bg-white p-4 sm:p-5 space-y-4">
+          <div className="topup-summary topup-order-summary rounded-[20px] p-4 sm:p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-[#DCFCE7] pb-2.5">
-              <h3 className="topup-summary-heading text-sm sm:text-base font-bold text-[#172033]"><ShieldCheck aria-hidden="true" size={17} />Order Summary</h3>
+              <h3 className="topup-summary-heading text-sm sm:text-base font-bold"><ShieldCheck aria-hidden="true" size={17} />Order Summary</h3>
             </div>
 
             {/* Selected Game & Package */}
-            <div className="space-y-2 text-xs sm:text-sm [&>div]:gap-3 [&>div>span:first-child]:shrink-0 [&>div>span:last-child]:min-w-0 [&>div>span:last-child]:break-words [&>div>span:last-child]:text-right">
-              <div className="flex justify-between text-[#172033]">
-                <span className="text-[#64748B]">Game:</span>
-                <span className="font-bold text-[#172033]">{game.name}</span>
+            <div className="topup-summary-rows space-y-2 text-xs sm:text-sm">
+              <div className="topup-summary-row">
+                <span className="topup-summary-label">Game</span>
+                <span className="topup-summary-value font-bold">{game.name}</span>
               </div>
 
-              <div className="flex justify-between text-[#172033]">
-                <span className="text-[#64748B]">Package:</span>
-                <span className="font-bold text-[#16A34A] text-right">
-                  {selectedPackage?.name || "Select a package"}
+              <div className="topup-summary-row">
+                <span className="topup-summary-label">Package</span>
+                <span className="topup-summary-value topup-summary-package font-bold">
+                  {selectedPackage?.name || "None"}
                 </span>
               </div>
 
-              <div className="flex justify-between text-[#172033]">
-                <span className="text-[#64748B]">{game.userIdLabel}:</span>
-                <span className="font-mono text-[#172033]">
-                  {userId ? userId : <em className="text-[#64748B] font-sans">Not provided</em>}
+              <div className="topup-summary-row">
+                <span className="topup-summary-label">Account</span>
+                <span className={`topup-summary-value font-semibold ${verifiedName ? "topup-summary-account-verified" : ""}`}>
+                  {verifying ? "Verifying…" : verifiedName ? `Verified · ${verifiedName}` : verifyStatusType === "unsupported" || verifyStatusType === "unavailable" ? "Verification unavailable" : "Not verified"}
+                </span>
+              </div>
+
+              <div className="topup-summary-row">
+                <span className="topup-summary-label">{game.userIdLabel}</span>
+                <span className="topup-summary-value font-mono">
+                  {userId.trim() || <em className="font-sans">Not provided</em>}
                 </span>
               </div>
 
               {game.requiresServer && (
-                <div className="flex justify-between text-[#172033]">
-                  <span className="text-[#64748B]">{game.serverLabel}:</span>
-                  <span className="font-mono text-[#172033]">
-                    {serverId ? serverId : <em className="text-[#64748B] font-sans">Not provided</em>}
+                <div className="topup-summary-row">
+                  <span className="topup-summary-label">{game.serverLabel}</span>
+                  <span className="topup-summary-value font-mono">
+                    {serverId.trim() || <em className="font-sans">Not provided</em>}
                   </span>
                 </div>
               )}
 
-              {verifiedName && (
-                <div className="flex justify-between text-[#172033]">
-                  <span className="text-[#64748B]">Character:</span>
-                  <span className="font-bold text-[#22C55E]">{verifiedName}</span>
-                </div>
-              )}
-
-              <div className="flex justify-between text-[#172033]">
-                <span className="text-[#64748B]">Payment:</span>
-                <span className="font-bold text-[#172033]">
-                  {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Select payment"}
+              <div className="topup-summary-row">
+                <span className="topup-summary-label">Payment</span>
+                <span className="topup-summary-value font-bold">
+                  {selectedPaymentMethod === "khqr" ? "ABA Pay / KHQR" : "Choose payment"}
                 </span>
               </div>
             </div>
 
             {/* Pricing Details */}
-            <div className="border-t border-[#DCFCE7] pt-3 space-y-1">
+            <div className="topup-summary-pricing border-t pt-3 space-y-1">
+              {selectedSubtotal !== null && selectedTotal !== null && selectedDiscount > 0 && (
+                <>
+                  <div className="topup-summary-secondary flex justify-between text-xs">
+                    <span>Subtotal</span>
+                    <span>${selectedSubtotal.toFixed(2)}</span>
+                  </div>
+                  <div className="topup-summary-discount flex justify-between text-xs font-medium">
+                    <span>Discount</span>
+                    <span>−${selectedDiscount.toFixed(2)}</span>
+                  </div>
+                </>
+              )}
               <div className="flex justify-between items-baseline">
-                <span className="text-xs sm:text-sm font-bold text-[#172033]">Total Amount</span>
+                <span className="topup-summary-total-label text-xs sm:text-sm font-bold">Total Amount</span>
                 <div className="text-right">
-                  <span className="text-xl sm:text-2xl font-black text-[#16A34A]">
-                    {selectedPackage?.sellingPrice !== null && selectedPackage?.sellingPrice !== undefined
-                      ? `$${selectedPackage.sellingPrice.toFixed(2)}`
-                      : "—"}
+                  <span className="topup-summary-total text-xl sm:text-2xl font-black">
+                    {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(selectedTotal ?? 0)}
                   </span>
-                  {selectedPackage?.sellingPrice !== null && selectedPackage?.sellingPrice !== undefined && (
-                    <div className="text-[10px] text-[#64748B]">
-                      ≈ {Math.round(selectedPackage.sellingPrice * 4100).toLocaleString()} KHR
+                  {selectedTotal !== null && (
+                    <div className="topup-summary-khr text-[10px]">
+                      ≈ {Math.round(selectedTotal * 4100).toLocaleString()} KHR
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            <p className="text-xs leading-relaxed text-[#64748B]" aria-live="polite">
-              {!isAccountReady ? "Verify your account to continue." : !selectedPackage ? "Choose your package to continue." : !selectedPaymentMethod ? "Select ABA Pay / KHQR to continue." : "Ready for secure checkout."}
+            <p className="topup-summary-hint text-xs leading-relaxed" aria-live="polite">
+              {!isAccountReady ? "Verify your account to continue." : !selectedPackage ? "Choose your package to continue." : "Continue to secure ABA Pay / KHQR checkout."}
             </p>
 
             {/* CTA Button */}
             <button
               type="button"
-              onClick={handleCheckout}
-              disabled={isCheckingOut || !isAccountReady || !selectedPackage || !selectedPackage.isAvailable || selectedPackage.sellingPrice === null || !selectedPaymentMethod}
-              className="w-full rounded-xl py-3 px-4 font-bold text-xs sm:text-sm text-white bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+              onClick={handleConfirmCheckout}
+              disabled={!canStartCheckout}
+              className="topup-desktop-checkout w-full rounded-xl py-3 px-4 font-bold text-xs sm:text-sm text-white bg-[#16A34A] hover:bg-[#15803D] active:bg-[#15803D] disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-98"
             >
               {isCheckingOut ? (
                 <>
@@ -659,12 +685,26 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               )}
             </button>
 
-            <div className="flex items-center justify-center gap-1.5 text-[10px] text-[#64748B] pt-0.5">
+            <div className="topup-payment-assurance flex items-center justify-center gap-1.5 pt-0.5">
               <ShieldCheck aria-hidden="true" className="h-3.5 w-3.5 text-[#22C55E]" />
               <span>Secure KHQR Checkout</span>
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="topup-mobile-payment-bar" role="region" aria-label="Checkout summary">
+        <div className="topup-mobile-payment-total" aria-live="polite">
+          <span>Total Payment</span>
+          <strong>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(selectedTotal ?? 0)}</strong>
+        </div>
+        <button type="button" onClick={handleConfirmCheckout} disabled={!canStartCheckout}>
+          {isCheckingOut ? (
+            <><RefreshCw aria-hidden="true" className="topup-mobile-payment-spinner" /><span>Processing</span></>
+          ) : (
+            <><span>Buy Now</span><ArrowRight aria-hidden="true" /></>
+          )}
+        </button>
       </div>
 
       {/* Checkout Confirmation Modal / Alert */}

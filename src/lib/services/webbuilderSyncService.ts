@@ -366,14 +366,22 @@ export async function syncFreeFireCatalog(options?: {
       const isOrderable = prod.orderable !== false && prod.status !== "inactive";
 
       const isNumeric = /^\d+$/.test(prod.name.trim());
+      const levelUpMatch = prod.name.match(/Level\s*Up\s*Package\s*[-–—:]*\s*Level\s*(\d+)/i);
+      const isLevelUp = Boolean(levelUpMatch);
       const displayName = isNumeric
         ? `${prod.name} Diamonds`
+        : isLevelUp
+        ? `Level Up ${levelUpMatch![1]}`
         : prod.name === "Weekly"
         ? "Weekly Membership"
         : prod.name === "Monthly"
         ? "Monthly Membership"
         : prod.name;
-      const diamondsOrPoints = isNumeric ? prod.name : prod.name;
+      const diamondsOrPoints = isNumeric
+        ? `${prod.name} Diamonds`
+        : isLevelUp
+        ? `Level Up ${levelUpMatch![1]}`
+        : prod.name;
 
       // Default ~12% markup
       const defaultSellingPrice = buyingPriceUsd
@@ -404,8 +412,11 @@ export async function syncFreeFireCatalog(options?: {
         sortOrder = 11;
       } else if (prod.name === "Monthly") {
         sortOrder = 12;
+      } else if (isLevelUp) {
+        const lvl = parseInt(levelUpMatch![1], 10);
+        sortOrder = lvl === 6 ? 21 : lvl === 10 ? 22 : lvl === 15 ? 23 : lvl === 20 ? 24 : lvl === 25 ? 25 : lvl === 30 ? 26 : 20 + i;
       } else {
-        sortOrder = 20 + i;
+        sortOrder = 30 + i;
       }
 
       if (!existing) {
@@ -438,7 +449,9 @@ export async function syncFreeFireCatalog(options?: {
               buyingPrice: buyingPriceUsd,
               priceCents: prod.price_cents,
               isActive: isOrderable,
-              name: existing.name || displayName,
+              name: isLevelUp ? displayName : (existing.name || displayName),
+              diamondsOrPoints: isLevelUp ? diamondsOrPoints : (existing.diamondsOrPoints || diamondsOrPoints),
+              sortOrder: isLevelUp ? sortOrder : (existing.sortOrder || sortOrder),
               sellingPrice: existing.sellingPrice || defaultSellingPrice,
               originalPrice:
                 existing.originalPrice ||

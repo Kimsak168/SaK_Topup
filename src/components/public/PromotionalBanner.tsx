@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { PublicBanner } from "@/lib/services/bannerService";
 
 interface PromotionalBannerProps {
@@ -12,10 +12,6 @@ interface PromotionalBannerProps {
 
 export function PromotionalBanner({ banners }: PromotionalBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  const [pauseRequested, setPauseRequested] = useState(false);
-  const [hasFocus, setHasFocus] = useState(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
   const [is16x9Map, setIs16x9Map] = useState<Record<string, boolean>>({});
@@ -26,15 +22,10 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
   const activeIndex = slides.length ? currentIndex % slides.length : 0;
 
   useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncMotion = () => setReduceMotion(media.matches);
     const syncVisibility = () => setIsVisible(!document.hidden);
-    syncMotion();
     syncVisibility();
-    media.addEventListener("change", syncMotion);
     document.addEventListener("visibilitychange", syncVisibility);
     return () => {
-      media.removeEventListener("change", syncMotion);
       document.removeEventListener("visibilitychange", syncVisibility);
     };
   }, []);
@@ -51,10 +42,10 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
 
   // Automatically switch to next banner every 5 seconds, looping after the last banner
   useEffect(() => {
-    if (slides.length <= 1 || isPaused || pauseRequested || hasFocus || reduceMotion || !isVisible) return;
+    if (slides.length <= 1 || !isVisible) return;
     const timer = setInterval(nextSlide, 5000);
     return () => clearInterval(timer);
-  }, [slides.length, isPaused, pauseRequested, hasFocus, reduceMotion, isVisible, nextSlide]);
+  }, [slides.length, isVisible, nextSlide]);
 
   // Touch and swipe gestures for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -89,20 +80,14 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
       aria-label="Promotions"
       aria-roledescription="carousel"
       className="relative mx-auto w-full max-w-[1100px] space-y-1.5 select-none"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setHasFocus(true)}
-      onBlurCapture={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setHasFocus(false);
-      }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
       {/* Centered True 16:9 Frame (max-w: 1050px, 8-10px mobile / 10-12px desktop border radius, no solid gray bars) */}
       <div className="group relative overflow-hidden rounded-[10px] md:rounded-[12px] border border-[#DCFCE7] shadow-xs transition-colors hover:border-[#16A34A]">
-        {/* Smooth Horizontal Sliding Track (lightweight 380ms transition) */}
+        {/* Smooth horizontal slide transition */}
         <div
-          className="flex transition-transform duration-[380ms] ease-out motion-reduce:transition-none"
+          className="flex transition-transform duration-[650ms] ease-in-out"
           style={slides.length > 1 ? { transform: `translateX(-${activeIndex * 100}%)` } : undefined}
         >
           {slides.map((banner, index) => {
@@ -232,20 +217,6 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
               />
             </button>
           ))}
-          {!reduceMotion && (
-            <button
-              type="button"
-              onClick={() => setPauseRequested(!pauseRequested)}
-              aria-label={pauseRequested ? "Play slideshow" : "Pause slideshow"}
-              className="flex h-7 w-7 items-center justify-center rounded-full text-[#64748B] hover:text-[#16A34A] active:text-[#22C55E] cursor-pointer focus-visible:outline-2 focus-visible:outline-[#16A34A] focus-visible:outline-offset-2 ml-0.5"
-            >
-              {pauseRequested ? (
-                <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-              ) : (
-                <Pause className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-              )}
-            </button>
-          )}
         </div>
       )}
     </div>

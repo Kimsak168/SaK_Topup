@@ -4,7 +4,7 @@ import { Gamepad2, ArrowLeft } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent border border-[#BAE6FD] text-primary mb-4 dark:border-pink-500/30">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent border border-[#39264D] text-primary mb-4 dark:border-[#39264D]/30">
         <Gamepad2 className="h-8 w-8" />
       </div>
 

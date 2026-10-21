@@ -50,7 +50,7 @@ export function CustomerFooter() {
           </div>
 
           <div>
-            <h2 className="storefront-footer-title">Explore SakSuuu</h2>
+            <h2 className="storefront-footer-title storefront-footer-explore-title">Explore SakSuuu</h2>
             <ul className="space-y-0.5">
               <li><Link href="/" className="storefront-footer-link">Home</Link></li>
               <li><Link href="/games" className="storefront-footer-link">Browse games</Link></li>
@@ -59,7 +59,7 @@ export function CustomerFooter() {
           </div>
 
           <div>
-            <h2 className="storefront-footer-title">Need a hand?</h2>
+            <h2 className="storefront-footer-title storefront-footer-explore-title">Need a hand?</h2>
             <p className="storefront-footer-copy">Our support team is here for your top-up questions.</p>
             <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               {socialLinks.map(({ label, href, color, path }) => (

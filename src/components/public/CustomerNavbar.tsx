@@ -1,43 +1,110 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SupportDropdown } from "@/components/public/SupportDropdown";
+import { Gamepad2, Headphones, Home, Menu, Search, X } from "lucide-react";
+import { SOCIAL_URLS } from "@/lib/socialLinks";
 import styles from "./CustomerNavbar.module.css";
 
 const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/games", label: "Games" },
-  { href: "/orders", label: "Orders" },
+  { href: "/", label: "Home", Icon: Home },
+  { href: "/games", label: "Games", Icon: Gamepad2 },
 ];
 
 function isCurrentPage(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
-  if (href === "/games") return pathname.startsWith("/games") || pathname.startsWith("/game/");
-  return pathname.startsWith(href);
+  return pathname.startsWith("/games") || pathname.startsWith("/game/");
 }
 
-const BRAND_ANIMATION_KEY = "saksuuu-navbar-brand-typed";
+function validSocialUrl(value: string): string | undefined {
+  try {
+    const url = new URL(value);
+    if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+  } catch {
+    // Missing or malformed social destinations are omitted.
+  }
+}
+
+const drawerSocialLinks = [
+  {
+    label: "Telegram",
+    href: validSocialUrl(SOCIAL_URLS.telegram),
+    path: "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 5.29 3.87c.97.54 1.67.26 1.91-.9L23.67 4c.35-1.44-.55-2.09-1.48-1.67L1.84 10.18c-1.39.56-1.38 1.33-.25 1.67l5.22 1.63L18.9 5.86c.57-.35 1.09-.16.66.23Z",
+  },
+  {
+    label: "Facebook",
+    href: validSocialUrl(SOCIAL_URLS.facebook),
+    path: "M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.931-1.956 1.887v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z",
+  },
+  {
+    label: "TikTok",
+    href: validSocialUrl(SOCIAL_URLS.tiktok),
+    path: "M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2H12.3v13.967a2.955 2.955 0 0 1-2.95 2.658 2.953 2.953 0 0 1-2.955-2.95 2.953 2.953 0 0 1 2.955-2.95c.305 0 .6.048.879.135V9.286a6.46 6.46 0 0 0-.879-.06 6.45 6.45 0 0 0-6.45 6.45 6.45 6.45 0 0 0 6.45 6.45 6.45 6.45 0 0 0 6.45-6.45V8.54a8.27 8.27 0 0 0 4.834 1.55V6.638c-.35 0-.7-.035-1.045-.104Z",
+  },
+].filter((link): link is typeof link & { href: string } => Boolean(link.href));
 
 export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
   const pathname = usePathname();
   const [brandTyping, setBrandTyping] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const drawerId = useId();
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+  const drawerTriggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    try {
-      if (window.sessionStorage.getItem(BRAND_ANIMATION_KEY)) return;
-      window.sessionStorage.setItem(BRAND_ANIMATION_KEY, "done");
-    } catch {
-      // Keep the complete brand visible when browser storage is unavailable.
-      return;
-    }
-
     setBrandTyping(true);
     const timer = window.setTimeout(() => setBrandTyping(false), 900);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    drawerCloseRef.current?.focus({ preventScroll: true });
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setDrawerOpen(false);
+        window.requestAnimationFrame(() => drawerTriggerRef.current?.focus({ preventScroll: true }));
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+      const drawer = document.getElementById(drawerId);
+      const focusable = drawer?.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled])',
+      );
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      } else if (drawer && !drawer.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [drawerId, drawerOpen]);
+
+  const closeDrawer = () => {
+    setDrawerOpen(false);
+    window.requestAnimationFrame(() => drawerTriggerRef.current?.focus({ preventScroll: true }));
+  };
 
   return (
     <header className={`${styles.header} public-navbar`}>
@@ -54,8 +121,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
           />
           <span aria-hidden="true" className={styles.wordmark}>
             <span className={`${styles.wordmarkText} ${brandTyping ? styles.wordmarkTyping : ""}`}>
-              <span className={styles.wordmarkDark}>Sak</span>
-              <span className={styles.wordmarkGreen}>Suuu</span>
+              SakSuuu
             </span>
           </span>
         </Link>
@@ -77,9 +143,115 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
         </nav>
 
         <div className={styles.actions}>
-          <SupportDropdown logoUrl={logoUrl} />
+          <Link
+            href="/games#game-search"
+            className={styles.searchButton}
+            aria-label="Search games"
+            title="Search games"
+          >
+            <Search aria-hidden="true" />
+          </Link>
+          <button
+            ref={drawerTriggerRef}
+            type="button"
+            className={styles.menuButton}
+            aria-label="Open navigation menu"
+            aria-haspopup="dialog"
+            aria-expanded={drawerOpen}
+            aria-controls={drawerOpen ? drawerId : undefined}
+            title="Menu"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <Menu aria-hidden="true" />
+          </button>
         </div>
       </div>
+
+      {drawerOpen && (
+        <div className={styles.drawerLayer}>
+          <button
+            type="button"
+            className={styles.drawerBackdrop}
+            onClick={closeDrawer}
+            aria-label="Close navigation menu"
+          />
+          <aside
+            id={drawerId}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            className={styles.drawer}
+          >
+            <div className={styles.drawerHeader}>
+              <Link href="/" className={styles.drawerBrand} aria-label="SakSuuu Home" onClick={closeDrawer}>
+                <Image src={logoUrl || "/images/logo.png"} alt="" width={38} height={38} />
+                <span aria-hidden="true" className={styles.drawerWordmark}>
+                  <span>Sak</span><strong>Suuu</strong>
+                </span>
+              </Link>
+              <button
+                ref={drawerCloseRef}
+                type="button"
+                className={styles.drawerClose}
+                onClick={closeDrawer}
+                aria-label="Close navigation menu"
+                title="Close menu"
+              >
+                <X aria-hidden="true" />
+              </button>
+            </div>
+
+            <nav aria-label="Menu navigation" className={styles.drawerNav}>
+              {navLinks.map(({ href, label, Icon }) => {
+                const active = isCurrentPage(pathname, href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={closeDrawer}
+                    aria-current={active ? "page" : undefined}
+                    className={`${styles.drawerLink} ${active ? styles.drawerLinkActive : ""}`}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+
+            <section className={styles.drawerSocials} aria-labelledby={`${drawerId}-socials-title`}>
+              <h2 id={`${drawerId}-socials-title`} className={styles.drawerSectionTitle}>Social &amp; support</h2>
+              <div className={styles.drawerSocialList}>
+                {drawerSocialLinks.map(({ label, href, path }) => (
+                  <a
+                    key={label}
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={closeDrawer}
+                    className={styles.drawerSocialLink}
+                    aria-label={`${label} (opens in a new tab)`}
+                  >
+                    <span className={styles.drawerSocialIcon}>
+                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d={path} /></svg>
+                    </span>
+                    <span>{label}</span>
+                  </a>
+                ))}
+                <Link
+                  href="/orders"
+                  onClick={closeDrawer}
+                  className={styles.drawerSocialLink}
+                  aria-label="Customer support and order help"
+                >
+                  <span className={styles.drawerSocialIcon}><Headphones aria-hidden="true" /></span>
+                  <span>Support</span>
+                </Link>
+              </div>
+            </section>
+          </aside>
+        </div>
+      )}
     </header>
   );
 }

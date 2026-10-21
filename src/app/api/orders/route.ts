@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
     }
     const {
       gameSlug = "freefire_global",
-      supplier = "vizo",
       supplierProductCode = "",
       playerId = "",
       serverId = "",

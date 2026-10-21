@@ -111,6 +111,21 @@ export function IframeCheckoutModal({
     };
   }, [isOpen, checkoutUrl, isPaid, checkStatus, stopPolling]);
 
+  // Safe close with confirmation
+  const handleRequestClose = useCallback(() => {
+    if (isPaid) {
+      onClose();
+      return;
+    }
+    const confirmed = window.confirm(
+      "Are you sure you want to close the checkout window? Your pending order will remain saved."
+    );
+    if (confirmed) {
+      stopPolling();
+      onClose();
+    }
+  }, [isPaid, onClose, stopPolling]);
+
   // Handle ESC key to safely prompt before closing
   useEffect(() => {
     if (!isOpen) return;
@@ -123,7 +138,7 @@ export function IframeCheckoutModal({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, isPaid]);
+  }, [isOpen, handleRequestClose]);
 
   // Copy order number
   const handleCopyOrderNumber = async () => {
@@ -135,21 +150,6 @@ export function IframeCheckoutModal({
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy order number");
-    }
-  };
-
-  // Safe close with confirmation
-  const handleRequestClose = () => {
-    if (isPaid) {
-      onClose();
-      return;
-    }
-    const confirmed = window.confirm(
-      "Are you sure you want to close the checkout window? Your pending order will remain saved."
-    );
-    if (confirmed) {
-      stopPolling();
-      onClose();
     }
   };
 

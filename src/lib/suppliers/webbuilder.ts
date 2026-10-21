@@ -187,6 +187,13 @@ export class WebBuilderTimeoutError extends WebBuilderError {
   }
 }
 
+export class WebBuilderProtocolError extends WebBuilderError {
+  constructor(message: string) {
+    super(message, 502, "INVALID_RESPONSE");
+    this.name = "WebBuilderProtocolError";
+  }
+}
+
 // ==========================================
 // Redacted Logging Helper
 // ==========================================
@@ -203,10 +210,32 @@ function getBaseUrl(): string {
   return (process.env.WEBBUILDER_BASE_URL || DEFAULT_BASE_URL).replace(/\/+$/, "");
 }
 
+function getTimeoutMs(): number {
+  const configured = Number(process.env.WEBBUILDER_TIMEOUT_MS);
+  return Number.isInteger(configured) && configured >= 100 && configured <= 60000
+    ? configured
+    : DEFAULT_TIMEOUT_MS;
+}
+
+function getRetryBaseDelayMs(): number {
+  const configured = Number(process.env.WEBBUILDER_RETRY_BASE_DELAY_MS);
+  return Number.isInteger(configured) && configured >= 0 && configured <= 10000
+    ? configured
+    : 1000;
+}
+
+function sanitizeSensitiveText(value: unknown): string {
+  let text = String(value ?? "");
+  for (const secret of [process.env.WEBBUILDER_API_KEY, process.env.WEBBUILDER_WEBHOOK_SECRET]) {
+    if (secret) text = text.replaceAll(secret, "[REDACTED]");
+  }
+  return text.replace(/\bBearer\s+[^\s,;]+/gi, "Bearer [REDACTED]");
+}
+
 /**
  * Mask sensitive string for safe logging (never print full keys or secrets)
  */
-function maskSecret(str?: string): string {
+export function maskSecret(str?: string): string {
   if (!str) return "[EMPTY]";
   if (str.length <= 6) return "***";
   return `${str.slice(0, 3)}***${str.slice(-3)}`;
@@ -232,19 +261,15 @@ function logRedacted(level: "log" | "warn" | "error", message: string, meta?: Re
       if (lower.includes("key") || lower.includes("secret") || lower.includes("token") || lower.includes("authorization") || lower.includes("bearer")) {
         sanitizedMeta[k] = "[REDACTED]";
       } else if (lower.includes("player") || lower.includes("userid") || lower.includes("uid")) {
-        sanitizedMeta[k] = typeof v === "string" ? maskPlayerUid(v) : v;
+        sanitizedMeta[k] = typeof v === "string" ? maskPlayerUid(sanitizeSensitiveText(v)) : v;
       } else {
-        sanitizedMeta[k] = v;
+        sanitizedMeta[k] = typeof v === "string" ? sanitizeSensitiveText(v) : v;
       }
     }
   }
 
   // Redact any accidental leakage of the actual API key string if present in message
-  const key = process.env.WEBBUILDER_API_KEY;
-  let cleanMessage = message;
-  if (key && key.length > 5 && cleanMessage.includes(key)) {
-    cleanMessage = cleanMessage.replaceAll(key, "[REDACTED_API_KEY]");
-  }
+  const cleanMessage = sanitizeSensitiveText(message);
 
   if (level === "error") {
     console.error(`[WebBuilder] ${cleanMessage}`, sanitizedMeta);
@@ -332,7 +357,7 @@ async function executeRequest<T>(options: RequestOptions): Promise<{ data: T; st
   }
 
   let attempt = 0;
-  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const timeoutMs = options.timeoutMs ?? getTimeoutMs();
 
   while (attempt <= MAX_RETRIES) {
     attempt++;
@@ -360,7 +385,7 @@ async function executeRequest<T>(options: RequestOptions): Promise<{ data: T; st
       if (attempt <= MAX_RETRIES && isTimeout) {
         // Backoff with jitter for timeouts
         const jitter = Math.floor(Math.random() * 200);
-        const backoff = Math.min(1000 * Math.pow(2, attempt - 1), 4000) + jitter;
+        const backoff = Math.min(getRetryBaseDelayMs() * Math.pow(2, attempt - 1), 4000) + jitter;
         logRedacted("warn", `Timeout connecting to ${options.path}, retrying in ${backoff}ms (attempt ${attempt}/${MAX_RETRIES})`);
         await new Promise((resolve) => setTimeout(resolve, backoff));
         continue;
@@ -373,7 +398,7 @@ async function executeRequest<T>(options: RequestOptions): Promise<{ data: T; st
       const msg = err instanceof Error ? err.message : String(err);
       if (attempt <= MAX_RETRIES) {
         const jitter = Math.floor(Math.random() * 200);
-        const backoff = 1000 + jitter;
+        const backoff = getRetryBaseDelayMs() + jitter;
         logRedacted("warn", `Network error connecting to ${options.path}: ${msg}. Retrying in ${backoff}ms`);
         await new Promise((resolve) => setTimeout(resolve, backoff));
         continue;

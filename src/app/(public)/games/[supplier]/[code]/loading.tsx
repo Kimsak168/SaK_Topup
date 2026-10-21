@@ -7,7 +7,7 @@ export default function GameLoading() {
         <div className="lg:col-span-2 space-y-6">
           <div className="h-48 rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] animate-pulse motion-reduce:animate-none" />
           <div className="topup-package-grid">
-            {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-28 rounded-lg sm:h-24 sm:rounded-xl bg-[#F0FDF4] border border-[#DCFCE7] animate-pulse motion-reduce:animate-none" />)}
+            {Array.from({ length: 6 }, (_, i) => <div key={i} className="h-[54px] sm:h-[58px] rounded-xl bg-[#F0FDF4] dark:bg-[#0D0914] border border-[#DCFCE7] dark:border-[#2E1F45] animate-pulse motion-reduce:animate-none" />)}
           </div>
         </div>
         <div className="h-80 rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] animate-pulse motion-reduce:animate-none" />

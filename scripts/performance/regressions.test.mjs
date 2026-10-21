@@ -172,7 +172,7 @@ test('verification caches only public game rules and admin invalidation refreshe
     '@/models/Game': { Game: { findOne: () => {
       queries++;
       return { select: fields => {
-        assert.equal(fields, 'supplierGameCode requiresServer serverLabel -_id');
+        assert.equal(fields, 'supplier supplierGameCode requiresServer serverLabel -_id');
         return { maxTimeMS: () => ({ lean: async () => ({ supplierGameCode: 'mlbb', requiresServer: needsServer }) }) };
       } };
     } } },
@@ -187,12 +187,13 @@ test('verification caches only public game rules and admin invalidation refreshe
   assert.equal(queries, 2);
 });
 
-function verificationRoute(vizo, g2bulk, game = { supplierGameCode: 'freefire_sgmy', requiresServer: false }, globals = {}) {
+function verificationRoute(vizo, g2bulk, game = { supplierGameCode: 'freefire_sgmy', requiresServer: false }, globals = {}, webbuilder = async () => ({ success: false, isUnavailable: true })) {
   return loader({
     'next/server': { NextResponse: Response },
     '@/lib/services/verificationGameService': { getVerificationGame: async () => game },
     '@/lib/suppliers/vizo': { checkVizoPlayer: vizo },
     '@/lib/suppliers/g2bulk': { checkG2BulkPlayer: g2bulk },
+    '@/lib/suppliers/webbuilder': { checkWebBuilderPlayer: webbuilder },
   }, { Headers, AbortSignal, ...globals })('src/app/api/player/verify/route.ts').POST;
 }
 
@@ -249,7 +250,7 @@ test('verification timeout is a shared eight-second budget, not a new ten-second
     const body = await res.json();
     assert.equal(body.isUnavailable, true);
     assert.equal(body.isInvalidId, undefined);
-    assert.deepEqual(budgets, [8000, 5000, 5000]);
+    assert.deepEqual(budgets, [8000, 5000, 5000, 5000]);
     assert.equal(fallbackHadTime, true);
   } finally { clearTimeout(keepAlive); }
 });
@@ -360,12 +361,12 @@ function model(documents) {
 
 test('legacy slugs retain configured prices, isolate games, and never expose supplier costs', async () => {
   const games = ['free-fire', 'pubg-mobile', 'mlbb'].map((slug, i) => ({
-    _id: slug, slug, supplier: i === 1 ? 'g2bulk' : 'webbuilder', supplierGameCode: ['freefire_sgmy', 'pubgm', 'mlbb'][i],
+    _id: slug, slug, supplier: i === 1 ? 'g2bulk' : 'webbuilder', supplierGameCode: ['freefire_khsgmy', 'pubgm', 'mlbb'][i],
     name: ['Free Fire', 'PUBG Mobile', 'Mobile Legends'][i], isActive: true,
     category: 'Action', publisher: 'Publisher',
   }));
   const packages = [
-    { gameSlug: 'free-fire-sgmy', gameCode: 'freefire_sgmy', supplier: 'webbuilder', supplierProductCode: 'same-id', name: '100', sellingPrice: 2.73, isActive: true, buyingPrice: 1, customImage: '/api/packages/image/image?v=old', updatedAt: new Date(1000) },
+    { gameSlug: 'free-fire-khsgmy', gameCode: 'freefire_khsgmy', supplier: 'webbuilder', supplierProductCode: 'same-id', name: '100', sellingPrice: 2.73, isActive: true, buyingPrice: 1, customImage: '/api/packages/image/image?v=old', updatedAt: new Date(1000) },
     { gameSlug: 'pubg-mobile', supplier: 'g2bulk', supplierProductCode: 'same-id', name: '60 UC', sellingPrice: 3.41, isActive: true },
     { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'webbuilder', supplierProductCode: 'disabled', name: '200', sellingPrice: 5, isActive: false },
     { gameSlug: 'mlbb', gameCode: 'mlbb', supplier: 'webbuilder', supplierProductCode: 'unpriced', name: '300', sellingPrice: null, isActive: true },
@@ -388,7 +389,7 @@ test('legacy slugs retain configured prices, isolate games, and never expose sup
   assert.equal(mlbb.length, 2);
   assert.ok(mlbb.every(p => !p.isAvailable));
   assert.equal((await service.getNormalizedPackages('vizo', 'free-fire'))[0].sellingPrice, 2.73);
-  assert.equal((await service.getGameBySupplierAndCode('g2bulk', 'freefire_global')).shouldRedirect, '/games/webbuilder/freefire_sgmy');
+  assert.equal((await service.getGameBySupplierAndCode('g2bulk', 'freefire_global')).shouldRedirect, '/games/webbuilder/freefire_khsgmy');
 });
 
 function checkout(sellingPrice, isActive = true, existing = false) {
@@ -502,7 +503,7 @@ test('legacy game redirects preserve the database supplier and regional Free Fir
     '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ supplier: 'vizo', supplierGameCode: 'custom-game' }) }) } },
   }, { console: { error() {} } })('src/app/(public)/game/[slug]/page.tsx').default;
   await assert.rejects(page({ params: Promise.resolve({ slug: 'custom-game' }) }), /REDIRECT:\/games\/vizo\/custom-game/);
-  await assert.rejects(page({ params: Promise.resolve({ slug: 'freefire_sgmy' }) }), /REDIRECT:\/games\/webbuilder\/freefire_sgmy/);
+  await assert.rejects(page({ params: Promise.resolve({ slug: 'freefire_sgmy' }) }), /REDIRECT:\/games\/webbuilder\/freefire_khsgmy/);
 });
 
 test('malformed checkout and payment-check bodies fail validation before database access', async () => {
@@ -682,7 +683,7 @@ test('proxy preserves regional game routes and lets the legacy page resolve unkn
   }, { URL })('src/proxy.ts');
   const request = path => ({ nextUrl: new URL(path, 'http://localhost'), url: `http://localhost${path}` });
   for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy', '/games/g2bulk/freefire_sgmy']) {
-    assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_sgmy');
+    assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_khsgmy');
   }
   assert.equal((await proxy(request('/game/custom-game'))).next, true);
 });

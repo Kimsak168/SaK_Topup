@@ -5,16 +5,29 @@ import Image from "next/image";
 import { Ban, Check, Package as PackageIcon, Sparkles, Zap } from "lucide-react";
 import type { ClientPackage } from "@/types/game";
 
+const DEFAULT_DIAMOND_IMAGE = "/images/diamond-crystals.png";
+
 interface PackageCardProps {
   pkg: ClientPackage;
+  isDiamond: boolean;
   isSelected: boolean;
+  defaultDiamondImage?: string;
   onSelect: (pkg: ClientPackage) => void;
 }
 
-const PackageCard = memo(function PackageCard({ pkg, isSelected, onSelect }: PackageCardProps) {
+const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defaultDiamondImage = DEFAULT_DIAMOND_IMAGE, onSelect }: PackageCardProps) {
   const isAvailable = pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
+  const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
+    ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
+    : 0;
   const [failedImage, setFailedImage] = useState<string | null>(null);
-  const imageSrc = pkg.customImage?.trim();
+  const customImageSrc = pkg.customImage?.trim();
+  const diamondImage = defaultDiamondImage;
+  const imageSrc = customImageSrc && failedImage !== customImageSrc
+    ? customImageSrc
+    : isDiamond && failedImage !== diamondImage
+    ? diamondImage
+    : null;
   return (
     <button
       key={pkg.id}
@@ -24,74 +37,83 @@ const PackageCard = memo(function PackageCard({ pkg, isSelected, onSelect }: Pac
       onClick={() => {
         if (isAvailable) onSelect(pkg);
       }}
-      className={`package-option group relative flex min-h-[104px] w-full flex-col items-center gap-1 rounded-xl border p-1.5 text-center cursor-pointer transition-[background-color,border-color,box-shadow] sm:min-h-[88px] sm:flex-row sm:gap-1.5 sm:p-2 sm:text-left focus-visible:outline-2 focus-visible:outline-[#22C55E] focus-visible:outline-offset-2 ${
+      className={`package-option group relative flex min-h-[50px] min-[360px]:min-h-[54px] sm:min-h-[58px] w-full flex-row items-center gap-2 min-[360px]:gap-2.5 sm:gap-3 rounded-xl border px-2 py-1.5 min-[360px]:px-2.5 min-[360px]:py-2 sm:px-3 sm:py-2 text-left cursor-pointer transition-all focus-visible:outline-2 focus-visible:outline-[#C084FC] focus-visible:outline-offset-2 ${
         !isAvailable
-          ? "opacity-50 bg-[#F0FDF4]/50 border-[#DCFCE7] cursor-not-allowed"
+          ? "opacity-50 bg-[#0D0914]/40 border-[#2E1F45]/60 cursor-not-allowed"
           : isSelected
-          ? "bg-[#16A34A] border-[#15803D] ring-2 ring-[#22C55E]/50 shadow-md"
-          : "bg-white border-[#DCFCE7] hover:border-[#22C55E] hover:shadow-xs active:bg-[#F0FDF4]"
+          ? "bg-[#180E2B] border-[#C084FC] ring-1.5 ring-[#C084FC]/50 shadow-[0_0_18px_rgba(192,132,252,0.22)]"
+          : "bg-[#0D0914] border-[#2E1F45] hover:border-[#C084FC]/60 hover:bg-[#140D24] hover:shadow-[0_4px_14px_rgba(192,132,252,0.1)] active:scale-[0.985]"
       }`}
     >
       {/* Badge */}
       {pkg.badge && (
-        <span className="absolute -top-1.5 right-1 sm:-top-2 sm:right-2 rounded-full px-1 py-0.5 text-[7px] sm:text-[8px] font-black uppercase tracking-wider bg-[linear-gradient(135deg,#16A34A,#22C55E)] text-white shadow-xs z-10">
+        <span className="absolute -top-2 left-2 rounded-full px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] sm:text-[7.5px] font-black uppercase tracking-wider bg-gradient-to-r from-[#A855F7] to-[#7C3AED] text-white shadow-xs z-10 pointer-events-none">
           {pkg.badge}
         </span>
       )}
 
-      {/* Package Image — top on mobile, left side on desktop */}
-      <div className="relative aspect-square w-full max-w-[80px] shrink-0 rounded-xl overflow-hidden bg-transparent flex items-center justify-center sm:aspect-auto sm:h-14 sm:w-14 sm:max-w-none md:h-16 md:w-16 lg:h-16 lg:w-16">
-        {imageSrc && failedImage !== imageSrc ? (
+      {/* Package Image — picture on left (big, prominent, fills frame) */}
+      <div className="relative h-10 w-10 min-[360px]:h-11 min-[360px]:w-11 sm:h-12 sm:w-12 shrink-0 rounded-xl overflow-hidden bg-black/60 border border-white/10 flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner">
+        {imageSrc ? (
           <Image
             src={imageSrc}
             alt={pkg.name}
             fill
-            sizes="(max-width: 639px) 80px, (max-width: 767px) 56px, 64px"
+            sizes="(max-width: 639px) 44px, 48px"
             loading="lazy"
-            className="object-contain sm:object-cover"
+            className="object-contain scale-115"
             onError={() => setFailedImage(imageSrc)}
           />
+        ) : isDiamond ? (
+          <Zap className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC] stroke-[2] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
         ) : (
-          <PackageIcon className="h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16 text-[#64748B]" />
+          <PackageIcon className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC]/85 group-hover:text-[#C084FC] transition-colors" />
         )}
       </div>
 
-      {/* Info — below image on mobile, right side on desktop */}
-      <div className="flex w-full min-w-0 flex-col items-center sm:w-auto sm:flex-1 sm:items-start">
-        <div className="w-full min-w-0">
-          <div className={`text-[10px] min-[400px]:text-[11px] sm:text-[11px] font-semibold leading-tight line-clamp-2 text-center break-words sm:text-left ${isSelected ? "text-white" : "text-[#172033]"}`}>
-            {pkg.diamondsOrPoints || pkg.name}
-          </div>
-          {pkg.bonus ? (
-            <div className={`text-[8px] sm:text-[10px] font-bold truncate text-center mt-0.5 sm:text-left ${isSelected ? "text-green-100" : "text-[#22C55E]"}`}>
-              {pkg.bonus}
-            </div>
-          ) : null}
+      {/* Info — on right (compact & clean) */}
+      <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
+        <div className="text-[11px] min-[360px]:text-xs sm:text-[13px] font-bold text-[#F8F5FF] leading-tight truncate">
+          {(() => {
+            const raw = (pkg.diamondsOrPoints || pkg.name).trim();
+            const levelUp = raw.replace(/Level\s*Up\s*(?:Package|Pass)?\s*[-–—:]*\s*(?:Level|Lv\.?)?\s*(\d+)/i, "Level Up $1");
+            return isDiamond && !/diamonds?/i.test(levelUp) ? `${levelUp} Diamonds` : levelUp;
+          })()}
         </div>
+        {pkg.bonus ? (
+          <div className="mt-0.5 truncate text-[7.5px] min-[360px]:text-[8.5px] font-semibold text-[#22C55E] leading-none">
+            {pkg.bonus}
+          </div>
+        ) : null}
 
         {isAvailable && pkg.sellingPrice !== null ? (
-          <div className="flex w-full flex-wrap items-baseline justify-center gap-x-1.5 gap-y-1 mt-1 sm:justify-start">
-            <span className={`text-[12px] min-[400px]:text-[13px] sm:text-[13px] font-bold leading-none ${isSelected ? "text-white" : "text-[#16A34A]"}`}>
+          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 mt-0.5 sm:mt-1 leading-none">
+            <span className="text-[12px] min-[360px]:text-[13px] sm:text-sm font-black text-[#C084FC] tracking-tight">
               ${pkg.sellingPrice.toFixed(2)}
             </span>
             {pkg.originalPrice && pkg.originalPrice > pkg.sellingPrice && (
-                <span className={`text-[8px] min-[400px]:text-[8px] sm:text-[8px] line-through leading-none ${isSelected ? "text-white/70" : "text-[#94A3B8]"}`}>
+              <span className="text-[8px] min-[360px]:text-[8.5px] text-[#64748B] line-through font-medium">
                 ${pkg.originalPrice.toFixed(2)}
+              </span>
+            )}
+            {discountPercent > 0 && (
+              <span className="rounded px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] font-black leading-none bg-[#22C55E]/15 text-[#4ADE80] border border-[#22C55E]/30">
+                {discountPercent}% off
               </span>
             )}
           </div>
         ) : (
-          <div className="text-[10px] font-semibold text-[#64748B] flex items-center justify-center gap-1 mt-1 sm:justify-start">
-            <Ban className="h-2.5 w-2.5 sm:h-3 sm:w-3 text-[#64748B]" />
+          <div className="text-[9px] min-[360px]:text-[10px] font-semibold text-[#64748B] flex items-center gap-1 mt-0.5">
+            <Ban className="h-2.5 w-2.5 text-[#64748B]" />
             <span>Unavailable</span>
           </div>
         )}
       </div>
 
-      {/* Selected Checkmark — small check badge in top-right corner */}
+      {/* Selected Checkmark — top right */}
       {isSelected && isAvailable && (
-        <div className="package-check-pop absolute top-1 right-1 sm:top-2 sm:right-2 h-3.5 w-3.5 sm:h-4.5 sm:w-4.5 rounded-full bg-white flex items-center justify-center text-[#16A34A] shadow-xs">
-          <Check className="h-2 w-2 sm:h-2.5 sm:w-2.5 text-[#16A34A]" strokeWidth={3} />
+        <div className="package-check-pop absolute top-1 right-1 h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 rounded-full bg-[#C084FC] flex items-center justify-center text-black shadow-xs">
+          <Check className="h-2 w-2 min-[360px]:h-2.5 min-[360px]:w-2.5 text-black" strokeWidth={3} />
         </div>
       )}
     </button>
@@ -103,23 +125,32 @@ interface PackageOptionsProps {
   packages: ClientPackage[];
   selectedId?: string;
   currencyName: string;
+  gameSlug?: string;
   onSelect: (pkg: ClientPackage) => void;
 }
 
-export const PackageOptions = memo(function PackageOptions({ packages, selectedId, currencyName, onSelect }: PackageOptionsProps) {
+export const PackageOptions = memo(function PackageOptions({ packages, selectedId, currencyName, gameSlug, onSelect }: PackageOptionsProps) {
+  const isMlbbGame = gameSlug
+    ? gameSlug.includes("mlbb") || gameSlug.includes("mobile-legends")
+    : packages.some(p => p.customImage?.includes("mlbb-diamond") || p.id?.toLowerCase().includes("mlbb") || p.supplierProductCode?.toLowerCase().includes("mlbb"));
+  const defaultDiamondImage = isMlbbGame ? "/images/mlbb-diamond.png" : DEFAULT_DIAMOND_IMAGE;
+
   const { validPackages, specialPackages, diamondPackages } = useMemo(() => {
     const validPackages = packages.filter(p => p.isAvailable && p.sellingPrice !== null && p.sellingPrice > 0);
     const specialPackages: ClientPackage[] = [];
     const diamondPackages: ClientPackage[] = [];
     for (const pkg of validPackages) {
-      const special = pkg.group === "special" || pkg.category === "special" || /pass|pack|weekly|monthly|twilight|starlight|member/i.test(pkg.name);
+      const visibleName = (pkg.diamondsOrPoints || pkg.name).trim();
+      const allNames = `${visibleName} ${pkg.name}`;
+      const packageName = /\b(pass|pack|weekly|monthly|twilight|starlight|member|subscription|bundle|membership|vip)\b/i.test(allNames);
+      const diamondName = /\bdiamonds?\b/i.test(visibleName) || /^\d[\d,\s]*$/.test(visibleName);
+      const special = packageName || (!diamondName && (pkg.group === "special" || pkg.category === "special"));
       (special ? specialPackages : diamondPackages).push(pkg);
     }
     return { validPackages, specialPackages, diamondPackages };
   }, [packages]);
-  const hasDistinction = specialPackages.length > 0 && diamondPackages.length > 0;
-  const renderPackageCard = (pkg: ClientPackage) => (
-    <PackageCard key={pkg.id} pkg={pkg} isSelected={selectedId === pkg.id} onSelect={onSelect} />
+  const renderPackageCard = (pkg: ClientPackage, isDiamond: boolean) => (
+    <PackageCard key={pkg.id} pkg={pkg} isDiamond={isDiamond} isSelected={selectedId === pkg.id} defaultDiamondImage={defaultDiamondImage} onSelect={onSelect} />
   );
 
   return (
@@ -129,7 +160,7 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
           <span className="topup-step-number">
             2
           </span>
-          <h2 className="text-sm sm:text-base font-bold text-[#172033]">
+          <h2 className="text-sm sm:text-base font-bold text-[#F8F5FF]">
             Select Package<span className="sr-only"> for {currencyName}</span>
           </h2>
         </div>
@@ -140,32 +171,28 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
 
       {validPackages.length > 0 ? (
         <div className="space-y-4 sm:space-y-5">
-          {/* Special Passes Section */}
+          {/* Package Section */}
           {specialPackages.length > 0 && (
             <div className="space-y-2 sm:space-y-3">
-              {hasDistinction && (
-                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-[#16A34A]">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  <span>Passes &amp; Special Bundles</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#C084FC]">
+                <Sparkles className="h-4 w-4 text-[#C084FC] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+                <span>Packages</span>
+              </div>
               <div className="topup-package-grid">
-                {specialPackages.map(renderPackageCard)}
+                {specialPackages.map((pkg) => renderPackageCard(pkg, false))}
               </div>
             </div>
           )}
 
-          {/* Diamond Denominations Section */}
+          {/* Diamond Section */}
           {diamondPackages.length > 0 && (
             <div className="space-y-2 sm:space-y-3">
-              {hasDistinction && (
-                <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-[#172033] pt-2.5 border-t border-[#DCFCE7]">
-                  <Zap className="h-3.5 w-3.5 text-[#16A34A]" />
-                  <span>Diamond Denominations</span>
-                </div>
-              )}
+              <div className={`flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#C084FC] ${specialPackages.length > 0 ? "border-t border-[#2E1F45] pt-3.5" : ""}`}>
+                <Zap className="h-4 w-4 text-[#C084FC] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+                <span>Diamonds</span>
+              </div>
               <div className="topup-package-grid">
-                {diamondPackages.map(renderPackageCard)}
+                {diamondPackages.map((pkg) => renderPackageCard(pkg, true))}
               </div>
             </div>
           )}

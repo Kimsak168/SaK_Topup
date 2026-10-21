@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type ReactElement } from "react";
-import { createPortal } from "react-dom";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowUp, ChevronDown, Headphones, Moon, SlidersHorizontal, Sun } from "lucide-react";
-import { Tooltip } from "@base-ui/react/tooltip";
-import { useTheme } from "next-themes";
-import { toast } from "sonner";
+import { useEffect, useId, useRef, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import { SOCIAL_URLS } from "@/lib/socialLinks";
 import styles from "./SupportDropdown.module.css";
 
@@ -55,50 +49,20 @@ const supportLinks = socialLinks.filter(({ label }) =>
   label === "Telegram" || label === "Facebook" || label === "TikTok",
 );
 
-function ToolbarTooltip({ label, open, children }: { label: string; open: boolean; children: ReactElement }) {
-  const tooltipId = useId();
-
-  return (
-    <Tooltip.Root disabled={!open}>
-      <Tooltip.Trigger aria-describedby={tooltipId} render={children} />
-      <Tooltip.Portal>
-        <Tooltip.Positioner side="left" sideOffset={12} collisionPadding={8} className={styles.tooltipPositioner}>
-          <Tooltip.Popup id={tooltipId} role="tooltip" className={styles.tooltip}>{label}</Tooltip.Popup>
-        </Tooltip.Positioner>
-      </Tooltip.Portal>
-    </Tooltip.Root>
-  );
-}
-
-export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
-  const [toolbarOpen, setToolbarOpen] = useState(false);
+export function SupportDropdown() {
   const [supportOpen, setSupportOpen] = useState(false);
-  const [activeAction, setActiveAction] = useState<string | null>(null);
-  const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(null);
-  const { resolvedTheme, setTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
   const containerRef = useRef<HTMLDivElement>(null);
-  const settingsButtonRef = useRef<HTMLButtonElement>(null);
   const supportButtonRef = useRef<HTMLButtonElement>(null);
-  const railRef = useRef<HTMLElement>(null);
-  const toolbarId = useId();
   const supportMenuId = useId();
-  const supportUrl = validSocialUrl(SOCIAL_URLS.telegram);
 
   useEffect(() => {
-    setPortalContainer(document.body);
-  }, []);
-
-  useEffect(() => {
-    if (!toolbarOpen && !supportOpen) return;
+    if (!supportOpen) return;
 
     function closeIfOutside(event: PointerEvent | FocusEvent) {
       if (
         event.target instanceof Node &&
-        !containerRef.current?.contains(event.target) &&
-        !railRef.current?.contains(event.target)
+        !containerRef.current?.contains(event.target)
       ) {
-        setToolbarOpen(false);
         setSupportOpen(false);
       }
     }
@@ -106,14 +70,9 @@ export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        setToolbarOpen(false);
         setSupportOpen(false);
-        (toolbarOpen ? settingsButtonRef : supportButtonRef).current?.focus({ preventScroll: true });
+        supportButtonRef.current?.focus({ preventScroll: true });
       }
-    }
-
-    if (toolbarOpen) {
-      railRef.current?.querySelector<HTMLAnchorElement>("a[href]")?.focus({ preventScroll: true });
     }
 
     document.addEventListener("pointerdown", closeIfOutside);
@@ -124,26 +83,10 @@ export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
       document.removeEventListener("focusin", closeIfOutside);
       document.removeEventListener("keydown", handleKeyDown, true);
     };
-  }, [toolbarOpen, supportOpen]);
+  }, [supportOpen]);
 
   return (
     <div ref={containerRef} className={styles.controls}>
-      <button
-        ref={settingsButtonRef}
-        type="button"
-        aria-expanded={toolbarOpen}
-        aria-controls={toolbarId}
-        aria-label={toolbarOpen ? "Close social toolbar" : "Open social toolbar"}
-        title={toolbarOpen ? "Close social toolbar" : "Open social toolbar"}
-        onClick={() => {
-          setSupportOpen(false);
-          setToolbarOpen((current) => !current);
-        }}
-        className={`${styles.controlButton} ${styles.settingsButton}`}
-      >
-        <SlidersHorizontal aria-hidden="true" />
-      </button>
-
       <div className={styles.supportControl}>
         <button
           ref={supportButtonRef}
@@ -151,16 +94,12 @@ export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
           aria-haspopup="true"
           aria-expanded={supportOpen}
           aria-controls={supportMenuId}
-          aria-label="Support"
-          onClick={() => {
-            setToolbarOpen(false);
-            setSupportOpen((current) => !current);
-          }}
+          aria-label="Open social and support links"
+          title="Social and support links"
+          onClick={() => setSupportOpen((current) => !current)}
           className={`${styles.controlButton} ${styles.supportButton}`}
         >
-          <Headphones aria-hidden="true" />
-          <span className={styles.supportLabel}>Support</span>
-          <ChevronDown aria-hidden="true" className={supportOpen ? styles.chevronOpen : ""} />
+          <SlidersHorizontal aria-hidden="true" />
         </button>
 
         <div
@@ -196,112 +135,6 @@ export function SupportDropdown({ logoUrl }: { logoUrl?: string } = {}) {
           )}
         </div>
       </div>
-
-      {portalContainer && createPortal(
-        <Tooltip.Provider delay={150}>
-          <nav
-            ref={railRef}
-            id={toolbarId}
-            aria-label="Social and settings toolbar"
-            inert={!toolbarOpen}
-            aria-hidden={!toolbarOpen}
-            data-open={toolbarOpen}
-            className={styles.rail}
-          >
-            <ToolbarTooltip label="SakSuuu Home" open={toolbarOpen}>
-              <Link href="/" aria-label="SakSuuu Home" className={styles.action + " " + styles.logo}>
-                <Image
-                  src={logoUrl || "/images/logo.png"}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className={styles.logoImage}
-                />
-              </Link>
-            </ToolbarTooltip>
-            {socialLinks.length > 0 && (
-              <ul aria-label="Social links" className={styles.section + " " + styles.socials}>
-                {socialLinks.map(({ label, href, path }) => (
-                  <li key={label}>
-                    <ToolbarTooltip label={label} open={toolbarOpen}>
-                      <a
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={label + " (opens in a new tab)"}
-                        data-active={activeAction === label}
-                        onClick={() => setActiveAction(label)}
-                        className={styles.action}
-                      >
-                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className={styles.icon}>
-                          <path d={path} />
-                        </svg>
-                      </a>
-                    </ToolbarTooltip>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div aria-hidden="true" className={styles.divider} />
-            <ul aria-label="Toolbar utilities" className={styles.section}>
-              <li>
-                <ToolbarTooltip label="Support" open={toolbarOpen}>
-                  {supportUrl ? (
-                    <a
-                      href={supportUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Support (opens in a new tab)"
-                      data-active={activeAction === "Support"}
-                      onClick={() => setActiveAction("Support")}
-                      className={styles.action}
-                    >
-                      <Headphones aria-hidden="true" className={styles.icon} />
-                    </a>
-                  ) : (
-                    <button type="button" aria-label="Support" className={styles.action} onClick={() => toast.error("Link unavailable", { id: "support-link" })}>
-                      <Headphones aria-hidden="true" className={styles.icon} />
-                    </button>
-                  )}
-                </ToolbarTooltip>
-              </li>
-              <li>
-                <ToolbarTooltip label="Change Theme" open={toolbarOpen}>
-                  <button
-                    type="button"
-                    aria-label={isDark ? "Change Theme (dark mode, switch to light)" : "Change Theme (light mode, switch to dark)"}
-                    data-active={activeAction === "Theme"}
-                    onClick={() => {
-                      setTheme(isDark ? "light" : "dark");
-                      setActiveAction("Theme");
-                    }}
-                    className={styles.action}
-                  >
-                    {isDark ? <Moon aria-hidden="true" className={styles.icon} /> : <Sun aria-hidden="true" className={styles.icon} />}
-                  </button>
-                </ToolbarTooltip>
-              </li>
-              <li>
-                <ToolbarTooltip label="Back to Top" open={toolbarOpen}>
-                  <button
-                    type="button"
-                    aria-label="Back to Top"
-                    data-active={activeAction === "Top"}
-                    onClick={() => {
-                      window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-                      setActiveAction("Top");
-                    }}
-                    className={styles.action}
-                  >
-                    <ArrowUp aria-hidden="true" className={styles.icon} />
-                  </button>
-                </ToolbarTooltip>
-              </li>
-            </ul>
-          </nav>
-        </Tooltip.Provider>,
-        portalContainer,
-      )}
     </div>
   );
 }

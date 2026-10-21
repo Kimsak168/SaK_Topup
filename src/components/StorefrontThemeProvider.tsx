@@ -6,8 +6,8 @@ export function StorefrontThemeProvider({ children }: { children: React.ReactNod
   return (
     <ThemeProvider
       attribute="data-storefront-theme"
-      storageKey="saksuuu_public_theme"
-      defaultTheme="light"
+      storageKey="saksuuu_theme_mode"
+      defaultTheme="dark"
       enableSystem={false}
       enableColorScheme={false}
     >

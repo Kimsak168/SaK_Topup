@@ -164,10 +164,10 @@ function showFloatingCloseButton(onCloseCallback?: () => void) {
     top: "16px",
     right: "16px",
     zIndex: "2147483647", // Maximum z-index
-    backgroundColor: "rgba(12, 14, 36, 0.94)",
-    color: "#ffffff",
-    border: "1px solid rgba(255, 46, 147, 0.5)",
-    boxShadow: "0 0 25px rgba(0, 0, 0, 0.7), 0 0 12px rgba(255, 46, 147, 0.3)",
+    backgroundColor: "rgba(18, 13, 27, 0.94)",
+    color: "#F8F5FF",
+    border: "1px solid #39264D",
+    boxShadow: "0 0 25px rgba(0, 0, 0, 0.7), 0 0 12px rgba(192, 132, 252, 0.3)",
     borderRadius: "9999px",
     padding: "9px 18px",
     fontSize: "12px",
@@ -182,13 +182,15 @@ function showFloatingCloseButton(onCloseCallback?: () => void) {
   });
 
   btn.onmouseenter = () => {
-    btn.style.backgroundColor = "rgba(255, 46, 147, 0.95)";
-    btn.style.borderColor = "#ff2e93";
+    btn.style.backgroundColor = "rgba(168, 85, 247, 0.95)";
+    btn.style.color = "#08060D";
+    btn.style.borderColor = "#A855F7";
     btn.style.transform = "scale(1.03)";
   };
   btn.onmouseleave = () => {
-    btn.style.backgroundColor = "rgba(12, 14, 36, 0.94)";
-    btn.style.borderColor = "rgba(255, 46, 147, 0.5)";
+    btn.style.backgroundColor = "rgba(18, 13, 27, 0.94)";
+    btn.style.color = "#F8F5FF";
+    btn.style.borderColor = "#39264D";
     btn.style.transform = "scale(1)";
   };
 

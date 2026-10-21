@@ -118,13 +118,31 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
 
   return configs.map(cfg => {
     const hasPrice = typeof cfg.sellingPrice === "number" && Number.isFinite(cfg.sellingPrice) && cfg.sellingPrice > 0;
-    const isNumeric = /^\d+$/.test(cfg.name.trim());
-    const group = supplier === "vizo" || isNumeric ? "diamonds" : "special";
-    const name = supplier === "vizo" && !cfg.name.includes("Diamond") ? `${cfg.name} Diamonds` : cfg.name;
-    const image = cfg.customImage || null;
+    const isNameNumeric = /^\d+$/.test(cfg.name.trim());
+    const rawDiamonds = (cfg.diamondsOrPoints || "").trim();
+    const isDiamondsNumeric = /^\d+$/.test(rawDiamonds);
+    const isNumeric = isNameNumeric || isDiamondsNumeric;
+    const isFreeFire = code.includes("freefire") || code.includes("ff") || slug.includes("free-fire");
+    const formatLevelUp = (str: string) =>
+      isFreeFire ? str.replace(/Level\s*Up\s*(?:Package|Pass)?\s*[-–—:]*\s*(?:Level|Lv\.?)?\s*(\d+)/i, "Level Up $1") : str;
+    const baseName = formatLevelUp(cfg.name);
+    const baseDiamonds = formatLevelUp(rawDiamonds);
+    const isMlbb = code.includes("mlbb") || code.includes("mobile-legends") || slug.includes("mlbb") || slug.includes("mobile-legends");
+    const isDiamondGame = isFreeFire || isMlbb || code === "mlbb" || slug === "mlbb";
+    const isSpecial = /\b(pass|pack|package|weekly|monthly|twilight|starlight|member|subscription|bundle|membership|vip|level\s*up)\b/i.test(baseName);
+    const isDiamondPackage = !isSpecial && (/\bdiamonds?\b/i.test(baseName) || /\bdiamonds?\b/i.test(baseDiamonds) || isNumeric);
+    const group = (supplier === "vizo" || isDiamondPackage) ? "diamonds" : "special";
+    const name = (supplier === "vizo" || isDiamondGame) && !baseName.includes("Diamond") && isNumeric
+      ? `${baseName} Diamonds`
+      : baseName;
+    const diamondsOrPoints = isDiamondsNumeric && isDiamondGame
+      ? `${baseDiamonds} Diamonds`
+      : baseDiamonds || (isDiamondGame && isNameNumeric ? `${baseName} Diamonds` : baseName);
+    const defaultDiamondImage = isMlbb ? "/images/mlbb-diamond.png" : (isFreeFire ? "/images/diamond-crystals.png" : null);
+    const image = cfg.customImage || (isDiamondPackage ? defaultDiamondImage : null);
     return {
       id: cfg.supplierProductCode, supplierProductCode: cfg.supplierProductCode,
-      name, diamondsOrPoints: cfg.diamondsOrPoints || (code === "mlbb" && isNumeric ? `${cfg.name} Diamonds` : cfg.name),
+      name, diamondsOrPoints,
       sellingPrice: hasPrice ? cfg.sellingPrice : null,
       originalPrice: typeof cfg.originalPrice === "number" && cfg.originalPrice > 0 ? cfg.originalPrice : null,
       currency: cfg.currency || "USD", badge: cfg.badge || undefined, bonus: cfg.bonus || undefined,

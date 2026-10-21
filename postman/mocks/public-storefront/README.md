@@ -30,3 +30,21 @@ frontend's fetch implementation or Sonner.
 The browser check defaults to Chrome's Windows installation. Set `CHROME_PATH`
 to use another installed Chrome binary. It writes measurements and screenshots
 to `artifacts/public-toasts/`. Postman CLI 1.73.0 was used for verification.
+
+## Checkout redesign verification
+
+With the storefront running on `http://localhost:3000`, start the same local
+simulation on port 4900 and run:
+
+```powershell
+node scripts/verify-checkout-redesign.mjs
+```
+
+This browser check covers mobile navbar and drawer behavior, the disabled
+sticky payment bar, ID validation, automatic confirmation, cancel and package
+changes, responsive layouts at 320, 360, 375, 390, 430, 768, 1024, and 1440px,
+checkout errors, and a simulated paid result. It routes player verification, order
+creation, payment status, and the KHQR SDK fixture to Postman; it does not create
+a real order or contact the payment provider. Screenshots and measurements go to
+`artifacts/public-checkout/`. Use `CHECKOUT_CHROME_FLAGS` if headless Chrome needs
+local launch flags.

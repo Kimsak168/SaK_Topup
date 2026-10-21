@@ -1,33 +1,35 @@
-/* The storefront preference is independent of the existing admin theme. */
+/* The storefront preference defaults to a pure black gaming aesthetic. */
+:root:has(.public-theme),
 :root[data-storefront-theme="dark"]:has(.public-theme) {
   color-scheme: dark;
-  --background: #0B1710;
-  --foreground: #F1F5F9;
-  --card: #122018;
-  --card-foreground: #F1F5F9;
-  --popover: #122018;
-  --popover-foreground: #F1F5F9;
-  --secondary: #1A3022;
-  --secondary-foreground: #E2E8F0;
-  --muted: #1A3022;
-  --muted-foreground: #A8B8CE;
-  --accent: #1E3A29;
-  --accent-foreground: #4ADE80;
-  --border: #31513A;
-  --border-soft: #253E2D;
-  --input: #31513A;
-  --card-border: #31513A;
-  --ring: #4ADE80;
+  --background: #000000;
+  --foreground: #F8F5FF;
+  --card: #0D0914;
+  --card-foreground: #F8F5FF;
+  --popover: #0D0914;
+  --popover-foreground: #F8F5FF;
+  --secondary: #161022;
+  --secondary-foreground: #E9DDFB;
+  --muted: #161022;
+  --muted-foreground: #A89CB8;
+  --accent: #201533;
+  --accent-foreground: #C084FC;
+  --border: #2E1F45;
+  --border-soft: #1E152D;
+  --input: #2E1F45;
+  --card-border: #2E1F45;
+  --ring: #C084FC;
 }
 
+:root .public-theme,
 :root[data-storefront-theme="dark"] .public-theme {
-  background: #0B1710;
+  background: #000000;
   color: var(--foreground);
 }
 
+:root .public-ambient,
 :root[data-storefront-theme="dark"] .public-ambient {
-  background: radial-gradient(ellipse at 85% 0%, rgb(22 163 74 / 0.08), transparent 50%),
-    radial-gradient(ellipse at 10% 25%, rgb(34 197 94 / 0.05), transparent 50%);
+  background: none;
 }
 
 /* Map the storefront's existing light palette so all public routes stay legible. */
@@ -39,13 +41,23 @@
   [class~="bg-[#F0FDF4]"], [class~="bg-[#DCFCE7]"]
 ) { background-color: var(--secondary); }
 
+:root[data-storefront-theme="dark"] .public-theme [class~="bg-emerald-50"][class~="text-[#22C55E]"] {
+  background-color: rgb(34 197 94 / .12);
+}
+
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="bg-[#F0FDF4]/50"], [class~="bg-[#F0FDF4]/60"],
   [class~="bg-[#DCFCE7]/40"], [class~="bg-[#DCFCE7]/60"], [class~="bg-[#BBF7D0]/60"]
-) { background-color: rgb(34 197 94 / 0.08); }
+) { background-color: color-mix(in srgb, var(--storefront-primary, #7C3AED) 7%, var(--card)); }
 
 :root[data-storefront-theme="dark"] .public-theme [class~="bg-[#DCFCE7]"] {
   background-color: var(--border-soft);
+}
+
+:root[data-storefront-theme="dark"] .public-theme .game-card,
+:root[data-storefront-theme="dark"] .public-theme .game-card-title,
+:root[data-storefront-theme="dark"] .public-theme .game-card > div:first-child {
+  background-color: var(--storefront-card, var(--card));
 }
 
 :root[data-storefront-theme="dark"] .public-theme :is(
@@ -60,9 +72,22 @@
   color: var(--muted-foreground);
 }
 
+:root .public-theme .storefront-footer :is(
+  .storefront-footer-title, .storefront-footer-copy, .storefront-footer-link,
+  .storefront-footer-bottom, [class~="text-[#172033]"], [class~="text-[#64748B]"]
+) {
+  font-weight: 700;
+}
+
+:root .public-theme .storefront-footer-brand :is(
+  [class~="text-[#172033]"]
+) {
+  color: var(--storefront-primary, #7C3AED);
+}
+
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="text-[#16A34A]"], [class~="text-[#15803D]"], [class~="text-[#004B87]"]
-) { color: #4ADE80; }
+) { color: var(--storefront-primary, #7C3AED); }
 
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="hover:bg-[#F0FDF4]"]:hover, [class~="active:bg-[#F0FDF4]"]:active,
@@ -71,4 +96,4 @@
 
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="hover:text-[#16A34A]"]:hover, [class~="active:text-[#16A34A]"]:active
-) { color: #86EFAC; }
+) { color: var(--storefront-primary-hover, #A855F7); }
