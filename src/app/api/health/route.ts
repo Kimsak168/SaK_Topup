@@ -20,8 +20,7 @@ export async function GET() {
       error?: string;
     };
     suppliers: {
-      vizo: "CONFIGURED" | "NOT_CONFIGURED";
-      g2bulk: "CONFIGURED" | "NOT_CONFIGURED";
+      webbuilder: "CONFIGURED" | "NOT_CONFIGURED";
     };
   } = {
     status: "ok",
@@ -32,8 +31,7 @@ export async function GET() {
       readyState: 0,
     },
     suppliers: {
-      vizo: process.env.VIZO_API_KEY && process.env.VIZO_BASE_URL ? "CONFIGURED" : "NOT_CONFIGURED",
-      g2bulk: process.env.G2BULK_API_KEY && process.env.G2BULK_BASE_URL ? "CONFIGURED" : "NOT_CONFIGURED",
+      webbuilder: process.env.WEBBUILDER_API_KEY ? "CONFIGURED" : "NOT_CONFIGURED",
     },
   };
 

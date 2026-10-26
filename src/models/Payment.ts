@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IPayment extends Document {
   paymentId: string;
   orderNumber: string;
-  gateway: "anajakpay" | "khqr" | "aba" | "wing" | "binance" | "manual";
+  gateway: "anajakpay" | "aba_payway_v2" | "vngzz2" | "khqr" | "aba" | "wing" | "binance" | "manual";
   transactionId?: string;
   amount: number;
   currency: string;
@@ -42,7 +42,7 @@ const PaymentSchema = new Schema<IPayment>(
     },
     gateway: {
       type: String,
-      enum: ["anajakpay", "khqr", "aba", "wing", "binance", "manual"],
+      enum: ["anajakpay", "aba_payway_v2", "vngzz2", "khqr", "aba", "wing", "binance", "manual"],
       required: true,
       index: true,
     },

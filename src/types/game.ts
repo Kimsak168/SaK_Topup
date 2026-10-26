@@ -2,8 +2,8 @@ export interface ClientGame {
   id: string;
   slug: string;
   name: string;
-  code: string; // Supplier game code (e.g. "freefire_global", "pubgm", "mlbb_global", "hok")
-  supplier: "vizo" | "g2bulk" | "webbuilder";
+  code: string; // Supplier game code (e.g. "freefire_khsgmy", "pubgm", "mlbb", "hok")
+  supplier: "webbuilder";
   path: string; // e.g. "/games/webbuilder/hok"
   category: string;
   image: string;

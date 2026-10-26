@@ -14,6 +14,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
   const [is16x9Map, setIs16x9Map] = useState<Record<string, boolean>>({});
   const touchStartXRef = useRef<number | null>(null);
 
@@ -84,7 +85,7 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
       onTouchEnd={handleTouchEnd}
     >
       {/* Centered True 16:9 Frame (max-w: 1050px, 8-10px mobile / 10-12px desktop border radius, no solid gray bars) */}
-      <div className="group relative overflow-hidden rounded-[10px] md:rounded-[12px] border border-[#DCFCE7] shadow-xs transition-colors hover:border-[#16A34A]">
+      <div className="group relative overflow-hidden rounded-[10px] md:rounded-[12px] border border-[#DCFCE7] shadow-xs transition-colors hover:border-[#16A34A] bg-[#0A0E1A]">
         {/* Smooth horizontal slide transition */}
         <div
           className="flex transition-transform duration-[650ms] ease-in-out"
@@ -93,10 +94,11 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
           {slides.map((banner, index) => {
             const isFirstSlide = index === 0;
             const isKnown16x9 = is16x9Map[banner.imageUrl] === true;
+            const isLoaded = loadedImages[banner.imageUrl] === true;
 
             const artwork = (
               <div
-                className="relative w-full aspect-video overflow-hidden"
+                className="relative w-full aspect-video overflow-hidden bg-[#0A0E1A]"
                 style={{ aspectRatio: "16 / 9" }}
               >
                 {!banner.imageUrl || failedImages[banner.imageUrl] ? (
@@ -105,33 +107,39 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
                   </div>
                 ) : (
                   <>
-                    {/* Background Layer: For non-16:9 images, ambient blurred copy of the banner filling the container using image's actual colors */}
-                    {!isKnown16x9 && (
-                      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden="true">
-                        {/* Base blur pass guarantees 100% color matching from the banner image, preventing any dull gray/black bleed */}
+                    {/* Subtle shimmer skeleton while image is loading */}
+                    {!isLoaded && (
+                      <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-[#0F172A] via-[#1E293B] to-[#0F172A]" />
+                    )}
+
+                    {/* Ambient blurred backdrop for non-16:9 artwork (using micro 120px thumb to prevent server lag) */}
+                    {!isKnown16x9 && isLoaded && (
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none transition-opacity duration-500" aria-hidden="true">
                         <Image
                           src={banner.imageUrl}
                           alt=""
                           fill
                           aria-hidden="true"
-                          loading={isFirstSlide ? "eager" : "lazy"}
-                          quality={30}
-                          sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1147px) calc(100vw - 48px), 1100px"
-                          className="object-cover scale-110 blur-xl"
+                          quality={20}
+                          sizes="120px"
+                          className="object-cover scale-125 blur-2xl opacity-60"
                         />
                       </div>
                     )}
 
-                    {/* Foreground Image: 100% sharp, full uploaded image visible, quality 95, no filters, no opacity, no blur */}
+                    {/* Foreground Image: Smooth fade-in, quality 80 for optimal speed and crispness */}
                     <Image
                       src={banner.imageUrl}
                       alt={banner.title || "SakSuuu Banner"}
                       fill
-                      quality={95}
+                      quality={80}
+                      priority={isFirstSlide}
                       sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1147px) calc(100vw - 48px), 1100px"
-                      className="relative z-10 object-contain object-center select-none"
-                      preload={isFirstSlide}
+                      className={`relative z-10 object-contain object-center select-none transition-opacity duration-300 ease-out ${
+                        isLoaded ? "opacity-100" : "opacity-0"
+                      }`}
                       onLoad={(event) => {
+                        setLoadedImages((prev) => ({ ...prev, [banner.imageUrl]: true }));
                         const img = event.currentTarget;
                         if (img.naturalWidth && img.naturalHeight) {
                           const ratio = img.naturalWidth / img.naturalHeight;

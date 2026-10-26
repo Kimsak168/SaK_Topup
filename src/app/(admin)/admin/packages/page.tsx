@@ -22,7 +22,7 @@ interface AdminPackage {
   id: string;
   gameSlug: string;
   gameCode: string;
-  supplier: "vizo" | "g2bulk" | "webbuilder";
+  supplier: "webbuilder";
   supplierProductCode: string;
   name: string;
   buyingPrice: number | null; // Private supplier wholesale cost
@@ -40,8 +40,7 @@ interface KPIStats {
   totalPkgs: number;
   configuredPkgs: number;
   unconfiguredPkgs: number;
-  vizoPkgs: number;
-  g2bulkPkgs: number;
+  webbuilderPkgs: number;
 }
 
 interface AvailableGame {
@@ -58,8 +57,7 @@ export default function AdminPackagesPage() {
     totalPkgs: 0,
     configuredPkgs: 0,
     unconfiguredPkgs: 0,
-    vizoPkgs: 0,
-    g2bulkPkgs: 0,
+    webbuilderPkgs: 0,
   });
   const [availableGames, setAvailableGames] = useState<AvailableGame[]>([]);
 
@@ -169,7 +167,7 @@ export default function AdminPackagesPage() {
     try {
       setIsSyncing(true);
       toast.loading(
-        `Syncing live packages from ${supplierFilter === "all" ? "Vizo and G2Bulk" : supplierFilter.toUpperCase()}...`,
+        "Syncing live packages from WebBuilder...",
         { id: "sync-packages" }
       );
 
@@ -436,7 +434,7 @@ export default function AdminPackagesPage() {
             Total Synced Packages
           </span>
           <div className="text-2xl font-bold tracking-tight text-[#F8FAFC]">{kpi.totalPkgs}</div>
-          <span className="text-[10px] text-[#64748B]">From Vizo &amp; G2Bulk APIs</span>
+          <span className="text-[10px] text-[#64748B]">From WebBuilder API</span>
         </div>
 
         <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
@@ -457,13 +455,12 @@ export default function AdminPackagesPage() {
 
         <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
           <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-            Packages By Supplier
+            Active Supplier
           </span>
-          <div className="text-lg font-bold text-[#F8FAFC]">
-            <span className="text-[#22C55E]">{kpi.vizoPkgs} Vizo</span> /{" "}
-            <span className="text-[#F8FAFC]">{kpi.g2bulkPkgs} G2Bulk</span>
+          <div className="text-lg font-bold text-emerald-400">
+            {kpi.webbuilderPkgs || kpi.totalPkgs} WebBuilder
           </div>
-          <span className="text-[10px] text-[#64748B]">Original supplier codes preserved</span>
+          <span className="text-[10px] text-[#64748B]">Automated wholesale pricing</span>
         </div>
       </div>
 
@@ -510,10 +507,7 @@ export default function AdminPackagesPage() {
             }}
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
-            <option value="all">All Suppliers</option>
-            <option value="vizo">Vizo (Free Fire)</option>
-            <option value="webbuilder">WebBuilder (Honor of Kings)</option>
-            <option value="g2bulk">G2Bulk</option>
+            <option value="all">Supplier: WebBuilder</option>
           </select>
 
           {/* Price Configuration Filter */}
@@ -640,16 +634,8 @@ export default function AdminPackagesPage() {
                         <div className="font-semibold text-[#94A3B8]">
                           {pkg.gameSlug.toUpperCase()}
                         </div>
-                        <span
-                          className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
-                            pkg.supplier === "vizo"
-                              ? "bg-[rgba(34,197,94,0.10)] text-[#22C55E] border border-[rgba(34,197,94,0.3)]"
-                              : pkg.supplier === "webbuilder"
-                              ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                              : "bg-[#151F31] text-[#94A3B8] border border-[#243047]"
-                          }`}
-                        >
-                          {pkg.supplier}
+                        <span className="inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                          WebBuilder
                         </span>
                       </td>
 

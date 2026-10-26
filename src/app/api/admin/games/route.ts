@@ -49,11 +49,10 @@ export async function GET(req: NextRequest) {
       .lean();
 
     // Global KPI stats
-    const [totalAll, activeCount, vizoCount, g2bulkCount] = await Promise.all([
+    const [totalAll, activeCount, webbuilderCount] = await Promise.all([
       Game.countDocuments().catch(() => 0),
       Game.countDocuments({ isActive: true }).catch(() => 0),
-      Game.countDocuments({ supplier: "vizo" }).catch(() => 0),
-      Game.countDocuments({ supplier: "g2bulk" }).catch(() => 0),
+      Game.countDocuments({ supplier: "webbuilder" }).catch(() => 0),
     ]);
 
     return NextResponse.json({
@@ -87,8 +86,7 @@ export async function GET(req: NextRequest) {
         totalAll,
         activeCount,
         disabledCount: totalAll - activeCount,
-        vizoCount,
-        g2bulkCount,
+        webbuilderCount,
       },
     });
   } catch (error: unknown) {

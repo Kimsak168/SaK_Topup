@@ -53,10 +53,10 @@ function getVerifiedSupplierCount() {
   try {
     const saved = sessionStorage.getItem("saksuuu_supplier_check");
     if (!saved) return 0;
-    const check = JSON.parse(saved) as { timestamp?: string; vizo?: { status?: string }; g2bulk?: { status?: string } };
+    const check = JSON.parse(saved) as { timestamp?: string; webbuilder?: { status?: string } };
     const checkedAt = Date.parse(check.timestamp || "");
     if (!Number.isFinite(checkedAt) || Date.now() - checkedAt > 10 * 60_000) return 0;
-    return Number(check.vizo?.status === "connected") + Number(check.g2bulk?.status === "connected");
+    return Number(check.webbuilder?.status === "connected");
   } catch {
     return 0;
   }
@@ -296,33 +296,29 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               } ${
                 isDarkMode ? "bg-[#111A2B] hover:bg-[#151F31] border border-[#243047]" : "bg-slate-50 hover:bg-slate-100 border border-slate-200"
               }`}
-              title={collapsed ? "Supplier APIs: Vizo & G2Bulk" : undefined}
+              title={collapsed ? "Supplier API: WebBuilder" : undefined}
               aria-label="View supplier connection status"
             >
               {!collapsed ? (
                 <div className="min-w-0 flex-1 leading-tight">
-                  <div className="text-[11px] font-semibold text-[#F8FAFC]">Supplier APIs</div>
+                  <div className="text-[11px] font-semibold text-[#F8FAFC]">Supplier API</div>
                   <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-[#94A3B8]">
                     <span
                       className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                        connectedSuppliers === 2
+                        connectedSuppliers >= 1
                           ? "bg-[#22C55E]"
-                          : connectedSuppliers === 1
-                          ? "bg-[#F59E0B]"
                           : "bg-[#64748B]"
                       }`}
                       aria-hidden="true"
                     />
-                    <span className="truncate">Vizo &amp; G2Bulk</span>
+                    <span className="truncate">WebBuilder</span>
                   </div>
                 </div>
               ) : (
                 <span
                   className={`h-2 w-2 rounded-full shrink-0 ${
-                    connectedSuppliers === 2
+                    connectedSuppliers >= 1
                       ? "bg-[#22C55E]"
-                      : connectedSuppliers === 1
-                      ? "bg-[#F59E0B]"
                       : "bg-[#64748B]"
                   }`}
                   aria-hidden="true"
@@ -519,19 +515,17 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 bg-[#111A2B] border border-[#243047]"
               >
                 <div className="min-w-0 flex-1 leading-tight">
-                  <div className="text-[11px] font-semibold text-[#F8FAFC]">Supplier APIs</div>
+                  <div className="text-[11px] font-semibold text-[#F8FAFC]">Supplier API</div>
                   <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-[#94A3B8]">
                     <span
                       className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                        connectedSuppliers === 2
+                        connectedSuppliers >= 1
                           ? "bg-[#22C55E]"
-                          : connectedSuppliers === 1
-                          ? "bg-[#F59E0B]"
                           : "bg-[#64748B]"
                       }`}
                       aria-hidden="true"
                     />
-                    <span className="truncate">Vizo &amp; G2Bulk</span>
+                    <span className="truncate">WebBuilder</span>
                   </div>
                 </div>
               </Link>

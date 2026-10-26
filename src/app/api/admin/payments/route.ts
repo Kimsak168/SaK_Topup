@@ -3,7 +3,8 @@ import { connectDB } from "@/lib/mongodb";
 import { Payment, type IPayment } from "@/models/Payment";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
-import { queryAnajakPayTransactionStatus } from "@/lib/services/anajakPayService";
+import { queryAnajakPayTransactionStatus, checkAnajakPayHealth } from "@/lib/services/anajakPayService";
+import { checkVngZz2Health, checkVngZz2Transaction, isVngZz2Configured } from "@/lib/services/vngzzPayWayService";
 import { getAdminPagination } from "@/lib/adminQuery";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +41,7 @@ export async function GET(req: NextRequest) {
       .catch(() => []);
 
     // Summary stats
-    const [totalSuccess, totalPending, totalFailed, successfulVolumeAgg] =
+    const [totalSuccess, totalPending, totalFailed, successfulVolumeAgg, health, vngHealth] =
       await Promise.all([
         Payment.countDocuments({ status: { $in: SUCCESS_STATUSES } }).catch(() => 0),
         Payment.countDocuments({ status: { $in: PENDING_STATUSES } }).catch(() => 0),
@@ -49,6 +50,8 @@ export async function GET(req: NextRequest) {
           { $match: { status: { $in: SUCCESS_STATUSES } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]).catch(() => []),
+        checkAnajakPayHealth().catch(() => ({ available: false, message: "Health check error" })),
+        checkVngZz2Health().catch(() => ({ available: false, message: "Health check error" })),
       ]);
 
     const totalVolume = successfulVolumeAgg[0]?.total || 0;
@@ -57,14 +60,26 @@ export async function GET(req: NextRequest) {
     const anajakProfile = process.env.ANAJAKPAY_PROFILE_ID;
     const anajakSecret = process.env.ANAJAKPAY_SECRET_KEY;
 
+    const vngKey = process.env.VNGZZ2_PAYMENT_API_KEY?.trim();
+    const vngSlot = process.env.VNGZZ2_PAYMENT_SLOT || "USD";
+    const vngConfigured = isVngZz2Configured();
+
     const gateways = [
       {
         id: "anajakpay",
         name: "AnajakPay (KHQR / Cambodian Banks)",
-        status: anajakProfile && anajakSecret ? "active" : "unconfigured",
+        status: anajakProfile && anajakSecret ? (health.available ? "active" : "maintenance") : "unconfigured",
         profileId: anajakProfile ? `${anajakProfile.slice(0, 6)}...${anajakProfile.slice(-4)}` : "Not Configured",
         currency: "USD / KHR",
-        type: "Instant KHQR Universal Pay",
+        type: health.available ? "Instant KHQR Universal Pay" : "KHQRcc Rail Temporarily Down",
+      },
+      {
+        id: "aba_payway_v2",
+        name: "ABA PayWay V2 (VngZz2)",
+        status: vngConfigured ? (vngHealth.available ? "active" : "maintenance") : "unconfigured",
+        profileId: vngKey ? `Slot: ${vngSlot} (${vngKey.slice(0, 4)}...${vngKey.slice(-3)})` : "Not Configured",
+        currency: "USD / KHR",
+        type: vngHealth.available ? "Direct PayWay KHQR & Deep-Link" : (vngConfigured ? "Gateway Offline" : "Awaiting API Key"),
       },
       {
         id: "aba",
@@ -157,12 +172,36 @@ export async function POST(req: NextRequest) {
       $or: [{ transactionId }, { orderNumber: transactionId }],
     }).lean();
 
-    const gatewayCheck = await queryAnajakPayTransactionStatus(transactionId);
+    // Determine whether this transaction is VngZz2 / ABA PayWay V2 or AnajakPay
+    const isVngZz2 = payment?.gateway === "aba_payway_v2" || payment?.gateway === "vngzz2" || relatedOrder?.paymentMethod === "aba_payway_v2";
+
+    let gatewayCheck: Record<string, unknown>;
+    if (isVngZz2) {
+      try {
+        const vngRes = await checkVngZz2Transaction(transactionId);
+        gatewayCheck = {
+          provider: "aba_payway_v2",
+          status: vngRes.state,
+          isPaid: vngRes.isPaid,
+          amount: vngRes.amount,
+          paywayTransactionId: vngRes.paywayTransactionId,
+          receiptUrl: vngRes.receiptUrl,
+        };
+      } catch (err) {
+        gatewayCheck = {
+          provider: "aba_payway_v2",
+          status: "ERROR",
+          error: err instanceof Error ? err.message : String(err),
+        };
+      }
+    } else {
+      gatewayCheck = await queryAnajakPayTransactionStatus(transactionId);
+    }
 
     return NextResponse.json({
       success: true,
       message: payment
-        ? `Transaction found in database. Gateway status: ${gatewayCheck.status || "Audited"}`
+        ? `Transaction found in database (${payment.gateway}). Gateway status: ${gatewayCheck.status || "Audited"}`
         : `Transaction not in local database. Gateway check: ${gatewayCheck.status || "Not found"}`,
       record: payment || null,
       relatedOrder: relatedOrder
@@ -171,6 +210,7 @@ export async function POST(req: NextRequest) {
             paymentStatus: relatedOrder.paymentStatus,
             fulfillmentStatus: relatedOrder.fulfillmentStatus,
             amount: relatedOrder.amount,
+            paymentMethod: relatedOrder.paymentMethod,
           }
         : null,
       gatewayAudit: gatewayCheck,

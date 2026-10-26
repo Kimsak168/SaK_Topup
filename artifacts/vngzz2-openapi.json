@@ -1,0 +1,963 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "VngZz 2 Game API",
+    "version": "1.0.0",
+    "description": "A complete REST API for Cambodia KHQR payments, hosted pay links, game top-ups, SMM services and transaction webhooks.",
+    "contact": {
+      "name": "VngZz 2 Game Support",
+      "url": "https://www.vngzz2game.site/dashboard/register"
+    },
+    "x-logo": {
+      "url": "https://www.vngzz2game.site/brand/logo-v2g.png",
+      "altText": "VngZz 2 Game"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://www.vngzz2game.site/api",
+      "description": "Base URL (send the X-API-Key header)"
+    },
+    {
+      "url": "https://www.vngzz2game.site/api/payment/request/{api_key}",
+      "description": "Legacy key-in-path base",
+      "variables": {
+        "api_key": {
+          "default": "YOUR_API_KEY"
+        }
+      }
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      },
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API key"
+      }
+    },
+    "schemas": {
+      "GenerateQrRequest": {
+        "type": "object",
+        "required": [
+          "amount"
+        ],
+        "properties": {
+          "amount": {
+            "type": "string",
+            "example": "2.00",
+            "description": "Greater than 0, max 2 decimals."
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "USD",
+              "KHR"
+            ],
+            "default": "USD"
+          },
+          "slot": {
+            "type": "string",
+            "example": "SLOT_3",
+            "description": "Optional Merchant Slot ID or Slot Name to route payment."
+          },
+          "idempotency_key": {
+            "type": "string",
+            "description": "Optional; replays the original transaction."
+          },
+          "payway_link_url": {
+            "type": "string",
+            "description": "Optional override of the hosted PayWay link."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      },
+      "CheckTransactionRequest": {
+        "type": "object",
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "description": "Preferred. Returned by /v1/generate_qr."
+          },
+          "client_id": {
+            "type": "string"
+          },
+          "device_id": {
+            "type": "string"
+          },
+          "request_time": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "status": {
+            "type": "integer",
+            "example": 400
+          },
+          "code": {
+            "type": "string",
+            "example": "INVALID_AMOUNT"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKeyHeader": []
+    },
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/v1/generate_qr": {
+      "post": {
+        "summary": "Create a payment and return the KHQR",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateQrRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "QR created"
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited"
+          },
+          "502": {
+            "description": "PayWay upstream error"
+          }
+        },
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "post_v1_generate_qr"
+      }
+    },
+    "/v1/check_transaction": {
+      "post": {
+        "summary": "Check the status of a transaction",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckTransactionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Current state"
+          },
+          "404": {
+            "description": "Unknown transaction_id"
+          }
+        },
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "post_v1_check_transaction"
+      },
+      "get": {
+        "summary": "Check the status of a transaction (query string)",
+        "parameters": [
+          {
+            "name": "transaction_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current state"
+          }
+        },
+        "tags": [
+          "Payments"
+        ],
+        "operationId": "get_v1_check_transaction"
+      }
+    },
+    "/v1/status": {
+      "get": {
+        "summary": "Service health and background payment-sweeper stats",
+        "parameters": [
+          {
+            "name": "deep",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "description": "Also ping PayWay."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Service is running; data.sweep shows background payment-sweeper counters"
+          }
+        },
+        "tags": [
+          "System"
+        ],
+        "security": [],
+        "operationId": "get_v1_status"
+      }
+    },
+    "/v1/game/profile": {
+      "get": {
+        "summary": "Check reseller balance and order statistics",
+        "responses": {
+          "200": {
+            "description": "Reseller profile and balance"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "operationId": "get_v1_game_profile"
+      }
+    },
+    "/v1/game/categories": {
+      "get": {
+        "summary": "List all 190+ game stock categories",
+        "responses": {
+          "200": {
+            "description": "Available game categories"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "security": [],
+        "operationId": "get_v1_game_categories"
+      }
+    },
+    "/v1/game/products": {
+      "get": {
+        "summary": "List products and prices for a game",
+        "parameters": [
+          {
+            "name": "game_code",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of game products"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "security": [],
+        "operationId": "get_v1_game_products"
+      }
+    },
+    "/v1/game/create_order": {
+      "post": {
+        "summary": "Place instant game top-up order (deducts balance & delivers)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "product_code",
+                  "game_user_id",
+                  "reference"
+                ],
+                "properties": {
+                  "product_code": {
+                    "type": "string",
+                    "example": "FREEFIRE_SG_25"
+                  },
+                  "game_user_id": {
+                    "type": "string",
+                    "example": "262856740"
+                  },
+                  "game_zone_id": {
+                    "type": "string",
+                    "example": "3543"
+                  },
+                  "reference": {
+                    "type": "string",
+                    "example": "ORD-2026-001"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order successful"
+          },
+          "400": {
+            "description": "Insufficient balance or invalid player ID"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "operationId": "post_v1_game_create_order"
+      }
+    },
+    "/v1/game/check_order": {
+      "get": {
+        "summary": "Check game top-up order details and status",
+        "parameters": [
+          {
+            "name": "reference",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order details"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "operationId": "get_v1_game_check_order"
+      }
+    },
+    "/v1/game/deposit": {
+      "post": {
+        "summary": "Create an instant ABA KHQR payment to top up reseller balance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "amount"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "example": "10.00"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "USD",
+                      "KHR"
+                    ],
+                    "default": "USD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Deposit KHQR created"
+          }
+        },
+        "tags": [
+          "Game Top-up"
+        ],
+        "operationId": "post_v1_game_deposit"
+      }
+    },
+    "/v1/smm/profile": {
+      "get": {
+        "summary": "Check reseller SMM wallet balance and order stats",
+        "responses": {
+          "200": {
+            "description": "SMM profile & isolated balance"
+          }
+        },
+        "tags": [
+          "SMM Services"
+        ],
+        "operationId": "get_v1_smm_profile"
+      }
+    },
+    "/v1/smm/services": {
+      "get": {
+        "summary": "List all 2,400+ available SMM services and pricing",
+        "responses": {
+          "200": {
+            "description": "SMM services list"
+          }
+        },
+        "tags": [
+          "SMM Services"
+        ],
+        "security": [],
+        "operationId": "get_v1_smm_services"
+      }
+    },
+    "/v1/smm/create_order": {
+      "post": {
+        "summary": "Create SMM order using SMM wallet balance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "service_id",
+                  "link",
+                  "quantity"
+                ],
+                "properties": {
+                  "service_id": {
+                    "type": "integer",
+                    "example": 17095
+                  },
+                  "link": {
+                    "type": "string",
+                    "example": "https://www.facebook.com/post/123"
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "example": 1000
+                  },
+                  "reference": {
+                    "type": "string",
+                    "example": "ORD-SMM-12345"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order placed successfully"
+          },
+          "400": {
+            "description": "Insufficient balance or invalid parameters"
+          }
+        },
+        "tags": [
+          "SMM Services"
+        ],
+        "operationId": "post_v1_smm_create_order"
+      }
+    },
+    "/v1/smm/deposit": {
+      "post": {
+        "summary": "Create instant ABA KHQR to top up SMM Wallet balance",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "amount"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "string",
+                    "example": "10.00"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "enum": [
+                      "USD",
+                      "KHR"
+                    ],
+                    "default": "USD"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Deposit KHQR created for SMM balance"
+          }
+        },
+        "tags": [
+          "SMM Services"
+        ],
+        "operationId": "post_v1_smm_deposit"
+      }
+    },
+    "/v1/transactions": {
+      "get": {
+        "summary": "List transactions (filtered, paginated)",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "PAID",
+                "FAILED",
+                "EXPIRED"
+              ]
+            }
+          },
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "USD",
+                "KHR"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 200
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "get_v1_transactions"
+      }
+    },
+    "/v1/transactions/{id}": {
+      "get": {
+        "summary": "Retrieve one transaction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "get_v1_transactions_id"
+      }
+    },
+    "/v1/transactions/{id}/cancel": {
+      "post": {
+        "summary": "Cancel a pending transaction",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cancelled"
+          },
+          "409": {
+            "description": "Already paid or not pending"
+          }
+        },
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "post_v1_transactions_id_cancel"
+      }
+    },
+    "/v1/transactions/{id}/qr.png": {
+      "get": {
+        "summary": "QR code as a PNG image",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 512,
+              "minimum": 128,
+              "maximum": 1024
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PNG image",
+            "content": {
+              "image/png": {}
+            }
+          }
+        },
+        "tags": [
+          "Transactions"
+        ],
+        "operationId": "get_v1_transactions_id_qr_png"
+      }
+    },
+    "/v1/merchant/slots": {
+      "get": {
+        "summary": "List merchant accounts (1 / 3 / 10 / 25 depending on plan)",
+        "responses": {
+          "200": {
+            "description": "List of configured merchant slots"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "get_v1_merchant_slots"
+      },
+      "post": {
+        "summary": "Add a new merchant slot",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "link_url"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Main Game Store"
+                  },
+                  "link_url": {
+                    "type": "string",
+                    "example": "https://link.payway.com.kh/ABAPAYIn442384e"
+                  },
+                  "currency": {
+                    "type": "string",
+                    "example": "USD"
+                  },
+                  "generate_key": {
+                    "type": "boolean",
+                    "example": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Merchant slot created"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "post_v1_merchant_slots"
+      }
+    },
+    "/v1/stats": {
+      "get": {
+        "summary": "Totals and conversion rate for the merchant",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "get_v1_stats"
+      }
+    },
+    "/v1/links": {
+      "get": {
+        "summary": "List ABA links per currency",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "get_v1_links"
+      }
+    },
+    "/v1/links/{currency}": {
+      "put": {
+        "summary": "Set the ABA link for a currency",
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "USD",
+                "KHR"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "link_url"
+                ],
+                "properties": {
+                  "link_url": {
+                    "type": "string",
+                    "example": "https://link.payway.com.kh/ABAPAYIn442384e"
+                  },
+                  "verify": {
+                    "type": "boolean",
+                    "description": "Also check the link responds with HTTP 200."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved"
+          },
+          "400": {
+            "description": "Invalid link"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "put_v1_links_currency"
+      },
+      "delete": {
+        "summary": "Remove the ABA link for a currency",
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Removed"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "delete_v1_links_currency"
+      }
+    },
+    "/v1/currencies": {
+      "get": {
+        "summary": "Supported currencies",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "System"
+        ],
+        "security": [],
+        "operationId": "get_v1_currencies"
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "summary": "Identify the calling API key",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "get_v1_me"
+      }
+    },
+    "/v1/webhook": {
+      "get": {
+        "summary": "Current webhook configuration",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "get_v1_webhook"
+      },
+      "put": {
+        "summary": "Set or clear the webhook URL",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://shop.example.com/hook"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved — returns the signing secret once"
+          }
+        },
+        "tags": [
+          "Merchant"
+        ],
+        "operationId": "put_v1_webhook"
+      }
+    },
+    "/v1/ping": {
+      "get": {
+        "summary": "Liveness probe",
+        "responses": {
+          "200": {
+            "description": "pong"
+          }
+        },
+        "tags": [
+          "System"
+        ],
+        "security": [],
+        "operationId": "get_v1_ping"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Payments",
+      "description": "KHQR payment creation and settlement checks."
+    },
+    {
+      "name": "Game Top-up",
+      "description": "Game catalog, player validation, wallet deposits and orders."
+    },
+    {
+      "name": "SMM Services",
+      "description": "Social media marketing services, orders and wallet deposits."
+    },
+    {
+      "name": "Transactions",
+      "description": "Transaction history, cancellation and QR retrieval."
+    },
+    {
+      "name": "Merchant",
+      "description": "Merchant slots, links, webhooks and account details."
+    },
+    {
+      "name": "System",
+      "description": "Status, capabilities, currencies and liveness."
+    }
+  ],
+  "externalDocs": {
+    "description": "Interactive VngZz 2 Game API Reference",
+    "url": "https://www.vngzz2game.site/api/openapi"
+  }
+}

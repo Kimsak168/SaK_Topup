@@ -15,6 +15,16 @@ export interface AnajakPayConfig {
 }
 
 /**
+ * Check if AnajakPay environment credentials are configured.
+ */
+export function isAnajakPayConfigured(): boolean {
+  return Boolean(
+    process.env.ANAJAKPAY_PROFILE_ID?.trim() &&
+    process.env.ANAJAKPAY_SECRET_KEY?.trim()
+  );
+}
+
+/**
  * Validate and retrieve AnajakPay environment credentials safely.
  * Never prints or leaks secrets in logs or errors.
  */
@@ -364,3 +374,57 @@ export async function queryAnajakPayTransactionStatus(
     details: result.raw,
   };
 }
+
+let cachedHealth: { available: boolean; message?: string; checkedAt: number } | null = null;
+const HEALTH_CACHE_TTL_MS = 30000; // 30 seconds
+
+/**
+ * Checks whether AnajakPay's KHQRcc checkout rail is operational.
+ * Probes the V2 endpoint and caches the result for 30s to avoid excessive requests.
+ */
+export async function checkAnajakPayHealth(force = false): Promise<{ available: boolean; message?: string }> {
+  if (!force && cachedHealth && Date.now() - cachedHealth.checkedAt < HEALTH_CACHE_TTL_MS) {
+    return { available: cachedHealth.available, message: cachedHealth.message };
+  }
+
+  try {
+    const { profileId, secretKey, appUrl } = getAnajakPayConfig();
+    const testTxn = "TXN-HEALTH-PROBE";
+    const amount = "1.00";
+    const successUrl = `${appUrl}/payment/health`;
+    const remark = "HealthProbe";
+    const dataToSign = `${secretKey}${testTxn}${amount}${successUrl}${remark}`;
+    const hash = crypto.createHash("sha1").update(dataToSign).digest("hex");
+
+    const probeUrl = `https://anajakpay.com/api/payment/requestv2/${encodeURIComponent(profileId)}?transaction_id=${testTxn}&amount=${amount}&success_url=${encodeURIComponent(successUrl)}&remark=${encodeURIComponent(remark)}&hash=${hash}`;
+
+    const res = await fetch(probeUrl, {
+      method: "GET",
+      signal: AbortSignal.timeout(3500),
+    });
+
+    if (res.status === 503) {
+      const text = await res.text().catch(() => "");
+      const isKhqrccDown = text.includes("KHQRcc Service Unavailable") || text.includes("Unavailable");
+      const message = isKhqrccDown
+        ? "AnajakPay KHQRcc rail is temporarily undergoing maintenance."
+        : "AnajakPay gateway service is temporarily unavailable (503).";
+      cachedHealth = { available: false, message, checkedAt: Date.now() };
+      return { available: false, message };
+    }
+
+    if (!res.ok && res.status >= 500) {
+      const message = `AnajakPay server error (${res.status}).`;
+      cachedHealth = { available: false, message, checkedAt: Date.now() };
+      return { available: false, message };
+    }
+
+    cachedHealth = { available: true, checkedAt: Date.now() };
+    return { available: true };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Connection timeout";
+    cachedHealth = { available: false, message: `AnajakPay network error: ${message}`, checkedAt: Date.now() };
+    return { available: false, message };
+  }
+}
+

@@ -6,6 +6,7 @@ import { GamePackage } from "@/models/GamePackage";
 import type { ClientGame, ClientPackage } from "@/types/game";
 import { cachePublicQuery, CATALOGUE_TAG, invalidateCatalogueCache } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
+import { legacyImageBytes, setCachedLegacyImage } from "./legacyImageService";
 
 const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Promise<ClientGame[]> =>
   withCatalogueTimeout(catalogueQuery("games", async () => {
@@ -62,19 +63,19 @@ export const getGameBySupplierAndCode = cache(async (
     "freefire_global": "freefire_khsgmy", "free-fire-global": "freefire_khsgmy",
     "freefire_khsgmy": "freefire_khsgmy", "free-fire-khsgmy": "freefire_khsgmy", "ff-khsgmy": "freefire_khsgmy",
     khsgmy: "freefire_khsgmy",
-    "pubg-mobile": "pubgm", "mobile-legends": "mlbb", "mlbb_global": "mlbb",
-    "honor-of-kings": "hok", "honor_of_kings": "hok",
+    "pubg-mobile": "pubgm", pubg: "pubgm", "pubg_mobile": "pubgm",
+    "mobile-legends": "mlbb", mlbb_global: "mlbb",
+    "honor-of-kings": "hok", honor_of_kings: "hok",
+    "blood-strike": "bloodstrike",
+    "magic-chess-gogo": "magic_chess", "magic-chess": "magic_chess",
+    "8-ball-pool": "8ballpool", "8ball": "8ballpool",
+    telegram: "telegram", "telegram-stars": "telegram", "telegram_stars": "telegram", tg: "telegram",
   };
   const raw = rawCode.toLowerCase().trim();
   const code = aliases[raw] || raw;
-  const targetSupplier = (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
-    : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
-    : ["pubgm"].includes(code) ? "g2bulk"
-    : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
-    : supplier;
-  if (!["vizo", "g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
-  if (targetSupplier !== supplier || raw !== code) {
-    return { game: null, shouldRedirect: `/games/${targetSupplier}/${code}` };
+  const targetSupplier = "webbuilder";
+  if (supplier !== "webbuilder" || raw !== code) {
+    return { game: null, shouldRedirect: `/games/webbuilder/${code}` };
   }
   // Share the same catalogue across metadata, page, and package slug resolution.
   const games = await getCatalogue();
@@ -107,14 +108,27 @@ export async function updatePackageSellingPrice(
 // Supplier sync is an explicit admin action. Failed reads throw and are never
 // cached as a successful empty catalogue. Only customer fields leave the server.
 const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
-  supplier: "vizo" | "g2bulk" | "webbuilder", code: string, slug: string
+  supplier: "webbuilder", code: string, slug: string
 ): Promise<ClientPackage[]> => withCatalogueTimeout(catalogueQuery("packages", async () => {
   const configs = await GamePackage.find({
     supplier,
     $or: [{ gameCode: code }, { gameSlug: { $in: [...new Set([code, slug])] } }],
   })
-    .select("supplierProductCode name diamondsOrPoints sellingPrice originalPrice currency badge bonus isFeatured isActive customImage sortOrder updatedAt")
+    .select("supplierProductCode name diamondsOrPoints sellingPrice originalPrice currency badge bonus isFeatured isActive customImage sortOrder updatedAt imageData imageContentType")
     .sort({ sortOrder: 1, sellingPrice: 1 }).maxTimeMS(4000).lean();
+
+  for (const cfg of configs) {
+    if (cfg.imageData && cfg.imageContentType) {
+      const bytes = legacyImageBytes(cfg.imageData);
+      if (bytes) {
+        setCachedLegacyImage(`package:${String(cfg._id)}`, {
+          bytes,
+          contentType: cfg.imageContentType,
+          updatedAt: cfg.updatedAt,
+        });
+      }
+    }
+  }
 
   return configs.map(cfg => {
     const hasPrice = typeof cfg.sellingPrice === "number" && Number.isFinite(cfg.sellingPrice) && cfg.sellingPrice > 0;
@@ -131,8 +145,8 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
     const isDiamondGame = isFreeFire || isMlbb || code === "mlbb" || slug === "mlbb";
     const isSpecial = /\b(pass|pack|package|weekly|monthly|twilight|starlight|member|subscription|bundle|membership|vip|level\s*up)\b/i.test(baseName);
     const isDiamondPackage = !isSpecial && (/\bdiamonds?\b/i.test(baseName) || /\bdiamonds?\b/i.test(baseDiamonds) || isNumeric);
-    const group = (supplier === "vizo" || isDiamondPackage) ? "diamonds" : "special";
-    const name = (supplier === "vizo" || isDiamondGame) && !baseName.includes("Diamond") && isNumeric
+    const group = isDiamondPackage ? "diamonds" : "special";
+    const name = isDiamondGame && !baseName.includes("Diamond") && isNumeric
       ? `${baseName} Diamonds`
       : baseName;
     const diamondsOrPoints = isDiamondsNumeric && isDiamondGame

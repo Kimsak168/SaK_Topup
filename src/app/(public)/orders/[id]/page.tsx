@@ -13,6 +13,7 @@ import {
   Check,
   Zap,
   ArrowRight,
+  AlertTriangle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { openKhqrInPageCheckout, closeKhqrInPageCheckout } from "@/lib/khqrPlugin";
@@ -52,6 +53,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [copiedOrder, setCopiedOrder] = useState(false);
   const [copiedTxn, setCopiedTxn] = useState(false);
+  const [gatewayDown, setGatewayDown] = useState(false);
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -75,6 +77,14 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
 
   useEffect(() => {
     fetchOrder();
+    fetch("/api/payment/anajakpay/health")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.available === false) {
+          setGatewayDown(true);
+        }
+      })
+      .catch(() => {});
     return () => closeKhqrInPageCheckout();
   }, [fetchOrder]);
 
@@ -344,24 +354,45 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
           </div>
         </div>
 
-        {/* Pending Payment Pay Button */}
+        {/* Pending Payment Pay Button & Maintenance Alert */}
         {isPending && order.checkoutUrl && (
-          <div className="p-5 rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="space-y-1 text-center sm:text-left">
-              <div className="font-bold text-[#172033] text-sm">Payment Pending</div>
-              <p className="text-xs text-[#64748B]">
-                Complete your ABA Mobile or KHQR payment to trigger instant delivery.
-              </p>
+          <div className="space-y-3">
+            {gatewayDown && (
+              <div
+                role="alert"
+                className="p-4 rounded-2xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 dark:border-amber-500/30 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200 animate-in fade-in"
+              >
+                <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <div className="font-bold flex items-center gap-1.5 flex-wrap">
+                    <span>AnajakPay KHQR Rail Temporarily Down</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-amber-200/80 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                      Bank Maintenance
+                    </span>
+                  </div>
+                  <p className="text-[11px] opacity-90 leading-relaxed">
+                    AnajakPay&apos;s banking rail is currently undergoing maintenance (KHQRcc unavailable). Checkout may be delayed. Please check back shortly.
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="p-5 rounded-2xl bg-[#F0FDF4] border border-[#BBF7D0] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="space-y-1 text-center sm:text-left">
+                <div className="font-bold text-[#172033] text-sm">Payment Pending</div>
+                <p className="text-xs text-[#64748B]">
+                  Complete your ABA Mobile or KHQR payment to trigger instant delivery.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleOpenInPageCheckout}
+                className="py-3 px-6 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
+              >
+                <CreditCard className="h-4 w-4" />
+                <span>Complete Payment with KHQR</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleOpenInPageCheckout}
-              className="py-3 px-6 rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] text-white font-bold text-xs transition-all shadow-xs flex items-center gap-2 shrink-0 cursor-pointer"
-            >
-              <CreditCard className="h-4 w-4" />
-              <span>Complete Payment with KHQR</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
           </div>
         )}
 

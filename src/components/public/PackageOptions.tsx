@@ -21,6 +21,7 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
     : 0;
   const [failedImage, setFailedImage] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const customImageSrc = pkg.customImage?.trim();
   const diamondImage = defaultDiamondImage;
   const imageSrc = customImageSrc && failedImage !== customImageSrc
@@ -61,8 +62,14 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
             fill
             sizes="(max-width: 639px) 44px, 48px"
             loading="lazy"
-            className="object-contain scale-115"
-            onError={() => setFailedImage(imageSrc)}
+            className={`object-contain scale-115 transition-opacity duration-200 ease-out ${
+              isLoaded ? "opacity-100" : "opacity-0"
+            }`}
+            onLoad={() => setIsLoaded(true)}
+            onError={() => {
+              setIsLoaded(true);
+              setFailedImage(imageSrc);
+            }}
           />
         ) : isDiamond ? (
           <Zap className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC] stroke-[2] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />

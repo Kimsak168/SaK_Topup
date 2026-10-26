@@ -15,7 +15,8 @@ export interface IOrder extends Document {
   buyingPrice?: number; // Supplier wholesale cost in USD
   profit?: number; // amount - buyingPrice
   currency: string;
-  paymentMethod: "khqr" | "aba" | "wing" | "binance" | "manual";
+  paymentMethod: "khqr" | "aba" | "wing" | "binance" | "manual" | "aba_payway_v2";
+  paymentGateway?: "anajakpay" | "aba_payway_v2" | string;
   paymentStatus:
     | "pending"
     | "paid"
@@ -79,6 +80,7 @@ const OrderSchema = new Schema<IOrder>(
     supplier: {
       type: String,
       enum: ["vizo", "g2bulk", "webbuilder"],
+      default: "webbuilder",
       required: true,
       index: true,
     },
@@ -128,8 +130,13 @@ const OrderSchema = new Schema<IOrder>(
     },
     paymentMethod: {
       type: String,
-      enum: ["khqr", "aba", "wing", "binance", "manual"],
+      enum: ["khqr", "aba", "wing", "binance", "manual", "aba_payway_v2"],
       default: "khqr",
+    },
+    paymentGateway: {
+      type: String,
+      enum: ["anajakpay", "aba_payway_v2", "manual"],
+      default: "anajakpay",
     },
     paymentStatus: {
       type: String,

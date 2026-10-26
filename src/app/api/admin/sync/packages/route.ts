@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   if (!auth.authorized) return auth.response;
 
   try {
-    let body: { gameCode?: string; supplier?: "vizo" | "g2bulk" | "webbuilder"; onlyActiveGames?: boolean } = {};
+    let body: { gameCode?: string; supplier?: "webbuilder"; onlyActiveGames?: boolean } = {};
     try {
       body = await req.json();
     } catch {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Packages synchronized successfully from real supplier APIs",
+      message: "Packages synchronized successfully from WebBuilder API",
       stats,
     });
   } catch (error: unknown) {

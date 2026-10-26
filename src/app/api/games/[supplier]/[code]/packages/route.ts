@@ -26,17 +26,8 @@ export async function GET(
   try {
     const { supplier, code } = await context.params;
 
-    // 1. Validate supplier parameter
-    const normalizedSupplier = supplier?.trim().toLowerCase();
-    if (!normalizedSupplier || (normalizedSupplier !== "vizo" && normalizedSupplier !== "g2bulk" && normalizedSupplier !== "webbuilder")) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "Invalid supplier. Supported suppliers are 'vizo', 'g2bulk', and 'webbuilder'.",
-        },
-        { status: 400 }
-      );
-    }
+    // 1. Normalize supplier to WebBuilder
+    const normalizedSupplier = "webbuilder";
 
     // 2. Validate game code parameter
     const rawCode = code?.trim();
@@ -51,7 +42,7 @@ export async function GET(
     }
 
     // 4. Fetch packages directly from MongoDB / cache
-    // Never synchronizes with Vizo or G2Bulk during public customer requests
+    // Only uses local database / cache; synchronization is strictly via admin controls
     const packages = await getNormalizedPackages(normalizedSupplier, rawCode);
 
     return NextResponse.json(

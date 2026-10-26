@@ -27,7 +27,7 @@ interface AdminGame {
   id: string;
   slug: string;
   name: string;
-  supplier: "vizo" | "g2bulk" | "webbuilder";
+  supplier: "webbuilder";
   supplierGameCode: string;
   category: string;
   image: string;
@@ -45,13 +45,11 @@ interface KPIStats {
   totalAll: number;
   activeCount: number;
   disabledCount: number;
-  vizoCount: number;
-  g2bulkCount: number;
+  webbuilderCount: number;
 }
 
 interface SyncSummary {
-  vizo: { imported: number; updated: number; skipped: number; failed: number; total: number; errors: string[] };
-  g2bulk: { imported: number; updated: number; skipped: number; failed: number; total: number; errors: string[] };
+  webbuilder?: { imported: number; updated: number; skipped: number; failed: number; total: number; errors: string[] };
   totalImported: number;
   totalUpdated: number;
   totalSkipped: number;
@@ -65,8 +63,7 @@ export default function AdminGamesPage() {
     totalAll: 0,
     activeCount: 0,
     disabledCount: 0,
-    vizoCount: 0,
-    g2bulkCount: 0,
+    webbuilderCount: 0,
   });
 
   // Filters
@@ -156,7 +153,7 @@ export default function AdminGamesPage() {
   const handleSyncGames = async () => {
     try {
       setIsSyncing(true);
-      toast.loading("Fetching real games catalogue from Vizo and G2Bulk APIs...", { id: "sync-games" });
+      toast.loading("Fetching games catalogue from WebBuilder API...", { id: "sync-games" });
       const res = await fetch("/api/admin/sync/games", { method: "POST" });
       const data = await res.json();
 
@@ -270,10 +267,8 @@ export default function AdminGamesPage() {
       const data = await res.json();
       if (res.ok && data.success) {
         const count =
-          (data.stats?.vizo?.imported || 0) +
-          (data.stats?.vizo?.updated || 0) +
-          (data.stats?.g2bulk?.imported || 0) +
-          (data.stats?.g2bulk?.updated || 0);
+          (data.stats?.webbuilder?.imported || 0) +
+          (data.stats?.webbuilder?.updated || 0);
         toast.success(`Successfully synchronized ${count} packages for ${game.name}!`, {
           id: `sync-pkg-${game.id}`,
         });
@@ -298,20 +293,12 @@ export default function AdminGamesPage() {
             Game Management & Supplier Sync
           </h1>
           <p className="text-xs text-[#94A3B8] mt-1">
-            Import real games from Vizo and G2Bulk APIs, configure website visibility, and manage thumbnails.
+            Import real games from WebBuilder API, configure website visibility, and manage thumbnails.
           </p>
         </div>
 
         {/* Header Action Buttons */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <Link
-            href="/admin/games/mlbb-test"
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#243047] bg-[#111A2B] hover:bg-[#151F31] px-3.5 text-xs font-semibold text-[#F8FAFC] transition-colors"
-          >
-            <Gamepad2 className="h-3.5 w-3.5 text-[#22C55E]" />
-            <span>MLBB Cambodian Verification</span>
-          </Link>
-
           <button
             type="button"
             onClick={handleSyncGames}
@@ -319,19 +306,19 @@ export default function AdminGamesPage() {
             className="inline-flex h-9 items-center gap-2 rounded-lg bg-[#22C55E] px-4 text-xs font-semibold text-slate-950 hover:bg-[#16A34A] transition-colors disabled:opacity-50 cursor-pointer"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${isSyncing ? "animate-spin" : ""}`} />
-            <span>{isSyncing ? "Syncing from APIs..." : "Sync Games from APIs"}</span>
+            <span>{isSyncing ? "Syncing from WebBuilder..." : "Sync Games from WebBuilder"}</span>
           </button>
         </div>
       </div>
 
       {/* KPI Cards Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#243047] space-y-1">
           <span className="text-[11px] font-semibold text-[#64748B] uppercase tracking-wider">
             Total Catalogue
           </span>
           <div className="text-xl font-bold text-[#F8FAFC]">{kpi.totalAll}</div>
-          <span className="text-[10px] text-[#64748B]">Real supplier games</span>
+          <span className="text-[10px] text-[#64748B]">WebBuilder catalog</span>
         </div>
 
         <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#22C55E]/20 space-y-1">
@@ -350,20 +337,12 @@ export default function AdminGamesPage() {
           <span className="text-[10px] text-[#64748B]">Not shown on store</span>
         </div>
 
-        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-[#38BDF8]/20 space-y-1">
-          <span className="text-[11px] font-semibold text-[#38BDF8] uppercase tracking-wider">
-            Vizo (Free Fire)
+        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-emerald-500/20 space-y-1">
+          <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">
+            Active Supplier
           </span>
-          <div className="text-xl font-bold text-[#38BDF8]">{kpi.vizoCount}</div>
-          <span className="text-[10px] text-[#64748B]">Exclusively Vizo</span>
-        </div>
-
-        <div className="rounded-xl p-3.5 bg-[#111A2B] border border-indigo-500/20 space-y-1">
-          <span className="text-[11px] font-semibold text-indigo-400 uppercase tracking-wider">
-            G2Bulk Games
-          </span>
-          <div className="text-xl font-bold text-indigo-400">{kpi.g2bulkCount}</div>
-          <span className="text-[10px] text-[#64748B]">PUBG, MLBB, etc.</span>
+          <div className="text-xl font-bold text-emerald-400">WebBuilder</div>
+          <span className="text-[10px] text-[#64748B]">Automated delivery</span>
         </div>
       </div>
 
@@ -393,10 +372,7 @@ export default function AdminGamesPage() {
             }}
             className="rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
-            <option value="all">All Suppliers</option>
-            <option value="vizo">Vizo (Free Fire)</option>
-            <option value="webbuilder">WebBuilder (Honor of Kings)</option>
-            <option value="g2bulk">G2Bulk</option>
+            <option value="all">Supplier: WebBuilder</option>
           </select>
 
           {/* Visibility Filter */}
@@ -479,19 +455,9 @@ export default function AdminGamesPage() {
 
                     {/* Supplier */}
                     <td className="py-2.5 px-3.5">
-                      {game.supplier === "vizo" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-[#38BDF8]/10 border border-[#38BDF8]/20 px-2 py-0.5 text-[10px] font-semibold text-[#38BDF8]">
-                          ⚡ VIZO API
-                        </span>
-                      ) : game.supplier === "webbuilder" ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                          🛡️ WEBBUILDER API
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 text-[10px] font-semibold text-indigo-400">
-                          🚀 G2BULK API
-                        </span>
-                      )}
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                        🛡️ WEBBUILDER API
+                      </span>
                     </td>
 
                     {/* Supplier Game Code */}
@@ -612,20 +578,11 @@ export default function AdminGamesPage() {
               Real catalogue endpoints were queried. Administrator settings and custom configurations were safely preserved.
             </p>
 
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1">
-                <div className="font-semibold text-[#38BDF8]">Vizo (Free Fire)</div>
-                <div className="text-[#94A3B8]">Imported: {syncSummary.vizo.imported}</div>
-                <div className="text-[#94A3B8]">Updated: {syncSummary.vizo.updated}</div>
-                <div className="text-[#64748B]">Total Vizo: {syncSummary.vizo.total}</div>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1">
-                <div className="font-semibold text-indigo-400">G2Bulk Catalogue</div>
-                <div className="text-[#94A3B8]">Imported: {syncSummary.g2bulk.imported}</div>
-                <div className="text-[#94A3B8]">Updated: {syncSummary.g2bulk.updated}</div>
-                <div className="text-[#64748B]">Total G2Bulk: {syncSummary.g2bulk.total}</div>
-              </div>
+            <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1 text-xs">
+              <div className="font-semibold text-emerald-400">WebBuilder Reseller API</div>
+              <div className="text-[#94A3B8]">Imported: {syncSummary.webbuilder?.imported ?? syncSummary.totalImported}</div>
+              <div className="text-[#94A3B8]">Updated: {syncSummary.webbuilder?.updated ?? syncSummary.totalUpdated}</div>
+              <div className="text-[#64748B]">Total Processed: {syncSummary.webbuilder?.total ?? (syncSummary.totalImported + syncSummary.totalUpdated)}</div>
             </div>
 
             <div className="p-3 rounded-lg bg-[#22C55E]/10 border border-[#22C55E]/20 text-xs text-[#22C55E] flex items-center justify-between">
@@ -635,9 +592,9 @@ export default function AdminGamesPage() {
               </span>
             </div>
 
-            {syncSummary.vizo.errors.length > 0 && (
+            {syncSummary.webbuilder?.errors && syncSummary.webbuilder.errors.length > 0 && (
               <div className="text-[11px] text-rose-400 bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20">
-                {syncSummary.vizo.errors.join(", ")}
+                {syncSummary.webbuilder.errors.join(", ")}
               </div>
             )}
 

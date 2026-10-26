@@ -20,7 +20,7 @@ interface AdminOrder {
   gameSlug: string;
   gameName: string;
   packageName: string;
-  supplier: "vizo" | "g2bulk";
+  supplier: "webbuilder" | "vizo" | "g2bulk" | string;
   supplierProductCode: string;
   playerId: string;
   serverId: string | null;
@@ -400,8 +400,7 @@ export default function AdminOrdersPage() {
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-2 text-xs text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
             <option value="all">All Suppliers</option>
-            <option value="vizo">Vizo (Free Fire)</option>
-            <option value="g2bulk">G2Bulk</option>
+            <option value="webbuilder">WebBuilder</option>
           </select>
         </div>
       </div>

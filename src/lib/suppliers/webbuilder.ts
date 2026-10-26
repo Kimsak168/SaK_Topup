@@ -592,6 +592,21 @@ export async function getWebBuilderProducts(options?: {
     if (targetCode.includes("hok") || targetCode.includes("honor")) {
       return rawList.filter(isHonorOfKingsProduct);
     }
+    if (targetCode.includes("pubg")) {
+      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("pubg")));
+    }
+    if (targetCode.includes("blood")) {
+      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("blood strike")));
+    }
+    if (targetCode.includes("magic") || targetCode.includes("chess")) {
+      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("magic chess")));
+    }
+    if (targetCode.includes("8ball") || targetCode.includes("pool")) {
+      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("8 ball")));
+    }
+    if (targetCode.includes("telegram") || targetCode === "tg") {
+      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("telegram")));
+    }
   }
 
   if (options?.honorOfKingsOnly === false) {

@@ -7,6 +7,7 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import {
   generateAnajakPayV2Checkout,
+  checkAnajakPayHealth,
   AnajakPayConfigError,
 } from "@/lib/services/anajakPayService";
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
     if (!body || typeof body !== "object" || Array.isArray(body) ||
       ["orderNumber", "gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName"].some(
         key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      ) || (body.supplier !== undefined && !["vizo", "g2bulk", "webbuilder"].includes(body.supplier))) {
+      ) || (body.supplier !== undefined && body.supplier !== "webbuilder")) {
       return NextResponse.json({ success: false, error: "Invalid checkout details" }, { status: 400 });
     }
     const {
@@ -35,6 +36,21 @@ export async function POST(req: NextRequest) {
     if (!orderNumber && (!String(playerId || "").trim() || !String(supplierProductCode || "").trim())) {
       return NextResponse.json({ success: false, error: "Player ID and package selection are required" }, { status: 400 });
     }
+
+    // Check AnajakPay gateway health before proceeding
+    const health = await checkAnajakPayHealth();
+    if (!health.available) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "AnajakPay KHQR is temporarily undergoing bank rail maintenance (KHQRcc service unavailable). Payment processing is temporarily paused. Please try again shortly or contact support.",
+          isMaintenance: true,
+          details: health.message,
+        },
+        { status: 503 }
+      );
+    }
+
     await connectDB();
 
     let targetOrder = null;
@@ -60,7 +76,7 @@ export async function POST(req: NextRequest) {
 
       // Authoritative Price Verification from MongoDB GamePackage
       const pkg = await GamePackage.findOne({
-        supplier: targetOrder.supplier,
+        supplier: "webbuilder",
         supplierProductCode: targetOrder.supplierProductCode,
         $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
       }).lean();
@@ -85,22 +101,8 @@ export async function POST(req: NextRequest) {
       // Create pending order flow directly
       const cleanPlayerId = String(playerId || "").trim();
       const cleanProductCode = String(supplierProductCode || "").trim();
-      const cleanGameSlug = String(gameSlug || "freefire_sgmy").trim();
-      let cleanSupplier = (supplier === "g2bulk" ? "g2bulk" : supplier === "webbuilder" ? "webbuilder" : supplier === "vizo" ? "vizo" : undefined) as "vizo" | "g2bulk" | "webbuilder" | undefined;
-      if (!cleanSupplier) {
-        const isFreeFire = cleanGameSlug.includes("freefire") || cleanGameSlug.includes("free-fire") || cleanGameSlug === "ff";
-        const isMlbb = cleanGameSlug.includes("mlbb") || cleanGameSlug.includes("mobile-legends");
-        const isHok = cleanGameSlug.includes("hok") || cleanGameSlug.includes("honor-of-kings");
-        if (isFreeFire || isMlbb || isHok) {
-          cleanSupplier = "webbuilder";
-        } else {
-          const activeGame = await Game.findOne({
-            $or: [{ slug: cleanGameSlug }, { supplierGameCode: cleanGameSlug }],
-            isActive: true,
-          }).lean();
-          cleanSupplier = (activeGame?.supplier as "vizo" | "g2bulk" | "webbuilder") || "vizo";
-        }
-      }
+      const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
+      const cleanSupplier = "webbuilder" as const;
 
       if (!cleanPlayerId) {
         return NextResponse.json(

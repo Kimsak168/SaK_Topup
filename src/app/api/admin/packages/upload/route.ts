@@ -5,6 +5,8 @@ import { connectDB } from "@/lib/mongodb";
 import { GamePackage } from "@/models/GamePackage";
 import { requireAdminAuth } from "@/lib/auth";
 import { readBannerImage } from "@/lib/bannerUpload";
+import { hasBlobToken, uploadToBlob } from "@/lib/services/blobService";
+import { invalidateLegacyImage } from "@/lib/services/legacyImageService";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -57,15 +59,30 @@ export async function POST(req: NextRequest) {
     };
 
     if (imageData && imageContentType) {
-      updateFields.imageData = imageData;
-      updateFields.imageContentType = imageContentType;
-      updateFields.customImage = `/api/packages/${packageId}/image?v=${randomUUID()}`;
+      if (hasBlobToken()) {
+        const ext = imageContentType.split("/")[1] || "png";
+        const uploaded = await uploadToBlob({
+          file: imageData,
+          filename: `pkg-${packageId}.${ext}`,
+          folder: "packages",
+          contentType: imageContentType,
+        });
+        updateFields.customImage = uploaded.url;
+        updateFields.imageData = null;
+        updateFields.imageContentType = null;
+      } else {
+        updateFields.imageData = imageData;
+        updateFields.imageContentType = imageContentType;
+        updateFields.customImage = `/api/packages/${packageId}/image?v=${randomUUID()}`;
+      }
+      invalidateLegacyImage(`package:${packageId}`);
     } else if (customImageUrl !== null) {
       updateFields.customImage = customImageUrl;
       if (!customImageUrl) {
         updateFields.imageData = null;
         updateFields.imageContentType = null;
       }
+      invalidateLegacyImage(`package:${packageId}`);
     }
 
     const updated = await GamePackage.findByIdAndUpdate(

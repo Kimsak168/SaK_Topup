@@ -33,6 +33,7 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
   const href = game.path || `/games/${game.supplier}/${game.code || game.slug}`;
   const imageSource = getImageSource(game.image);
   const [failedImage, setFailedImage] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const imgSrc = failedImage === imageSource || failedImageSources.has(imageSource)
     ? FALLBACK_IMAGE
     : imageSource;
@@ -55,15 +56,23 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       }}
       className="game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-white outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#22C55E] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:-translate-y-[2px] motion-reduce:transition-none sm:rounded-[16px]"
     >
-      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F7FFF9]">
+      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
+        {/* Shimmer skeleton while image loads */}
+        {!isLoaded && (
+          <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
+        )}
         <Image
           src={imgSrc}
           alt={game.name}
           fill
           sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 20vw, 280px"
           loading="lazy"
-          className="game-card-image object-cover object-center transition-[scale] duration-200 ease-out motion-safe:pointer-fine:group-hover:scale-[1.02] motion-reduce:transition-none"
+          className={`game-card-image relative z-10 object-cover object-center transition-[scale,opacity] duration-300 ease-out motion-safe:pointer-fine:group-hover:scale-[1.02] motion-reduce:transition-none ${
+            isLoaded ? "opacity-100" : "opacity-0"
+          }`}
+          onLoad={() => setIsLoaded(true)}
           onError={() => {
+            setIsLoaded(true);
             if (imgSrc === FALLBACK_IMAGE) return;
             failedImageSources.add(imageSource);
             setFailedImage(imageSource);

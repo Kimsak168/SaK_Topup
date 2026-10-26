@@ -12,7 +12,7 @@ export const revalidate = 300;
 export const metadata: Metadata = {
   title: "SakSuuu Game Top-Up — បញ្ចូលលុយហ្គេមលឿនរហ័ស 24/7",
   description:
-    "Official game top-up platform for Cambodia. Instant recharge for Free Fire, PUBG Mobile, Mobile Legends, and more with Vizo and G2Bulk APIs.",
+    "Official game top-up platform for Cambodia. Instant recharge for Free Fire, PUBG Mobile, Mobile Legends, and more with WebBuilder API.",
 };
 
 async function BannerSection() {

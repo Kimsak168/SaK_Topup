@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="description" content="VngZz 2 Game API documentation for Cambodia KHQR payments, game top-up, SMM, pay links, transaction status and webhooks." />
+<meta name="theme-color" content="#0b1020" />
+<link rel="canonical" href="https://www.vngzz2game.site/api/document" />
+<link rel="icon" type="image/png" href="/brand/favicon-v2g.png" />
+<meta property="og:title" content="VngZz 2 Game API — Documentation" />
+<meta property="og:description" content="Build KHQR payments in USD and KHR with VngZz 2 Game." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.vngzz2game.site/api/document" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+<title>VngZz 2 Game API — Documentation</title>
+<style>
+  :root { --bg:#0b1020; --panel:#131a30; --line:#243050; --txt:#e6ebf7; --muted:#93a1c4; --accent:#4dd4ac; --post:#49a1ff; --get:#4dd4ac; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.6 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  .wrap { max-width:960px; margin:0 auto; padding:40px 22px 80px; }
+  h1 { font-size:30px; margin:0 0 6px; }
+  h2 { font-size:20px; margin:38px 0 12px; border-bottom:1px solid var(--line); padding-bottom:8px; }
+  h3 { font-size:15px; margin:20px 0 8px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+  p, li { color:#cbd5f0; }
+  code, pre { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+  pre { background:#0a0f1f; border:1px solid var(--line); border-radius:10px; padding:14px 16px; overflow:auto; font-size:13px; }
+  code.inline { background:#0a0f1f; border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:13px; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin:16px 0; }
+  .pill { display:inline-block; font-weight:700; font-size:12px; padding:3px 9px; border-radius:6px; margin-right:8px; }
+  .POST { background:rgba(73,161,255,.16); color:var(--post); }
+  .GET { background:rgba(77,212,172,.16); color:var(--get); }
+  table { width:100%; border-collapse:collapse; margin:10px 0 4px; font-size:14px; }
+  html { -webkit-text-size-adjust:100%; }
+  body { overflow-x:hidden; }
+  img, svg { max-width:100%; }
+  /* long endpoint paths and hashes must wrap instead of widening the page */
+  code.inline { word-break:break-all; overflow-wrap:anywhere; }
+  pre { max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  .tbl { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:10px 0 4px; }
+
+  @media (max-width:640px) {
+    .wrap { padding:26px 15px 60px; }
+    h1 { font-size:24px; }
+    h2 { font-size:18px; margin-top:30px; }
+    pre { font-size:12px; padding:12px 13px; }
+    /* tables scroll inside their own box rather than pushing the page wide */
+    table { display:block; overflow-x:auto; white-space:nowrap; font-size:13px; }
+    a { overflow-wrap:anywhere; }
+  }
+  @media (pointer:coarse) {
+    a { display:inline-block; min-height:44px; line-height:2.4; }
+    h1 a, h2 a, code a { min-height:0; }
+  }
+  @supports (padding: max(0px)) {
+    .wrap { padding-left:max(15px, env(safe-area-inset-left));
+            padding-right:max(15px, env(safe-area-inset-right));
+            padding-bottom:max(60px, calc(env(safe-area-inset-bottom) + 40px)); }
+  }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  .muted { color:var(--muted); }
+  .tag { color:var(--accent); }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VngZz 2 Game API <span class="muted">v1.0.0</span></h1>
+  <p class="muted">Accept ABA PayWay KHQR payments: create a payment, show the QR,
+  and confirm it server-side.</p>
+
+  <div class="card">
+    <h3>Base URL</h3>
+    <pre>https://www.vngzz2game.site/api</pre>
+    <h3>Authentication</h3>
+    <pre>X-API-Key: YOUR_API_KEY</pre>
+    <p class="muted">Also accepted: <code class="inline">Authorization: Bearer YOUR_API_KEY</code>
+    or <code class="inline">?api_key=YOUR_API_KEY</code>. The legacy
+    <code class="inline">https://www.vngzz2game.site/api/payment/request/&lt;key&gt;/v1/...</code> form still works.</p>
+    <h3>Machine-readable</h3>
+    <p><a href="/api/openapi">Interactive API Explorer</a> · <a href="/api/document?format=json">OpenAPI JSON</a> · <a href="/api/document?format=markdown">Markdown</a></p>
+  </div>
+
+  <h2>Endpoints</h2>
+  <table>
+    <tr><th>Method</th><th>Path</th><th>Purpose</th></tr>
+    <tr><td><span class="pill POST">POST</span></td><td><code class="inline">/v1/generate_qr</code></td><td>Create a payment session and return the KHQR</td></tr>
+    <tr><td><span class="pill POST">POST</span></td><td><code class="inline">/v1/check_transaction</code></td><td>Poll a transaction until it is paid</td></tr>
+    <tr><td><span class="pill GET">GET</span></td><td><code class="inline">/v1/status</code></td><td>Service + upstream health</td></tr>
+    <tr><td><span class="pill GET">GET</span></td><td><code class="inline">/v1/transactions</code></td><td>Recent transactions (debug)</td></tr>
+    <tr><td><span class="pill GET">GET</span></td><td><code class="inline">/checkout/payment/smmv2/&lt;key&gt;</code></td><td>SMM iframe widget (amount + KHQR)</td></tr>
+  </table>
+  <p class="muted">SMM iframe and Telegram Python bot:
+  <a href="/docs/smm-payment.md">SMM guide</a> ·
+  <a href="/docs/telegram-bot-python.md">Telegram bot</a> ·
+  <a href="/examples/telegram_payway_bot.py">telegram_payway_bot.py</a></p>
+
+  <h2><span class="pill POST">POST</span> /v1/generate_qr</h2>
+  <div class="card">
+    <h3>Body</h3>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr>
+      <tr><td>amount</td><td>string|number</td><td>yes</td><td>&gt; 0, max 2 decimals, max 20 chars</td></tr>
+      <tr><td>currency</td><td>string</td><td>no</td><td><code class="inline">USD</code> (default) or <code class="inline">KHR</code></td></tr>
+      <tr><td>idempotency_key</td><td>string</td><td>no</td><td>Also accepted as the <code class="inline">Idempotency-Key</code> header</td></tr>
+      <tr><td>payway_link_url</td><td>string</td><td>no</td><td>Override the hosted PayWay link; falls back if unreachable</td></tr>
+      <tr><td>metadata</td><td>object</td><td>no</td><td>Echoed back on every response</td></tr>
+    </table>
+    <h3>Request</h3>
+<pre>curl -X POST "https://www.vngzz2game.site/api/v1/generate_qr" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "content-type: application/json" \
+  -d '{"amount":"2.00","currency":"USD","idempotency_key":"order-1001"}'</pre>
+    <h3>Response 201</h3>
+<pre>{
+  "success": true,
+  "status": 201,
+  "message": "QR generated successfully.",
+  "data": {
+    "transaction_id": "TXN-1770000000000-a1b2c3d4",
+    "amount": "2.00",
+    "currency": "USD",
+    "state": "PENDING",
+    "expires_at": "2026-08-12T07:33:00.000Z",
+    "qr_string": "000201010212...6304ABCD",
+    "qr_image": "data:image/png;base64,iVBORw0KGgo...",
+    "qr_png_url": "https://www.vngzz2game.site/pay/2ZEf4syOpIEM/qr.png",
+    "pay_url": "https://www.vngzz2game.site/pay/2ZEf4syOpIEM",
+    "qr_image_url": null,
+    "deep_link": "abamobilebank://ababank.com?type=payway&amp;qrcode=...",
+    "is_mobile": false,
+    "expire_in_sec": 180,
+    "check_payload": {
+      "transaction_id": "TXN-1770000000000-a1b2c3d4"
+    }
+  }
+}</pre>
+    <p><b>QR image fields (updated 2026-10-23):</b> the QR image itself is generated by the
+    gateway and passed through the API — use <code class="inline">qr_image</code> (a base64
+    <code class="inline">data:image/png</code> URI, render it directly in
+    <code class="inline">&lt;img src="…"&gt;</code>) or <code class="inline">qr_png_url</code>
+    (a hosted PNG link). <code class="inline">qr_image_url</code> was the old ABA PayWay CDN
+    link and is now always <code class="inline">null</code> since ABA migrated its PayWay host
+    (the old <code class="inline">pwapp.ababank.com</code> download URLs no longer exist).
+    <code class="inline">check_payload</code> contains only the
+    <code class="inline">transaction_id</code> — PayWay credentials never leave the gateway.</p>
+  </div>
+
+  <h2><span class="pill POST">POST</span> /v1/check_transaction</h2>
+  <div class="card">
+    <p>Send <code class="inline">transaction_id</code> (the API remembers the PayWay credentials), or send
+    <code class="inline">client_id</code>, <code class="inline">device_id</code>, <code class="inline">request_time</code>
+    and <code class="inline">token</code> yourself if you store them. <code class="inline">GET</code> with the same
+    query parameters is also supported.</p>
+<pre>curl -X POST "https://www.vngzz2game.site/api/v1/check_transaction" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -H "content-type: application/json" \
+  -d '{"transaction_id":"TXN-1770000000000-a1b2c3d4"}'</pre>
+    <h3>Response 200</h3>
+<pre>{
+  "success": true,
+  "status": 200,
+  "message": "Payment approved",
+  "data": {
+    "transaction_id": "TXN-1770000000000-a1b2c3d4",
+    "amount": "2.00",
+    "currency": "USD",
+    "state": "PAID",
+    "is_paid": true,
+    "action": "approved",
+    "code": "00",
+    "payway_transaction_id": "158831340",
+    "receipt_url": "https://pwapp.ababank.com/.../download-receipt?...",
+    "checked_at": "2026-08-12T07:31:22.104Z"
+  },
+  "payway_raw": { "data": { "action": "approved" } }
+}</pre>
+    <h3>States</h3>
+    <table>
+      <tr><th>state</th><th>Meaning</th></tr>
+      <tr><td class="tag">PENDING</td><td>QR issued, customer has not paid yet. The background sweeper keeps checking — no need to poll.</td></tr>
+      <tr><td class="tag">PAID</td><td>PayWay reported the transaction as approved (<code class="inline">action: "approved"</code>, <code class="inline">payment_status</code>/<code class="inline">description</code> <code class="inline">APPROVED</code>, <code class="inline">payment_status_code: 0</code>, or APV + payer details)</td></tr>
+      <tr><td class="tag">FAILED</td><td>Declined, cancelled or errored</td></tr>
+      <tr><td class="tag">EXPIRED</td><td>QR TTL elapsed — a late payment may still be picked up by the grace sweep and settled as PAID</td></tr>
+    </table>
+    <p class="muted">Payments are detected automatically even if the customer closes the page: a background
+    sweeper checks every open QR against PayWay every <code class="inline">PAYMENT_SWEEP_MS</code> (default 15&nbsp;s),
+    settles paid transactions to <code class="inline">PAID</code> exactly once, and re-checks recently expired rows
+    within <code class="inline">PAYMENT_SWEEP_GRACE_SEC</code> for late payments.</p>
+  </div>
+
+  <h2><span class="pill GET">GET</span> /v1/status</h2>
+  <div class="card">
+<pre>curl "https://www.vngzz2game.site/api/v1/status?deep=true"</pre>
+<pre>{
+  "success": true,
+  "status": 200,
+  "data": {
+    "service": "vngzz2game-api",
+    "version": "1.0.0",
+    "state": "OPERATIONAL",
+    "uptime_seconds": 421,
+    "server_time": "2026-08-12T07:31:22.104Z",
+    "payway": { "checked": true, "reachable": true, "http_status": 200, "latency_ms": 312 },
+    "sweep": {
+      "running": true,
+      "interval_sec": 15,
+      "grace_sec": 900,
+      "last_tick": "2026-08-28T05:39:35Z",
+      "last_tick_ms": 1730,
+      "queries": 44,
+      "pending": 44,
+      "checked": 0,
+      "settled": 0,
+      "errors": 0
+    }
+  }
+}</pre>
+    <p class="muted">Live background payment-sweeper counters. A paid QR is settled to
+    <code class="inline">PAID</code> automatically even if the customer closed the checkout page —
+    you never have to keep a browser open for the payment to be detected.</p>
+  </div>
+
+  <h2>Errors &amp; limits</h2>
+  <div class="card">
+    <p>Every error uses the same envelope:</p>
+<pre>{ "success": false, "status": 400, "code": "INVALID_AMOUNT", "message": "Please enter an amount greater than 0." }</pre>
+    <table>
+      <tr><th>Code</th><th>HTTP</th><th>Cause</th></tr>
+      <tr><td>INVALID_AMOUNT</td><td>400</td><td>Amount missing, ≤ 0, too long, or &gt; 2 decimals</td></tr>
+      <tr><td>INVALID_CURRENCY</td><td>400</td><td>Currency is not USD or KHR</td></tr>
+      <tr><td>MISSING_FIELDS</td><td>400</td><td>No transaction_id and incomplete PayWay credentials</td></tr>
+      <tr><td>INVALID_API_KEY</td><td>401</td><td>Wrong key in path or header</td></tr>
+      <tr><td>TRANSACTION_NOT_FOUND</td><td>404</td><td>Unknown transaction_id (or it aged out of memory)</td></tr>
+      <tr><td>RATE_LIMITED</td><td>429</td><td>20 QR/min or 60 checks/min per IP</td></tr>
+      <tr><td>PAYWAY_ERROR</td><td>4xx/502</td><td>Upstream PayWay rejection, raw body included</td></tr>
+      <tr><td>PAYWAY_TIMEOUT</td><td>504</td><td>PayWay did not answer in time</td></tr>
+    </table>
+  </div>
+</div>
+</body>
+</html>

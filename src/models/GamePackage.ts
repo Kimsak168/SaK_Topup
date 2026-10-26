@@ -3,8 +3,8 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IGamePackage extends Document {
   gameSlug: string;
   gameCode?: string;
-  supplier: "vizo" | "g2bulk" | "webbuilder";
-  supplierProductCode: string; // Vizo product_code, G2Bulk catalogue id, or WebBuilder product id
+  supplier: "webbuilder";
+  supplierProductCode: string; // WebBuilder product id
   name: string;
   diamondsOrPoints?: string;
   bonus?: string;
@@ -43,7 +43,8 @@ const GamePackageSchema = new Schema<IGamePackage>(
     },
     supplier: {
       type: String,
-      enum: ["vizo", "g2bulk", "webbuilder"],
+      enum: ["webbuilder"],
+      default: "webbuilder",
       required: true,
       index: true,
     },

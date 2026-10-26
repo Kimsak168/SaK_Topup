@@ -177,7 +177,7 @@ function LoginForm() {
           </div>
           <div className="flex items-center gap-1">
             <Server className="h-3 w-3 shrink-0" />
-            <span>Vizo & G2Bulk Direct</span>
+            <span>WebBuilder Direct</span>
           </div>
         </div>
       </div>

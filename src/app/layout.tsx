@@ -21,7 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
   description:
-    "Instant automated game top-up for Free Fire, PUBG Mobile, Mobile Legends, and more. Direct official Vizo and G2Bulk API integrations with 24/7 delivery.",
+    "Instant automated game top-up for Free Fire, PUBG Mobile, Mobile Legends, and more. Direct official WebBuilder API integration with 24/7 delivery.",
   keywords: [
     "SakSuuu",
     "Game Top Up",
@@ -29,8 +29,8 @@ export const metadata: Metadata = {
     "PUBG Mobile UC",
     "Mobile Legends Diamonds",
     "MLBB Weekly Pass",
-    "Vizo API",
-    "G2Bulk API",
+    "Honor of Kings Tokens",
+    "WebBuilder API",
     "Instant Gaming Recharge",
   ],
 };

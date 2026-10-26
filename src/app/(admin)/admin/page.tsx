@@ -26,22 +26,12 @@ interface OverviewData {
   }>;
   salesChart: Array<{ date: string; revenue: number; orders: number }>;
   suppliers: {
-    vizo: { configured: boolean };
-    g2bulk: { configured: boolean };
     webbuilder?: { configured: boolean };
   };
 }
 
 interface SupplierCheck {
   timestamp: string;
-  vizo: {
-    status: string; apiKeyConfigured: boolean; error: string | null;
-    reseller: { balance?: number | string; username?: string; total_orders?: number } | null;
-  };
-  g2bulk: {
-    status: string; apiKeyConfigured: boolean; error: string | null;
-    reseller: { balance?: number | string; username?: string; first_name?: string } | null;
-  };
   webbuilder?: {
     status: string; apiKeyConfigured: boolean; error: string | null;
     reseller: { balance?: number | string; username?: string } | null;
@@ -309,8 +299,8 @@ export default function AdminOverviewPage() {
               </div>
             </div>
 
-            <div className="grid gap-3 lg:grid-cols-3">
-              {(["webbuilder", "g2bulk", "vizo"] as const).map((key) => {
+            <div className="grid gap-3 lg:grid-cols-2">
+              {(["webbuilder"] as const).map((key) => {
                 const configured = data.suppliers[key]?.configured ?? false;
                 const verified = supplierCheck?.[key];
                 const status = !configured ? "Unavailable" : !verified ? "Configured" :
@@ -324,11 +314,9 @@ export default function AdminOverviewPage() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-[#F8FAFC]">
-                          {key === "webbuilder" ? "WebBuilder" : key === "vizo" ? "Vizo" : "G2Bulk"}
-                        </h3>
+                        <h3 className="text-[#F8FAFC]">WebBuilder</h3>
                         <p className="text-[11px] text-[#94A3B8]">
-                          {key === "webbuilder" ? "Free Fire, MLBB & HoK" : key === "vizo" ? "Free Fire (Disabled)" : "Game top-up supplier"}
+                          Automated fulfillment provider for all catalog games
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-1.5">

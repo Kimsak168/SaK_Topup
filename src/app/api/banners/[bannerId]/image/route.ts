@@ -1,7 +1,13 @@
 import { NextRequest } from "next/server";
 import { Banner } from "@/models/Banner";
 import { catalogueQuery } from "@/lib/services/catalogueTiming";
-import { legacyImageBytes, legacyImageCacheControl } from "@/lib/services/legacyImageService";
+import {
+  legacyImageBytes,
+  legacyImageCacheControl,
+  getCachedLegacyImage,
+  setCachedLegacyImage,
+  fetchWithDeduplication,
+} from "@/lib/services/legacyImageService";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,21 +21,62 @@ export async function GET(
     return new Response("Image not found", { status: 404 });
   }
 
+  const version = req.nextUrl.searchParams.get("v");
+  const cacheKey = `banner:${bannerId}`;
+
+  // 1. Check in-memory server cache for instant < 1ms response
+  const cached = getCachedLegacyImage(cacheKey);
+  if (cached) {
+    return new Response(new Uint8Array(cached.bytes), {
+      headers: {
+        "Content-Type": cached.contentType,
+        "Content-Length": String(cached.bytes.length),
+        "Cache-Control": legacyImageCacheControl(
+          version,
+          cached.updatedAt,
+          "public, max-age=86400, stale-while-revalidate=604800"
+        ),
+        "X-Content-Type-Options": "nosniff",
+        "X-Image-Cache": "HIT",
+      },
+    });
+  }
+
   try {
-    const banner = await catalogueQuery("banner-image", async () => Banner.findById(bannerId)
-      .select({ imageData: 1, imageContentType: 1, updatedAt: 1, _id: 0 }).maxTimeMS(4000).lean());
-    const bytes = legacyImageBytes(banner?.imageData);
-    if (!bytes || !banner?.imageContentType) {
+    // 2. Deduplicate concurrent requests so only 1 query hits MongoDB per bannerId
+    const data = await fetchWithDeduplication(cacheKey, async () => {
+      const banner = await catalogueQuery("banner-image", async () =>
+        Banner.findById(bannerId)
+          .select({ imageData: 1, imageContentType: 1, updatedAt: 1, _id: 0 })
+          .maxTimeMS(4000)
+          .lean()
+      );
+      const bytes = legacyImageBytes(banner?.imageData);
+      if (!bytes || !banner?.imageContentType) return null;
+      return {
+        bytes,
+        contentType: banner.imageContentType,
+        updatedAt: banner.updatedAt,
+      };
+    });
+
+    if (!data) {
       return new Response("Image not found", { status: 404 });
     }
 
-    return new Response(new Uint8Array(bytes), {
+    setCachedLegacyImage(cacheKey, data);
+
+    return new Response(new Uint8Array(data.bytes), {
       headers: {
-        "Content-Type": banner.imageContentType,
-        "Content-Length": String(bytes.length),
-        "Cache-Control": legacyImageCacheControl(req.nextUrl.searchParams.get("v"), banner.updatedAt,
-          "public, max-age=60, stale-while-revalidate=300"),
+        "Content-Type": data.contentType,
+        "Content-Length": String(data.bytes.length),
+        "Cache-Control": legacyImageCacheControl(
+          version,
+          data.updatedAt,
+          "public, max-age=86400, stale-while-revalidate=604800"
+        ),
         "X-Content-Type-Options": "nosniff",
+        "X-Image-Cache": "MISS",
       },
     });
   } catch (error) {

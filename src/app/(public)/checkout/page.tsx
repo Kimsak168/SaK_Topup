@@ -15,8 +15,10 @@ import {
   ChevronLeft,
   Copy,
   Check,
+  AlertTriangle,
 } from "lucide-react";
 import { openKhqrInPageCheckout, closeKhqrInPageCheckout } from "@/lib/khqrPlugin";
+import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
 
 interface CompletedOrder {
   orderNumber: string;
@@ -33,19 +35,33 @@ function CheckoutContent() {
 
   const game = searchParams.get("game") || "Free Fire";
   const gameSlug = searchParams.get("gameSlug") || "freefire_global";
-  const supplier = searchParams.get("supplier") || "vizo";
+  const supplier = "webbuilder";
   const packageName = searchParams.get("package") || "100 Diamonds";
   const price = parseFloat(searchParams.get("price") || "1.99");
   const playerId = searchParams.get("playerId") || "12345678";
   const serverId = searchParams.get("serverId") || "";
   const playerName = searchParams.get("playerName") || "";
 
+  const [selectedMethod, setSelectedMethod] = useState<"khqr" | "aba_payway_v2">("khqr");
+  const [paywayV2ModalData, setPaywayV2ModalData] = useState<AbaPayWayV2ModalData | null>(null);
+  const [isPaywayV2Open, setIsPaywayV2Open] = useState(false);
+
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState<CompletedOrder | null>(null);
   const [copied, setCopied] = useState(false);
+  const [gatewayDown, setGatewayDown] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    fetch("/api/payment/anajakpay/health")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data.available === false) {
+          setGatewayDown(true);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       toast.dismiss("checkout");
       if (pollingRef.current) {
@@ -119,6 +135,51 @@ function CheckoutContent() {
   const handleCreateOrder = async () => {
     try {
       setIsProcessing(true);
+
+      if (selectedMethod === "aba_payway_v2") {
+        toast.loading("Generating ABA PayWay QR...", { id: "checkout" });
+        const res = await fetch("/api/payment/vngzz2/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            gameSlug,
+            supplier,
+            supplierProductCode: packageName,
+            expectedPrice: price,
+            playerId,
+            serverId,
+            playerName,
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          toast.error("Unable to start ABA PayWay payment", {
+            id: "checkout",
+            description: data?.error || "Please try again or select AnajakPay KHQR.",
+          });
+          return;
+        }
+
+        setPaywayV2ModalData({
+          orderNumber: data.orderNumber,
+          transactionId: data.transactionId,
+          amount: data.amount || price,
+          currency: data.currency || "USD",
+          packageName,
+          gameName: game,
+          qrImage: data.qrImage,
+          qrPngUrl: data.qrPngUrl,
+          deepLink: data.deepLink,
+          payUrl: data.payUrl,
+          expireInSec: data.expireInSec,
+        });
+        setIsPaywayV2Open(true);
+        toast.success("PayWay QR generated", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
+        return;
+      }
+
+      // Default: AnajakPay KHQR
       toast.loading("Preparing secure checkout...", { id: "checkout" });
       const res = await fetch("/api/payment/anajakpay/create", {
         method: "POST",
@@ -136,7 +197,15 @@ function CheckoutContent() {
       const data = await res.json();
 
       if (!res.ok || !data.success || !data.checkoutUrl) {
-        toast.error("Unable to start payment", { id: "checkout", description: "Please try again or contact support if the problem continues." });
+        if (data?.isMaintenance || res.status === 503) {
+          setGatewayDown(true);
+          toast.error("AnajakPay KHQR Rail Temporarily Down", {
+            id: "checkout",
+            description: "AnajakPay's KHQR banking rail is undergoing maintenance. Please try again shortly or contact support.",
+          });
+          return;
+        }
+        toast.error("Unable to start payment", { id: "checkout", description: data?.error || "Please try again or contact support if the problem continues." });
         return;
       }
 
@@ -147,7 +216,7 @@ function CheckoutContent() {
         amount: data.amount || price,
         playerId,
         serverId: serverId || undefined,
-        paymentMethod: "ABA Pay / KHQR",
+        paymentMethod: "AnajakPay KHQR",
       };
       toast.success("Order created successfully", { id: "order-creation" });
 
@@ -232,37 +301,105 @@ function CheckoutContent() {
               </span>
             </div>
 
-            {/* Single Payment Card: ABA Pay / KHQR */}
-            <div className="relative p-4 sm:p-5 rounded-2xl border-2 border-[#16A34A] bg-[#F0FDF4] ring-2 ring-[#16A34A]/20 shadow-xs flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                <div className="relative h-[55px] w-[55px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#BBF7D0] bg-[#004B87]">
-                  <Image
-                    src="/images/aba-logo.png"
-                    alt="ABA Bank"
-                    width={55}
-                    height={55}
-                    className="h-full w-full object-cover rounded-xl"
-                    priority
-                  />
-                </div>
-                <div className="space-y-0.5 min-w-0">
-                  <div className="text-base sm:text-lg font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
-                    <span className="break-words">ABA Pay / KHQR</span>
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-white text-[#16A34A] border border-[#BBF7D0] shrink-0">
-                      KHQR
-                    </span>
+            {/* Payment Options Grid */}
+            <div className="grid grid-cols-1 gap-3">
+              {/* Option 1: AnajakPay KHQR */}
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("khqr")}
+                className={`relative p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between gap-4 cursor-pointer ${
+                  selectedMethod === "khqr"
+                    ? "border-[#16A34A] bg-[#F0FDF4] ring-2 ring-[#16A34A]/20 shadow-xs"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
+                }`}
+              >
+                <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                  <div className="relative h-[50px] w-[50px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#BBF7D0] bg-[#004B87]">
+                    <Image
+                      src="/images/aba-logo.png"
+                      alt="ABA Bank"
+                      width={50}
+                      height={50}
+                      className="h-full w-full object-cover rounded-xl"
+                      priority
+                    />
                   </div>
-                  <p className="text-xs text-[#64748B] font-medium">Secure KHQR Checkout</p>
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
+                      <span>AnajakPay KHQR</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-[#16A34A] border border-[#BBF7D0] shrink-0">
+                        Universal
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#64748B] font-medium">All Cambodian Banks (KHQR)</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex shrink-0 items-center gap-2">
-                <div className="h-6 w-6 rounded-full bg-[#16A34A] flex items-center justify-center text-white shadow-xs">
-                  <CheckCircle2 className="h-4 w-4" />
+                <div className="flex shrink-0 items-center gap-2">
+                  <div className={`h-6 w-6 rounded-full flex items-center justify-center shadow-xs ${
+                    selectedMethod === "khqr" ? "bg-[#16A34A] text-white" : "border border-slate-300"
+                  }`}>
+                    {selectedMethod === "khqr" ? <CheckCircle2 className="h-4 w-4" /> : null}
+                  </div>
                 </div>
-              </div>
+              </button>
+
+              {/* Option 2: ABA PayWay V2 */}
+              <button
+                type="button"
+                onClick={() => setSelectedMethod("aba_payway_v2")}
+                className={`relative p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between gap-4 cursor-pointer ${
+                  selectedMethod === "aba_payway_v2"
+                    ? "border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20 shadow-xs"
+                    : "border-slate-200 hover:border-slate-300 bg-white"
+                }`}
+              >
+                <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+                  <div className="relative h-[50px] w-[50px] shrink-0 overflow-hidden rounded-xl shadow-xs bg-[#004B87] flex items-center justify-center text-white">
+                    <QrCode className="h-6 w-6" />
+                  </div>
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
+                      <span>ABA PayWay V2</span>
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-sky-100 text-[#004B87] border border-sky-200 shrink-0">
+                        Direct ABA
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#64748B] font-medium">PayWay QR Code & ABA Mobile App</p>
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2">
+                  <div className={`h-6 w-6 rounded-full flex items-center justify-center shadow-xs ${
+                    selectedMethod === "aba_payway_v2" ? "bg-[#004B87] text-white" : "border border-slate-300"
+                  }`}>
+                    {selectedMethod === "aba_payway_v2" ? <CheckCircle2 className="h-4 w-4" /> : null}
+                  </div>
+                </div>
+              </button>
             </div>
           </div>
+
+          {/* Maintenance Notice if AnajakPay KHQRcc is down */}
+          {gatewayDown && (
+            <div
+              role="alert"
+              className="p-4 rounded-xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 dark:border-amber-500/30 flex items-start gap-3 text-xs text-amber-900 dark:text-amber-200 animate-in fade-in"
+            >
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <div className="font-bold flex items-center gap-1.5 flex-wrap">
+                  <span>AnajakPay KHQR Rail Temporarily Down</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-amber-200/80 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                    Bank Maintenance
+                  </span>
+                </div>
+                <p className="text-[11px] opacity-90 leading-relaxed">
+                  AnajakPay&apos;s banking rail is currently reporting service maintenance (KHQRcc unavailable). Checkout is temporarily paused until bank services recover. Please try again shortly.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Guarantee Note */}
           <div className="p-4 rounded-xl bg-emerald-50 border border-[#22C55E]/30 flex items-center gap-3 text-xs text-[#22C55E]">
@@ -307,7 +444,9 @@ function CheckoutContent() {
               )}
               <div className="flex justify-between">
                 <span className="text-[#64748B]">Payment:</span>
-                <span className="font-bold text-[#172033]">ABA Pay / KHQR</span>
+                <span className="font-bold text-[#172033]">
+                  {selectedMethod === "aba_payway_v2" ? "ABA PayWay V2" : "AnajakPay KHQR"}
+                </span>
               </div>
             </div>
 
@@ -338,7 +477,9 @@ function CheckoutContent() {
                 </>
               ) : (
                 <>
-                  <span>Pay with ABA / KHQR</span>
+                  <span>
+                    {selectedMethod === "aba_payway_v2" ? "Pay with ABA PayWay V2" : "Pay with AnajakPay KHQR"}
+                  </span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -404,6 +545,29 @@ function CheckoutContent() {
           </div>
         </div>
       )}
+
+      {/* ABA PayWay V2 Interactive QR Modal */}
+      <AbaPayWayV2Modal
+        isOpen={isPaywayV2Open}
+        data={paywayV2ModalData}
+        onClose={() => setIsPaywayV2Open(false)}
+        onSuccess={({ orderNumber }) => {
+          setIsPaywayV2Open(false);
+          setOrderComplete({
+            orderNumber,
+            game,
+            packageName,
+            amount: price,
+            playerId,
+            serverId: serverId || undefined,
+            paymentMethod: "ABA PayWay V2",
+          });
+        }}
+        onRetry={() => {
+          setIsPaywayV2Open(false);
+          handleCreateOrder();
+        }}
+      />
     </div>
   );
 }

@@ -116,7 +116,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
             alt=""
             width={44}
             height={44}
-            preload
+            priority
             className={styles.logo}
           />
           <span aria-hidden="true" className={styles.wordmark}>

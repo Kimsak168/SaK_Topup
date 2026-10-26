@@ -60,63 +60,35 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Customer route normalization: /games/[supplier]/[code] invalid combinations and aliases
+  // 3. Customer route normalization: redirect all supplier routes to /games/webbuilder/[code]
   if (pathname.startsWith("/games/")) {
     const parts = pathname.split("/").filter(Boolean); // ['games', supplier, code]
     if (parts.length >= 3) {
       const supplier = parts[1].toLowerCase();
-      const code = parts[2].toLowerCase();
+      const rawCode = parts[2].toLowerCase();
 
-      // Free Fire routing to WebBuilder (Canonical game code: freefire_khsgmy)
-      if (
-        (supplier === "g2bulk" || supplier === "vizo") &&
-        (code.includes("freefire") || code.startsWith("free-fire") || code === "ff" || code.includes("khsgmy") || code.includes("sgmy"))
-      ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
-      }
-
-      // Canonical Free Fire path on WebBuilder
-      if (
-        supplier === "webbuilder" &&
-        (code === "free-fire" ||
-          code === "freefire" ||
-          code === "ff" ||
-          code === "freefire_global" ||
-          code === "freefire_sgmy" ||
-          code === "free-fire-sgmy" ||
-          code === "freefire-sgmy" ||
-          code === "sgmy" ||
-          code === "free-fire-khsgmy" ||
-          code === "khsgmy")
-      ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
+      // Canonical code mappings
+      let canonicalCode = rawCode;
+      if (rawCode.includes("freefire") || rawCode.startsWith("free-fire") || rawCode === "ff" || rawCode.includes("khsgmy") || rawCode.includes("sgmy")) {
+        canonicalCode = "freefire_khsgmy";
+      } else if (rawCode === "mlbb" || rawCode === "mobile-legends" || rawCode === "mlbb_global") {
+        canonicalCode = "mlbb";
+      } else if (rawCode === "honor-of-kings" || rawCode === "hok" || rawCode === "honor_of_kings") {
+        canonicalCode = "hok";
+      } else if (rawCode === "pubg-mobile" || rawCode === "pubgm") {
+        canonicalCode = "pubgm";
+      } else if (rawCode === "blood-strike" || rawCode === "bloodstrike") {
+        canonicalCode = "bloodstrike";
+      } else if (rawCode === "magic-chess" || rawCode === "magic-chess-gogo" || rawCode === "magic_chess") {
+        canonicalCode = "magic_chess";
+      } else if (rawCode === "8ballpool" || rawCode === "8-ball-pool") {
+        canonicalCode = "8ballpool";
+      } else if (rawCode === "telegram" || rawCode === "telegram-stars" || rawCode === "tg") {
+        canonicalCode = "telegram";
       }
 
-      // PUBG Mobile routing to G2Bulk
-      if (supplier === "vizo" && (code === "pubgm" || code === "pubg-mobile")) {
-        return NextResponse.redirect(new URL("/games/g2bulk/pubgm", request.url));
-      }
-      if (supplier === "g2bulk" && code === "pubg-mobile") {
-        return NextResponse.redirect(new URL("/games/g2bulk/pubgm", request.url));
-      }
-
-      // Mobile Legends routing to WebBuilder (Canonical game code: mlbb)
-      if (
-        (supplier === "vizo" || supplier === "g2bulk") &&
-        (code === "mlbb" || code === "mobile-legends" || code === "mlbb_global")
-      ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
-      }
-      if (supplier === "webbuilder" && (code === "mobile-legends" || code === "mlbb_global")) {
-        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
-      }
-
-      // Honor of Kings routing to WebBuilder (Canonical game code: hok)
-      if (supplier !== "webbuilder" && (code === "honor-of-kings" || code === "hok" || code === "honor_of_kings")) {
-        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
-      }
-      if (supplier === "webbuilder" && (code === "honor-of-kings" || code === "honor_of_kings")) {
-        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
+      if (supplier !== "webbuilder" || rawCode !== canonicalCode) {
+        return NextResponse.redirect(new URL(`/games/webbuilder/${canonicalCode}`, request.url));
       }
     }
   }
@@ -127,38 +99,26 @@ export async function proxy(request: NextRequest) {
     if (parts.length >= 2) {
       const slug = parts[1].toLowerCase();
 
-      if (
-        slug.includes("freefire") ||
-        slug.startsWith("free-fire") ||
-        slug === "ff" ||
-        slug.includes("khsgmy") ||
-        slug.includes("sgmy")
-      ) {
-        return NextResponse.redirect(new URL("/games/webbuilder/freefire_khsgmy", request.url));
+      let canonicalCode = slug;
+      if (slug.includes("freefire") || slug.startsWith("free-fire") || slug === "ff" || slug.includes("khsgmy") || slug.includes("sgmy")) {
+        canonicalCode = "freefire_khsgmy";
+      } else if (slug === "mobile-legends" || slug === "mlbb" || slug === "mlbb_global") {
+        canonicalCode = "mlbb";
+      } else if (slug === "honor-of-kings" || slug === "hok" || slug === "honor_of_kings") {
+        canonicalCode = "hok";
+      } else if (slug === "pubg-mobile" || slug === "pubgm") {
+        canonicalCode = "pubgm";
+      } else if (slug === "bloodstrike" || slug === "blood-strike") {
+        canonicalCode = "bloodstrike";
+      } else if (slug === "magic-chess" || slug === "magic-chess-gogo" || slug === "magic_chess") {
+        canonicalCode = "magic_chess";
+      } else if (slug === "8ballpool" || slug === "8-ball-pool") {
+        canonicalCode = "8ballpool";
+      } else if (slug === "telegram" || slug === "telegram-stars" || slug === "tg") {
+        canonicalCode = "telegram";
       }
 
-      if (slug === "pubg-mobile" || slug === "pubgm") {
-        return NextResponse.redirect(new URL("/games/g2bulk/pubgm", request.url));
-      }
-
-      if (slug === "mobile-legends" || slug === "mlbb" || slug === "mlbb_global") {
-        return NextResponse.redirect(new URL("/games/webbuilder/mlbb", request.url));
-      }
-
-      if (slug === "valorant") {
-        return NextResponse.redirect(new URL("/games/g2bulk/valorant", request.url));
-      }
-
-      if (slug === "bloodstrike" || slug === "blood-strike") {
-        return NextResponse.redirect(new URL("/games/g2bulk/bloodstrike", request.url));
-      }
-
-      if (slug === "honor-of-kings" || slug === "hok" || slug === "honor_of_kings") {
-        return NextResponse.redirect(new URL("/games/webbuilder/hok", request.url));
-      }
-
-      // Let the legacy page resolve the configured supplier from the database.
-      return NextResponse.next();
+      return NextResponse.redirect(new URL(`/games/webbuilder/${canonicalCode}`, request.url));
     }
   }
 

@@ -61,11 +61,10 @@ export async function GET(req: NextRequest) {
       .lean();
 
     // Stats
-    const [totalPkgs, configuredPkgs, vizoPkgs, g2bulkPkgs] = await Promise.all([
+    const [totalPkgs, configuredPkgs, webbuilderPkgs] = await Promise.all([
       GamePackage.countDocuments().catch(() => 0),
       GamePackage.countDocuments({ sellingPrice: { $gt: 0 } }).catch(() => 0),
-      GamePackage.countDocuments({ supplier: "vizo" }).catch(() => 0),
-      GamePackage.countDocuments({ supplier: "g2bulk" }).catch(() => 0),
+      GamePackage.countDocuments({ supplier: "webbuilder" }).catch(() => 0),
     ]);
 
     // Distinct games for filter dropdown
@@ -103,8 +102,7 @@ export async function GET(req: NextRequest) {
         totalPkgs,
         configuredPkgs,
         unconfiguredPkgs: totalPkgs - configuredPkgs,
-        vizoPkgs,
-        g2bulkPkgs,
+        webbuilderPkgs,
       },
       availableGames: distinctGames.map((g) => ({
         slug: g.slug,

@@ -62,6 +62,48 @@ export default function AdminPaymentsPage() {
   const [lookupId, setLookupId] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState<PaymentVerifyResult | null>(null);
+  const [testingGatewayId, setTestingGatewayId] = useState<string | null>(null);
+
+  const handleTestConnection = async (gatewayId: string) => {
+    try {
+      setTestingGatewayId(gatewayId);
+      if (gatewayId === "aba_payway_v2") {
+        const res = await fetch("/api/payment/vngzz2/health");
+        const data = await res.json();
+        if (data.available) {
+          toast.success("ABA PayWay V2 is OPERATIONAL", {
+            description: `State: ${data.state || "Active"} · Latency: ${data.latencyMs ?? 0}ms · Version: ${data.version || "1.0.0"}`,
+          });
+        } else if (data.isConfigured === false) {
+          toast.info("ABA PayWay V2 Pending Configuration", {
+            description: "Add VNGZZ2_PAYMENT_API_KEY to your environment variables to enable live payments.",
+          });
+        } else {
+          toast.error("ABA PayWay V2 Connection Warning", {
+            description: data.message || "Unable to reach VngZz2 payment server",
+          });
+        }
+      } else if (gatewayId === "anajakpay") {
+        const res = await fetch("/api/payment/anajakpay/health");
+        const data = await res.json();
+        if (data.available) {
+          toast.success("AnajakPay KHQRcc Rail is OPERATIONAL", {
+            description: "Bank rail online. Instant universal QR payments active.",
+          });
+        } else {
+          toast.error("AnajakPay Rail Maintenance", {
+            description: data.message || "AnajakPay reports temporary banking rail maintenance.",
+          });
+        }
+      }
+    } catch (err) {
+      toast.error("Connection probe failed", {
+        description: err instanceof Error ? err.message : "Network error",
+      });
+    } finally {
+      setTestingGatewayId(null);
+    }
+  };
 
   const fetchPayments = useCallback(async () => {
     try {
@@ -193,6 +235,18 @@ export default function AdminPaymentsPage() {
                   <span className="text-[#94A3B8] font-sans">Currency:</span>
                   <span className="text-[#F8FAFC]">{gw.currency}</span>
                 </div>
+
+                {(gw.id === "aba_payway_v2" || gw.id === "anajakpay") && (
+                  <button
+                    type="button"
+                    onClick={() => handleTestConnection(gw.id)}
+                    disabled={testingGatewayId === gw.id}
+                    className="w-full mt-2 inline-flex items-center justify-center gap-1.5 py-1.5 px-2.5 rounded-lg text-[11px] font-bold border border-[#243047] bg-[#151F31] hover:bg-[#1E293B] hover:text-[#22C55E] text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <RefreshCw className={`h-3 w-3 ${testingGatewayId === gw.id ? "animate-spin" : ""}`} />
+                    <span>{testingGatewayId === gw.id ? "Testing probe..." : "Test Connection"}</span>
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -337,8 +391,18 @@ export default function AdminPaymentsPage() {
                     <td className="py-2.5 px-3.5 font-mono text-[#F8FAFC]">
                       {p.orderNumber}
                     </td>
-                    <td className="py-2.5 px-3.5 uppercase font-semibold text-[#94A3B8]">
-                      {p.gateway}
+                    <td className="py-2.5 px-3.5">
+                      {p.gateway === "aba_payway_v2" || p.gateway === "vngzz2" ? (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-[#0066b2]/20 text-[#38bdf8] border border-[#0066b2]/40 whitespace-nowrap">
+                          <span className="w-1.5 h-1.5 rounded-full bg-[#38bdf8]" />
+                          ABA PayWay V2
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          AnajakPay
+                        </span>
+                      )}
                     </td>
                     <td className="py-2.5 px-3.5 font-mono text-[#64748B]">
                       {p.transactionId || "—"}
