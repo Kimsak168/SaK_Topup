@@ -3,14 +3,7 @@ import { Metadata } from "next";
 import { getGameBySupplierAndCode, getNormalizedPackages } from "@/lib/services/gameService";
 import { GameTopUpClient } from "@/components/public/GameTopUpClient";
 
-// Public HTML and RSC can be reused as well as the underlying catalogue data.
-// Admin catalogue writes invalidate this route through invalidateCatalogueCache.
-export const revalidate = 300;
-
-// Generate each game on its first visit, without contacting Atlas during build.
-export function generateStaticParams() {
-  return [];
-}
+export const dynamic = "force-dynamic";
 
 interface GamePageProps {
   params: Promise<{ supplier: string; code: string }>;

@@ -33,7 +33,7 @@
       "get": { "summary": "List configured supplier accounts and cached balance snapshots", "responses": { "200": { "description": "Three configured accounts with capability and freshness labels; secrets excluded" }, "401": { "$ref": "#/components/responses/Unauthorized" } } },
       "post": {
         "summary": "Record a confirmed manual supplier balance",
-        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["action", "supplierId", "walletId", "amount", "currency", "confirmation"], "properties": { "action": { "const": "manual-balance" }, "supplierId": { "$ref": "#/components/schemas/SupplierId" }, "walletId": { "$ref": "#/components/schemas/WalletId" }, "amount": { "type": "string", "pattern": "^\\d+(\\.\\d{1,4})?$" }, "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "confirmation": { "const": "RECORD MANUAL BALANCE" } } } } },
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["action", "supplierId", "walletId", "amount", "currency", "confirmation"], "properties": { "action": { "const": "manual-balance" }, "supplierId": { "$ref": "#/components/schemas/SupplierId" }, "walletId": { "$ref": "#/components/schemas/WalletId" }, "amount": { "type": "string", "pattern": "^\\d+(\\.\\d{1,4})?$" }, "currency": { "type": "string", "pattern": "^[A-Z]{3}$" }, "confirmation": { "const": "RECORD MANUAL BALANCE" } } } } } },
         "responses": { "201": { "description": "Manual balance snapshot recorded and audit logged" }, "400": { "description": "Invalid action or input" }, "401": { "$ref": "#/components/responses/Unauthorized" } }
       }
     },

@@ -24,10 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export async function generateStaticParams() {
-  const { groups } = await getDigitalShopCatalogue();
-  return groups.map((g) => ({ group: g.id }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function DigitalGroupPage({ params, searchParams }: PageProps) {
   const { group: groupParam } = await params;
