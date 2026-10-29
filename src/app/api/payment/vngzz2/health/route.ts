@@ -8,9 +8,10 @@ export async function GET() {
   if (!isConfigured) {
     return NextResponse.json({
       success: true,
-      available: false,
+      available: true,
       isConfigured: false,
-      message: "VngZz2 Payment API key is not configured.",
+      mode: "sandbox",
+      message: "ABA PayWay V2 is operating in Sandbox mode. Add VNGZZ2_PRIMARY_API_KEY to .env.local to activate Live gateway.",
     });
   }
 
@@ -19,6 +20,7 @@ export async function GET() {
     success: true,
     available: health.available,
     isConfigured: true,
+    mode: "live",
     state: health.state,
     latencyMs: health.latencyMs,
     service: health.service,

@@ -19,7 +19,6 @@ import {
   Check,
   X,
   AlertTriangle,
-  Gamepad2,
   Ellipsis,
 } from "lucide-react";
 
@@ -27,7 +26,7 @@ interface AdminGame {
   id: string;
   slug: string;
   name: string;
-  supplier: "webbuilder";
+  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
   supplierGameCode: string;
   category: string;
   image: string;
@@ -50,6 +49,7 @@ interface KPIStats {
 
 interface SyncSummary {
   webbuilder?: { imported: number; updated: number; skipped: number; failed: number; total: number; errors: string[] };
+  vngzz2?: { imported: number; updated: number; skipped: number; failed: number; total: number; errors: string[] };
   totalImported: number;
   totalUpdated: number;
   totalSkipped: number;
@@ -153,7 +153,7 @@ export default function AdminGamesPage() {
   const handleSyncGames = async () => {
     try {
       setIsSyncing(true);
-      toast.loading("Fetching games catalogue from WebBuilder API...", { id: "sync-games" });
+      toast.loading("Fetching games from configured suppliers...", { id: "sync-games" });
       const res = await fetch("/api/admin/sync/games", { method: "POST" });
       const data = await res.json();
 
@@ -266,9 +266,7 @@ export default function AdminGamesPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        const count =
-          (data.stats?.webbuilder?.imported || 0) +
-          (data.stats?.webbuilder?.updated || 0);
+        const count = (data.stats?.totalImported || 0) + (data.stats?.totalUpdated || 0);
         toast.success(`Successfully synchronized ${count} packages for ${game.name}!`, {
           id: `sync-pkg-${game.id}`,
         });
@@ -372,7 +370,10 @@ export default function AdminGamesPage() {
             }}
             className="rounded-lg border border-[#243047] bg-[#0C1322] px-3 py-2 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
-            <option value="all">Supplier: WebBuilder</option>
+            <option value="all">All suppliers</option>
+            <option value="webbuilder">WebBuilder</option>
+            <option value="vngzz2">VNGZZ2</option>
+            <option value="g2bulk">G2Bulk</option>
           </select>
 
           {/* Visibility Filter */}
@@ -455,8 +456,18 @@ export default function AdminGamesPage() {
 
                     {/* Supplier */}
                     <td className="py-2.5 px-3.5">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
-                        🛡️ WEBBUILDER API
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                          game.supplier === "vngzz2"
+                            ? "bg-blue-500/10 border border-blue-500/20 text-blue-400"
+                            : game.supplier === "g2bulk"
+                            ? "bg-purple-500/10 border border-purple-500/20 text-purple-400"
+                            : game.supplier === "vizo"
+                            ? "bg-amber-500/10 border border-amber-500/20 text-amber-400"
+                            : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+                        }`}
+                      >
+                        🛡️ {game.supplier} API
                       </span>
                     </td>
 
@@ -591,6 +602,16 @@ export default function AdminGamesPage() {
                 {syncSummary.totalImported + syncSummary.totalUpdated} Games
               </span>
             </div>
+
+            {syncSummary.vngzz2 && (
+              <div className="p-3 rounded-lg bg-[#0C1322] border border-[#243047] space-y-1 text-xs text-[#94A3B8]">
+                <div className="font-semibold text-emerald-400">VNGZZ2 Game API</div>
+                <div>Imported: {syncSummary.vngzz2.imported}</div>
+                <div>Updated: {syncSummary.vngzz2.updated}</div>
+                <div>Failed: {syncSummary.vngzz2.failed}</div>
+                {syncSummary.vngzz2.errors.length > 0 && <p className="text-rose-400">{syncSummary.vngzz2.errors.join(", ")}</p>}
+              </div>
+            )}
 
             {syncSummary.webbuilder?.errors && syncSummary.webbuilder.errors.length > 0 && (
               <div className="text-[11px] text-rose-400 bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20">

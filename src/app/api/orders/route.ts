@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!body || typeof body !== "object" || Array.isArray(body) ||
       ["gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName", "paymentMethod", "orderNumber"].some(
         key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      ) || (body.supplier !== undefined && body.supplier !== "webbuilder")) {
+      ) || (body.supplier !== undefined && !["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(body.supplier))) {
       return NextResponse.json({ success: false, error: "Invalid order details" }, { status: 400 });
     }
     const {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const cleanPlayerId = String(playerId || "").trim();
     const cleanProductCode = String(supplierProductCode || "").trim();
     const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
-    const cleanSupplier = "webbuilder" as const;
+    const cleanSupplier = (body.supplier || "webbuilder") as "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
 
     if (!cleanPlayerId) {
       return NextResponse.json(
@@ -59,6 +59,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
     }
 
+    if (game.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game requires additional account details. Please contact support." }, { status: 400 });
+
     if (game?.requiresServer && !String(serverId || "").trim()) {
       return NextResponse.json(
         {
@@ -82,7 +84,7 @@ export async function POST(req: NextRequest) {
       typeof pkg.sellingPrice !== "number" ||
       !Number.isFinite(pkg.sellingPrice) ||
       pkg.sellingPrice <= 0 ||
-      pkg.isActive === false
+      pkg.isActive === false || pkg.supplierAvailable === false
     ) {
       return NextResponse.json(
         {

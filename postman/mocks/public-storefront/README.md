@@ -48,3 +48,25 @@ creation, payment status, and the KHQR SDK fixture to Postman; it does not creat
 a real order or contact the payment provider. Screenshots and measurements go to
 `artifacts/public-checkout/`. Use `CHECKOUT_CHROME_FLAGS` if headless Chrome needs
 local launch flags.
+
+## Social services marketplace verification
+
+The services page uses the same local simulation server with synthetic catalog
+and order records. They exist only in Postman's local mock state; this run never
+contacts a real SMM supplier, MongoDB, or ABA payment service.
+
+With the app running on `http://localhost:3000`, start the simulation in another
+terminal, then run the browser checks:
+
+```powershell
+postman simulation run postman/simulations/services.sim.yaml --port 4900 --output ndjson --no-history
+node scripts/verify-services-page.mjs
+```
+
+The browser check opens the real app directly and intercepts catalog, order, and
+payment-status requests to the local simulation, so it never contacts a real
+supplier or payment service. It covers platform and service filters, search,
+sorting, pagination, loading errors, desktop and mobile layouts, quantity and
+URL limits, server price rounding, and a payment that remains pending until the
+simulated backend confirms it. Screenshots and a result summary go to
+`artifacts/services-marketplace/`.

@@ -4,10 +4,12 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import {
   getWebBuilderProducts,
-  getWebBuilderBalance,
   WebBuilderProduct,
 } from "@/lib/suppliers/webbuilder";
 import { invalidateCatalogueCache } from "@/lib/services/cacheService";
+import { isVngzzGameConfigured } from "@/lib/suppliers/vngzz2";
+import { syncVngzzCatalogue, emptyVngzzStats } from "./vngzzSyncService";
+import { getG2BulkRobloxProducts } from "@/lib/suppliers/g2bulk";
 
 export interface SyncStats {
   supplier: string;
@@ -23,6 +25,8 @@ export interface FullSyncResult {
   success: boolean;
   games: {
     webbuilder: SyncStats;
+    vngzz2?: SyncStats;
+    g2bulk?: SyncStats;
     totalImported: number;
     totalUpdated: number;
     totalSkipped: number;
@@ -30,12 +34,196 @@ export interface FullSyncResult {
   };
   packages?: {
     webbuilder: SyncStats;
+    vngzz2?: SyncStats;
+    g2bulk?: SyncStats;
     totalImported: number;
     totalUpdated: number;
     totalSkipped: number;
     totalFailed: number;
   };
   timestamp: string;
+}
+
+export function emptyG2BulkStats(): SyncStats {
+  return {
+    supplier: "g2bulk",
+    imported: 0,
+    updated: 0,
+    skipped: 0,
+    failed: 0,
+    total: 0,
+    errors: [],
+  };
+}
+
+export const G2BULK_ROBLOX_GAME = {
+  name: "Roblox",
+  slug: "roblox",
+  code: "roblox",
+  category: "Adventure",
+  currencyName: "Robux",
+  publisher: "Roblox Corporation",
+  requiresServer: false,
+  userIdLabel: "Roblox Username",
+  image: "/images/roblox.jpg",
+  banner: "/images/roblox.jpg",
+  badge: "HOT",
+  isPopular: true,
+  sortOrder: 5,
+};
+
+export async function syncG2BulkRobloxGame(): Promise<SyncStats> {
+  await connectDB();
+  const stats = emptyG2BulkStats();
+  stats.total = 1;
+
+  try {
+    const existing = await Game.findOne({
+      supplier: "g2bulk",
+      $or: [{ slug: G2BULK_ROBLOX_GAME.slug }, { supplierGameCode: G2BULK_ROBLOX_GAME.code }],
+    });
+
+    if (!existing) {
+      await Game.create({
+        slug: G2BULK_ROBLOX_GAME.slug,
+        name: G2BULK_ROBLOX_GAME.name,
+        supplier: "g2bulk",
+        supplierGameCode: G2BULK_ROBLOX_GAME.code,
+        category: G2BULK_ROBLOX_GAME.category,
+        image: G2BULK_ROBLOX_GAME.image,
+        banner: G2BULK_ROBLOX_GAME.banner,
+        publisher: G2BULK_ROBLOX_GAME.publisher,
+        currencyName: G2BULK_ROBLOX_GAME.currencyName,
+        description: "Instant automated Roblox Robux recharge & digital Gift Cards via G2Bulk. Safe 24/7 delivery.",
+        requiresServer: false,
+        userIdLabel: G2BULK_ROBLOX_GAME.userIdLabel,
+        instruction: "Enter your Roblox Username (or User ID) to recharge Robux or Gift Cards.",
+        badge: G2BULK_ROBLOX_GAME.badge,
+        isPopular: true,
+        isTrending: true,
+        isActive: true,
+        defaultMarginPercent: 12,
+        sortOrder: G2BULK_ROBLOX_GAME.sortOrder,
+      });
+      stats.imported++;
+    } else {
+      await Game.updateOne(
+        { _id: existing._id },
+        {
+          $set: {
+            supplier: "g2bulk",
+            supplierGameCode: G2BULK_ROBLOX_GAME.code,
+            requiresServer: false,
+            userIdLabel: G2BULK_ROBLOX_GAME.userIdLabel,
+            isActive: true,
+            image: existing.image || G2BULK_ROBLOX_GAME.image,
+            banner: existing.banner || G2BULK_ROBLOX_GAME.banner,
+            updatedAt: new Date(),
+          },
+        }
+      );
+      stats.updated++;
+    }
+  } catch (err: unknown) {
+    stats.failed++;
+    stats.errors.push(`Failed to sync G2Bulk Roblox game: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  return stats;
+}
+
+export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
+  await connectDB();
+  const stats = emptyG2BulkStats();
+
+  try {
+    const robloxGame = await Game.findOne({
+      supplier: "g2bulk",
+      $or: [{ slug: G2BULK_ROBLOX_GAME.slug }, { supplierGameCode: G2BULK_ROBLOX_GAME.code }],
+    });
+
+    if (!robloxGame) {
+      stats.failed++;
+      stats.errors.push("Roblox game record not found in database. Please sync games first.");
+      return stats;
+    }
+
+    const products = await getG2BulkRobloxProducts();
+    // Prioritize popular Global Robux and US Gift Cards
+    const relevantProducts = products.filter((p) => {
+      const cat = (p.category_title || "").toLowerCase();
+      return cat.includes("global") || cat.includes("us giftcard");
+    });
+    const listToSync = relevantProducts.length > 0 ? relevantProducts : products;
+    stats.total = listToSync.length;
+
+    for (const prod of listToSync) {
+      try {
+        const prodId = String(prod.id);
+        const wholesaleCost = Number(prod.unit_price) || 0;
+        const defaultMargin = robloxGame.defaultMarginPercent || 12;
+        const computedSellingPrice = Math.round(wholesaleCost * (1 + defaultMargin / 100) * 100) / 100;
+        const computedOriginalPrice = Math.round(computedSellingPrice * 1.15 * 100) / 100;
+
+        const isCard = prod.title.toLowerCase().includes("us") || prod.title.toLowerCase().includes("$");
+        const badge = prod.title.includes("800") || prod.title.includes("20$") ? "HOT" : prod.title.includes("1000") || prod.title.includes("200 Robux") ? "POPULAR" : "";
+
+        const existing = await GamePackage.findOne({
+          supplier: "g2bulk",
+          supplierProductCode: prodId,
+        });
+
+        if (!existing) {
+          await GamePackage.create({
+            gameSlug: "roblox",
+            gameCode: "roblox",
+            supplier: "g2bulk",
+            supplierProductCode: prodId,
+            name: prod.title,
+            diamondsOrPoints: prod.title,
+            buyingPrice: wholesaleCost,
+            sellingPrice: computedSellingPrice,
+            originalPrice: computedOriginalPrice,
+            currency: "USD",
+            customImage: isCard ? "/images/roblox.jpg" : "/images/robux-coin.jpg",
+            badge,
+            isActive: true,
+            supplierAvailable: prod.stock !== 0,
+            adminConfigured: false,
+            sortOrder: Math.round(wholesaleCost * 10),
+          });
+          stats.imported++;
+        } else {
+          const updateFields: Record<string, unknown> = {
+            gameSlug: "roblox",
+            gameCode: "roblox",
+            supplier: "g2bulk",
+            name: prod.title,
+            diamondsOrPoints: prod.title,
+            buyingPrice: wholesaleCost,
+            supplierAvailable: prod.stock !== 0,
+            updatedAt: new Date(),
+          };
+
+          if (!existing.adminConfigured) {
+            updateFields.sellingPrice = computedSellingPrice;
+            updateFields.originalPrice = computedOriginalPrice;
+          }
+
+          await GamePackage.updateOne({ _id: existing._id }, { $set: updateFields });
+          stats.updated++;
+        }
+      } catch (pkgErr: unknown) {
+        stats.failed++;
+        stats.errors.push(`Failed to sync Roblox package ${prod.id}: ${pkgErr instanceof Error ? pkgErr.message : String(pkgErr)}`);
+      }
+    }
+  } catch (err: unknown) {
+    stats.failed++;
+    stats.errors.push(`G2Bulk Roblox packages sync error: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  return stats;
 }
 
 interface WebBuilderGameDefinition {
@@ -184,7 +372,22 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
  * 1. Synchronize all games from WebBuilder API
  * Preserves existing admin customizations (images, descriptions, selling prices, active states).
  */
-export async function syncGamesFromSuppliers(): Promise<FullSyncResult["games"]> {
+export async function syncGamesFromSuppliers(options: { supplier?: "webbuilder" | "vngzz2" | "g2bulk" } = {}): Promise<FullSyncResult["games"]> {
+  if (options.supplier === "vngzz2") {
+    const result = await syncVngzzCatalogue();
+    invalidateCatalogueCache();
+    return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, result.games, emptyG2BulkStats());
+  }
+
+  if (options.supplier === "g2bulk") {
+    const g2Stats = await syncG2BulkRobloxGame();
+    invalidateCatalogueCache();
+    return combinedStats(
+      { ...emptyVngzzStats(), supplier: "webbuilder" },
+      emptyVngzzStats(),
+      g2Stats
+    );
+  }
   await connectDB();
 
   const webbuilderStats: SyncStats = {
@@ -261,15 +464,24 @@ export async function syncGamesFromSuppliers(): Promise<FullSyncResult["games"]>
     webbuilderStats.errors.push(`WebBuilder games sync error: ${msg}`);
   }
 
-  invalidateCatalogueCache();
+  const vngzzStats = emptyVngzzStats();
+  if (options.supplier !== "webbuilder" && options.supplier !== "g2bulk" && isVngzzGameConfigured()) {
+    try { Object.assign(vngzzStats, (await syncVngzzCatalogue()).games); }
+    catch (error) { vngzzStats.failed++; vngzzStats.errors.push(error instanceof Error ? error.message : "VNGZZ2 sync failed"); }
+  }
 
-  return {
-    webbuilder: webbuilderStats,
-    totalImported: webbuilderStats.imported,
-    totalUpdated: webbuilderStats.updated,
-    totalSkipped: webbuilderStats.skipped,
-    totalFailed: webbuilderStats.failed,
-  };
+  let g2bulkStats = emptyG2BulkStats();
+  if (options.supplier !== "webbuilder") {
+    try {
+      g2bulkStats = await syncG2BulkRobloxGame();
+    } catch (error) {
+      g2bulkStats.failed++;
+      g2bulkStats.errors.push(error instanceof Error ? error.message : "G2Bulk sync failed");
+    }
+  }
+
+  invalidateCatalogueCache();
+  return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);
 }
 
 /**
@@ -278,9 +490,24 @@ export async function syncGamesFromSuppliers(): Promise<FullSyncResult["games"]>
  */
 export async function syncPackagesFromSuppliers(options: {
   gameCode?: string;
-  supplier?: "webbuilder";
+  supplier?: "webbuilder" | "vngzz2" | "g2bulk";
   onlyActiveGames?: boolean;
 } = {}): Promise<FullSyncResult["packages"]> {
+  if (options.supplier === "vngzz2") {
+    const result = await syncVngzzCatalogue({ ...options, packages: true });
+    invalidateCatalogueCache();
+    return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, result.packages, emptyG2BulkStats());
+  }
+
+  if (options.supplier === "g2bulk" || options.gameCode === "roblox") {
+    const g2Stats = await syncG2BulkRobloxPackages();
+    invalidateCatalogueCache();
+    return combinedStats(
+      { ...emptyVngzzStats(), supplier: "webbuilder" },
+      emptyVngzzStats(),
+      g2Stats
+    );
+  }
   await connectDB();
 
   const webbuilderStats: SyncStats = {
@@ -362,11 +589,7 @@ export async function syncPackagesFromSuppliers(options: {
                   gameCode: def.code,
                   buyingPrice: buyingPriceUsd,
                   priceCents: prod.price_cents,
-                  isActive: isOrderable,
-                  sellingPrice: existing.sellingPrice || defaultSellingPrice,
-                  originalPrice:
-                    existing.originalPrice ||
-                    (defaultSellingPrice ? Math.round(defaultSellingPrice * 1.15 * 100) / 100 : null),
+                  supplierAvailable: isOrderable,
                   syncedAt: new Date(),
                   updatedAt: new Date(),
                 },
@@ -388,13 +611,35 @@ export async function syncPackagesFromSuppliers(options: {
     webbuilderStats.errors.push(`WebBuilder packages fetch error: ${msg}`);
   }
 
-  invalidateCatalogueCache();
+  const vngzzStats = emptyVngzzStats();
+  if (options.supplier !== "webbuilder" && options.supplier !== "g2bulk" && isVngzzGameConfigured()) {
+    try { Object.assign(vngzzStats, (await syncVngzzCatalogue({ ...options, packages: true })).packages); }
+    catch (error) { vngzzStats.failed++; vngzzStats.errors.push(error instanceof Error ? error.message : "VNGZZ2 sync failed"); }
+  }
 
+  let g2bulkStats = emptyG2BulkStats();
+  if (options.supplier !== "webbuilder" && (!options.gameCode || options.gameCode === "roblox")) {
+    try {
+      g2bulkStats = await syncG2BulkRobloxPackages();
+    } catch (error) {
+      g2bulkStats.failed++;
+      g2bulkStats.errors.push(error instanceof Error ? error.message : "G2Bulk packages sync failed");
+    }
+  }
+
+  invalidateCatalogueCache();
+  return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);
+}
+
+function combinedStats(webbuilder: SyncStats, vngzz2: SyncStats, g2bulk?: SyncStats) {
+  const g2 = g2bulk || emptyG2BulkStats();
   return {
-    webbuilder: webbuilderStats,
-    totalImported: webbuilderStats.imported,
-    totalUpdated: webbuilderStats.updated,
-    totalSkipped: webbuilderStats.skipped,
-    totalFailed: webbuilderStats.failed,
+    webbuilder,
+    vngzz2,
+    g2bulk: g2,
+    totalImported: webbuilder.imported + vngzz2.imported + g2.imported,
+    totalUpdated: webbuilder.updated + vngzz2.updated + g2.updated,
+    totalSkipped: webbuilder.skipped + vngzz2.skipped + g2.skipped,
+    totalFailed: webbuilder.failed + vngzz2.failed + g2.failed,
   };
 }

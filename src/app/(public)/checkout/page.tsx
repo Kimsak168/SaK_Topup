@@ -35,7 +35,8 @@ function CheckoutContent() {
 
   const game = searchParams.get("game") || "Free Fire";
   const gameSlug = searchParams.get("gameSlug") || "freefire_global";
-  const supplier = "webbuilder";
+  const requestedSupplier = searchParams.get("supplier") || "webbuilder";
+  const supplier = ["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(requestedSupplier) ? requestedSupplier : "webbuilder";
   const packageName = searchParams.get("package") || "100 Diamonds";
   const price = parseFloat(searchParams.get("price") || "1.99");
   const playerId = searchParams.get("playerId") || "12345678";
@@ -52,6 +53,8 @@ function CheckoutContent() {
   const [gatewayDown, setGatewayDown] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [isVngConfigured, setIsVngConfigured] = useState<boolean | null>(null);
+
   useEffect(() => {
     fetch("/api/payment/anajakpay/health")
       .then((res) => res.json())
@@ -61,6 +64,15 @@ function CheckoutContent() {
         }
       })
       .catch(() => {});
+
+    fetch("/api/payment/vngzz2/health")
+      .then((res) => res.json())
+      .then((data) => {
+        setIsVngConfigured(Boolean(data?.isConfigured));
+      })
+      .catch(() => {
+        setIsVngConfigured(false);
+      });
 
     return () => {
       toast.dismiss("checkout");
@@ -168,6 +180,8 @@ function CheckoutContent() {
           currency: data.currency || "USD",
           packageName,
           gameName: game,
+          merchantName: "Sak Topup",
+          qrString: data.qrString,
           qrImage: data.qrImage,
           qrPngUrl: data.qrPngUrl,
           deepLink: data.deepLink,
@@ -176,6 +190,18 @@ function CheckoutContent() {
         });
         setIsPaywayV2Open(true);
         toast.success("PayWay QR generated", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
+
+        // If on mobile device, directly navigate to ABA Mobile app
+        const isMobileDevice =
+          typeof window !== "undefined" &&
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobileDevice && data.deepLink) {
+          try {
+            window.location.href = data.deepLink;
+          } catch (e) {
+            console.warn("[Checkout] Deep link navigation error:", e);
+          }
+        }
         return;
       }
 
@@ -326,7 +352,7 @@ function CheckoutContent() {
                   </div>
                   <div className="space-y-0.5 min-w-0">
                     <div className="text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
-                      <span>AnajakPay KHQR</span>
+                      <span className="payment-method-title">KHQR</span>
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-[#16A34A] border border-[#BBF7D0] shrink-0">
                         Universal
                       </span>
@@ -344,10 +370,18 @@ function CheckoutContent() {
                 </div>
               </button>
 
-              {/* Option 2: ABA PayWay V2 */}
+              {/* Option 2: KHQR V2 */}
               <button
                 type="button"
-                onClick={() => setSelectedMethod("aba_payway_v2")}
+                onClick={() => {
+                  setSelectedMethod("aba_payway_v2");
+                  if (isVngConfigured === false) {
+                    toast.info("KHQR V2 (Sandbox Demo)", {
+                      id: "payway-v2-mode",
+                      description: "Operating in test mode. Add VNGZZ2_PRIMARY_API_KEY in .env.local for live gateway.",
+                    });
+                  }
+                }}
                 className={`relative p-4 rounded-2xl border-2 transition-all text-left flex items-center justify-between gap-4 cursor-pointer ${
                   selectedMethod === "aba_payway_v2"
                     ? "border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20 shadow-xs"
@@ -360,12 +394,18 @@ function CheckoutContent() {
                   </div>
                   <div className="space-y-0.5 min-w-0">
                     <div className="text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
-                      <span>ABA PayWay V2</span>
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-sky-100 text-[#004B87] border border-sky-200 shrink-0">
-                        Direct ABA
+                      <span className="payment-method-title">KHQR V2</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 border ${
+                        isVngConfigured === false
+                          ? "bg-amber-100 text-amber-800 border-amber-200"
+                          : "bg-sky-100 text-[#004B87] border-sky-200"
+                      }`}>
+                        {isVngConfigured === false ? "Sandbox Demo" : "Direct ABA"}
                       </span>
                     </div>
-                    <p className="text-xs text-[#64748B] font-medium">PayWay QR Code & ABA Mobile App</p>
+                    <p className="text-xs text-[#64748B] font-medium">
+                      PayWay QR Code & ABA Mobile App
+                    </p>
                   </div>
                 </div>
 
@@ -445,7 +485,7 @@ function CheckoutContent() {
               <div className="flex justify-between">
                 <span className="text-[#64748B]">Payment:</span>
                 <span className="font-bold text-[#172033]">
-                  {selectedMethod === "aba_payway_v2" ? "ABA PayWay V2" : "AnajakPay KHQR"}
+                  {selectedMethod === "aba_payway_v2" ? "KHQR V2" : "KHQR"}
                 </span>
               </div>
             </div>
@@ -478,7 +518,7 @@ function CheckoutContent() {
               ) : (
                 <>
                   <span>
-                    {selectedMethod === "aba_payway_v2" ? "Pay with ABA PayWay V2" : "Pay with AnajakPay KHQR"}
+                    {selectedMethod === "aba_payway_v2" ? "Pay with KHQR V2" : "Pay with KHQR"}
                   </span>
                   <ArrowRight className="h-4 w-4" />
                 </>

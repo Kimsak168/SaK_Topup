@@ -14,6 +14,7 @@ export function generateStaticParams() {
 
 interface GamePageProps {
   params: Promise<{ supplier: string; code: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
@@ -34,8 +35,13 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
   };
 }
 
-export default async function GameDetailPage({ params }: GamePageProps) {
-  const { supplier, code } = await params;
+export default async function GameDetailPage({ params, searchParams }: GamePageProps) {
+  const queryParams: Promise<{ [key: string]: string | string[] | undefined }> =
+    searchParams ?? Promise.resolve({});
+  const [{ supplier, code }, query] = await Promise.all([
+    params,
+    queryParams,
+  ]);
   const [result, initialPackages] = await Promise.all([
     getGameBySupplierAndCode(supplier, code),
     getNormalizedPackages(supplier, code),
@@ -55,7 +61,12 @@ export default async function GameDetailPage({ params }: GamePageProps) {
   return (
     <div className="relative min-h-screen w-full overflow-x-clip py-2 min-[360px]:py-3 sm:py-8">
       <div className="max-w-7xl mx-auto px-2 min-[360px]:px-3 sm:px-6 lg:px-8 relative z-10">
-        <GameTopUpClient key={game.id} game={game} initialPackages={initialPackages} />
+        <GameTopUpClient
+          key={game.id}
+          game={game}
+          initialPackages={initialPackages}
+          initialSelectedPackageId={typeof query.package === "string" ? query.package : undefined}
+        />
       </div>
     </div>
   );

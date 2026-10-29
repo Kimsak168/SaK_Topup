@@ -12,6 +12,8 @@ interface GameSearchProps {
   initialGames: ClientGame[];
   initialError?: string | null;
   heading?: string;
+  onGameSelect?: (game: ClientGame) => void;
+  selectedGameId?: string;
 }
 
 // Strictly check if game is marked popular by administrator
@@ -47,7 +49,7 @@ function matchesSearch(game: ClientGame, query: string): boolean {
   return terms.some((term) => name.includes(term) || slug.includes(term) || publisher.includes(term));
 }
 
-export function GameSearch({ initialGames, initialError, heading = "ហ្គេមពេញនិយម" }: GameSearchProps) {
+export function GameSearch({ initialGames, initialError, heading = "ហ្គេមពេញនិយម", onGameSelect, selectedGameId }: GameSearchProps) {
   const [games, setGames] = useState<ClientGame[]>(() => initialGames || []);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<string | null>(initialError || null);
@@ -188,7 +190,12 @@ export function GameSearch({ initialGames, initialError, heading = "ហ្គេ
       ) : filteredGames.length > 0 ? (
         <div className="storefront-grid">
           {filteredGames.map((game) => (
-            <GameCard key={game.id || game.slug} game={game} />
+            <GameCard
+              key={game.id || game.slug}
+              game={game}
+              onSelect={onGameSelect}
+              isSelected={selectedGameId === game.id}
+            />
           ))}
         </div>
       ) : (

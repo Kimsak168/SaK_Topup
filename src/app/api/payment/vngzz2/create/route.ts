@@ -7,8 +7,8 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import {
   generateVngZz2Qr,
+  generateVngZz2SandboxQr,
   isVngZz2Configured,
-  checkVngZz2Health,
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       Array.isArray(body) ||
       ["orderNumber", "gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName"].some(
         (key) => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      )
+      ) || (body.supplier !== undefined && !["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(body.supplier))
     ) {
       return NextResponse.json({ success: false, error: "Invalid checkout details" }, { status: 400 });
     }
@@ -46,32 +46,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Verify VngZz2 configuration
-    if (!isVngZz2Configured()) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ABA PayWay V2 gateway is currently unconfigured. Please select AnajakPay or contact support.",
-          isConfigured: false,
-        },
-        { status: 503 }
-      );
-    }
-
-    // Quick health probe
-    const health = await checkVngZz2Health(4000);
-    if (!health.available) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "ABA PayWay V2 service is temporarily unavailable. Please try again shortly or use AnajakPay.",
-          isMaintenance: true,
-          details: health.message,
-        },
-        { status: 503 }
-      );
-    }
-
     await connectDB();
 
     let targetOrder = null;
@@ -87,16 +61,21 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "This order has already been paid" }, { status: 400 });
       }
 
+      if (targetOrder.supplier === "vngzz2") {
+        const savedGame = await Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean();
+        if (!savedGame || savedGame.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
+      }
+
       // Authoritative Price Verification from MongoDB GamePackage
       const pkg = await GamePackage.findOne({
-        supplier: "webbuilder",
+        supplier: targetOrder.supplier || "webbuilder",
         supplierProductCode: targetOrder.supplierProductCode,
         $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
       }).lean();
 
       if (
         !pkg ||
-        pkg.isActive === false ||
+        pkg.isActive === false || pkg.supplierAvailable === false ||
         typeof pkg.sellingPrice !== "number" ||
         !Number.isFinite(pkg.sellingPrice) ||
         pkg.sellingPrice <= 0
@@ -117,7 +96,7 @@ export async function POST(req: NextRequest) {
       const cleanPlayerId = String(playerId || "").trim();
       const cleanProductCode = String(supplierProductCode || "").trim();
       const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
-      const cleanSupplier = (supplier || "webbuilder") as "webbuilder";
+      const cleanSupplier = (supplier || "webbuilder") as "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
 
       if (!cleanPlayerId) {
         return NextResponse.json({ success: false, error: "Player ID is required" }, { status: 400 });
@@ -136,6 +115,8 @@ export async function POST(req: NextRequest) {
       if (!game) {
         return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
       }
+
+      if (game.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game requires additional account details. Please contact support." }, { status: 400 });
 
       if (game?.requiresServer && !String(serverId || "").trim()) {
         return NextResponse.json(
@@ -156,7 +137,7 @@ export async function POST(req: NextRequest) {
         typeof pkg.sellingPrice !== "number" ||
         !Number.isFinite(pkg.sellingPrice) ||
         pkg.sellingPrice <= 0 ||
-        pkg.isActive === false
+        pkg.isActive === false || pkg.supplierAvailable === false
       ) {
         return NextResponse.json(
           { success: false, error: "The selected package is unavailable or pending price configuration." },
@@ -203,17 +184,29 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Call VngZz2 Payment API to generate ABA PayWay KHQR
-    const qrResult = await generateVngZz2Qr({
-      amount: targetOrder.amount,
-      currency: "USD",
-      orderNumber: targetOrder.orderNumber,
-      metadata: {
-        gameName: targetOrder.gameName,
-        packageName: targetOrder.packageName,
-        playerId: targetOrder.playerId,
-      },
-    });
+    // Call VngZz2 Payment API: live if configured, otherwise sandbox simulation
+    const isLive = isVngZz2Configured();
+    const qrResult = isLive
+      ? await generateVngZz2Qr({
+          amount: targetOrder.amount,
+          currency: "USD",
+          orderNumber: targetOrder.orderNumber,
+          metadata: {
+            gameName: targetOrder.gameName,
+            packageName: targetOrder.packageName,
+            playerId: targetOrder.playerId,
+          },
+        })
+      : generateVngZz2SandboxQr({
+          amount: targetOrder.amount,
+          currency: "USD",
+          orderNumber: targetOrder.orderNumber,
+          metadata: {
+            gameName: targetOrder.gameName,
+            packageName: targetOrder.packageName,
+            playerId: targetOrder.playerId,
+          },
+        });
 
     targetOrder.transactionId = qrResult.transactionId;
     targetOrder.paymentMethod = "aba_payway_v2";
@@ -251,13 +244,14 @@ export async function POST(req: NextRequest) {
       deepLink: qrResult.deepLink,
       expireInSec: qrResult.expireInSec,
       gateway: "aba_payway_v2",
+      isSandbox: !isLive,
     });
   } catch (error: unknown) {
     if (error instanceof VngZz2ConfigError) {
-      console.error("[VngZz2 Create] Configuration error:", error.message);
+      console.warn("[VngZz2 Create] Configuration note:", error.message);
       return NextResponse.json(
-        { success: false, error: "Payment gateway configuration is missing. Please contact support." },
-        { status: 503 }
+        { success: false, error: "ABA PayWay V2 is unconfigured. Please select AnajakPay or contact support." },
+        { status: 400 }
       );
     }
 

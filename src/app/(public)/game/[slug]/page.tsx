@@ -18,11 +18,13 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
 
   // 1. Direct Free Fire alias handling -> WebBuilder
   if (
-    normalized.includes("freefire") ||
-    normalized.startsWith("free-fire") ||
-    normalized === "ff" ||
-    normalized.includes("khsgmy") ||
-    normalized.includes("sgmy")
+    !normalized.startsWith("vngzz2-") && (
+      normalized.includes("freefire") ||
+      normalized.startsWith("free-fire") ||
+      normalized === "ff" ||
+      normalized.includes("khsgmy") ||
+      normalized.includes("sgmy")
+    )
   ) {
     redirect("/games/webbuilder/freefire_khsgmy");
   }
@@ -68,7 +70,8 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
 
     if (game) {
       const code = game.supplierGameCode || game.slug;
-      targetPath = `/games/webbuilder/${encodeURIComponent(code)}`;
+      const supplier = game.supplier || "webbuilder";
+      targetPath = `/games/${encodeURIComponent(supplier)}/${encodeURIComponent(code)}`;
     }
   } catch (err) {
     console.error("Legacy redirect error:", err);

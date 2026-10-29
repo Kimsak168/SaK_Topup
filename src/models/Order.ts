@@ -4,7 +4,10 @@ export interface IOrder extends Document {
   orderNumber: string;
   gameSlug: string;
   gameName: string;
-  supplier: "vizo" | "g2bulk" | "webbuilder";
+  supplier: "vizo" | "g2bulk" | "webbuilder" | "vngzz2";
+  serviceType?: "game" | "smm" | "digital";
+  targetLink?: string;
+  quantity?: number;
   packageId?: string;
   packageName: string;
   supplierProductCode: string;
@@ -53,6 +56,7 @@ export interface IOrder extends Document {
   errorLog?: string;
   paidAt?: Date;
   fulfilledAt?: Date;
+  refundVersion?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -79,10 +83,23 @@ const OrderSchema = new Schema<IOrder>(
     },
     supplier: {
       type: String,
-      enum: ["vizo", "g2bulk", "webbuilder"],
+      enum: ["vizo", "g2bulk", "webbuilder", "vngzz2"],
       default: "webbuilder",
       required: true,
       index: true,
+    },
+    serviceType: {
+      type: String,
+      enum: ["game", "smm", "digital"],
+      default: "game",
+      index: true,
+    },
+    targetLink: {
+      type: String,
+      trim: true,
+    },
+    quantity: {
+      type: Number,
     },
     packageId: {
       type: String,
@@ -185,12 +202,10 @@ const OrderSchema = new Schema<IOrder>(
     supplierOrderId: {
       type: String,
       trim: true,
-      index: true,
     },
     idempotencyKey: {
       type: String,
       trim: true,
-      index: true,
     },
     requestHash: {
       type: String,
@@ -223,6 +238,7 @@ const OrderSchema = new Schema<IOrder>(
     fulfilledAt: {
       type: Date,
     },
+    refundVersion: { type: Number, default: 0, select: false },
   },
   {
     timestamps: true,
@@ -230,6 +246,20 @@ const OrderSchema = new Schema<IOrder>(
 );
 
 OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ paymentStatus: 1, createdAt: -1 });
+OrderSchema.index({ fulfillmentStatus: 1, createdAt: -1 });
+OrderSchema.index({ paymentStatus: 1, paidAt: -1 });
+OrderSchema.index(
+  { idempotencyKey: 1 },
+  { unique: true, partialFilterExpression: { idempotencyKey: { $type: "string", $gt: "" } }, name: "uniq_order_idempotency_key" }
+);
+OrderSchema.index(
+  { supplier: 1, supplierOrderId: 1 },
+  { unique: true, partialFilterExpression: { supplierOrderId: { $type: "string", $gt: "" } }, name: "uniq_supplier_order_id" }
+);
+if (process.env.NODE_ENV !== "production" && mongoose.models.Order) {
+  delete (mongoose.models as Record<string, unknown>).Order;
+}
 
 export const Order: Model<IOrder> =
   mongoose.models.Order || mongoose.model<IOrder>("Order", OrderSchema);

@@ -11,7 +11,7 @@ export const getVerificationGame = cachePublicQuery(
   CATALOGUE_TAG,
   async (supplier: string, identifier: string) => withCatalogueTimeout(
     catalogueQuery("verification-game", async () => Game.findOne({
-      $or: [
+      $or: supplier === "vngzz2" ? [{ supplier, supplierGameCode: identifier }, { supplier, slug: identifier }] : [
         { supplier, supplierGameCode: identifier },
         { supplier, slug: identifier },
         { supplierGameCode: identifier },

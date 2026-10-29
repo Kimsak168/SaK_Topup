@@ -1,426 +1,216 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import {
-  RefreshCw,
-  ExternalLink,
-  ArrowRight,
-  Database,
-  CheckCircle2,
-  AlertTriangle,
-  Server,
-  Zap,
-} from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Database, RefreshCw, Server, Wallet } from "lucide-react";
 
-interface WebBuilderReseller {
-  balance?: number | string;
-  available_cents?: number;
-  reserved_cents?: number;
-  [key: string]: unknown;
-}
+type BalanceSnapshot = { walletId: string; amount: string; currency: string; source: "live" | "manual"; freshness: "live" | "cached" | "manual"; checkedAt: string };
+type SupplierAccount = {
+  id: "vngzz2" | "g2bulk" | "webbuilder";
+  displayName: string;
+  enabled: boolean;
+  baseUrl: string;
+  configured: boolean;
+  credentialVariables: string[];
+  capabilities: string[];
+  catalogModes: string[];
+  balanceScopes: string[];
+  status: "configured" | "connected" | "failed" | "unavailable" | "disabled";
+  lastConnectionTestAt: string | null;
+  lastBalanceSyncAt: string | null;
+  lastError: string | null;
+  balances: BalanceSnapshot[];
+};
 
-interface SupplierTelemetry {
-  success: boolean;
-  timestamp: string;
-  webbuilder?: {
-    status: "connected" | "configured" | "unavailable" | "failed";
-    latencyMs: number | null;
-    baseUrl: string;
-    apiKeyConfigured: boolean;
-    reseller: WebBuilderReseller | null;
-    error: string | null;
-  };
+const statusStyle: Record<string, string> = {
+  connected: "bg-emerald-500/10 text-emerald-300 border-emerald-500/25",
+  configured: "bg-sky-500/10 text-sky-300 border-sky-500/25",
+  failed: "bg-rose-500/10 text-rose-300 border-rose-500/25",
+  unavailable: "bg-slate-500/10 text-slate-300 border-slate-500/25",
+  disabled: "bg-slate-500/10 text-slate-300 border-slate-500/25",
+};
+
+function displayMoney(amount: string, currency: string) {
+  const value = Number(amount);
+  if (!Number.isFinite(value)) return "Unavailable";
+  return new Intl.NumberFormat("en-US", { style: "currency", currency, maximumFractionDigits: currency === "KHR" ? 0 : 4 }).format(value);
 }
 
 export default function AdminSuppliersPage() {
-  const [data, setData] = useState<SupplierTelemetry | null>(null);
+  const [accounts, setAccounts] = useState<SupplierAccount[]>([]);
   const [loading, setLoading] = useState(true);
-  const [checking, setChecking] = useState(false);
+  const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
-  const configurationRequested = useRef(false);
+  const [manualSupplier, setManualSupplier] = useState("");
+  const [manualWallet, setManualWallet] = useState("");
+  const [manualAmount, setManualAmount] = useState("");
+  const [manualCurrency, setManualCurrency] = useState("USD");
+  const [historySupplier, setHistorySupplier] = useState("");
+  const [historyRows, setHistoryRows] = useState<BalanceSnapshot[]>([]);
   const [syncingGames, setSyncingGames] = useState(false);
   const [syncingPackages, setSyncingPackages] = useState(false);
 
-  const fetchTelemetry = useCallback(async (verify = false) => {
+  const load = useCallback(async () => {
+    setLoading(true);
     try {
-      if (verify) setChecking(true);
-      const res = await fetch("/api/admin/suppliers", {
-        method: verify ? "POST" : "GET",
-        cache: "no-store",
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json: SupplierTelemetry = await res.json();
-      if (!verify) {
-        try {
-          const saved = sessionStorage.getItem("saksuuu_supplier_check");
-          if (saved) {
-            const previous = JSON.parse(saved) as SupplierTelemetry;
-            const checkedAt = Date.parse(previous.timestamp);
-            if (Number.isFinite(checkedAt) && Date.now() - checkedAt <= 10 * 60_000) {
-              if (
-                json.webbuilder?.apiKeyConfigured &&
-                previous.webbuilder &&
-                (previous.webbuilder.status === "connected" || previous.webbuilder.status === "failed")
-              ) {
-                json.webbuilder = previous.webbuilder;
-              }
-              json.timestamp = previous.timestamp;
-            }
-          }
-        } catch (cause) {
-          console.error("Could not restore supplier verification:", cause);
-        }
-      } else {
-        sessionStorage.setItem("saksuuu_supplier_check", JSON.stringify(json));
-        window.dispatchEvent(new Event("saksuuu:supplier-status"));
-      }
-      setData(json);
+      const response = await fetch("/api/admin/suppliers", { cache: "no-store" });
+      const json = await response.json();
+      if (!response.ok || !json.success) throw new Error(json.error || "Supplier account data is unavailable.");
+      setAccounts(json.accounts || []);
       setError("");
-    } catch (err) {
-      console.error("Failed to load supplier telemetry:", err);
-      setError(err instanceof Error ? err.message : "Supplier status is unavailable");
-      toast.error("Failed to check supplier connectivity");
-    } finally {
-      setLoading(false);
-      setChecking(false);
-    }
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Supplier account data is unavailable.");
+    } finally { setLoading(false); }
   }, []);
 
-  useEffect(() => {
-    if (configurationRequested.current) return;
-    configurationRequested.current = true;
-    void fetchTelemetry();
-  }, [fetchTelemetry]);
+  useEffect(() => { void load(); }, [load]);
+
+  const runAction = async (supplierId: string, action: "test-connection" | "sync-balance") => {
+    setBusy(`${supplierId}:${action}`);
+    try {
+      if (action === "test-connection") {
+        const testResponse = await fetch(`/api/admin/suppliers/${supplierId}/test-connection`, { method: "POST" });
+        const testJson = await testResponse.json();
+        if (!testResponse.ok || !testJson.success) throw new Error(testJson.error || "Connection test failed.");
+      } else {
+        const response = await fetch(`/api/admin/suppliers/${supplierId}/sync-balance`, { method: "POST" });
+        const json = await response.json();
+        if (!response.ok || !json.success) throw new Error(json.error || "Balance refresh failed.");
+      }
+      toast.success(action === "test-connection" ? "Connection test completed." : "Verified balance refreshed.");
+      await load();
+    } catch (cause) {
+      toast.error(cause instanceof Error ? cause.message : "Supplier request failed.");
+      await load();
+    } finally { setBusy(""); }
+  };
+
+  const recordManualBalance = async (supplier: SupplierAccount) => {
+    if (!manualAmount || !manualWallet) return toast.error("Enter an amount and wallet scope first.");
+    if (!window.confirm(`Record ${manualAmount} ${manualCurrency} as a manually entered ${manualWallet} balance for ${supplier.displayName}?`)) return;
+    setBusy(`${supplier.id}:manual`);
+    try {
+      const response = await fetch("/api/admin/suppliers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "manual-balance", supplierId: supplier.id, walletId: manualWallet, amount: manualAmount, currency: manualCurrency, confirmation: "RECORD MANUAL BALANCE" }),
+      });
+      const json = await response.json();
+      if (!response.ok || !json.success) throw new Error(json.error || "Manual balance could not be recorded.");
+      setManualSupplier(""); setManualAmount(""); setManualWallet("");
+      toast.success("Manual balance recorded and audit logged.");
+      await load();
+    } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Manual balance could not be recorded."); }
+    finally { setBusy(""); }
+  };
+
+  const toggleHistory = async (supplierId: string) => {
+    if (historySupplier === supplierId) { setHistorySupplier(""); setHistoryRows([]); return; }
+    setHistorySupplier(supplierId);
+    try {
+      const response = await fetch(`/api/admin/suppliers/${supplierId}/balance-history?limit=10`, { cache: "no-store" });
+      const json = await response.json();
+      if (!response.ok || !json.success) throw new Error(json.error || "Balance history is unavailable.");
+      setHistoryRows(json.rows || []);
+    } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Balance history is unavailable."); setHistoryRows([]); }
+  };
 
   const handleSyncGames = async () => {
+    setSyncingGames(true);
     try {
-      setSyncingGames(true);
-      toast.info("Starting catalogue synchronization from WebBuilder...");
-      const res = await fetch("/api/admin/sync/games", { method: "POST" });
-      const json = await res.json();
-
-      if (json.success) {
-        toast.success(
-          `Sync Complete: ${json.stats.totalImported} new, ${json.stats.totalUpdated} updated`
-        );
-      } else {
-        toast.error(json.error || "Game sync failed");
-      }
-    } catch {
-      toast.error("Network error during game synchronization");
-    } finally {
-      setSyncingGames(false);
-    }
+      const response = await fetch("/api/admin/sync/games", { method: "POST" });
+      const json = await response.json();
+      if (!response.ok || !json.success) throw new Error(json.error || "Game catalogue sync failed.");
+      toast.success(`Game catalogue synced: ${json.stats.totalImported} new, ${json.stats.totalUpdated} updated.`);
+    } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Game catalogue sync failed."); }
+    finally { setSyncingGames(false); }
   };
 
   const handleSyncPackages = async () => {
+    setSyncingPackages(true);
     try {
-      setSyncingPackages(true);
-      toast.info("Starting packages & wholesale pricing sync from WebBuilder...");
-      const res = await fetch("/api/admin/sync/packages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ onlyActiveGames: true }),
-      });
-      const json = await res.json();
-
-      if (json.success) {
-        toast.success(
-          `Packages Sync Complete: ${json.stats.totalImported} imported, ${json.stats.totalUpdated} updated`
-        );
-      } else {
-        toast.error(json.error || "Package sync failed");
-      }
-    } catch {
-      toast.error("Network error during package synchronization");
-    } finally {
-      setSyncingPackages(false);
-    }
+      const response = await fetch("/api/admin/sync/packages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ onlyActiveGames: true }) });
+      const json = await response.json();
+      if (!response.ok || !json.success) throw new Error(json.error || "Package sync failed.");
+      toast.success(`Packages synced: ${json.stats.totalImported} imported, ${json.stats.totalUpdated} updated.`);
+    } catch (cause) { toast.error(cause instanceof Error ? cause.message : "Package sync failed."); }
+    finally { setSyncingPackages(false); }
   };
 
-  const webbuilder = data?.webbuilder;
-
   return (
-    <div className="admin-page">
-      {/* Top Header */}
-      <div className="admin-page-heading">
-        <div>
-          <h1>Supplier Integration</h1>
-          <p className="admin-page-description">
-            WebBuilder is your active automated fulfillment provider for all direct game top-ups.
-          </p>
-        </div>
+    <main className="admin-page space-y-5">
+      <header className="admin-page-heading">
+        <div><h1>Suppliers / អ្នកផ្គត់ផ្គង់</h1><p className="admin-page-description">Three configured accounts, verified balance snapshots, and catalog coverage. Credentials stay server-side.</p></div>
+        <button type="button" onClick={() => void load()} disabled={loading} className="admin-button admin-button-secondary cursor-pointer"><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</button>
+      </header>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => void fetchTelemetry(true)}
-            disabled={checking}
-            className="admin-button admin-button-secondary cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${checking ? "animate-spin" : ""}`} />
-            <span>{checking ? "Checking..." : "Verify Connection"}</span>
-          </button>
+      {error && <div role="alert" className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">{error}</div>}
+      {loading && !accounts.length && <div className="grid gap-4 lg:grid-cols-3">{[1, 2, 3].map(item => <div key={item} className="admin-panel h-64 animate-pulse" />)}</div>}
 
-          <button
-            onClick={handleSyncGames}
-            disabled={syncingGames}
-            className="admin-button admin-button-primary cursor-pointer"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${syncingGames ? "animate-spin" : ""}`} />
-            <span>{syncingGames ? "Syncing..." : "Sync All Games"}</span>
-          </button>
-        </div>
-      </div>
-
-      {error && (
-        <div role="alert" className="p-3.5 rounded-lg border border-[#EF4444]/30 bg-[#EF4444]/10 text-xs text-[#EF4444]">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="h-28 rounded-xl bg-[#111A2B] border border-[#243047] animate-pulse" aria-label="Loading supplier configuration" />
-      )}
-
-      {/* Supplier Card */}
-      {data && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <div className="lg:col-span-2 admin-panel admin-panel-stack">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1 space-y-1">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Server className="h-4 w-4 text-[#22C55E]" />
-                    <span>WebBuilder Reseller API</span>
-                  </h2>
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] leading-4 font-semibold ${
-                      webbuilder?.status === "connected"
-                        ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
-                        : webbuilder?.status === "failed"
-                        ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
-                        : "bg-slate-500/15 text-slate-300 border border-slate-500/30"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        webbuilder?.status === "connected"
-                          ? "bg-emerald-400"
-                          : webbuilder?.status === "failed"
-                          ? "bg-rose-400"
-                          : "bg-slate-400"
-                      }`}
-                    />
-                    {webbuilder?.status === "connected"
-                      ? "Connected"
-                      : webbuilder?.status === "failed"
-                      ? "Failed"
-                      : webbuilder?.status === "configured"
-                      ? "Configured"
-                      : "Unavailable"}
-                  </span>
-                </div>
-                <p className="text-[13px] text-[#94A3B8]">
-                  Primary automated fulfillment supplier (Free Fire, MLBB, HoK, PUBG Mobile, Blood Strike, Magic Chess, 8 Ball Pool)
-                </p>
-                <p className="text-[11px] text-slate-500">
-                  {webbuilder?.status === "connected" || webbuilder?.status === "failed"
-                    ? `Last verified ${new Date(data!.timestamp).toLocaleString()}`
-                    : "Last verified: Not checked"}
-                </p>
-                {webbuilder?.error && (
-                  <p className="text-xs text-rose-400 pt-1" role="alert">
-                    {webbuilder.error}
-                  </p>
-                )}
-              </div>
-
-              {webbuilder?.latencyMs !== null && webbuilder?.latencyMs !== undefined && (
-                <div className="text-right shrink-0">
-                  <span className="text-[10px] uppercase font-bold text-slate-400">Response time</span>
-                  <div className="text-sm font-mono font-bold text-emerald-400">
-                    {webbuilder.latencyMs} ms
-                  </div>
-                </div>
-              )}
+      <section className="grid gap-4 xl:grid-cols-3" aria-label="Configured suppliers">
+        {accounts.map(account => (
+          <article key={account.id} className="admin-panel admin-panel-stack min-w-0">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-[#151F31] text-emerald-300"><Server className="h-5 w-5" /></span><div className="min-w-0"><h2 className="truncate text-base font-bold text-white">{account.displayName}</h2><p className="truncate text-xs text-slate-500">{account.id}</p></div></div>
+              <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold capitalize ${statusStyle[account.status] || statusStyle.unavailable}`}>
+                {account.status === "connected" ? <CheckCircle2 className="h-3.5 w-3.5" /> : account.status === "failed" ? <AlertTriangle className="h-3.5 w-3.5" /> : <Activity className="h-3.5 w-3.5" />}{account.status}
+              </span>
             </div>
 
-            {/* Wallet Balances */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2 border-t border-[#243047]">
-              <div className="p-3 rounded-lg bg-[#151F31] border border-[#243047]">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Available Balance</span>
-                <span className="font-mono text-base font-bold text-[#22C55E]">
-                  {webbuilder?.reseller?.balance !== undefined
-                    ? `$${Number(webbuilder.reseller.balance).toFixed(2)} USD`
-                    : "Not checked"}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#151F31] border border-[#243047]">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Reserved Funds</span>
-                <span className="font-mono text-base font-bold text-amber-400">
-                  {webbuilder?.reseller?.reserved_cents !== undefined
-                    ? `$${(Number(webbuilder.reseller.reserved_cents) / 100).toFixed(2)} USD`
-                    : "—"}
-                </span>
-              </div>
-
-              <div className="p-3 rounded-lg bg-[#151F31] border border-[#243047] col-span-2 sm:col-span-1">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">API Authentication</span>
-                <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5 mt-0.5">
-                  {webbuilder?.apiKeyConfigured ? (
-                    <>
-                      <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E]" />
-                      <span>API Key Active</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-3.5 w-3.5 text-rose-400" />
-                      <span>Missing Key</span>
-                    </>
-                  )}
-                </span>
-              </div>
+            <div className="space-y-2 rounded-xl border border-[#243047] bg-[#0C1322] p-3">
+              <div className="flex items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-400">API credential</span><span className={account.configured ? "text-xs text-emerald-300" : "text-xs text-rose-300"}>{account.configured ? "Configured" : "Missing"}</span></div>
+              <div className="break-all text-[11px] text-slate-500">{account.credentialVariables.join(" · ")}</div>
+              <div className="break-all font-mono text-[11px] text-slate-400">{account.baseUrl}</div>
             </div>
 
-            {/* Technical Details */}
-            <div className="space-y-2 text-xs pt-2 border-t border-[#243047]">
-              <div className="flex justify-between text-slate-300">
-                <span className="text-slate-400">API Endpoint</span>
-                <span className="font-mono text-slate-400 text-[11px]">{webbuilder?.baseUrl}</span>
-              </div>
-              <div className="flex justify-between text-slate-300">
-                <span className="text-slate-400">Catalog Coverage</span>
-                <span className="font-mono text-slate-300 text-[11px]">
-                  Free Fire (KHSGMY), Mobile Legends, Honor of Kings, PUBG Mobile, Blood Strike, Magic Chess, 8 Ball Pool
-                </span>
-              </div>
+            <div className="flex flex-wrap gap-1.5">{account.capabilities.map(capability => <span key={capability} className="rounded-full bg-slate-800 px-2 py-1 text-[10px] uppercase tracking-wide text-slate-300">{capability}</span>)}
+              {account.id === "g2bulk" && <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">SMM API documented; catalog mapping pending</span>}
+              {account.id === "webbuilder" && <span className="rounded-full bg-slate-700 px-2 py-1 text-[10px] text-slate-300">Game-only</span>}
             </div>
 
-            {/* Card Actions */}
-            <div className="admin-supplier-links pt-2 border-t border-[#243047] flex items-center justify-between gap-2">
-              <Link
-                href="/admin/packages"
-                className="text-[13px] font-semibold text-[#94A3B8] hover:text-[#F8FAFC] flex items-center gap-1.5"
-              >
-                <span>Manage all packages</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
+            <div className="space-y-2 border-t border-[#243047] pt-3">
+              <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-sm font-semibold text-slate-200"><Wallet className="h-4 w-4 text-cyan-300" /> Balance snapshots</h3><span className="text-[10px] uppercase tracking-wider text-slate-500">No inferred zero</span></div>
+              {account.balances.length ? account.balances.map(balance => <div key={`${balance.walletId}-${balance.currency}`} className="flex items-center justify-between gap-3 rounded-lg border border-[#243047] bg-[#111A2B] px-3 py-2">
+                <div><div className="text-xs font-semibold capitalize text-slate-300">{balance.walletId} wallet</div><div className="text-[10px] text-slate-500">{new Date(balance.checkedAt).toLocaleString()}</div></div>
+                <div className="text-right"><div className="font-mono text-sm font-bold text-white">{displayMoney(balance.amount, balance.currency)}</div><div className={`text-[10px] capitalize ${balance.freshness === "live" ? "text-emerald-300" : balance.freshness === "manual" ? "text-amber-300" : "text-slate-500"}`}>{balance.freshness}</div></div>
+              </div>) : <p className="rounded-lg border border-dashed border-[#243047] p-3 text-xs text-slate-500">Balance not yet available. Refresh to request a live balance.</p>}
+              {account.lastBalanceSyncAt && <p className="text-[10px] text-slate-500">Last successful balance sync: {new Date(account.lastBalanceSyncAt).toLocaleString()}</p>}
+              {account.lastConnectionTestAt && <p className="text-[10px] text-slate-500">Last connection check: {new Date(account.lastConnectionTestAt).toLocaleString()}</p>}
+              {account.lastError && <p role="status" className="text-xs text-rose-300">{account.lastError}</p>}
+            </div>
 
-              <div className="flex items-center gap-3">
-                <Link
-                  href="/games/webbuilder/freefire_khsgmy"
-                  target="_blank"
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
-                >
-                  <span>Free Fire</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
-                <Link
-                  href="/games/webbuilder/mlbb"
-                  target="_blank"
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
-                >
-                  <span>MLBB</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
-                <Link
-                  href="/games/webbuilder/hok"
-                  target="_blank"
-                  className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
-                >
-                  <span>HoK</span>
-                  <ExternalLink className="h-3 w-3" />
-                </Link>
+            <div className="flex flex-wrap gap-2 border-t border-[#243047] pt-3">
+              <button type="button" onClick={() => void runAction(account.id, "test-connection")} disabled={Boolean(busy) || !account.configured} className="admin-button admin-button-secondary flex-1 cursor-pointer disabled:opacity-40">{busy === `${account.id}:test-connection` ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Activity className="h-3.5 w-3.5" />} Test connection</button>
+              <button type="button" onClick={() => void runAction(account.id, "sync-balance")} disabled={Boolean(busy) || !account.configured} className="admin-button admin-button-primary flex-1 cursor-pointer disabled:opacity-40">{busy === `${account.id}:sync-balance` ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />} Refresh balance</button>
+            </div>
+
+            <button type="button" onClick={() => { setManualSupplier(manualSupplier === account.id ? "" : account.id); setManualWallet(account.balanceScopes[0] || ""); }} className="self-start text-xs font-semibold text-slate-400 underline decoration-slate-600 underline-offset-4 hover:text-white">Record manual balance</button>
+            {manualSupplier === account.id && <div className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
+              <p className="text-xs text-amber-100/80">Manual values are labeled separately and never replace provider-reported balances.</p>
+              <div className="grid grid-cols-3 gap-2">
+                <select value={manualWallet} onChange={event => setManualWallet(event.target.value)} className="col-span-3 rounded-lg border border-[#243047] bg-[#0C1322] px-2 py-2 text-xs text-white">{account.balanceScopes.map(scope => <option key={scope} value={scope}>{scope}</option>)}</select>
+                <input value={manualAmount} onChange={event => setManualAmount(event.target.value)} inputMode="decimal" placeholder="Amount" className="col-span-2 min-w-0 rounded-lg border border-[#243047] bg-[#0C1322] px-2 py-2 text-xs text-white" />
+                <input value={manualCurrency} onChange={event => setManualCurrency(event.target.value.toUpperCase().slice(0, 3))} maxLength={3} aria-label="Currency" className="rounded-lg border border-[#243047] bg-[#0C1322] px-2 py-2 text-xs uppercase text-white" />
               </div>
-            </div>
-          </div>
+              <button type="button" onClick={() => void recordManualBalance(account)} disabled={Boolean(busy)} className="w-full rounded-lg border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-bold text-amber-100 disabled:opacity-40">Confirm manual balance</button>
+            </div>}
+            <button type="button" onClick={() => void toggleHistory(account.id)} className="inline-flex items-center gap-1 self-start text-xs text-slate-500 hover:text-slate-200"><Activity className="h-3 w-3" /> {historySupplier === account.id ? "Hide balance history" : "View balance history"}</button>
+            {historySupplier === account.id && <div className="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-[#243047] p-2">
+              {historyRows.length ? historyRows.map(row => <div key={`${row.walletId}-${row.checkedAt}`} className="flex justify-between gap-3 py-1 text-[11px]"><span className="text-slate-400">{row.walletId} · {row.freshness}</span><span className="text-right text-slate-200">{displayMoney(row.amount, row.currency)}<span className="block text-[10px] text-slate-500">{new Date(row.checkedAt).toLocaleString()}</span></span></div>) : <div className="py-3 text-center text-xs text-slate-500">No balance snapshots.</div>}
+            </div>}
+          </article>
+        ))}
+      </section>
 
-          {/* Quick Info Box */}
-          <div className="admin-panel admin-panel-stack space-y-4">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Zap className="h-4 w-4 text-[#22C55E]" />
-              <span>Direct Supplier Benefits</span>
-            </h3>
-
-            <ul className="text-xs text-[#94A3B8] space-y-2.5">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E] shrink-0 mt-0.5" />
-                <span>Single integration eliminates multi-supplier timeouts and fragmented order flows.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E] shrink-0 mt-0.5" />
-                <span>Automated instant nickname check for Free Fire, MLBB, HoK, and PUBG Mobile.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E] shrink-0 mt-0.5" />
-                <span>Atomic idempotency keys prevent double-charging or duplicate diamond fulfillment.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 text-[#22C55E] shrink-0 mt-0.5" />
-                <span>Private wholesale costs with full margin control over customer selling prices.</span>
-              </li>
-            </ul>
-
-            <div className="pt-3 border-t border-[#243047]">
-              <Link
-                href="/admin/games"
-                className="w-full py-2 px-3 rounded-lg bg-[#151F31] hover:bg-[#1C283F] border border-[#243047] text-xs font-semibold text-slate-200 flex items-center justify-center gap-2 transition-colors"
-              >
-                <span>View Games Catalog</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
+      <section className="admin-panel admin-panel-stack">
+        <div><h2 className="flex items-center gap-2"><Database className="h-4 w-4 text-cyan-300" />Catalog synchronization</h2><p className="admin-page-description">Existing game and package sync actions remain available. They preserve configured selling prices and custom images.</p></div>
+        <div className="grid gap-3 md:grid-cols-2">
+          <button type="button" onClick={() => void handleSyncGames()} disabled={syncingGames} className="admin-button admin-button-secondary justify-center cursor-pointer disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${syncingGames ? "animate-spin" : ""}`} />{syncingGames ? "Syncing games…" : "Sync games"}</button>
+          <button type="button" onClick={() => void handleSyncPackages()} disabled={syncingPackages} className="admin-button admin-button-secondary justify-center cursor-pointer disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${syncingPackages ? "animate-spin" : ""}`} />{syncingPackages ? "Syncing packages…" : "Sync packages"}</button>
         </div>
-      )}
-
-      {/* Synchronization Tools Hub */}
-      <div className="admin-panel admin-panel-stack mt-5">
-        <div>
-          <h2 className="flex items-center gap-2">
-            <Database className="h-4 w-4 shrink-0 text-[#94A3B8]" />
-            <span>Catalogue synchronization</span>
-          </h2>
-          <p className="admin-page-description">
-            Update live products and prices from WebBuilder while preserving your custom images and margins.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-          <div className="p-4 rounded-lg bg-[#151F31] border border-[#243047] space-y-3">
-            <h3 className="text-[#F8FAFC]">Games catalogue</h3>
-            <p className="text-xs text-slate-400">
-              Synchronizes active games without altering your custom images or descriptions.
-            </p>
-            <button
-              onClick={handleSyncGames}
-              disabled={syncingGames}
-              className="w-full py-2 px-3 rounded-lg bg-[rgba(34,197,94,0.12)] hover:bg-[#22C55E] text-[#22C55E] hover:text-[#080D18] border border-[rgba(34,197,94,0.3)] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${syncingGames ? "animate-spin" : ""}`} />
-              <span>{syncingGames ? "Synchronizing Games..." : "Run Games Sync"}</span>
-            </button>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#151F31] border border-[#243047] space-y-3">
-            <h3 className="text-[#F8FAFC]">Packages &amp; wholesale pricing</h3>
-            <p className="text-xs text-slate-400">
-              Refreshes wholesale supplier buying prices while preserving all configured customer selling prices.
-            </p>
-            <button
-              onClick={handleSyncPackages}
-              disabled={syncingPackages}
-              className="w-full py-2 px-3 rounded-lg bg-[#111A2B] hover:bg-[#0C1322] text-[#F8FAFC] border border-[#243047] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw className={`h-3.5 w-3.5 ${syncingPackages ? "animate-spin" : ""}`} />
-              <span>{syncingPackages ? "Synchronizing Packages..." : "Run Packages Sync"}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <div className="flex flex-wrap gap-4 text-xs"><Link href="/admin/games" className="text-emerald-300 hover:text-white">Manage games</Link><Link href="/admin/packages" className="text-emerald-300 hover:text-white">Manage packages</Link><Link href="/admin/smm-services" className="text-emerald-300 hover:text-white">SMM catalog</Link></div>
+      </section>
+    </main>
   );
 }

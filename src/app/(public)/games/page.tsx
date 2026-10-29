@@ -2,7 +2,9 @@ import { getClientGames } from "@/lib/services/gameService";
 import { GameSearch } from "@/components/public/GameSearch";
 import { Metadata } from "next";
 
-export const revalidate = 300;
+// Read the database-backed catalogue at request time. Its unstable_cache entry
+// still revalidates every five minutes and is invalidated after admin edits.
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Games Catalogue — SakSuuu Game Top-Up",

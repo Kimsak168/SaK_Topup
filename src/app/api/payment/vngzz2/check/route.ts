@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order, IOrder } from "@/models/Order";
 import { Payment } from "@/models/Payment";
-import { checkVngZz2Transaction } from "@/lib/services/vngzzPayWayService";
+import { checkVngZz2Transaction, formatVngZzAmount } from "@/lib/services/vngzzPayWayService";
 import { triggerAutomaticFulfillment } from "@/lib/services/fulfillmentService";
 
 export const dynamic = "force-dynamic";
@@ -57,23 +57,19 @@ export async function POST(req: NextRequest) {
     const checkResult = await checkVngZz2Transaction(txnToQuery);
 
     if (checkResult.isPaid) {
-      // Amount verification: prevent underpaid transactions
-      if (typeof checkResult.amount === "number" && checkResult.amount > 0) {
-        if (checkResult.amount < order.amount) {
-          console.warn(
-            `[VngZz2 Check] Underpaid order ${order.orderNumber}: Expected $${order.amount}, got $${checkResult.amount}`
-          );
-          return NextResponse.json({
-            success: false,
-            error: "Payment amount does not match order amount",
-            isPaid: false,
-          });
-        }
+      if (checkResult.transactionId !== txnToQuery) {
+        return NextResponse.json({ success: false, error: "Verified transaction reference does not match this order.", isPaid: false }, { status: 400 });
+      }
+      if (!Number.isFinite(checkResult.amount) || checkResult.amount <= 0 || formatVngZzAmount(checkResult.amount) !== formatVngZzAmount(order.amount)) {
+        return NextResponse.json({ success: false, error: "Payment amount does not match the order amount.", isPaid: false }, { status: 400 });
+      }
+      if (String(checkResult.currency).toUpperCase() !== String(order.currency || "USD").toUpperCase()) {
+        return NextResponse.json({ success: false, error: "Payment currency does not match the order currency.", isPaid: false }, { status: 400 });
       }
 
       // Mark order PAID atomically
       const updatedOrder = await Order.findOneAndUpdate(
-        { orderNumber: order.orderNumber, paymentStatus: { $ne: "PAID" } },
+        { orderNumber: order.orderNumber, paymentStatus: { $in: ["PENDING", "pending"] } },
         {
           $set: {
             paymentStatus: "PAID",
@@ -88,19 +84,23 @@ export async function POST(req: NextRequest) {
       await Payment.findOneAndUpdate(
         { orderNumber: order.orderNumber },
         {
+          $setOnInsert: {
+            paymentId: `PAY-${order.orderNumber}`,
+            orderNumber: order.orderNumber,
+            gateway: "aba_payway_v2",
+            amount: order.amount,
+            currency: order.currency || "USD",
+          },
           $set: {
             status: "PAID",
             paidAt: new Date(),
             transactionId: checkResult.transactionId || txnToQuery,
-            payerAccount: checkResult.paywayTransactionId || undefined,
-            rawResponse: {
-              paywayTransactionId: checkResult.paywayTransactionId,
-              receiptUrl: checkResult.receiptUrl,
-              checkedAt: checkResult.checkedAt,
-            },
+            ...(checkResult.paywayTransactionId ? { payerAccount: checkResult.paywayTransactionId } : {}),
+            rawResponse: { state: checkResult.state, transactionId: txnToQuery, amount: formatVngZzAmount(checkResult.amount), currency: checkResult.currency, checkedAt: checkResult.checkedAt },
             updatedAt: new Date(),
           },
-        }
+        },
+        { upsert: true }
       );
 
       // Trigger automatic game fulfillment if order was updated now

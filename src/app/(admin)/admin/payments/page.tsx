@@ -76,7 +76,7 @@ export default function AdminPaymentsPage() {
           });
         } else if (data.isConfigured === false) {
           toast.info("ABA PayWay V2 Pending Configuration", {
-            description: "Add VNGZZ2_PAYMENT_API_KEY to your environment variables to enable live payments.",
+            description: "Add VNGZZ2_PRIMARY_API_KEY to your environment variables to enable live payments.",
           });
         } else {
           toast.error("ABA PayWay V2 Connection Warning", {

@@ -49,7 +49,6 @@ const PaymentSchema = new Schema<IPayment>(
     transactionId: {
       type: String,
       trim: true,
-      index: true,
     },
     amount: {
       type: Number,
@@ -94,6 +93,10 @@ const PaymentSchema = new Schema<IPayment>(
 );
 
 PaymentSchema.index({ createdAt: -1 });
+PaymentSchema.index(
+  { gateway: 1, transactionId: 1 },
+  { unique: true, partialFilterExpression: { transactionId: { $type: "string", $gt: "" } }, name: "uniq_gateway_payment_transaction" }
+);
 
 export const Payment: Model<IPayment> =
   mongoose.models.Payment || mongoose.model<IPayment>("Payment", PaymentSchema);

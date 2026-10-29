@@ -22,7 +22,7 @@ export default function PublicCustomerLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="public-theme relative min-h-screen flex flex-col bg-black text-[#F8F5FF] selection:bg-[#7C3AED] selection:text-white">
+    <div className="public-theme relative min-h-screen flex flex-col bg-[#FFF8FC] text-[#3B2D39] selection:bg-[#FBCFE8] selection:text-[#3B2D39]">
       <div className="public-ambient pointer-events-none absolute inset-0 z-0" aria-hidden="true" />
       <FallingFlowersBackground />
 

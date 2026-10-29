@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerificationGame } from "@/lib/services/verificationGameService";
+import { checkVizoPlayer } from "@/lib/suppliers/vizo";
+import { checkG2BulkPlayer } from "@/lib/suppliers/g2bulk";
 import { checkWebBuilderPlayer } from "@/lib/suppliers/webbuilder";
-import { GamePackage } from "@/models/GamePackage";
-import { connectDB } from "@/lib/mongodb";
+import { checkVngzzPlayer } from "@/lib/suppliers/vngzz2";
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
   const started = performance.now();
   const spans: { name: string; ms: number }[] = [];
 
-  const timed = async <T>(name: string, operation: () => Promise<T>): Promise<T> => {
+  const timed = async <T,>(name: string, operation: () => Promise<T>): Promise<T> => {
     const start = performance.now();
     try {
       return await operation();
@@ -60,15 +61,54 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(body, { ...init, headers });
   };
 
-  const signal = () => AbortSignal.any([req.signal, AbortSignal.timeout(8000)]);
+  let supplierSignal: AbortSignal | undefined;
+  const signal = () => {
+    supplierSignal ??= AbortSignal.any([req.signal, AbortSignal.timeout(8000)]);
+    return AbortSignal.any([supplierSignal, AbortSignal.timeout(5000)]);
+  };
+
+  const verifyVizo = (game: string, id: string, server?: string) =>
+    timed("vizo", () => checkVizoPlayer(game, id, server, signal()));
+  const verifyG2Bulk = (game: string, id: string, server?: string) =>
+    timed(game === "mlbb_global" ? "g2bulk_global" : "g2bulk", () => checkG2BulkPlayer(game, id, server, signal()));
+  const verifyWebBuilder = (productId: string, id: string, server?: string) =>
+    timed("webbuilder", () => checkWebBuilderPlayer(productId, id, server, signal()));
 
   try {
     const body = await req.json().catch(() => ({}));
-    const { code, slug, userId, serverId } = body;
+    const { supplier, code, slug, userId, serverId } = body;
 
     const gameIdentifier = String(code || slug || "").trim().toLowerCase();
     const cleanUserId = String(userId || "").trim();
     const cleanServerId = serverId ? String(serverId).trim() : undefined;
+
+    // This provider's published game API has no nickname verification contract.
+    // Never verify its regional games against an unrelated supplier/product.
+    if (supplier === "vngzz2") {
+      if (!gameIdentifier || !cleanUserId) return respond({ success: false, message: "Please enter your Player ID." }, { status: 400 });
+      const game = await timed("metadata", () => getVerificationGame("vngzz2", gameIdentifier));
+      if (!game || game.supplier !== "vngzz2") return respond({ success: false, message: "Game unavailable." }, { status: 404 });
+      if (game.requiresServer && !cleanServerId) return respond({ success: false, message: "Please enter your Server / Zone ID." }, { status: 400 });
+
+      const check = await timed("vngzz2", () =>
+        checkVngzzPlayer(game.supplierGameCode || gameIdentifier, cleanUserId, cleanServerId, signal())
+      );
+
+      if (check.valid) {
+        return respond({
+          success: true,
+          isValid: true,
+          playerName: check.username || "Verified Player",
+          message: "Player ID verified successfully",
+        });
+      }
+
+      return respond({
+        success: false,
+        isValid: false,
+        message: check.message || "Player ID could not be verified. Please check your ID and try again.",
+      }, { status: 400 });
+    }
 
     if (!gameIdentifier || !cleanUserId) {
       return respond(
@@ -77,9 +117,32 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const isFreeFire =
+      gameIdentifier.includes("freefire") ||
+      gameIdentifier === "ff" ||
+      gameIdentifier === "free-fire" ||
+      gameIdentifier.includes("khsgmy");
+
+    const isHonorOfKings =
+      gameIdentifier === "hok" ||
+      gameIdentifier.includes("honor") ||
+      supplier === "webbuilder";
+
+    let targetSupplier = supplier
+      ? String(supplier).trim().toLowerCase()
+      : isFreeFire
+      ? "webbuilder"
+      : isHonorOfKings
+      ? "webbuilder"
+      : "g2bulk";
+
+    if (supplier) {
+      targetSupplier = String(supplier).trim().toLowerCase();
+    }
+
     let game = null;
     try {
-      game = await timed("metadata", () => getVerificationGame("webbuilder", gameIdentifier));
+      game = await timed("metadata", () => getVerificationGame(targetSupplier, gameIdentifier));
     } catch (dbErr) {
       console.warn("[PlayerVerify] DB query fallback:", dbErr instanceof Error ? dbErr.message : String(dbErr));
     }
@@ -91,70 +154,192 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Resolve product ID for WebBuilder player check
-    let productId = String(body.productId || body.product_id || body.packageId || "").trim();
-    if (!productId || productId.startsWith("sample") || productId.length < 8) {
-      productId = DEFAULT_PRODUCT_IDS[gameIdentifier] || "";
-      if (!productId) {
-        // Look up first available package in DB
-        try {
-          await connectDB();
-          const pkg = await GamePackage.findOne({
-            supplier: "webbuilder",
-            $or: [{ gameSlug: gameIdentifier }, { gameCode: gameIdentifier }],
-            isActive: true,
-          }).select("supplierProductCode").lean();
-          if (pkg?.supplierProductCode) {
-            productId = pkg.supplierProductCode;
-          }
-        } catch {
-          // fallback
+    if (game?.supplier) {
+      targetSupplier = game.supplier;
+    }
+
+    // Determine normalized supplier game code
+    const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_khsgmy" : isHonorOfKings ? "hok" : gameIdentifier);
+
+    // ==========================================
+    // 0. WEBBUILDER API VERIFICATION (HoK, MLBB, Free Fire)
+    // ==========================================
+    if (targetSupplier === "webbuilder" || isHonorOfKings || isFreeFire) {
+      let productId = String(body.productId || body.product_id || body.packageId || "").trim();
+      if (
+        !productId ||
+        productId === "hok" ||
+        productId === "mlbb" ||
+        productId === "freefire" ||
+        productId.startsWith("sample") ||
+        productId.length < 8
+      ) {
+        if (isFreeFire) {
+          productId = DEFAULT_PRODUCT_IDS.freefire;
+        } else if (gameIdentifier.includes("mlbb") || gameIdentifier.includes("mobile-legends")) {
+          productId = DEFAULT_PRODUCT_IDS.mlbb;
+        } else {
+          productId = DEFAULT_PRODUCT_IDS[gameIdentifier] || DEFAULT_PRODUCT_IDS.hok;
         }
+      }
+
+      const wbRes = await verifyWebBuilder(productId, cleanUserId, cleanServerId);
+      const duration = Date.now() - startTime;
+
+      if (wbRes.success) {
+        console.log(
+          `[PlayerVerify] ${game?.supplierGameCode || gameIdentifier} via WebBuilder: SUCCESS (IGN: ${wbRes.username}, Region: ${wbRes.region || "N/A"}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond({
+          success: true,
+          playerName: wbRes.username,
+          username: wbRes.username,
+          region: wbRes.region,
+          zone_name: wbRes.zone_name,
+          message: `Verified: ${wbRes.username}${wbRes.region ? ` (${wbRes.region})` : ""}`,
+        });
+      }
+
+      if (wbRes.isInvalidId) {
+        console.log(
+          `[PlayerVerify] ${game?.supplierGameCode || gameIdentifier} via WebBuilder: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(
+          {
+            success: false,
+            isInvalidId: true,
+            message: wbRes.message || "Player account not found. Please verify your Player ID and Zone ID.",
+          },
+          { status: 400 }
+        );
+      }
+
+      if (isFreeFire && wbRes.isUnavailable) {
+        console.warn(
+          `[PlayerVerify] WebBuilder Free Fire check was unavailable (${wbRes.message}). Attempting Vizo fallback...`
+        );
+      } else {
+        return respond({
+          success: false,
+          isUnavailable: true,
+          message: wbRes.message || "Verification service is temporarily busy. You can still proceed.",
+        });
       }
     }
 
-    if (!productId) {
-      // Default to Free Fire package if unknown
-      productId = DEFAULT_PRODUCT_IDS.freefire;
-    }
+    // ==========================================
+    // 1. FREE FIRE (Primary: Vizo, Fallback: G2Bulk)
+    // ==========================================
+    if (isFreeFire) {
+      // Free Fire on Vizo /player_info/check endpoint requires 'freefire_sgmy'
+      const vizoRes = await verifyVizo("freefire_sgmy", cleanUserId, cleanServerId);
+      const duration = Date.now() - startTime;
 
-    const wbRes = await timed("webbuilder", () =>
-      checkWebBuilderPlayer(productId, cleanUserId, cleanServerId, signal())
-    );
-    const duration = Date.now() - startTime;
+      if (vizoRes.success) {
+        console.log(
+          `[PlayerVerify] Free Fire via Vizo: SUCCESS (IGN: ${vizoRes.playerName}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(vizoRes);
+      }
 
-    if (wbRes.success) {
-      console.log(
-        `[PlayerVerify] ${gameIdentifier} via WebBuilder: SUCCESS (IGN: ${wbRes.username}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+      // If Vizo explicitly confirmed the player ID is invalid, do not false-report
+      if (vizoRes.isInvalidId) {
+        console.log(
+          `[PlayerVerify] Free Fire via Vizo: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(vizoRes, { status: 400 });
+      }
+
+      // If Vizo encountered an auth/network/timeout issue, try resilient fallback to G2Bulk freefire_sgmy
+      console.warn(
+        `[PlayerVerify] Free Fire Vizo check was not conclusive (${vizoRes.message}). Attempting G2Bulk fallback...`
       );
+      const g2Res = await verifyG2Bulk("freefire_sgmy", cleanUserId, cleanServerId);
+      const totalDuration = Date.now() - startTime;
+
+      if (g2Res.success) {
+        console.log(
+          `[PlayerVerify] Free Fire via G2Bulk fallback: SUCCESS (IGN: ${g2Res.playerName}) in ${totalDuration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(g2Res);
+      }
+
+      if (g2Res.isInvalidId) {
+        console.log(
+          `[PlayerVerify] Free Fire via G2Bulk fallback: INVALID_ID in ${totalDuration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(g2Res, { status: 400 });
+      }
+
+      // Both failed due to network / temporary supplier issue
       return respond({
-        success: true,
-        playerName: wbRes.username,
-        username: wbRes.username,
-        region: wbRes.region,
-        zone_name: wbRes.zone_name,
-        message: `Verified: ${wbRes.username}${wbRes.region ? ` (${wbRes.region})` : ""}`,
+        success: false,
+        isUnavailable: true,
+        message: "Live verification server is temporarily busy. You can still proceed with your Top Up.",
       });
     }
 
-    if (wbRes.isInvalidId) {
-      console.log(
-        `[PlayerVerify] ${gameIdentifier} via WebBuilder: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
-      );
-      return respond(
-        {
-          success: false,
-          isInvalidId: true,
-          message: wbRes.message || "Player account not found. Please verify your Player ID and Zone ID.",
-        },
-        { status: 400 }
-      );
+    // ==========================================
+    // 2. MOBILE LEGENDS: BANG BANG (MLBB)
+    // ==========================================
+    if (targetCode === "mlbb" || targetCode === "mobile-legends" || gameIdentifier.includes("mlbb")) {
+      // 2a. First try G2Bulk mlbb
+      const g2Res = await verifyG2Bulk("mlbb", cleanUserId, cleanServerId);
+      const duration = Date.now() - startTime;
+
+      if (g2Res.success) {
+        console.log(
+          `[PlayerVerify] MLBB via G2Bulk: SUCCESS (IGN: ${g2Res.playerName}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(g2Res);
+      }
+
+      // 2b. If invalid on standard mlbb, also check Indonesian mlbb_global
+      if (g2Res.isInvalidId) {
+        const g2GlobalRes = await verifyG2Bulk("mlbb_global", cleanUserId, cleanServerId);
+        if (g2GlobalRes.success) {
+          console.log(
+            `[PlayerVerify] MLBB via G2Bulk mlbb_global: SUCCESS (IGN: ${g2GlobalRes.playerName}) [UID: ${maskId(cleanUserId)}]`
+          );
+          return respond(g2GlobalRes);
+        }
+      }
+
+      // 2c. Also try Vizo mlbb as secondary validation
+      const vizoRes = await verifyVizo("mlbb", cleanUserId, cleanServerId);
+      if (vizoRes.success) {
+        console.log(
+          `[PlayerVerify] MLBB via Vizo fallback: SUCCESS (IGN: ${vizoRes.playerName}) [UID: ${maskId(cleanUserId)}]`
+        );
+        return respond(vizoRes);
+      }
+
+      if (g2Res.isInvalidId) {
+        return respond(
+          {
+            success: false,
+            isInvalidId: true,
+            message: "Player account not found. Please double check your User ID and Zone ID.",
+          },
+          { status: 400 }
+        );
+      }
+
+      return respond(g2Res);
     }
 
-    return respond({
-      success: false,
-      isUnavailable: true,
-      message: wbRes.message || "Verification service is temporarily busy. You can still proceed.",
+    // ==========================================
+    // 3. PUBG MOBILE & OTHER G2BULK GAMES
+    // ==========================================
+    const result = await verifyG2Bulk(targetCode, cleanUserId, cleanServerId);
+    const duration = Date.now() - startTime;
+
+    console.log(
+      `[PlayerVerify] Game: ${targetCode} via G2Bulk: ${result.success ? "SUCCESS (" + result.playerName + ")" : result.isInvalidId ? "INVALID" : "UNAVAILABLE"} in ${duration}ms [UID: ${maskId(cleanUserId)}]`
+    );
+
+    return respond(result, {
+      status: result.isInvalidId ? 400 : 200,
     });
   } catch (error) {
     console.error("[PlayerVerify] Error:", error instanceof Error ? error.message : String(error));

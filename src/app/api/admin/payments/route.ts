@@ -50,8 +50,12 @@ export async function GET(req: NextRequest) {
           { $match: { status: { $in: SUCCESS_STATUSES } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]).catch(() => []),
-        checkAnajakPayHealth().catch(() => ({ available: false, message: "Health check error" })),
-        checkVngZz2Health().catch(() => ({ available: false, message: "Health check error" })),
+        typeof checkAnajakPayHealth === "function"
+          ? checkAnajakPayHealth().catch(() => ({ available: false, message: "Health check error" }))
+          : Promise.resolve({ available: false, message: "Gateway unconfigured" }),
+        typeof checkVngZz2Health === "function"
+          ? checkVngZz2Health().catch(() => ({ available: false, message: "Health check error" }))
+          : Promise.resolve({ available: false, message: "Gateway unconfigured" }),
       ]);
 
     const totalVolume = successfulVolumeAgg[0]?.total || 0;
@@ -60,9 +64,9 @@ export async function GET(req: NextRequest) {
     const anajakProfile = process.env.ANAJAKPAY_PROFILE_ID;
     const anajakSecret = process.env.ANAJAKPAY_SECRET_KEY;
 
-    const vngKey = process.env.VNGZZ2_PAYMENT_API_KEY?.trim();
+    const vngKey = (process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim();
     const vngSlot = process.env.VNGZZ2_PAYMENT_SLOT || "USD";
-    const vngConfigured = isVngZz2Configured();
+    const vngConfigured = typeof isVngZz2Configured === "function" ? isVngZz2Configured() : false;
 
     const gateways = [
       {

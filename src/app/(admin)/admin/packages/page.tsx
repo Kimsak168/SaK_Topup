@@ -22,7 +22,7 @@ interface AdminPackage {
   id: string;
   gameSlug: string;
   gameCode: string;
-  supplier: "webbuilder";
+  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
   supplierProductCode: string;
   name: string;
   buyingPrice: number | null; // Private supplier wholesale cost
@@ -167,7 +167,7 @@ export default function AdminPackagesPage() {
     try {
       setIsSyncing(true);
       toast.loading(
-        "Syncing live packages from WebBuilder...",
+        "Syncing packages from configured suppliers...",
         { id: "sync-packages" }
       );
 
@@ -458,7 +458,7 @@ export default function AdminPackagesPage() {
             Active Supplier
           </span>
           <div className="text-lg font-bold text-emerald-400">
-            {kpi.webbuilderPkgs || kpi.totalPkgs} WebBuilder
+            {kpi.totalPkgs} across all suppliers
           </div>
           <span className="text-[10px] text-[#64748B]">Automated wholesale pricing</span>
         </div>
@@ -492,7 +492,7 @@ export default function AdminPackagesPage() {
           >
             <option value="all">All Games</option>
             {availableGames.map((g) => (
-              <option key={g.code || g.slug} value={g.code || g.slug}>
+              <option key={`${g.supplier}:${g.code || g.slug}`} value={g.code || g.slug}>
                 {g.name} ({g.supplier.toUpperCase()})
               </option>
             ))}
@@ -507,7 +507,10 @@ export default function AdminPackagesPage() {
             }}
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
-            <option value="all">Supplier: WebBuilder</option>
+            <option value="all">All suppliers</option>
+            <option value="webbuilder">WebBuilder</option>
+            <option value="vngzz2">VNGZZ2</option>
+            <option value="g2bulk">G2Bulk</option>
           </select>
 
           {/* Price Configuration Filter */}
@@ -634,8 +637,18 @@ export default function AdminPackagesPage() {
                         <div className="font-semibold text-[#94A3B8]">
                           {pkg.gameSlug.toUpperCase()}
                         </div>
-                        <span className="inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                          WebBuilder
+                        <span
+                          className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
+                            pkg.supplier === "vngzz2"
+                              ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
+                              : pkg.supplier === "g2bulk"
+                              ? "bg-purple-500/10 text-purple-400 border border-purple-500/30"
+                              : pkg.supplier === "vizo"
+                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                              : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                          }`}
+                        >
+                          {pkg.supplier || "WebBuilder"}
                         </span>
                       </td>
 

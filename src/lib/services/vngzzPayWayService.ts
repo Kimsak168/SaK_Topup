@@ -1,5 +1,6 @@
 import "server-only";
 import crypto from "crypto";
+import QRCode from "qrcode";
 
 /**
  * ABA PayWay V2 (VngZz2 Payment API) Service
@@ -46,6 +47,7 @@ export interface VngZz2Config {
   baseUrl: string;
   apiKey: string;
   slot?: string;
+  currency?: string;
   webhookSecret?: string;
 }
 
@@ -103,7 +105,9 @@ export interface VngZz2HealthResult {
  * Check if VngZz2 environment configuration is provided.
  */
 export function isVngZz2Configured(): boolean {
-  return Boolean(process.env.VNGZZ2_PAYMENT_API_KEY?.trim());
+  return Boolean(
+    (process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim()
+  );
 }
 
 /**
@@ -111,19 +115,21 @@ export function isVngZz2Configured(): boolean {
  * Never exposes credentials to frontend code.
  */
 export function getVngZz2Config(): VngZz2Config {
-  const apiKey = process.env.VNGZZ2_PAYMENT_API_KEY?.trim();
+  const apiKey = (process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim();
   const rawBase = (process.env.VNGZZ2_PAYMENT_BASE_URL || "https://www.vngzz2game.site/api").trim();
-  const baseUrl = rawBase.replace(/\/+$/, "");
+  // Strip trailing slashes and any trailing /v1 so endpoint paths (/v1/generate_qr) don't become /v1/v1
+  const baseUrl = rawBase.replace(/\/+$/, "").replace(/\/v1$/, "");
   const slot = (process.env.VNGZZ2_PAYMENT_SLOT || process.env.VNGZZ2_PAYMENT_SLOT_ID || "USD").trim();
+  const currency = (process.env.VNGZZ2_PAYMENT_CURRENCY || "USD").toUpperCase();
   const webhookSecret = process.env.VNGZZ2_PAYMENT_WEBHOOK_SECRET?.trim();
 
   if (!apiKey) {
     throw new VngZz2ConfigError(
-      "VngZz2 payment gateway is not configured. Missing VNGZZ2_PAYMENT_API_KEY environment variable."
+      "VngZz2 payment gateway is not configured. Missing VNGZZ2_PRIMARY_API_KEY (or VNGZZ2_PAYMENT_API_KEY) environment variable."
     );
   }
 
-  return { baseUrl, apiKey, slot, webhookSecret };
+  return { baseUrl, apiKey, slot, currency, webhookSecret };
 }
 
 /**
@@ -164,13 +170,45 @@ function logRedacted(level: "log" | "warn" | "error", message: string, meta?: Re
 }
 
 /**
+ * Generate a realistic ABA PayWay KHQR simulation for testing/sandbox environments.
+ * Used when VNGZZ2_PAYMENT_API_KEY is not configured or in development mode.
+ */
+export function generateVngZz2SandboxQr(params: GenerateQrParams): GenerateQrResult {
+  const canonicalAmount = formatVngZzAmount(params.amount);
+  const currency = params.currency || "USD";
+  const transactionId = `TXN-SANDBOX-VNGZZ2-${Date.now().toString().slice(-6)}-${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+
+  const qrString = `00020101021229300016com.ababank.payway0108${params.orderNumber}54${canonicalAmount}538405802KH5907SAKSUUU6010PHNOM PENH6304DEMO`;
+
+  let svg = "";
+  QRCode.toString(qrString, { type: "svg", margin: 1, errorCorrectionLevel: "H" }, (_err, str) => {
+    svg = str || "";
+  });
+
+  const qrImage = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+
+  return {
+    success: true,
+    transactionId,
+    amount: parseFloat(canonicalAmount),
+    currency,
+    state: "PENDING",
+    qrString: `00020101021229300016com.ababank.payway0108${params.orderNumber}54${canonicalAmount}538405802KH5907SAKSUUU6010PHNOM PENH6304DEMO`,
+    qrImage,
+    deepLink: `abamobilebank://ababank.com?type=payway&qrcode=DEMO_${transactionId}`,
+    expireInSec: 180,
+    expiresAt: new Date(Date.now() + 180 * 1000).toISOString(),
+  };
+}
+
+/**
  * 1. Generate ABA PayWay KHQR via VngZz2 API
  * POST /v1/generate_qr
  */
 export async function generateVngZz2Qr(params: GenerateQrParams): Promise<GenerateQrResult> {
   const config = getVngZz2Config();
   const canonicalAmount = formatVngZzAmount(params.amount);
-  const currency = params.currency || "USD";
+  const currency = params.currency || config.currency || "USD";
   const slot = params.slot || config.slot;
   const timeoutMs = params.timeoutMs || 10000;
 
@@ -268,11 +306,32 @@ export async function checkVngZz2Transaction(
   transactionId: string,
   options?: { timeoutMs?: number }
 ): Promise<CheckTransactionResult> {
-  const config = getVngZz2Config();
   const cleanTxnId = String(transactionId || "").trim();
   if (!cleanTxnId) {
     throw new Error("Missing transactionId for transaction inquiry");
   }
+
+  // Handle sandbox / simulation transactions cleanly without requiring an external API key
+  if (cleanTxnId.startsWith("TXN-SANDBOX-") || cleanTxnId.startsWith("SANDBOX-")) {
+    return {
+      success: true,
+      transactionId: cleanTxnId,
+      state: "PENDING",
+      isPaid: false,
+      amount: 0,
+      currency: "USD",
+      action: "approved",
+      code: "00",
+      paywayTransactionId: `ABA-SANDBOX-${cleanTxnId.slice(-6)}`,
+      receiptUrl: "https://pwapp.ababank.com/download-receipt?id=sandbox",
+      checkedAt: new Date().toISOString(),
+      message: "Sandbox payments are not accepted as verified customer payments.",
+    };
+  }
+
+  if (!isVngZz2Configured()) throw new VngZz2ConfigError("VngZz2 payment verification is not configured.");
+
+  const config = getVngZz2Config();
 
   const endpoint = `${config.baseUrl}/v1/check_transaction`;
   const timeoutMs = options?.timeoutMs || 8000;
@@ -354,8 +413,20 @@ export async function checkVngZz2Transaction(
  * GET /v1/status or GET /v1/ping
  */
 export async function checkVngZz2Health(timeoutMs = 5000): Promise<VngZz2HealthResult> {
+  if (!isVngZz2Configured()) {
+    return {
+      available: true,
+      state: "SANDBOX_OPERATIONAL",
+      latencyMs: 1,
+      service: "vngzz2-sandbox-gateway",
+      version: "2.0.0-sandbox",
+      capabilities: ["khqr", "sandbox_simulation"],
+      message: "Operating in Sandbox mode. Set VNGZZ2_PRIMARY_API_KEY in .env.local to activate Live gateway.",
+    };
+  }
+
   const rawBase = (process.env.VNGZZ2_PAYMENT_BASE_URL || "https://www.vngzz2game.site/api").trim();
-  const baseUrl = rawBase.replace(/\/+$/, "");
+  const baseUrl = rawBase.replace(/\/+$/, "").replace(/\/v1$/, "");
 
   const startTime = Date.now();
   try {
@@ -408,10 +479,8 @@ export function verifyVngZz2WebhookSignature(params: {
   const secret = params.secret || process.env.VNGZZ2_PAYMENT_WEBHOOK_SECRET?.trim();
   const signature = params.signature?.trim();
 
-  // If no secret is configured, inform caller that signature checking is not enabled
-  if (!secret) {
-    return true;
-  }
+  // A missing webhook secret must fail closed; provider callbacks are not trusted without it.
+  if (!secret) return false;
 
   if (!signature) {
     return false;

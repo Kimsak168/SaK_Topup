@@ -1,0 +1,83 @@
+{
+  "checks": [
+    "real response counts, brand-colored platform icons, premium hero, and desktop two-column layout render",
+    "platform and category filters narrow the catalog, and service selection updates checkout",
+    "service-type filters, search, price sorting, and 12-item pagination work",
+    "catalog API failures show a clear recovery state and recover after the service returns",
+    "mobile, tablet, and desktop layouts fit 320, 360, 390, 430, 768, 1024, and 1440px",
+    "URL and quantity validation enforce min/max and the price preview matches server rounding",
+    "order errors are surfaced; ABA KHQR stays pending until backend status changes to PAID",
+    "live app route rejects fractional quantities, unsafe URLs, and unsupported payment methods before supplier or database calls"
+  ],
+  "layouts": [
+    {
+      "viewport": 320,
+      "pageWidth": 320,
+      "catalogLeft": 12,
+      "formTop": 3097.578125,
+      "catalogTop": 146.328125,
+      "tabsClient": 296,
+      "tabsScroll": 1163
+    },
+    {
+      "viewport": 360,
+      "pageWidth": 360,
+      "catalogLeft": 12,
+      "formTop": 2506.6875,
+      "catalogTop": 122.9375,
+      "tabsClient": 336,
+      "tabsScroll": 1163
+    },
+    {
+      "viewport": 390,
+      "pageWidth": 390,
+      "catalogLeft": 12,
+      "formTop": 2417.53125,
+      "catalogTop": 129.15625,
+      "tabsClient": 366,
+      "tabsScroll": 1163
+    },
+    {
+      "viewport": 430,
+      "pageWidth": 430,
+      "catalogLeft": 12,
+      "formTop": 3011.921875,
+      "catalogTop": 779.546875,
+      "tabsClient": 406,
+      "tabsScroll": 1163
+    },
+    {
+      "viewport": 768,
+      "pageWidth": 760,
+      "catalogLeft": 24,
+      "formTop": 2592.65625,
+      "catalogTop": 706.15625,
+      "tabsClient": 712,
+      "tabsScroll": 1231
+    },
+    {
+      "viewport": 1024,
+      "pageWidth": 1016,
+      "catalogLeft": 32,
+      "formTop": 733.1875,
+      "catalogTop": 733.1875,
+      "tabsClient": 952,
+      "tabsScroll": 1231
+    },
+    {
+      "viewport": 1440,
+      "pageWidth": 1432,
+      "catalogLeft": 108,
+      "formTop": 732.0625,
+      "catalogTop": 732.0625,
+      "tabsClient": 1216,
+      "tabsScroll": 1231
+    }
+  ],
+  "simulatedOrders": 1,
+  "browserErrors": [],
+  "consoleErrors": [
+    "Failed to load services: Error: Simulated catalogue unavailable\n    at loadServices (webpack-internal:///(app-pages-browser)/./src/app/(public)/services/page.tsx:278:31)",
+    "Failed to load services: Error: Simulated catalogue unavailable\n    at loadServices (webpack-internal:///(app-pages-browser)/./src/app/(public)/services/page.tsx:278:31)"
+  ]
+}

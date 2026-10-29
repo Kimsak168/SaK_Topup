@@ -8,6 +8,10 @@ import {
   generateWebBuilderIdempotencyKey,
   computeOrderRequestHash,
 } from "@/lib/suppliers/webbuilder";
+import { placeVizoOrder } from "@/lib/suppliers/vizo";
+import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
+import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
+import { DIGITAL_SHOP_UNAVAILABLE_MESSAGE } from "@/lib/services/digitalShopService";
 
 export interface FulfillmentResult {
   success: boolean;
@@ -18,7 +22,7 @@ export interface FulfillmentResult {
 }
 
 /**
- * Automatically fulfill an order with WebBuilder API.
+ * Automatically fulfill an order with the appropriate supplier (WebBuilder, Vizo, or G2Bulk).
  * Implements atomic fulfillment claiming to guarantee that duplicate purchases cannot be submitted.
  */
 export async function triggerAutomaticFulfillment(
@@ -75,6 +79,147 @@ export async function triggerAutomaticFulfillment(
   }
 
   try {
+    if (order.serviceType === "smm") {
+      await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
+      const smmRes = await createVngzzSmmOrder({
+        serviceId: order.supplierProductCode,
+        link: order.targetLink || order.playerId,
+        quantity: order.quantity || 100,
+        reference: order.orderNumber,
+      });
+
+      const isCompleted = smmRes.status === "completed";
+      const isFailed = smmRes.status === "failed";
+      const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
+
+      await Order.findByIdAndUpdate(order._id, {
+        $set: {
+          supplierOrderId: smmRes.orderId || order.orderNumber,
+          fulfillmentStatus: newStatus,
+          lastSupplierStatus: smmRes.supplierStatus,
+          fulfilledAt: isCompleted ? new Date() : undefined,
+          errorLog: isFailed ? smmRes.message : undefined,
+          updatedAt: new Date(),
+        },
+      });
+
+      return {
+        success: !isFailed,
+        orderNumber: order.orderNumber,
+        fulfillmentStatus: newStatus,
+        supplierOrderId: smmRes.orderId || order.orderNumber,
+        message: smmRes.message,
+      };
+    }
+
+    if (order.serviceType === "digital") {
+      // Do not send paid orders to an undocumented VNGZZ2 Digital endpoint.
+      // Keep the order visible for admin/manual resolution until a supplier is configured.
+      await Order.findByIdAndUpdate(order._id, {
+        $set: {
+          fulfillmentStatus: "processing",
+          lastSupplierStatus: "SUPPLIER_UNAVAILABLE",
+          errorLog: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
+          updatedAt: new Date(),
+        },
+      });
+
+      return {
+        success: false,
+        orderNumber: order.orderNumber,
+        fulfillmentStatus: "processing",
+        supplierOrderId: order.supplierOrderId,
+        message: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
+      };
+    }
+
+    if (order.supplier === "vngzz2") {
+      // Persist the stable reference before submitting. A timeout is reconciled
+      // through check_order; it must never trigger a second purchase.
+      await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
+      const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId, serverId: order.serverId, reference: order.orderNumber });
+      await Order.findByIdAndUpdate(order._id, { $set: {
+        supplierOrderId: result.id, fulfillmentStatus: result.status, lastSupplierStatus: result.supplierStatus,
+        ...(result.status === "completed" ? { fulfilledAt: new Date() } : {}),
+        ...(result.status === "failed" ? { errorLog: result.message } : {}),
+      } });
+      return { success: result.status !== "failed", orderNumber, fulfillmentStatus: result.status, supplierOrderId: result.id, message: result.message };
+    }
+    // 1. Vizo Fulfillment (Free Fire legacy / fallback supplier)
+    if (order.supplier === "vizo") {
+      const vizoRes = await placeVizoOrder({
+        productCode: order.supplierProductCode,
+        userId: order.playerId,
+        serverId: order.serverId,
+        refOrder: order.orderNumber,
+      });
+
+      const isCompleted = vizoRes.status === "completed";
+      const isFailed = vizoRes.status === "failed";
+      const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
+
+      await Order.findByIdAndUpdate(order._id, {
+        $set: {
+          supplierOrderId: vizoRes.supplierOrderId || vizoRes.transactionId,
+          fulfillmentStatus: newStatus,
+          lastSupplierStatus: vizoRes.status,
+          fulfilledAt: isCompleted ? new Date() : undefined,
+          errorLog: isFailed ? vizoRes.message : undefined,
+          adminNotes: `Vizo order ${vizoRes.status}: ${vizoRes.message || ""}`,
+          updatedAt: new Date(),
+        },
+      });
+
+      return {
+        success: isCompleted || vizoRes.status === "processing",
+        orderNumber: order.orderNumber,
+        fulfillmentStatus: newStatus,
+        supplierOrderId: vizoRes.supplierOrderId || vizoRes.transactionId,
+        message: vizoRes.message || `Vizo order status: ${vizoRes.status}`,
+      };
+    }
+
+    // 2. G2Bulk Fulfillment (Roblox product purchase & SMM protocol)
+    if (order.supplier === "g2bulk") {
+      const g2Res = await placeG2BulkOrder({
+        catalogueId: order.supplierProductCode,
+        userId: order.playerId,
+        serverId: order.serverId,
+        refOrder: order.orderNumber,
+        gameSlug: order.gameSlug,
+      });
+
+      const isCompleted = g2Res.status === "completed";
+      const isFailed = g2Res.status === "failed";
+      const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
+
+      const deliveryNote = g2Res.deliveryItems && g2Res.deliveryItems.length > 0
+        ? ` | Codes: ${g2Res.deliveryItems.join(", ")}`
+        : "";
+
+      await Order.findByIdAndUpdate(order._id, {
+        $set: {
+          supplierOrderId: g2Res.supplierOrderId,
+          fulfillmentStatus: newStatus,
+          lastSupplierStatus: g2Res.status,
+          fulfilledAt: isCompleted ? new Date() : undefined,
+          errorLog: isFailed ? g2Res.message : undefined,
+          adminNotes: `G2Bulk order ${g2Res.status}: ${g2Res.message || ""}${deliveryNote}`,
+          updatedAt: new Date(),
+        },
+      });
+
+      return {
+        success: isCompleted || g2Res.status === "processing",
+        orderNumber: order.orderNumber,
+        fulfillmentStatus: newStatus,
+        supplierOrderId: g2Res.supplierOrderId,
+        message: (g2Res.message || `G2Bulk order status: ${g2Res.status}`) + deliveryNote,
+      };
+    }
+
+    if (order.supplier !== "webbuilder") throw new Error("Unsupported fulfillment supplier.");
+    // 3. WebBuilder Fulfillment (Primary / Official Reseller API)
     const idempotencyKey = order.idempotencyKey || generateWebBuilderIdempotencyKey(order.orderNumber);
     const requestHash = computeOrderRequestHash({
       product_id: order.supplierProductCode,
@@ -198,7 +343,7 @@ export async function triggerAutomaticFulfillment(
 }
 
 /**
- * Reconcile in-flight supplier order with WebBuilder without resubmitting a purchase.
+ * Reconcile in-flight supplier order without resubmitting a purchase.
  */
 export async function reconcileSupplierFulfillment(
   orderNumber: string
@@ -214,6 +359,49 @@ export async function reconcileSupplierFulfillment(
     };
   }
 
+  if (order.serviceType === "digital") {
+    if (String(order.paymentStatus).toUpperCase() !== "PAID") {
+      return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
+    }
+
+    if (String(order.fulfillmentStatus).toLowerCase() === "completed") {
+      return {
+        success: true,
+        orderNumber,
+        fulfillmentStatus: order.fulfillmentStatus,
+        supplierOrderId: order.supplierOrderId,
+        message: "Digital order is already marked completed; supplier status cannot be checked until a provider is configured.",
+      };
+    }
+
+    order.lastSupplierStatus = "SUPPLIER_UNAVAILABLE";
+    order.errorLog = DIGITAL_SHOP_UNAVAILABLE_MESSAGE;
+    await order.save();
+
+    return {
+      success: false,
+      orderNumber,
+      fulfillmentStatus: order.fulfillmentStatus,
+      supplierOrderId: order.supplierOrderId,
+      message: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
+    };
+  }
+
+  if (order.supplier === "vngzz2") {
+    if (String(order.paymentStatus).toUpperCase() !== "PAID") return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
+    const result = await checkVngzzOrder(order.orderNumber);
+    // Never downgrade a completed delivery after a stale provider response.
+    if (!["completed", "COMPLETED", "delivered", "DELIVERED"].includes(order.fulfillmentStatus)) {
+      order.fulfillmentStatus = result.status;
+      order.lastSupplierStatus = result.supplierStatus;
+      order.supplierOrderId = result.id;
+      if (result.status === "completed") order.fulfilledAt = new Date();
+      if (result.status === "failed") order.errorLog = result.message;
+      await order.save();
+    }
+    return { success: order.fulfillmentStatus !== "failed", orderNumber, fulfillmentStatus: order.fulfillmentStatus, supplierOrderId: order.supplierOrderId, message: result.message };
+  }
+
   if (!order.supplierOrderId) {
     return {
       success: false,
@@ -223,6 +411,45 @@ export async function reconcileSupplierFulfillment(
     };
   }
 
+  // G2Bulk Reconciliation
+  if (order.supplier === "g2bulk") {
+    const g2Status = await checkG2BulkOrderStatus(order.supplierOrderId);
+    if (g2Status) {
+      if (g2Status.status === "completed") {
+        order.fulfillmentStatus = "completed";
+        order.fulfilledAt = new Date();
+        order.lastSupplierStatus = "completed";
+        await order.save();
+        return {
+          success: true,
+          orderNumber,
+          fulfillmentStatus: "completed",
+          supplierOrderId: order.supplierOrderId,
+          message: "G2Bulk order confirmed completed",
+        };
+      } else if (g2Status.status === "failed") {
+        order.fulfillmentStatus = "failed";
+        order.lastSupplierStatus = "failed";
+        order.errorLog = g2Status.message || "G2Bulk order failed";
+        await order.save();
+        return {
+          success: false,
+          orderNumber,
+          fulfillmentStatus: "failed",
+          supplierOrderId: order.supplierOrderId,
+          message: g2Status.message || "G2Bulk order failed",
+        };
+      }
+    }
+    return {
+      success: true,
+      orderNumber,
+      fulfillmentStatus: order.fulfillmentStatus,
+      message: `G2Bulk order status: ${order.fulfillmentStatus}`,
+    };
+  }
+
+  // WebBuilder Reconciliation
   const wbOrder = await getWebBuilderOrder(order.supplierOrderId);
   if (wbOrder) {
     if (wbOrder.status === "succeeded") {

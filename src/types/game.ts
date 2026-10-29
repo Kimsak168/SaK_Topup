@@ -3,7 +3,7 @@ export interface ClientGame {
   slug: string;
   name: string;
   code: string; // Supplier game code (e.g. "freefire_khsgmy", "pubgm", "mlbb", "hok")
-  supplier: "webbuilder";
+  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
   path: string; // e.g. "/games/webbuilder/hok"
   category: string;
   image: string;
@@ -12,6 +12,7 @@ export interface ClientGame {
   currencyName: string;
   description: string;
   requiresServer: boolean;
+  checkoutSupported?: boolean;
   serverLabel: string;
   userIdLabel: string;
   instruction?: string;

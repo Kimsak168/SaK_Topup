@@ -10,7 +10,7 @@ export const metadata = {
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="admin-theme dark min-h-screen w-full bg-[#080D18] text-[#F8FAFC]">
+    <div className="admin-theme min-h-screen w-full bg-[#FFF8FC] text-[#3B2433]">
       <AdminDashboardShell>{children}</AdminDashboardShell>
     </div>
   );

@@ -2,6 +2,7 @@ import { invalidateCatalogueCache } from "@/lib/services/cacheService";
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Game } from "@/models/Game";
+import { GamePackage } from "@/models/GamePackage";
 import { requireAdminAuth } from "@/lib/auth";
 import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
 
@@ -115,7 +116,27 @@ export async function PATCH(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    if (typeof isActive === "boolean") updateFields.isActive = isActive;
+    if (typeof isActive === "boolean") {
+      updateFields.isActive = isActive;
+      if (isActive) {
+        const gameDoc = await Game.findById(gameId).lean();
+        if (gameDoc) {
+          const activePkgCount = await GamePackage.countDocuments({
+            $or: [{ gameSlug: gameDoc.slug }, { gameCode: gameDoc.supplierGameCode }],
+            isActive: true,
+          });
+          if (activePkgCount === 0) {
+            await GamePackage.updateMany(
+              {
+                $or: [{ gameSlug: gameDoc.slug }, { gameCode: gameDoc.supplierGameCode }],
+                sellingPrice: { $gt: 0 },
+              },
+              { $set: { isActive: true, updatedAt: new Date() } }
+            );
+          }
+        }
+      }
+    }
     if (typeof customImage === "string") updateFields.customImage = customImage.trim();
     if (typeof description === "string") updateFields.description = description.trim();
     if (typeof badge === "string") updateFields.badge = badge.trim();

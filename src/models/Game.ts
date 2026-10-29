@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IGame extends Document {
   slug: string;
   name: string;
-  supplier: "webbuilder";
+  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
   supplierGameCode: string;
   category: string;
   image: string;
@@ -14,6 +14,8 @@ export interface IGame extends Document {
   description: string;
   type?: "direct" | "voucher";
   requiresServer: boolean;
+  gameFields?: string[];
+  checkoutSupported?: boolean;
   serverLabel?: string;
   userIdLabel?: string;
   instruction?: string;
@@ -44,7 +46,7 @@ const GameSchema = new Schema<IGame>(
     },
     supplier: {
       type: String,
-      enum: ["webbuilder"],
+      enum: ["webbuilder", "vizo", "g2bulk", "vngzz2"],
       default: "webbuilder",
       required: true,
     },
@@ -89,6 +91,8 @@ const GameSchema = new Schema<IGame>(
       type: Boolean,
       default: false,
     },
+    gameFields: { type: [String], default: undefined },
+    checkoutSupported: { type: Boolean, default: true },
     serverLabel: {
       type: String,
       default: "Server ID / Zone ID",

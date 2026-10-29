@@ -2,18 +2,8 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import {
-  X,
-  Clock,
-  ExternalLink,
-  RefreshCw,
-  CheckCircle2,
-  AlertCircle,
-  Copy,
-  Check,
-  ShieldCheck,
-  Smartphone,
-} from "lucide-react";
+import { X, AlertCircle, RefreshCw, CheckCircle2 } from "lucide-react";
+import QRCode from "qrcode";
 
 export interface AbaPayWayV2ModalData {
   orderNumber: string;
@@ -22,6 +12,9 @@ export interface AbaPayWayV2ModalData {
   currency: string;
   packageName: string;
   gameName: string;
+  paymentStatus?: string;
+  merchantName?: string;
+  qrString?: string | null;
   qrImage?: string | null;
   qrPngUrl?: string | null;
   deepLink?: string | null;
@@ -46,11 +39,13 @@ export default function AbaPayWayV2Modal({
 }: AbaPayWayV2ModalProps) {
   const [timeLeft, setTimeLeft] = useState<number>(180);
   const [isExpired, setIsExpired] = useState<boolean>(false);
-  const [isChecking, setIsChecking] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
-  const [copied, setCopied] = useState<boolean>(false);
+  const [paymentStatus, setPaymentStatus] = useState("PENDING");
+  const [renderedQr, setRenderedQr] = useState<string | null>(null);
+
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const hasAutoRedirectedRef = useRef<boolean>(false);
 
   // Initialize countdown and timer
   useEffect(() => {
@@ -60,6 +55,7 @@ export default function AbaPayWayV2Modal({
     setTimeLeft(initialSeconds);
     setIsExpired(false);
     setIsSuccess(false);
+    setPaymentStatus(data.paymentStatus?.toUpperCase() || "PENDING");
 
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
@@ -77,12 +73,85 @@ export default function AbaPayWayV2Modal({
     };
   }, [isOpen, data]);
 
+  // Generate crisp QR code data URL from qrString or fallback to qrImage / qrPngUrl
+  useEffect(() => {
+    let isCancelled = false;
+    if (!isOpen || !data) {
+      setRenderedQr(null);
+      return;
+    }
+
+    if (data.qrString) {
+      QRCode.toDataURL(data.qrString, {
+        errorCorrectionLevel: "H",
+        margin: 1,
+        width: 360,
+        color: {
+          dark: "#000000",
+          light: "#FFFFFF",
+        },
+      })
+        .then((url) => {
+          if (!isCancelled) {
+            setRenderedQr(url);
+          }
+        })
+        .catch((err) => {
+          console.warn("[KHQR V2] Failed to generate QR data URL:", err);
+          if (!isCancelled) {
+            setRenderedQr(data.qrImage || data.qrPngUrl || null);
+          }
+        });
+    } else {
+      setRenderedQr(data.qrImage || data.qrPngUrl || null);
+    }
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [isOpen, data]);
+
+  // Direct ABA app navigation helper
+  const handleOpenAbaApp = useCallback(() => {
+    if (!data) return;
+    if (data.deepLink) {
+      try {
+        window.location.href = data.deepLink;
+      } catch (e) {
+        console.warn("[PayWay V2] Failed to open deep link:", e);
+        if (data.payUrl) {
+          window.open(data.payUrl, "_blank", "noopener,noreferrer");
+        }
+      }
+    } else if (data.payUrl) {
+      window.open(data.payUrl, "_blank", "noopener,noreferrer");
+    }
+  }, [data]);
+
+  // Automatically attempt opening ABA Mobile when opened on mobile device
+  useEffect(() => {
+    if (isOpen && data?.deepLink && !hasAutoRedirectedRef.current) {
+      const isMobile =
+        typeof window !== "undefined" &&
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobile) {
+        hasAutoRedirectedRef.current = true;
+        const t = setTimeout(() => {
+          handleOpenAbaApp();
+        }, 300);
+        return () => clearTimeout(t);
+      }
+    }
+    if (!isOpen) {
+      hasAutoRedirectedRef.current = false;
+    }
+  }, [isOpen, data, handleOpenAbaApp]);
+
   // Check payment status helper
   const checkPaymentStatus = useCallback(async (): Promise<boolean> => {
     if (!data?.orderNumber || !data?.transactionId) return false;
 
     try {
-      setIsChecking(true);
       const res = await fetch("/api/payment/vngzz2/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,8 +163,16 @@ export default function AbaPayWayV2Modal({
 
       if (!res.ok) return false;
       const json = await res.json();
+      if (json.success) {
+        const actualStatus = json.isPaid
+          ? "PAID"
+          : typeof json.paymentStatus === "string"
+            ? json.paymentStatus.toUpperCase()
+            : "PENDING";
+        setPaymentStatus(actualStatus);
+      }
 
-      if (json.success && (json.paymentStatus === "PAID" || json.isPaid)) {
+      if (json.success && (String(json.paymentStatus || "").toUpperCase() === "PAID" || json.isPaid)) {
         setIsSuccess(true);
         if (pollingRef.current) clearInterval(pollingRef.current);
         if (timerRef.current) clearInterval(timerRef.current);
@@ -114,12 +191,10 @@ export default function AbaPayWayV2Modal({
     } catch (err) {
       console.warn("[PayWay V2 Modal] Status check error:", err);
       return false;
-    } finally {
-      setIsChecking(false);
     }
   }, [data, onSuccess]);
 
-  // Automated background polling every 3 seconds
+  // Automated background polling every 2 seconds
   useEffect(() => {
     if (!isOpen || !data || isExpired || isSuccess) {
       if (pollingRef.current) clearInterval(pollingRef.current);
@@ -128,7 +203,7 @@ export default function AbaPayWayV2Modal({
 
     pollingRef.current = setInterval(async () => {
       await checkPaymentStatus();
-    }, 3000);
+    }, 2000);
 
     return () => {
       if (pollingRef.current) clearInterval(pollingRef.current);
@@ -151,192 +226,171 @@ export default function AbaPayWayV2Modal({
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   const formattedTime = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-  const amountKHR = Math.round((data.amount || 0) * 4100);
-
-  const handleCopyOrder = async () => {
-    try {
-      await navigator.clipboard.writeText(data.orderNumber);
-      setCopied(true);
-      toast.success("Order number copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy order number");
-    }
-  };
-
-  const qrSrc = data.qrImage || data.qrPngUrl || null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="payway-v2-modal-title"
+      aria-labelledby="khqr-modal-title"
     >
-      <div className="relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-3xl bg-white dark:bg-[#0F172A] border border-[#CBD5E1] dark:border-[#1E293B] shadow-2xl p-5 sm:p-6 text-center space-y-4 animate-in zoom-in-95">
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-          <div className="flex items-center gap-2.5 text-left">
-            <div className="relative h-9 w-9 rounded-xl bg-[#004B87] p-1.5 flex items-center justify-center shadow-xs">
-              <span className="text-[11px] font-black tracking-tighter text-white uppercase">ABA</span>
-            </div>
-            <div>
-              <h2 id="payway-v2-modal-title" className="text-sm font-black text-slate-900 dark:text-white leading-tight">
-                ABA PayWay V2
-              </h2>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400">Direct PayWay QR & KHQR Rail</p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Close modal"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Success State */}
+      {/* Keep this payment surface light; the storefront remaps bg-white to its dark card color. */}
+      <div
+        style={{ backgroundColor: "#FFFFFF", colorScheme: "light" }}
+        className="relative w-full max-w-[360px] rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border-0 text-slate-900 animate-in zoom-in-95 duration-200 select-none overflow-hidden"
+      >
         {isSuccess ? (
-          <div className="py-8 space-y-4 animate-in zoom-in-95">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-500 border border-emerald-200 dark:border-emerald-800">
-              <CheckCircle2 className="h-9 w-9" />
+          /* Payment Success State */
+          <div className="py-10 px-4 space-y-4 text-center animate-in zoom-in-95">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+              <CheckCircle2 className="h-10 w-10 animate-in zoom-in" />
             </div>
-            <div className="space-y-1">
-              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+            <div className="space-y-1.5">
+              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-500/20 text-emerald-700 border border-emerald-500/30">
                 Payment Received
               </span>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white">Payment Confirmed!</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Fulfilling <strong className="text-emerald-600 dark:text-emerald-400">{data.packageName}</strong> now.
+              <h3 className="text-xl font-black text-slate-900">
+                ការទូទាត់ជោគជ័យ!
+              </h3>
+              <p className="text-xs text-slate-600">
+                Top-up of <strong className="text-emerald-700 font-bold">{data.packageName}</strong> is now being dispatched.
               </p>
             </div>
           </div>
         ) : (
           <>
-            {/* Order Brief */}
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-900/60 p-3 text-xs space-y-2 border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Order Ref</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-bold text-slate-800 dark:text-slate-200">{data.orderNumber}</span>
-                  <button
-                    type="button"
-                    onClick={handleCopyOrder}
-                    className="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-                    aria-label="Copy order number"
-                  >
-                    {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
-                  </button>
-                </div>
-              </div>
+            {/* Modal Header: KHQR Title, Countdown Spinner Ring & Close X */}
+            <div className="flex items-center justify-between pb-2 px-0.5">
+              <span
+                id="khqr-modal-title"
+                className="text-[20px] font-bold text-teal-700 tracking-tight font-sans"
+              >
+                KHQR
+              </span>
 
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500 dark:text-slate-400">Package</span>
-                <span className="font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
-                  {data.packageName}
+              <div className="flex items-center gap-3">
+                {/* Circular Countdown Ring & Time */}
+                {!isExpired && (
+                  <div className="flex items-center gap-1.5 font-medium text-slate-600">
+                    <svg
+                      className="w-[18px] h-[18px] animate-spin text-teal-700"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <circle
+                        cx="12"
+                        cy="12"
+                        r="9"
+                        stroke="#e2e8f0"
+                        strokeWidth="2.5"
+                      />
+                      <path
+                        d="M12 3a9 9 0 0 1 9 9"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <span className="tabular-nums font-mono text-[13px] text-slate-600 font-semibold">
+                      {formattedTime}
+                    </span>
+                  </div>
+                )}
+
+                {/* Cyan Close Button */}
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="text-teal-700 hover:text-teal-900 p-1 rounded-full transition-colors cursor-pointer"
+                  aria-label="Close KHQR payment"
+                >
+                  <X className="h-5 w-5 stroke-[2.2]" />
+                </button>
+              </div>
+            </div>
+
+            {/* Merchant Details & Amount Due */}
+            <div className="pt-2 pb-3 text-center">
+              <div className="text-[14px] font-medium text-slate-600">
+                {data.merchantName || "Sak Topup"}
+              </div>
+              <div className="flex items-baseline justify-center gap-2 mt-1.5">
+                <span className="text-[36px] sm:text-[38px] font-bold text-slate-950 tracking-tight leading-none tabular-nums font-sans">
+                  {data.amount.toFixed(2)}
+                </span>
+                <span className="text-[12px] font-semibold text-slate-600 uppercase tracking-wider">
+                  {data.currency || "USD"}
                 </span>
               </div>
-
-              <div className="flex items-center justify-between pt-1 border-t border-slate-200 dark:border-slate-800">
-                <span className="text-slate-500 dark:text-slate-400 font-medium">Amount Due</span>
-                <div className="text-right">
-                  <span className="text-base font-black text-emerald-600 dark:text-emerald-400">
-                    ${data.amount.toFixed(2)} USD
-                  </span>
-                  <span className="block text-[10px] text-slate-400">≈ {amountKHR.toLocaleString()} KHR</span>
-                </div>
-              </div>
             </div>
 
-            {/* QR Section */}
-            <div className="relative mx-auto w-full max-w-[260px] aspect-square rounded-2xl bg-white p-3 border-2 border-slate-200 dark:border-slate-700 shadow-md flex flex-col items-center justify-center overflow-hidden">
-              {isExpired ? (
-                <div className="space-y-3 p-4">
-                  <AlertCircle className="h-10 w-10 text-amber-500 mx-auto" />
-                  <p className="text-xs font-bold text-slate-800 dark:text-slate-200">QR Code Expired</p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
-                    For your security, PayWay QR codes expire after 3 minutes.
-                  </p>
-                  {onRetry && (
-                    <button
-                      type="button"
-                      onClick={onRetry}
-                      className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors shadow-xs"
-                    >
-                      Generate New QR
-                    </button>
-                  )}
-                </div>
-              ) : qrSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={qrSrc}
-                  alt={`ABA PayWay KHQR for ${data.orderNumber}`}
-                  className="w-full h-full object-contain"
-                />
-              ) : (
-                <div className="space-y-2">
-                  <RefreshCw className="h-8 w-8 text-slate-400 animate-spin mx-auto" />
-                  <p className="text-xs text-slate-500">Generating PayWay QR...</p>
-                </div>
-              )}
-            </div>
-
-            {/* Countdown Timer */}
-            {!isExpired && (
-              <div className="flex items-center justify-center gap-1.5 text-xs">
-                <Clock className="h-3.5 w-3.5 text-amber-500 animate-pulse" />
-                <span className="text-slate-600 dark:text-slate-400">Expires in:</span>
-                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{formattedTime}</span>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="space-y-2 pt-1">
-              {/* Deep Link Button for ABA Mobile App on phone */}
-              {data.deepLink && !isExpired && (
-                <a
-                  href={data.deepLink}
-                  className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-[#004B87] hover:bg-[#003B6B] transition-colors shadow-xs flex items-center justify-center gap-2"
-                >
-                  <Smartphone className="h-4 w-4" />
-                  <span>Open in ABA Mobile App</span>
-                  <ExternalLink className="h-3.5 w-3.5 ml-auto opacity-70" />
-                </a>
-              )}
-
-              {/* Hosted Checkout Link fallback */}
-              {data.payUrl && !isExpired && !data.deepLink && (
-                <a
-                  href={data.payUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-[#004B87] hover:bg-[#003B6B] transition-colors shadow-xs flex items-center justify-center gap-2"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  <span>Open Official PayWay Page</span>
-                </a>
-              )}
-
-              {/* Manual Check Status Button */}
-              <button
-                type="button"
-                onClick={() => checkPaymentStatus()}
-                disabled={isChecking || isExpired}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            {/* QR Code Container */}
+            <div className="py-2 flex items-center justify-center">
+              <div
+                onClick={handleOpenAbaApp}
+                title={data.deepLink ? "Click to open ABA Mobile app" : undefined}
+                style={{ backgroundColor: "#FFFFFF" }}
+                className={`relative w-[210px] h-[210px] sm:w-[224px] sm:h-[224px] rounded-2xl p-2.5 flex items-center justify-center shadow-lg ${
+                  data.deepLink ? "cursor-pointer transition-transform hover:scale-[1.01]" : ""
+                }`}
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${isChecking ? "animate-spin text-emerald-500" : ""}`} />
-                <span>{isChecking ? "Checking Bank Rail..." : "I Have Paid / Check Status"}</span>
-              </button>
+                {isExpired ? (
+                  <div className="space-y-3 p-4 text-center">
+                    <AlertCircle className="h-10 w-10 text-rose-500 mx-auto" />
+                    <p className="text-xs font-bold text-slate-900">QR Code Expired</p>
+                    <p className="text-[11px] text-slate-500 leading-tight">
+                      PayWay KHQR codes expire after 3 minutes for security.
+                    </p>
+                    {onRetry && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onRetry();
+                        }}
+                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#E11D48] hover:bg-[#BE123C] transition-colors shadow-xs cursor-pointer"
+                      >
+                        Generate New QR
+                      </button>
+                    )}
+                  </div>
+                ) : renderedQr ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={renderedQr}
+                      alt={`KHQR for ${data.orderNumber}`}
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                    {/* Center Badge: Black Disc with White Currency Symbol */}
+                    <div
+                      className="absolute inset-0 m-auto h-10 w-10 rounded-full bg-black border-2 border-white flex items-center justify-center shadow-xs pointer-events-none select-none"
+                      aria-hidden="true"
+                    >
+                      <span className="text-white font-bold text-[17px] leading-none">
+                        {data.currency === "KHR" ? "៛" : "$"}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-2 text-center">
+                    <RefreshCw className="h-8 w-8 text-slate-400 animate-spin mx-auto" />
+                    <p className="text-xs text-slate-500 font-medium">Generating KHQR...</p>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Security Assurance */}
-            <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-500 pt-1">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-500" />
-              <span>Official ABA PayWay V2 Merchant Rail</span>
+            {/* Footer Text Note */}
+            <div className="pt-3 pb-1 text-center text-slate-600 font-medium text-xs sm:text-[13px] leading-relaxed">
+              <p>Scan with <span className="font-semibold text-slate-700">ABA Mobile</span>, or other</p>
+              <p>Mobile Banking App supporting</p>
+              <p className="font-semibold text-teal-700">KHQR</p>
+              <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-bold text-slate-700" aria-live="polite">
+                <span className={`h-1.5 w-1.5 rounded-full ${paymentStatus === "PAID" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                Payment status: {paymentStatus.replaceAll("_", " ")}
+              </p>
             </div>
           </>
         )}

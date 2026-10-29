@@ -54,6 +54,10 @@ export function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
   const repeatMultiplier = Math.max(1, Math.ceil(8 / uniqueGames.length));
   const fullGameList = Array.from({ length: repeatMultiplier }, () => uniqueGames).flat();
 
+  // Dynamically calculate animation duration so items scroll at a steady, comfortable reading speed
+  // ~2.5 seconds per game creates a relaxed, premium glide instead of a fast blur.
+  const durationSec = Math.max(50, Math.round(fullGameList.length * 2.5));
+
   return (
     <div
       role="region"
@@ -61,7 +65,13 @@ export function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
       className="ticker-wrapper relative isolate flex h-9 w-full min-w-0 items-center overflow-hidden rounded-[10px] px-1 select-none sm:h-10"
     >
       {/* Moving track with duplicated GameList for seamless loop */}
-      <div className="ticker-track">
+      <div
+        className="ticker-track"
+        style={{
+          ["--ticker-duration" as string]: `${durationSec}s`,
+          animationDuration: `${durationSec}s`,
+        }}
+      >
         <GameList games={fullGameList} />
         <GameList games={fullGameList} ariaHidden={true} />
       </div>

@@ -60,12 +60,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 3. Customer route normalization: redirect all supplier routes to /games/webbuilder/[code]
+  // 3. Customer route normalization. Keep supplier-owned catalogs on their
+  // supplier routes; only apply legacy aliases to WebBuilder game URLs.
   if (pathname.startsWith("/games/")) {
     const parts = pathname.split("/").filter(Boolean); // ['games', supplier, code]
     if (parts.length >= 3) {
       const supplier = parts[1].toLowerCase();
       const rawCode = parts[2].toLowerCase();
+
+      // Preserve exact supplier and regional codes for imported catalogs.
+      if (["vngzz2", "vizo", "g2bulk"].includes(supplier)) {
+        return NextResponse.next();
+      }
 
       // Canonical code mappings
       let canonicalCode = rawCode;
@@ -99,7 +105,9 @@ export async function proxy(request: NextRequest) {
     if (parts.length >= 2) {
       const slug = parts[1].toLowerCase();
 
-      let canonicalCode = slug;
+      if (slug.startsWith("vngzz2-")) return NextResponse.next();
+
+      let canonicalCode: string | null = null;
       if (slug.includes("freefire") || slug.startsWith("free-fire") || slug === "ff" || slug.includes("khsgmy") || slug.includes("sgmy")) {
         canonicalCode = "freefire_khsgmy";
       } else if (slug === "mobile-legends" || slug === "mlbb" || slug === "mlbb_global") {
@@ -118,7 +126,10 @@ export async function proxy(request: NextRequest) {
         canonicalCode = "telegram";
       }
 
-      return NextResponse.redirect(new URL(`/games/webbuilder/${canonicalCode}`, request.url));
+      if (canonicalCode) {
+        return NextResponse.redirect(new URL(`/games/webbuilder/${canonicalCode}`, request.url));
+      }
+      return NextResponse.next();
     }
   }
 

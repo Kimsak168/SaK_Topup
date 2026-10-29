@@ -1,35 +1,40 @@
-/* The storefront preference defaults to a pure black gaming aesthetic. */
+/* Sakura Dream keeps the storefront bright, airy, and readable. */
 :root:has(.public-theme),
 :root[data-storefront-theme="dark"]:has(.public-theme) {
-  color-scheme: dark;
-  --background: #000000;
-  --foreground: #F8F5FF;
-  --card: #0D0914;
-  --card-foreground: #F8F5FF;
-  --popover: #0D0914;
-  --popover-foreground: #F8F5FF;
-  --secondary: #161022;
-  --secondary-foreground: #E9DDFB;
-  --muted: #161022;
-  --muted-foreground: #A89CB8;
-  --accent: #201533;
-  --accent-foreground: #C084FC;
-  --border: #2E1F45;
-  --border-soft: #1E152D;
-  --input: #2E1F45;
-  --card-border: #2E1F45;
-  --ring: #C084FC;
+  color-scheme: light;
+  --background: #FFF8FC;
+  --foreground: #3B2D39;
+  --card: #FFFFFF;
+  --card-foreground: #3B2D39;
+  --popover: #FFFFFF;
+  --popover-foreground: #3B2D39;
+  --secondary: #FDF2F8;
+  --secondary-foreground: #4D3748;
+  --muted: #FDF2F8;
+  --muted-foreground: #766477;
+  --accent: #FCE7F3;
+  --accent-foreground: #8C72A5;
+  --border: #F0C6DA;
+  --border-soft: #F6DDE9;
+  --input: #F0C6DA;
+  --card-border: #F0C6DA;
+  --ring: #B54779;
 }
 
 :root .public-theme,
 :root[data-storefront-theme="dark"] .public-theme {
-  background: #000000;
+  background:
+    radial-gradient(ellipse at 10% 15%, rgb(251 207 232 / .65), transparent 40%),
+    radial-gradient(ellipse at 90% 75%, rgb(221 214 254 / .55), transparent 42%),
+    linear-gradient(135deg, #FFF8FC 0%, #FDF2F8 50%, #FFF5FA 100%);
   color: var(--foreground);
 }
 
 :root .public-ambient,
 :root[data-storefront-theme="dark"] .public-ambient {
-  background: none;
+  background:
+    radial-gradient(ellipse at 12% 24%, rgb(251 207 232 / .26), transparent 42%),
+    radial-gradient(ellipse at 88% 82%, rgb(221 214 254 / .2), transparent 38%);
 }
 
 /* Map the storefront's existing light palette so all public routes stay legible. */
@@ -48,7 +53,7 @@
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="bg-[#F0FDF4]/50"], [class~="bg-[#F0FDF4]/60"],
   [class~="bg-[#DCFCE7]/40"], [class~="bg-[#DCFCE7]/60"], [class~="bg-[#BBF7D0]/60"]
-) { background-color: color-mix(in srgb, var(--storefront-primary, #7C3AED) 7%, var(--card)); }
+) { background-color: color-mix(in srgb, var(--storefront-primary, #B54779) 7%, var(--card)); }
 
 :root[data-storefront-theme="dark"] .public-theme [class~="bg-[#DCFCE7]"] {
   background-color: var(--border-soft);
@@ -57,7 +62,7 @@
 :root[data-storefront-theme="dark"] .public-theme .game-card,
 :root[data-storefront-theme="dark"] .public-theme .game-card-title,
 :root[data-storefront-theme="dark"] .public-theme .game-card > div:first-child {
-  background-color: var(--storefront-card, var(--card));
+  background-color: var(--storefront-soft, var(--secondary));
 }
 
 :root[data-storefront-theme="dark"] .public-theme :is(
@@ -82,12 +87,8 @@
 :root .public-theme .storefront-footer-brand :is(
   [class~="text-[#172033]"]
 ) {
-  color: var(--storefront-primary, #7C3AED);
+  color: var(--storefront-primary, #B54779);
 }
-
-:root[data-storefront-theme="dark"] .public-theme :is(
-  [class~="text-[#16A34A]"], [class~="text-[#15803D]"], [class~="text-[#004B87]"]
-) { color: var(--storefront-primary, #7C3AED); }
 
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="hover:bg-[#F0FDF4]"]:hover, [class~="active:bg-[#F0FDF4]"]:active,
@@ -96,4 +97,4 @@
 
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="hover:text-[#16A34A]"]:hover, [class~="active:text-[#16A34A]"]:active
-) { color: var(--storefront-primary-hover, #A855F7); }
+) { color: var(--storefront-primary-hover, #963A66); }

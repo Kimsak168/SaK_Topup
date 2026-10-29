@@ -54,7 +54,7 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
       )}
 
       {/* Package Image — picture on left (big, prominent, fills frame) */}
-      <div className="relative h-10 w-10 min-[360px]:h-11 min-[360px]:w-11 sm:h-12 sm:w-12 shrink-0 rounded-xl overflow-hidden bg-black/60 border border-white/10 flex items-center justify-center group-hover:scale-105 transition-transform shadow-inner">
+      <div className="relative h-10 w-10 min-[360px]:h-11 min-[360px]:w-11 sm:h-12 sm:w-12 shrink-0 rounded-xl overflow-hidden bg-[#FFF8FC] border border-[#F0C6DA] flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -80,7 +80,7 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
 
       {/* Info — on right (compact & clean) */}
       <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
-        <div className="text-[11px] min-[360px]:text-xs sm:text-[13px] font-bold text-[#F8F5FF] leading-tight truncate">
+        <div className="min-h-[2.2em] text-[11px] min-[360px]:text-xs sm:text-[13px] font-bold text-[#F8F5FF] leading-tight line-clamp-2 whitespace-normal break-words">
           {(() => {
             const raw = (pkg.diamondsOrPoints || pkg.name).trim();
             const levelUp = raw.replace(/Level\s*Up\s*(?:Package|Pass)?\s*[-–—:]*\s*(?:Level|Lv\.?)?\s*(\d+)/i, "Level Up $1");
@@ -104,7 +104,7 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
               </span>
             )}
             {discountPercent > 0 && (
-              <span className="rounded px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] font-black leading-none bg-[#22C55E]/15 text-[#4ADE80] border border-[#22C55E]/30">
+              <span className="rounded px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] font-black leading-none bg-[#FCE7F3] text-[#A94776] border border-[#F0C6DA]">
                 {discountPercent}% off
               </span>
             )}
@@ -133,10 +133,12 @@ interface PackageOptionsProps {
   selectedId?: string;
   currencyName: string;
   gameSlug?: string;
+  title?: string;
+  stepNumber?: number | null;
   onSelect: (pkg: ClientPackage) => void;
 }
 
-export const PackageOptions = memo(function PackageOptions({ packages, selectedId, currencyName, gameSlug, onSelect }: PackageOptionsProps) {
+export const PackageOptions = memo(function PackageOptions({ packages, selectedId, currencyName, gameSlug, title = "Select Package", stepNumber = 2, onSelect }: PackageOptionsProps) {
   const isMlbbGame = gameSlug
     ? gameSlug.includes("mlbb") || gameSlug.includes("mobile-legends")
     : packages.some(p => p.customImage?.includes("mlbb-diamond") || p.id?.toLowerCase().includes("mlbb") || p.supplierProductCode?.toLowerCase().includes("mlbb"));
@@ -164,11 +166,9 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
     <>
       <div className="flex flex-wrap items-center justify-between gap-2.5">
         <div className="topup-step-title">
-          <span className="topup-step-number">
-            2
-          </span>
+          {stepNumber !== null ? <span className="topup-step-number">{stepNumber}</span> : null}
           <h2 className="text-sm sm:text-base font-bold text-[#F8F5FF]">
-            Select Package<span className="sr-only"> for {currencyName}</span>
+            {title}<span className="sr-only"> for {currencyName}</span>
           </h2>
         </div>
         <span className="text-xs font-semibold text-[#64748B]">

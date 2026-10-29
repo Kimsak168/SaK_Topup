@@ -629,17 +629,19 @@ export async function getWebBuilderBalance(): Promise<WebBuilderBalance> {
     path: "/balance",
   });
 
-  if ("available_cents" in res.data) {
-    return res.data;
+  const outer = res.data as Record<string, unknown>;
+  const payload = outer && typeof outer.data === "object" && outer.data !== null
+    ? outer.data as Record<string, unknown>
+    : outer;
+  const available = payload?.available_cents;
+  const reserved = payload?.reserved_cents;
+  if (
+    !Number.isSafeInteger(available) || (available as number) < 0 ||
+    !Number.isSafeInteger(reserved) || (reserved as number) < 0
+  ) {
+    throw new Error("WebBuilder returned an invalid balance response.");
   }
-  if ("data" in res.data && typeof res.data.data === "object" && res.data.data !== null) {
-    return res.data.data;
-  }
-
-  return {
-    available_cents: Number((res.data as Record<string, unknown>).available_cents || 0),
-    reserved_cents: Number((res.data as Record<string, unknown>).reserved_cents || 0),
-  };
+  return { available_cents: available as number, reserved_cents: reserved as number };
 }
 
 /**

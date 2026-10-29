@@ -45,13 +45,13 @@ export default function RootLayout({
       lang="km"
       suppressHydrationWarning
       className={cn(
-        "h-full antialiased scroll-smooth bg-black dark",
+        "h-full antialiased scroll-smooth bg-[#FFF8FC] dark",
         inter.variable,
         jetbrainsMono.variable,
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col bg-black text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      <body className="min-h-full flex flex-col bg-[#FFF8FC] text-[#3B2D39] font-sans selection:bg-[#FBCFE8] selection:text-[#3B2D39]">
         <StorefrontThemeProvider>
           {children}
           <ThemeToaster />

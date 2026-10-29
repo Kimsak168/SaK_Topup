@@ -8,6 +8,8 @@ import { ClientGame } from "@/types/game";
 
 interface GameCardProps {
   game: ClientGame;
+  onSelect?: (game: ClientGame) => void;
+  isSelected?: boolean;
 }
 
 const FALLBACK_IMAGE = "/images/freefire.jpg";
@@ -29,7 +31,7 @@ function getImageSource(image: string): string {
   return FALLBACK_IMAGE;
 }
 
-export const GameCard = memo(function GameCard({ game }: GameCardProps) {
+export const GameCard = memo(function GameCard({ game, onSelect, isSelected = false }: GameCardProps) {
   const href = game.path || `/games/${game.supplier}/${game.code || game.slug}`;
   const imageSource = getImageSource(game.image);
   const [failedImage, setFailedImage] = useState<string | null>(null);
@@ -46,6 +48,10 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
       title={game.name}
       onClick={(event) => {
         if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (onSelect) {
+          event.preventDefault();
+          onSelect(game);
+        }
         toast.success("Game selected", { id: "game-selection", description: game.name });
       }}
       onKeyDown={(event) => {
@@ -54,10 +60,10 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
           event.currentTarget.click();
         }
       }}
-      className="game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-white outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#22C55E] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:-translate-y-[2px] motion-reduce:transition-none sm:rounded-[16px]"
+      aria-current={onSelect && isSelected ? "true" : undefined}
+      className={`game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-[#FDF2F8] outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
       <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
-        {/* Shimmer skeleton while image loads */}
         {!isLoaded && (
           <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
         )}
@@ -67,7 +73,7 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
           fill
           sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 20vw, 280px"
           loading="lazy"
-          className={`game-card-image relative z-10 object-cover object-center transition-[scale,opacity] duration-300 ease-out motion-safe:pointer-fine:group-hover:scale-[1.02] motion-reduce:transition-none ${
+          className={`game-card-image relative z-10 object-cover object-center transition-opacity duration-300 ease-out motion-reduce:transition-none ${
             isLoaded ? "opacity-100" : "opacity-0"
           }`}
           onLoad={() => setIsLoaded(true)}
@@ -80,7 +86,7 @@ export const GameCard = memo(function GameCard({ game }: GameCardProps) {
         />
       </div>
 
-      <div className="game-card-title flex h-12 min-w-0 shrink-0 items-center justify-center bg-white px-2 py-1.5 sm:h-14 sm:px-3">
+      <div className="game-card-title flex h-12 min-w-0 shrink-0 items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3">
         <h3 className="line-clamp-2 w-full min-w-0 text-center text-[12px] leading-4 font-semibold wrap-anywhere text-[#172033] sm:text-[14px] sm:leading-5">
           {game.name}
         </h3>

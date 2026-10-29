@@ -1,55 +1,44 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getWebBuilderBalance } from "@/lib/suppliers/webbuilder";
 import { requireAdminAuth } from "@/lib/auth";
+import {
+  listSupplierAccounts,
+  recordManualSupplierBalance,
+} from "@/lib/services/supplierManager";
 
 export const dynamic = "force-dynamic";
 
-function configuration() {
-  return {
-    success: true,
-    timestamp: new Date().toISOString(),
-    webbuilder: {
-      status: process.env.WEBBUILDER_API_KEY ? "configured" : "unavailable",
-      latencyMs: null as number | null,
-      baseUrl: process.env.WEBBUILDER_BASE_URL || "https://webbuilderservice.dev/v1",
-      apiKeyConfigured: Boolean(process.env.WEBBUILDER_API_KEY),
-      reseller: null as Record<string, unknown> | null,
-      error: null as string | null,
-    },
-  };
+function safeMessage(error: unknown) {
+  return error instanceof Error ? error.message.slice(0, 250) : "Supplier operation failed.";
 }
 
 export async function GET(req: NextRequest) {
   const auth = await requireAdminAuth(req);
   if (!auth.authorized) return auth.response;
-  return NextResponse.json(configuration());
+  try {
+    const accounts = await listSupplierAccounts();
+    return NextResponse.json({ success: true, timestamp: new Date().toISOString(), accounts });
+  } catch {
+    return NextResponse.json({ success: false, error: "Supplier account data is unavailable." }, { status: 503 });
+  }
 }
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdminAuth(req);
   if (!auth.authorized) return auth.response;
-  const result = configuration();
 
-  if (result.webbuilder.apiKeyConfigured) {
-    const start = Date.now();
-    try {
-      const bal = await getWebBuilderBalance();
-      result.webbuilder.status = "connected";
-      result.webbuilder.reseller = {
-        balance: (bal.available_cents / 100).toFixed(2),
-        available_cents: bal.available_cents,
-        reserved_cents: bal.reserved_cents,
-      };
-    } catch (error) {
-      console.error("WebBuilder verification failed:", error);
-      result.webbuilder.status = "failed";
-      result.webbuilder.error =
-        error instanceof Error ? error.message : "WebBuilder connection failed";
-    } finally {
-      result.webbuilder.latencyMs = Date.now() - start;
-    }
+  let body: Record<string, unknown>;
+  try { body = await req.json(); } catch { return NextResponse.json({ success: false, error: "A JSON request body is required." }, { status: 400 }); }
+  if (body.action !== "manual-balance") return NextResponse.json({ success: false, error: "Unsupported supplier action." }, { status: 400 });
+  try {
+    const result = await recordManualSupplierBalance({
+      supplierId: String(body.supplierId || ""),
+      walletId: String(body.walletId || ""),
+      amount: String(body.amount || ""),
+      currency: String(body.currency || "").toUpperCase(),
+      confirmation: String(body.confirmation || ""),
+    }, auth.session);
+    return NextResponse.json({ success: true, balance: result }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({ success: false, error: safeMessage(error) }, { status: 400 });
   }
-
-  result.timestamp = new Date().toISOString();
-  return NextResponse.json(result);
 }

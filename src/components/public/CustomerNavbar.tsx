@@ -4,18 +4,25 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gamepad2, Headphones, Home, Menu, Search, X } from "lucide-react";
+import { Gamepad2, Headphones, Home, Menu, Search, Sparkles, X } from "lucide-react";
 import { SOCIAL_URLS } from "@/lib/socialLinks";
 import styles from "./CustomerNavbar.module.css";
 
 const navLinks = [
   { href: "/", label: "Home", Icon: Home },
-  { href: "/games", label: "Games", Icon: Gamepad2 },
+  { href: "/#games", label: "Games", Icon: Gamepad2 },
+  { href: "/#services", label: "Services", Icon: Sparkles },
 ];
 
-function isCurrentPage(pathname: string, href: string): boolean {
-  if (href === "/") return pathname === "/";
-  return pathname.startsWith("/games") || pathname.startsWith("/game/");
+type HomeSection = "home" | "games" | "services";
+
+function isCurrentPage(pathname: string, href: string, activeHomeSection: HomeSection): boolean {
+  if (href === "/") return pathname === "/" && activeHomeSection === "home";
+  if (href.endsWith("#services")) {
+    return pathname.startsWith("/services") || (pathname === "/" && activeHomeSection === "services");
+  }
+  return pathname.startsWith("/games") || pathname.startsWith("/game/") ||
+    (pathname === "/" && activeHomeSection === "games");
 }
 
 function validSocialUrl(value: string): string | undefined {
@@ -47,6 +54,7 @@ const drawerSocialLinks = [
 
 export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
   const pathname = usePathname();
+  const [activeHomeSection, setActiveHomeSection] = useState<HomeSection>("home");
   const [brandTyping, setBrandTyping] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerId = useId();
@@ -58,6 +66,37 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
     const timer = window.setTimeout(() => setBrandTyping(false), 900);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (pathname !== "/") {
+      setActiveHomeSection("home");
+      return;
+    }
+
+    let frame = 0;
+    const updateActiveSection = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const marker = window.innerHeight * 0.3;
+        const games = document.getElementById("games")?.getBoundingClientRect();
+        const services = document.getElementById("all-platforms")?.getBoundingClientRect() || document.getElementById("services")?.getBoundingClientRect();
+        const next: HomeSection =
+          services && services.top <= marker ? "services" :
+          games && games.top <= marker ? "games" :
+          "home";
+        setActiveHomeSection((current) => current === next ? current : next);
+      });
+    };
+
+    updateActiveSection();
+    window.addEventListener("scroll", updateActiveSection, { passive: true });
+    window.addEventListener("hashchange", updateActiveSection);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateActiveSection);
+      window.removeEventListener("hashchange", updateActiveSection);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!drawerOpen) return;
@@ -128,7 +167,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
 
         <nav aria-label="Primary navigation" className={styles.primaryNav}>
           {navLinks.map(({ href, label }) => {
-            const active = isCurrentPage(pathname, href);
+            const active = isCurrentPage(pathname, href, activeHomeSection);
             return (
               <Link
                 key={href}
@@ -203,7 +242,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
 
             <nav aria-label="Menu navigation" className={styles.drawerNav}>
               {navLinks.map(({ href, label, Icon }) => {
-                const active = isCurrentPage(pathname, href);
+                const active = isCurrentPage(pathname, href, activeHomeSection);
                 return (
                   <Link
                     key={href}

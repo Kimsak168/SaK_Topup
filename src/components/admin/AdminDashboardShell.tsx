@@ -11,8 +11,10 @@ import {
   Package,
   ShoppingCart,
   CreditCard,
+  CircleDollarSign,
   Image as ImageIcon,
   Server,
+  Share2,
   Settings,
   Menu,
   X,
@@ -35,10 +37,12 @@ const NAV_GROUPS = [
   { title: "CATALOGUE & SALES", items: [
     { href: "/admin/games", label: "Games Catalogue", icon: Gamepad2 },
     { href: "/admin/packages", label: "Packages & Pricing", icon: Package },
+    { href: "/admin/smm-services", label: "Social Services", icon: Share2 },
     { href: "/admin/orders", label: "Customer Orders", icon: ShoppingCart },
   ] },
   { title: "OPERATIONS", items: [
     { href: "/admin/payments", label: "Payment Gateways", icon: CreditCard },
+    { href: "/admin/finance", label: "Finance & Reconciliation", icon: CircleDollarSign },
     { href: "/admin/banners", label: "Promo Banners", icon: ImageIcon },
   ] },
   { title: "PLATFORM", items: [
@@ -68,7 +72,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [connectedSuppliers, setConnectedSuppliers] = useState(0);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -122,7 +126,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   useEffect(() => {
     try {
       const savedTheme = localStorage.getItem("saksuuu_admin_theme");
-      if (savedTheme === "light") setIsDarkMode(false);
+      if (savedTheme === "dark") setIsDarkMode(true);
     } catch { /* Storage can be unavailable in private browsing. */ }
   }, []);
 
@@ -377,9 +381,9 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 <Menu className="h-4 w-4" />
               </button>
 
-              <div className="min-w-0 text-[13px] font-medium text-[#94A3B8]">
-                <span className="hidden md:block">Store administration</span>
-                <span className="block truncate md:hidden">{currentNav.label}</span>
+              <div className="min-w-0 leading-tight">
+                <span className="hidden md:block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94A3B8]">Admin / Workspace</span>
+                <span className="block truncate text-sm font-semibold text-[#F8FAFC]">{currentNav.label}</span>
               </div>
             </div>
 

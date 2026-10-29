@@ -1,0 +1,5 @@
+simulation: smm-service-marketplace
+routing: path
+mocks:
+  - routeKey: storefront
+    path: ../mocks/public-storefront/config.yaml

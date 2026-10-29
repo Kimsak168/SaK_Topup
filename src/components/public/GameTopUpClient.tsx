@@ -25,6 +25,7 @@ import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
 interface GameTopUpClientProps {
   game: ClientGame;
   initialPackages: ClientPackage[];
+  initialSelectedPackageId?: string;
 }
 
 interface ActiveOrderInfo {
@@ -39,7 +40,7 @@ interface ActiveOrderInfo {
   fulfillmentStatus: string;
 }
 
-export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps) {
+export function GameTopUpClient({ game, initialPackages, initialSelectedPackageId }: GameTopUpClientProps) {
   // Account Inputs
   const [userId, setUserId] = useState("");
   const [serverId, setServerId] = useState("");
@@ -53,7 +54,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.jpg");
 
   // Selected Package — no automatic pre-selection; customer must click to choose
-  const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(() =>
+    initialPackages.find((pkg) => pkg.id === initialSelectedPackageId && pkg.isAvailable) || null,
+  );
   const handlePackageSelect = useCallback((pkg: ClientPackage) => {
     const deselected = selectedPackage?.id === pkg.id;
     setSelectedPackage(deselected ? null : pkg);
@@ -70,6 +73,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [paywayV2ModalData, setPaywayV2ModalData] = useState<AbaPayWayV2ModalData | null>(null);
   const [isPaywayV2Open, setIsPaywayV2Open] = useState(false);
 
+  const [isVngConfigured, setIsVngConfigured] = useState<boolean | null>(null);
+
   useEffect(() => {
     fetch("/api/payment/anajakpay/health")
       .then((res) => res.json())
@@ -80,6 +85,15 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         }
       })
       .catch(() => {});
+
+    fetch("/api/payment/vngzz2/health")
+      .then((res) => res.json())
+      .then((data) => {
+        setIsVngConfigured(Boolean(data?.isConfigured));
+      })
+      .catch(() => {
+        setIsVngConfigured(false);
+      });
   }, []);
   const isAccountReady = Boolean(userId.trim()) &&
     (!game.requiresServer || Boolean(serverId.trim())) &&
@@ -355,6 +369,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           currency: data.currency || "USD",
           packageName: packageToPurchase.name,
           gameName: game.name,
+          merchantName: "Sak Topup",
+          qrString: data.qrString,
           qrImage: data.qrImage,
           qrPngUrl: data.qrPngUrl,
           deepLink: data.deepLink,
@@ -363,6 +379,18 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         });
         setIsPaywayV2Open(true);
         toast.success("PayWay QR generated", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
+
+        // If on mobile device, directly navigate to ABA Mobile app
+        const isMobileDevice =
+          typeof window !== "undefined" &&
+          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        if (isMobileDevice && data.deepLink) {
+          try {
+            window.location.href = data.deepLink;
+          } catch (e) {
+            console.warn("[GameTopUp] Deep link navigation error:", e);
+          }
+        }
         return;
       }
 
@@ -494,6 +522,11 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         <div className="min-w-0 lg:col-span-8 space-y-4 sm:space-y-5">
           {/* STEP 1: Account Information */}
           <section data-topup-step="1" className="topup-step rounded-[14px] bg-white p-3 min-[360px]:p-3.5 sm:p-5 space-y-3 sm:space-y-4">
+            {game.checkoutSupported === false && (
+              <p role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-300">
+                This game requires additional account details. Please contact support to place an order.
+              </p>
+            )}
             <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
               <div className="topup-step-title">
                 <span className="topup-step-number">
@@ -664,12 +697,12 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                   </span>
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-bold text-slate-900">AnajakPay KHQR</span>
+                      <span className="payment-method-title text-sm font-bold text-foreground">KHQR</span>
                       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
                         Universal
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-xs text-slate-500">All Cambodian Banks (KHQR)</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">All Cambodian Banks (KHQR)</span>
                   </span>
                 </span>
                 <span className={`topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
@@ -683,7 +716,15 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <button
                 type="button"
                 aria-pressed={selectedPaymentMethod === "aba_payway_v2"}
-                onClick={() => setSelectedPaymentMethod("aba_payway_v2")}
+                onClick={() => {
+                  setSelectedPaymentMethod("aba_payway_v2");
+                  if (isVngConfigured === false) {
+                    toast.info("KHQR V2 (Sandbox Demo)", {
+                      id: "payway-v2-mode",
+                      description: "Operating in test mode. Add VNGZZ2_PRIMARY_API_KEY in .env.local for live gateway.",
+                    });
+                  }
+                }}
                 className={`topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-all cursor-pointer ${
                   selectedPaymentMethod === "aba_payway_v2"
                     ? "border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20"
@@ -696,12 +737,18 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                   </span>
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-bold text-slate-900">ABA PayWay V2</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-100 text-[#004B87]">
-                        Direct ABA
+                      <span className="payment-method-title text-sm font-bold text-foreground">KHQR V2</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                        isVngConfigured === false
+                          ? "bg-amber-100 text-amber-800"
+                          : "bg-sky-100 text-[#004B87]"
+                      }`}>
+                        {isVngConfigured === false ? "Sandbox Demo" : "Direct ABA"}
                       </span>
                     </span>
-                    <span className="mt-0.5 block text-xs text-slate-500">PayWay QR & ABA Mobile App</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">
+                      {isVngConfigured === false ? "Requires VNGZZ2_PRIMARY_API_KEY" : "PayWay QR & ABA Mobile App"}
+                    </span>
                   </span>
                 </span>
                 <span className={`topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
@@ -782,7 +829,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <div className="topup-summary-row">
                 <span className="topup-summary-label">Payment</span>
                 <span className="topup-summary-value font-bold">
-                  {selectedPaymentMethod === "aba_payway_v2" ? "ABA PayWay V2" : "AnajakPay KHQR"}
+                  {selectedPaymentMethod === "aba_payway_v2" ? "KHQR V2" : "KHQR"}
                 </span>
               </div>
             </div>
@@ -822,8 +869,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 : !selectedPackage
                 ? "Choose your package to continue."
                 : selectedPaymentMethod === "aba_payway_v2"
-                ? "Continue to ABA PayWay V2 checkout."
-                : "Continue to secure AnajakPay KHQR checkout."}
+                ? "Continue to KHQR V2 checkout."
+                : "Continue to secure KHQR checkout."}
             </p>
 
             {/* CTA Button */}
@@ -841,7 +888,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               ) : (
                 <>
                   <span>
-                    {selectedPaymentMethod === "aba_payway_v2" ? "Pay with ABA PayWay V2" : "Pay with AnajakPay KHQR"}
+                    {selectedPaymentMethod === "aba_payway_v2" ? "Pay with KHQR V2" : "Pay with KHQR"}
                   </span>
                   <ArrowRight className="h-4 w-4" />
                 </>

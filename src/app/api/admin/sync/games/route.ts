@@ -4,6 +4,7 @@ import { syncGamesFromSuppliers } from "@/lib/services/syncService";
 import { requireAdminAuth } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdminAuth(req);
@@ -12,7 +13,8 @@ export async function POST(req: NextRequest) {
   try {
     const stats = await syncGamesFromSuppliers();
     return NextResponse.json({
-      success: true,
+      success: stats.totalFailed === 0,
+      error: stats.totalFailed ? "Some games failed to synchronize. Review the supplier errors and retry." : undefined,
       message: "Games synchronized successfully from real supplier APIs",
       stats,
     });

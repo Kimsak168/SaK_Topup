@@ -26,8 +26,11 @@ export async function GET(
   try {
     const { supplier, code } = await context.params;
 
-    // 1. Normalize supplier to WebBuilder
-    const normalizedSupplier = "webbuilder";
+    // 1. Normalize supplier with multi-supplier fallback
+    const normalizedSupplier = supplier.trim().toLowerCase();
+    if (!["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(normalizedSupplier)) {
+      return NextResponse.json({ success: false, error: "Unknown game supplier.", packages: [] }, { status: 404 });
+    }
 
     // 2. Validate game code parameter
     const rawCode = code?.trim();

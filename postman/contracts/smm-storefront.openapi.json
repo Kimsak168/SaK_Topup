@@ -1,0 +1,137 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SakSuuu SMM Storefront API",
+    "version": "1.0.0",
+    "description": "The public catalog is read from validated MongoDB SmmService records. Supplier updates require an authenticated admin preview and confirmed apply."
+  },
+  "servers": [{ "url": "https://{host}", "variables": { "host": { "default": "example.invalid" } } }],
+  "paths": {
+    "/api/smm/services": {
+      "get": {
+        "summary": "List active social media services",
+        "description": "Returns only active, available, validated services. Search and filters are applied in MongoDB before pagination. Supplier wholesale rates and raw supplier metadata are not returned.",
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1, "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100, "default": 24 } },
+          { "name": "platform", "in": "query", "schema": { "type": "string", "enum": ["all", "tiktok", "telegram", "facebook", "instagram", "youtube", "other"], "default": "all" } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["all", "followers", "likes", "views", "comments", "shares", "other"], "default": "all" } },
+          { "name": "category", "in": "query", "schema": { "type": "string", "default": "All" } },
+          { "name": "search", "in": "query", "schema": { "type": "string", "maxLength": 100 } },
+          { "name": "sort", "in": "query", "schema": { "type": "string", "enum": ["recommended", "price-low", "price-high", "name"], "default": "recommended" } }
+        ],
+        "responses": {
+          "200": { "description": "Filtered service page and real catalog counts", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServiceCatalogResponse" } } } },
+          "400": { "description": "Unsupported platform or service type filter", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
+          "500": { "description": "Catalog unavailable", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+    "/api/smm/orders": {
+      "post": {
+        "summary": "Create a pending SMM order and payment checkout",
+        "description": "The server rechecks the selected active MongoDB service and order limits, then calculates the amount from the current customer rate shown by the public catalog (per 1,000 units, rounded up to cents). Browser-submitted prices are ignored. A successful response creates a pending order and payment record; fulfillment remains subject to payment confirmation.",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateSmmOrderRequest" } } } },
+        "responses": {
+          "200": { "description": "Pending order and payment instructions", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CreateSmmOrderResponse" } } } },
+          "400": { "description": "Invalid link, quantity, payment method, or unavailable service", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } },
+          "500": { "description": "Order or payment setup failed", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } } }
+        }
+      }
+    },
+    "/api/admin/smm-services": {
+      "get": {
+        "summary": "Search and review catalog records",
+        "security": [{ "adminCookie": [] }],
+        "parameters": [
+          { "name": "search", "in": "query", "schema": { "type": "string", "maxLength": 100 } },
+          { "name": "platform", "in": "query", "schema": { "type": "string" } },
+          { "name": "status", "in": "query", "schema": { "type": "string", "enum": ["all", "active", "inactive", "unavailable", "duplicate", "invalid", "review"] } },
+          { "name": "page", "in": "query", "schema": { "type": "integer", "minimum": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": { "200": { "description": "Service records, counts, pagination, and recent audit actions" }, "401": { "description": "Admin session required" } }
+      },
+      "post": {
+        "summary": "Preview or confirm catalog maintenance",
+        "description": "Preview actions are read-only. Apply actions require the displayed plan hash and exact confirmation phrase. Sync and cleanup create catalog snapshots and audit records before changes. Cleanup changes safe display fields only; it does not delete records or edit orders or payments.",
+        "security": [{ "adminCookie": [] }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AdminCatalogAction" } } } },
+        "responses": { "200": { "description": "Preview or completed action" }, "401": { "description": "Admin session required" }, "409": { "description": "The plan changed or selected records no longer pass validation" }, "500": { "description": "Action failed" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": { "adminCookie": { "type": "apiKey", "in": "cookie", "name": "saksuuu_admin_token" } },
+    "schemas": {
+      "ErrorResponse": { "type": "object", "required": ["success", "error"], "properties": { "success": { "const": false }, "error": { "type": "string" } } },
+      "Service": {
+        "type": "object",
+        "required": ["service", "name", "category", "platform", "serviceType", "rate", "min", "max"],
+        "properties": {
+          "service": { "type": "string", "description": "Opaque service selection token required to create an order." },
+          "name": { "type": "string" },
+          "category": { "type": "string" },
+          "platform": { "type": "string", "enum": ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"] },
+          "serviceType": { "type": "string", "enum": ["followers", "likes", "views", "comments", "shares", "other"] },
+          "rate": { "type": "number", "exclusiveMinimum": 0, "description": "Customer price per 1,000 units." },
+          "min": { "type": "integer", "minimum": 1 },
+          "max": { "type": "integer", "minimum": 1 },
+          "refill": { "type": ["boolean", "null"], "description": "Present only when the supplier provides a refill policy." },
+          "description": { "type": "string" }
+        }
+      },
+      "ServiceCatalogResponse": {
+        "type": "object",
+        "required": ["success", "total", "catalogTotal", "platforms", "categories", "services", "pagination", "source"],
+        "properties": {
+          "success": { "const": true },
+          "total": { "type": "integer" },
+          "catalogTotal": { "type": "integer" },
+          "platforms": { "type": "array", "items": { "type": "object", "required": ["id", "name", "count"], "properties": { "id": { "type": "string" }, "name": { "type": "string" }, "count": { "type": "integer" } } } },
+          "categories": { "type": "array", "items": { "type": "string" } },
+          "services": { "type": "array", "items": { "$ref": "#/components/schemas/Service" } },
+          "pagination": { "type": "object", "required": ["page", "limit", "total", "totalPages"], "properties": { "page": { "type": "integer" }, "limit": { "type": "integer" }, "total": { "type": "integer" }, "totalPages": { "type": "integer" } } },
+          "source": { "const": "mongodb" }
+        }
+      },
+      "CreateSmmOrderRequest": {
+        "type": "object",
+        "required": ["serviceId", "link", "quantity"],
+        "properties": {
+          "serviceId": { "type": "string" },
+          "link": { "type": "string", "format": "uri", "maxLength": 2048 },
+          "quantity": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "type": "string", "pattern": "^[0-9]+$" }] },
+          "paymentMethod": { "type": "string", "enum": ["aba_payway_v2", "khqr"], "default": "aba_payway_v2" }
+        }
+      },
+      "CreateSmmOrderResponse": {
+        "type": "object",
+        "required": ["success", "orderNumber", "transactionId", "amount", "currency", "paymentStatus", "serviceName", "quantity"],
+        "properties": {
+          "success": { "const": true },
+          "orderNumber": { "type": "string" },
+          "transactionId": { "type": "string" },
+          "amount": { "type": "number" },
+          "currency": { "const": "USD" },
+          "paymentStatus": { "type": "string" },
+          "checkoutUrl": { "type": "string" },
+          "qrData": { "type": ["object", "null"] },
+          "serviceName": { "type": "string" },
+          "quantity": { "type": "integer" }
+        }
+      },
+      "AdminCatalogAction": {
+        "type": "object",
+        "required": ["action"],
+        "properties": {
+          "action": { "type": "string", "enum": ["preview-sync", "apply-sync", "preview-cleanup", "apply-cleanup", "bulk-status"] },
+          "planHash": { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+          "confirmation": { "type": "string" },
+          "status": { "type": "string", "enum": ["active", "inactive"] },
+          "serviceIds": { "type": "array", "maxItems": 250, "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

@@ -33,7 +33,7 @@
 
 .controlButton:focus-visible,
 .supportLink:focus-visible {
-  outline: 2px solid #C084FC;
+  outline: 2px solid #F9A8D4;
   outline-offset: 3px;
 }
 
@@ -97,7 +97,7 @@
   transition: color 150ms ease, background-color 150ms ease;
 }
 
-.supportLink:hover { background: var(--storefront-soft, #F4EFFB); color: var(--storefront-primary, #7C3AED); }
+.supportLink:hover { background: var(--storefront-soft, #481735); color: var(--storefront-primary, #C02670); }
 .supportIcon { width: 17px; height: 17px; flex: none; }
 .noSupportLinks { margin: 5px 9px 8px; color: var(--storefront-muted, #716A80); font-size: 12px; }
 

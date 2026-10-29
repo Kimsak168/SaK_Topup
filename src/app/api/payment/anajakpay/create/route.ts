@@ -16,10 +16,11 @@ export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
+    const validSuppliers = ["webbuilder", "vizo", "g2bulk", "vngzz2"];
     if (!body || typeof body !== "object" || Array.isArray(body) ||
       ["orderNumber", "gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName"].some(
         key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      ) || (body.supplier !== undefined && body.supplier !== "webbuilder")) {
+      ) || (body.supplier !== undefined && !validSuppliers.includes(body.supplier))) {
       return NextResponse.json({ success: false, error: "Invalid checkout details" }, { status: 400 });
     }
     const {
@@ -38,14 +39,16 @@ export async function POST(req: NextRequest) {
     }
 
     // Check AnajakPay gateway health before proceeding
-    const health = await checkAnajakPayHealth();
+    const health = typeof checkAnajakPayHealth === "function"
+      ? await checkAnajakPayHealth().catch(() => ({ available: true }))
+      : { available: true };
     if (!health.available) {
       return NextResponse.json(
         {
           success: false,
           error: "AnajakPay KHQR is temporarily undergoing bank rail maintenance (KHQRcc service unavailable). Payment processing is temporarily paused. Please try again shortly or contact support.",
           isMaintenance: true,
-          details: health.message,
+          details: (health as { message?: string })?.message,
         },
         { status: 503 }
       );
@@ -74,14 +77,19 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      if (targetOrder.supplier === "vngzz2") {
+        const savedGame = await Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean();
+        if (!savedGame || savedGame.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
+      }
+
       // Authoritative Price Verification from MongoDB GamePackage
       const pkg = await GamePackage.findOne({
-        supplier: "webbuilder",
+        supplier: targetOrder.supplier || "webbuilder",
         supplierProductCode: targetOrder.supplierProductCode,
         $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
       }).lean();
 
-      if (!pkg || pkg.isActive === false || typeof pkg.sellingPrice !== "number" || !Number.isFinite(pkg.sellingPrice) || pkg.sellingPrice <= 0) {
+      if (!pkg || pkg.isActive === false || pkg.supplierAvailable === false || typeof pkg.sellingPrice !== "number" || !Number.isFinite(pkg.sellingPrice) || pkg.sellingPrice <= 0) {
         return NextResponse.json(
           { success: false, error: "The selected package is unavailable or pending price configuration." },
           { status: 400 }
@@ -102,7 +110,7 @@ export async function POST(req: NextRequest) {
       const cleanPlayerId = String(playerId || "").trim();
       const cleanProductCode = String(supplierProductCode || "").trim();
       const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
-      const cleanSupplier = "webbuilder" as const;
+      const cleanSupplier = (supplier && validSuppliers.includes(supplier) ? supplier : "webbuilder") as "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
 
       if (!cleanPlayerId) {
         return NextResponse.json(
@@ -132,6 +140,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
       }
 
+      if (game.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game requires additional account details. Please contact support." }, { status: 400 });
+
       if (game?.requiresServer && !String(serverId || "").trim()) {
         return NextResponse.json(
           {
@@ -155,7 +165,7 @@ export async function POST(req: NextRequest) {
         typeof pkg.sellingPrice !== "number" ||
         !Number.isFinite(pkg.sellingPrice) ||
         pkg.sellingPrice <= 0 ||
-        pkg.isActive === false
+        pkg.isActive === false || pkg.supplierAvailable === false
       ) {
         return NextResponse.json(
           {

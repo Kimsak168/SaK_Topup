@@ -4,8 +4,6 @@ import { Banner } from "@/models/Banner";
 import { cachePublicQuery, BANNERS_TAG } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
 
-import { legacyImageBytes, setCachedLegacyImage } from "./legacyImageService";
-
 export interface PublicBanner {
   id: string;
   title: string;
@@ -20,21 +18,8 @@ export interface PublicBanner {
 const readBanners = cache(cachePublicQuery("banners", BANNERS_TAG, async (): Promise<PublicBanner[]> =>
   withCatalogueTimeout(catalogueQuery("banners", async () => {
     const banners = await Banner.find({ isActive: true })
-      .select("title subtitle badge imageUrl targetUrl ctaText accentColor sortOrder updatedAt imageData imageContentType")
+      .select("title subtitle badge imageUrl targetUrl ctaText accentColor sortOrder updatedAt")
       .sort({ sortOrder: 1, createdAt: -1 }).limit(4).maxTimeMS(4000).lean();
-
-    for (const banner of banners) {
-      if (banner.imageData && banner.imageContentType) {
-        const bytes = legacyImageBytes(banner.imageData);
-        if (bytes) {
-          setCachedLegacyImage(`banner:${String(banner._id)}`, {
-            bytes,
-            contentType: banner.imageContentType,
-            updatedAt: banner.updatedAt,
-          });
-        }
-      }
-    }
 
     return banners.map(banner => ({
       id: String(banner._id), title: banner.title || "", subtitle: banner.subtitle ?? "",

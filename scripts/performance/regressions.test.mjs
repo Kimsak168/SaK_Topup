@@ -25,7 +25,28 @@ function loader(mocks = {}, globals = {}) {
       if (name.startsWith('.')) return load(resolve(dirname(filename), name) + '.ts');
       return require(name);
     };
-    vm.runInNewContext(source, { module: loadedModule, exports: loadedModule.exports, require: localRequire, console, process, performance, setTimeout, clearTimeout, ...globals }, { filename });
+    vm.runInNewContext(
+      source,
+      {
+        module: loadedModule,
+        exports: loadedModule.exports,
+        require: localRequire,
+        console,
+        process,
+        performance,
+        setTimeout,
+        clearTimeout,
+        Buffer,
+        Headers,
+        Request,
+        Response,
+        URL,
+        AbortController,
+        AbortSignal,
+        ...globals,
+      },
+      { filename }
+    );
     return loadedModule.exports;
   };
   return load;
@@ -676,14 +697,17 @@ test('failed payment plugin loads can retry and a missing plugin never reports s
   assert.equal(await third, true);
 });
 
-test('proxy preserves regional game routes and lets the legacy page resolve unknown suppliers', async () => {
+test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned catalogs', async () => {
   const { proxy } = loader({
     'next/server': { NextResponse: { next: () => ({ next: true }), redirect: url => ({ location: url.pathname }) } },
     '@/lib/auth': {}, '@/lib/adminRedirect': {},
   }, { URL })('src/proxy.ts');
   const request = path => ({ nextUrl: new URL(path, 'http://localhost'), url: `http://localhost${path}` });
-  for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy', '/games/g2bulk/freefire_sgmy']) {
+  for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy']) {
     assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_khsgmy');
+  }
+  for (const path of ['/games/g2bulk/freefire_sgmy', '/games/vizo/freefire_sgmy', '/games/vngzz2/freefire_sgmy']) {
+    assert.equal((await proxy(request(path))).next, true);
   }
   assert.equal((await proxy(request('/game/custom-game'))).next, true);
 });
@@ -707,5 +731,132 @@ test('admin payment reconciliation requires the provider amount to match the ord
     const res = await POST({ json: async () => ({ orderNumber: order.orderNumber }) });
     assert.equal(res.status, amount === 9.25 ? 200 : 400, String(amount));
     assert.equal(writes.length, amount === 9.25 ? 3 : 0, String(amount));
+  }
+});
+
+test('VNGZZ2 prices use reseller sell_price and reject malformed or negative money', () => {
+  const api = loader()('src/lib/suppliers/vngzz2.ts');
+  const product = { product_code: 'MLBB_55', name: '55', sell_price: '0.76', cost_price: 0.01, status: 'active' };
+  assert.equal(api.normalizeVngzzProducts({ products: [product] })[0].price, 0.76);
+  assert.equal(api.normalizeVngzzProducts({ products: [{ ...product, status: 'inactive' }] })[0].available, false);
+  for (const sell_price of [undefined, null, true, '', '1USD', 'Infinity', Infinity, -1]) {
+    assert.throws(() => api.normalizeVngzzProducts({ products: [{ ...product, sell_price }] }), /invalid product or price/);
+  }
+  assert.throws(() => api.normalizeVngzzProducts({ products: [product, product] }), /invalid product or price/);
+  assert.throws(() => api.normalizeVngzzGames({ total: 2, categories: [{ game_code: 'mlbb', name: 'MLBB' }] }), /incomplete catalogue/);
+  assert.equal(api.isVngzzCheckoutSupported({ game_fields: ['userid', 'serverid'] }), true);
+  assert.equal(api.isVngzzCheckoutSupported({ game_fields: ['userid', 'serverid', 'charname'] }), false);
+});
+
+test('VNGZZ2 regional routes and packages stay with their supplier and never expose wholesale prices', async () => {
+  const games = [
+    { _id: 'wb', slug: 'mlbb', supplier: 'webbuilder', supplierGameCode: 'mlbb', name: 'MLBB', category: 'MOBA', publisher: 'Publisher' },
+    { _id: 'vng', slug: 'vngzz2-mlbb', supplier: 'vngzz2', supplierGameCode: 'mlbb', name: 'MLBB', category: 'MOBA', publisher: 'Publisher' },
+    { _id: 'regional', slug: 'vngzz2-freefire-sgmy', supplier: 'vngzz2', supplierGameCode: 'freefire_sgmy', name: 'FF SGMY', category: 'Action', publisher: 'Publisher' },
+    { _id: 'extra', slug: 'vngzz2-ragnarok-origin', supplier: 'vngzz2', supplierGameCode: 'ragnarok_origin', name: 'Ragnarok', category: 'Action', publisher: 'Publisher', checkoutSupported: false },
+  ];
+  const packages = [
+    { gameCode: 'mlbb', gameSlug: 'mlbb', supplier: 'webbuilder', supplierProductCode: 'shared', name: '55', sellingPrice: 9, isActive: true },
+    { gameCode: 'mlbb', gameSlug: 'vngzz2-mlbb', supplier: 'vngzz2', supplierProductCode: 'shared', name: '55', sellingPrice: 1, buyingPrice: 0.76, priceCents: 76, isActive: true },
+    { gameCode: 'mlbb', gameSlug: 'vngzz2-mlbb', supplier: 'vngzz2', supplierProductCode: 'out-of-stock', name: '86', sellingPrice: 2, isActive: true, supplierAvailable: false },
+    { gameCode: 'ragnarok_origin', gameSlug: 'vngzz2-ragnarok-origin', supplier: 'vngzz2', supplierProductCode: 'extra', name: '40', sellingPrice: 2, isActive: true },
+  ];
+  const service = loader({ react: { cache: fn => fn }, 'next/cache': sharedDataCache(),
+    '@/lib/mongodb': { connectDB: async () => {} }, '@/models/Game': { Game: model(games.map(game => ({ ...game, isActive: true }))) }, '@/models/GamePackage': { GamePackage: model(packages) },
+  })('src/lib/services/gameService.ts');
+  assert.equal((await service.getGameBySupplierAndCode('vngzz2', 'freefire_sgmy')).game.code, 'freefire_sgmy');
+  assert.equal((await service.getGameBySupplierAndCode('vngzz2', 'mlbb')).game.supplier, 'vngzz2');
+  assert.equal((await service.getGameBySupplierAndCode('webbuilder', 'mlbb')).game.supplier, 'webbuilder');
+  const result = await service.getNormalizedPackages('vngzz2', 'mlbb');
+  assert.equal(result.length, 2);
+  assert.equal(result[0].sellingPrice, 1);
+  assert.equal(result[0].isAvailable, true);
+  assert.equal(result[1].isAvailable, false);
+  assert.ok(result.every(pkg => !('buyingPrice' in pkg) && !('priceCents' in pkg)));
+  assert.equal((await service.getNormalizedPackages('vngzz2', 'ragnarok_origin'))[0].isAvailable, false);
+});
+
+test('VNGZZ2 sync preserves admin prices and toggles and isolates duplicate product codes by game', async () => {
+  const writes = [];
+  const gameWrites = [];
+  const categories = ['mlbb', 'freefire_sgmy'].map(game_code => ({ game_code, name: game_code, game_fields: ['userid'] }));
+  const { syncVngzzCatalogue } = loader({
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/lib/suppliers/vngzz2': { getVngzzImageUrl: () => '/image.png', isVngzzCheckoutSupported: () => true },
+    '@/models/Game': { Game: {
+      updateOne: async (filter, update) => { gameWrites.push({ filter, update }); return { upsertedCount: 0 }; },
+      findOne: filter => ({ lean: async () => ({ slug: `vngzz2-${filter.supplierGameCode}`, isActive: true, defaultMarginPercent: 12 }) }),
+    } },
+    '@/models/GamePackage': { GamePackage: {
+      find: () => ({ select() { return this; }, lean: async () => [{ supplierProductCode: 'shared-code', sellingPrice: 99, isActive: false, customImage: '/admin.png' }] }),
+      bulkWrite: async operations => writes.push(...operations), updateMany: async () => {},
+    } },
+  })('src/lib/services/vngzzSyncService.ts');
+  const result = await syncVngzzCatalogue({ packages: true, source: { games: categories, products: async () => [{ product_code: 'shared-code', name: '55', price: 0.76, available: true, currency: 'USD' }] } });
+  assert.equal(result.games.updated, 2);
+  assert.equal(result.packages.updated, 2);
+  assert.equal(result.packages.failed, 0);
+  assert.equal(new Set(writes.map(op => op.updateOne.filter.gameCode)).size, 2);
+  for (const op of writes) {
+    assert.equal(op.updateOne.filter.supplier, 'vngzz2');
+    for (const key of ['sellingPrice', 'isActive', 'customImage', 'name', 'badge', 'adminConfigured']) assert.equal(key in op.updateOne.update.$set, false, key);
+    assert.equal(op.updateOne.update.$setOnInsert.sellingPrice, 0.86);
+  }
+  for (const op of gameWrites) assert.equal('isActive' in op.update.$set, false);
+});
+
+test('VNGZZ2 fulfillment submits the stored product and reference and reconciles without resubmitting', async () => {
+  const calls = [];
+  const order = { _id: 'order', supplier: 'vngzz2', orderNumber: 'ORD-VNG-test', supplierProductCode: 'MLBB_55', playerId: 'player', serverId: 'zone', paymentStatus: 'PAID', fulfillmentStatus: 'processing', save: async () => {} };
+  const service = loader({
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/Order': { Order: { findOneAndUpdate: async () => order, findOne: async () => order, findByIdAndUpdate: async () => {} } },
+    '@/lib/suppliers/webbuilder': {}, '@/lib/suppliers/vizo': {}, '@/lib/suppliers/g2bulk': {},
+    '@/lib/suppliers/vngzz2': {
+      createVngzzOrder: async payload => { calls.push(payload); return { id: 'provider-id', status: 'processing', supplierStatus: 'pending', message: 'Pending' }; },
+      checkVngzzOrder: async reference => { assert.equal(reference, order.orderNumber); return { id: 'provider-id', status: 'completed', supplierStatus: 'completed', message: 'Delivered' }; },
+    },
+  })('src/lib/services/fulfillmentService.ts');
+  assert.equal((await service.triggerAutomaticFulfillment(order.orderNumber)).fulfillmentStatus, 'processing');
+  assert.equal(calls[0].productCode, 'MLBB_55');
+  assert.equal(calls[0].serverId, 'zone');
+  assert.equal(calls[0].reference, order.orderNumber);
+  assert.equal((await service.reconcileSupplierFulfillment(order.orderNumber)).fulfillmentStatus, 'completed');
+  assert.equal(calls.length, 1);
+});
+
+test('VNGZZ2 package endpoint and proxy preserve supplier and exact regional codes', async () => {
+  const { GET } = loader({ 'next/server': { NextResponse: Response }, '@/lib/services/gameService': {
+    getNormalizedPackages: async (supplier, code) => { assert.equal(supplier, 'vngzz2'); assert.equal(code, 'freefire_sgmy'); return []; },
+  } })('src/app/api/games/[supplier]/[code]/packages/route.ts');
+  assert.equal((await GET({}, { params: Promise.resolve({ supplier: 'vngzz2', code: 'freefire_sgmy' }) })).status, 200);
+  assert.equal((await GET({}, { params: Promise.resolve({ supplier: 'unknown', code: 'mlbb' }) })).status, 404);
+  const { proxy } = loader({ 'next/server': { NextResponse: { next: () => ({ next: true }), redirect: () => assert.fail('Must preserve VNGZZ2 routes') } }, '@/lib/auth': {}, '@/lib/adminRedirect': {} }, { URL })('src/proxy.ts');
+  for (const code of ['mlbb_global', 'freefire_sgmy', 'freefire_th', 'hok', 'magic_chess_gogo']) {
+    const path = `/games/vngzz2/${code}`;
+    assert.equal((await proxy({ nextUrl: new URL(path, 'http://localhost'), url: `http://localhost${path}` })).next, true);
+  }
+  assert.equal((await proxy({ nextUrl: new URL('http://localhost/game/vngzz2-freefire-sgmy'), url: 'http://localhost/game/vngzz2-freefire-sgmy' })).next, true);
+});
+
+test('VNGZZ2 checkout rejects unavailable stock and unsupported account fields before any payment is created', async () => {
+  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/anajakpay/create/route.ts', 'src/app/api/payment/vngzz2/create/route.ts']) {
+    for (const existing of [false, true]) {
+      for (const unsupported of [false, true]) {
+        const pkg = { supplier: 'vngzz2', supplierProductCode: 'MLBB_55', sellingPrice: 1, isActive: true, supplierAvailable: unsupported };
+        const order = { supplier: 'vngzz2', gameSlug: 'vngzz2-mlbb', supplierProductCode: 'MLBB_55', paymentStatus: 'PENDING' };
+        const { POST } = loader({
+          'next/server': { NextResponse: Response }, '@/lib/mongodb': { connectDB: async () => {} },
+          '@/models/Game': { Game: { findOne: filter => { assert.equal(filter.supplier, 'vngzz2'); return { lean: async () => ({ isActive: true, checkoutSupported: !unsupported }) }; } } },
+          '@/models/GamePackage': { GamePackage: { findOne: filter => { assert.equal(filter.supplier, 'vngzz2'); return { lean: async () => pkg }; } } },
+          '@/models/Order': { Order: { findOne: async () => order, create: () => assert.fail('Unavailable games must not create orders') } },
+          '@/models/Payment': { Payment: { create: () => assert.fail('Unavailable games must not create payments') } },
+          '@/lib/services/anajakPayService': { checkAnajakPayHealth: async () => ({ available: true }), AnajakPayConfigError: class extends Error {} },
+          '@/lib/services/vngzzPayWayService': { isVngZz2Configured: () => true, VngZz2ConfigError: class extends Error {} },
+        }, { console: { error() {} } })(filename);
+        const payload = existing && !filename.includes('/api/orders/') ? { orderNumber: 'ORD-test' } : { supplier: 'vngzz2', gameSlug: 'vngzz2-mlbb', supplierProductCode: 'MLBB_55', playerId: 'player' };
+        assert.equal((await POST({ json: async () => payload })).status, 400, `${filename}: existing=${existing}, unsupported=${unsupported}`);
+      }
+    }
   }
 });

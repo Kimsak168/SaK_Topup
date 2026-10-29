@@ -151,15 +151,17 @@ test("AnajakPay: Regression - Configuration, Amount Formatting, Checkout & Signa
 // ========================================================
 test("ABA PayWay V2: VngZz2 Configuration & Utility Functions", async (t) => {
   const origEnv = { ...process.env };
+  delete process.env.VNGZZ2_PRIMARY_API_KEY;
   process.env.VNGZZ2_PAYMENT_BASE_URL = "https://www.vngzz2game.site/api";
   process.env.VNGZZ2_PAYMENT_API_KEY = "test_vngzz2_api_key_xyz";
   process.env.VNGZZ2_PAYMENT_SLOT = "USD";
+  process.env.VNGZZ2_PAYMENT_CURRENCY = "USD";
   process.env.VNGZZ2_PAYMENT_WEBHOOK_SECRET = "webhook_secret_hmac_123";
 
   const load = createModuleLoader();
   const vngzz = load("src/lib/services/vngzzPayWayService.ts");
 
-  await t.test("isVngZz2Configured returns true with API key set", () => {
+  await t.test("isVngZz2Configured returns true with legacy API key set", () => {
     assert.strictEqual(vngzz.isVngZz2Configured(), true);
   });
 
@@ -168,7 +170,16 @@ test("ABA PayWay V2: VngZz2 Configuration & Utility Functions", async (t) => {
     assert.strictEqual(config.baseUrl, "https://www.vngzz2game.site/api");
     assert.strictEqual(config.apiKey, "test_vngzz2_api_key_xyz");
     assert.strictEqual(config.slot, "USD");
+    assert.strictEqual(config.currency, "USD");
     assert.strictEqual(config.webhookSecret, "webhook_secret_hmac_123");
+  });
+
+  await t.test("isVngZz2Configured and getVngZz2Config prioritize VNGZZ2_PRIMARY_API_KEY", () => {
+    process.env.VNGZZ2_PRIMARY_API_KEY = "primary_key_abc_456";
+    const vngzzPrimary = load("src/lib/services/vngzzPayWayService.ts");
+    assert.strictEqual(vngzzPrimary.isVngZz2Configured(), true);
+    assert.strictEqual(vngzzPrimary.getVngZz2Config().apiKey, "primary_key_abc_456");
+    delete process.env.VNGZZ2_PRIMARY_API_KEY;
   });
 
   await t.test("formatVngZzAmount formats currency amounts cleanly", () => {
@@ -182,6 +193,7 @@ test("ABA PayWay V2: VngZz2 Configuration & Utility Functions", async (t) => {
 
 test("ABA PayWay V2: Unconfigured State & Error Handling", async (t) => {
   const origEnv = { ...process.env };
+  delete process.env.VNGZZ2_PRIMARY_API_KEY;
   delete process.env.VNGZZ2_PAYMENT_API_KEY;
 
   const load = createModuleLoader();
@@ -204,6 +216,29 @@ test("ABA PayWay V2: Unconfigured State & Error Handling", async (t) => {
         return err.name === "VngZz2ConfigError" && err.message.includes("VNGZZ2_PAYMENT_API_KEY");
       }
     );
+  });
+
+  await t.test("generateVngZz2SandboxQr produces valid SVG data URI without API key", () => {
+    const sandboxResult = vngzz.generateVngZz2SandboxQr({
+      amount: 1.5,
+      currency: "USD",
+      orderNumber: "ORD-SANDBOX-TEST",
+    });
+    assert.strictEqual(sandboxResult.success, true);
+    assert.strictEqual(sandboxResult.amount, 1.5);
+    assert.strictEqual(sandboxResult.currency, "USD");
+    assert.ok(sandboxResult.transactionId.startsWith("TXN-SANDBOX-VNGZZ2-"));
+    assert.ok(sandboxResult.qrImage?.startsWith("data:image/svg+xml;base64,"));
+    assert.ok(sandboxResult.deepLink?.startsWith("abamobilebank://"));
+    assert.strictEqual(sandboxResult.expireInSec, 180);
+  });
+
+  await t.test("checkVngZz2Transaction never treats a sandbox transaction as a paid payment", async () => {
+    const checkRes = await vngzz.checkVngZz2Transaction("TXN-SANDBOX-VNGZZ2-9999-ABCD");
+    assert.strictEqual(checkRes.success, true);
+    assert.strictEqual(checkRes.isPaid, false);
+    assert.strictEqual(checkRes.state, "PENDING");
+    assert.ok(checkRes.paywayTransactionId?.includes("ABA-SANDBOX-"));
   });
 
   process.env = origEnv;
@@ -430,6 +465,11 @@ test("ABA PayWay V2: Webhook Signature Verification (HMAC-SHA256)", async (t) =>
       vngzz.verifyVngZz2WebhookSignature({ rawBody: payload, signature: "invalid_sig_0000" }),
       false
     );
+  });
+
+  await t.test("missing webhook secret fails closed", () => {
+    delete process.env.VNGZZ2_PAYMENT_WEBHOOK_SECRET;
+    assert.strictEqual(vngzz.verifyVngZz2WebhookSignature({ rawBody: payload, signature: validSignature }), false);
   });
 
   process.env = origEnv;
