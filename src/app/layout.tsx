@@ -5,6 +5,7 @@ import "./storefront-theme.css";
 import { cn } from "@/lib/utils";
 import { ThemeToaster } from "@/components/ThemeToaster";
 import { StorefrontThemeProvider } from "@/components/StorefrontThemeProvider";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default function RootLayout({
           {children}
           <ThemeToaster />
         </StorefrontThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
