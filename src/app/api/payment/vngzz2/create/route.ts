@@ -1,4 +1,4 @@
-import { after, NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
@@ -11,10 +11,6 @@ import {
   isVngZz2Configured,
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
-import {
-  dispatchOrderNotifications,
-  dispatchPendingTelegramNotifications,
-} from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 
@@ -256,20 +252,6 @@ export async function POST(req: NextRequest) {
         { upsert: true, returnDocument: "after" }
       ),
     ]);
-
-    // Background Telegram notification dispatch without delaying QR display to customer
-    const finalOrderNumber = targetOrder.orderNumber;
-    try {
-      after(async () => {
-        await dispatchOrderNotifications(finalOrderNumber).catch((err) => {
-          console.warn("[VngZz2 Create] Background notification dispatch error:", err);
-        });
-      });
-    } catch {
-      void dispatchOrderNotifications(finalOrderNumber).catch((err) => {
-        console.warn("[VngZz2 Create] Direct background notification dispatch error:", err);
-      });
-    }
 
     return NextResponse.json({
       success: true,
