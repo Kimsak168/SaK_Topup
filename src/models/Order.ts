@@ -329,17 +329,20 @@ function createOrderStatusEvents(current: Record<string, unknown>, next: Record<
 }
 
 function dispatchTelegramEvents() {
+  const runDispatch = async () => {
+    try {
+      const { dispatchPendingTelegramNotifications } = await import("@/lib/services/telegramNotificationService");
+      await dispatchPendingTelegramNotifications(8);
+    } catch {
+      console.error("[Telegram] Dispatch deferred to the durable worker.");
+    }
+  };
+
   try {
-    after(async () => {
-      try {
-        const { dispatchPendingTelegramNotifications } = await import("@/lib/services/telegramNotificationService");
-        await dispatchPendingTelegramNotifications(8);
-      } catch {
-        console.error("[Telegram] Dispatch deferred to the durable worker.");
-      }
-    });
+    after(runDispatch);
   } catch {
-    // Maintenance scripts have no request context. Cron drains the durable outbox.
+    // If after() is unavailable (e.g. outside request context or mongoose hook), trigger immediately
+    void runDispatch();
   }
 }
 
