@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
@@ -65,17 +65,21 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "This order has already been paid" }, { status: 400 });
       }
 
-      if (targetOrder.supplier === "vngzz2") {
-        const savedGame = await Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean();
-        if (!savedGame || savedGame.checkoutSupported === false) return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
-      }
+      // Parallelize game validation and package price lookup
+      const [savedGame, pkg] = await Promise.all([
+        targetOrder.supplier === "vngzz2"
+          ? Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean()
+          : Promise.resolve(null),
+        GamePackage.findOne({
+          supplier: targetOrder.supplier || "webbuilder",
+          supplierProductCode: targetOrder.supplierProductCode,
+          $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
+        }).lean(),
+      ]);
 
-      // Authoritative Price Verification from MongoDB GamePackage
-      const pkg = await GamePackage.findOne({
-        supplier: targetOrder.supplier || "webbuilder",
-        supplierProductCode: targetOrder.supplierProductCode,
-        $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
-      }).lean();
+      if (targetOrder.supplier === "vngzz2" && (!savedGame || savedGame.checkoutSupported === false)) {
+        return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
+      }
 
       if (
         !pkg ||
@@ -110,11 +114,19 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "Game package selection is required" }, { status: 400 });
       }
 
-      const game = await Game.findOne({
-        supplier: cleanSupplier,
-        $or: [{ slug: cleanGameSlug }, { supplierGameCode: cleanGameSlug }],
-        isActive: true,
-      }).lean();
+      // Parallelize Game and GamePackage lookup
+      const [game, pkg] = await Promise.all([
+        Game.findOne({
+          supplier: cleanSupplier,
+          $or: [{ slug: cleanGameSlug }, { supplierGameCode: cleanGameSlug }],
+          isActive: true,
+        }).lean(),
+        GamePackage.findOne({
+          supplier: cleanSupplier,
+          supplierProductCode: cleanProductCode,
+          $or: [{ gameSlug: cleanGameSlug }, { gameCode: cleanGameSlug }],
+        }).lean(),
+      ]);
 
       if (!game) {
         return NextResponse.json({ success: false, error: "The selected game is unavailable." }, { status: 400 });
@@ -128,13 +140,6 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-
-      // Authoritative Price Retrieval from MongoDB GamePackage
-      const pkg = await GamePackage.findOne({
-        supplier: cleanSupplier,
-        supplierProductCode: cleanProductCode,
-        $or: [{ gameSlug: cleanGameSlug }, { gameCode: cleanGameSlug }],
-      }).lean();
 
       if (
         !pkg ||
@@ -234,27 +239,37 @@ export async function POST(req: NextRequest) {
       }
       targetOrder.markModified("telegramNotifications");
     }
-    await targetOrder.save();
+    // Parallelize targetOrder save and Payment upsert for optimal speed
+    await Promise.all([
+      targetOrder.save(),
+      Payment.findOneAndUpdate(
+        { orderNumber: targetOrder.orderNumber },
+        {
+          paymentId: `PAY-${targetOrder.orderNumber}`,
+          orderNumber: targetOrder.orderNumber,
+          gateway: "aba_payway_v2",
+          transactionId: qrResult.transactionId,
+          amount: targetOrder.amount,
+          currency: "USD",
+          status: "PENDING",
+        },
+        { upsert: true, returnDocument: "after" }
+      ),
+    ]);
 
-    // Upsert Payment model record
-    await Payment.findOneAndUpdate(
-      { orderNumber: targetOrder.orderNumber },
-      {
-        paymentId: `PAY-${targetOrder.orderNumber}`,
-        orderNumber: targetOrder.orderNumber,
-        gateway: "aba_payway_v2",
-        transactionId: qrResult.transactionId,
-        amount: targetOrder.amount,
-        currency: "USD",
-        status: "PENDING",
-      },
-      { upsert: true, new: true }
-    );
-
-    // Immediately dispatch this order's pending notification and await delivery
-    await dispatchOrderNotifications(targetOrder.orderNumber).catch((err) => {
-      console.warn("[VngZz2 Create] Direct notification dispatch error:", err);
-    });
+    // Background Telegram notification dispatch without delaying QR display to customer
+    const finalOrderNumber = targetOrder.orderNumber;
+    try {
+      after(async () => {
+        await dispatchOrderNotifications(finalOrderNumber).catch((err) => {
+          console.warn("[VngZz2 Create] Background notification dispatch error:", err);
+        });
+      });
+    } catch {
+      void dispatchOrderNotifications(finalOrderNumber).catch((err) => {
+        console.warn("[VngZz2 Create] Direct background notification dispatch error:", err);
+      });
+    }
 
     return NextResponse.json({
       success: true,
