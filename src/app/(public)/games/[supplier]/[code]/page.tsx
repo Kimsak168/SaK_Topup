@@ -4,6 +4,7 @@ import { getGameBySupplierAndCode, getNormalizedPackages } from "@/lib/services/
 import { GameTopUpClient } from "@/components/public/GameTopUpClient";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 interface GamePageProps {
   params: Promise<{ supplier: string; code: string }>;

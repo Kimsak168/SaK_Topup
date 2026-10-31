@@ -4,6 +4,7 @@ import { Order } from "@/models/Order";
 import { acquireJobLease, releaseJobLease } from "@/lib/services/backgroundJobLease";
 import { sendTelegramNotification } from "@/lib/services/telegramNotificationService";
 import type { TelegramNotificationEvent } from "@/lib/notifications/telegramFormat";
+import { logCronEvent } from "@/lib/cronLogger";
 
 const STALE_MS = 120_000;
 const MAX_ATTEMPTS = 10;
@@ -58,8 +59,12 @@ export async function dispatchPendingTelegramNotifications(limit = 20) {
   const summary = { scannedOrders: 0, attempted: 0, sent: 0 };
   if (!process.env.TELEGRAM_BOT_TOKEN?.trim() || !process.env.TELEGRAM_ADMIN_CHAT_ID?.trim()) return { ...summary, configured: false };
   const token = await acquireJobLease("telegram-outbox", 60_000);
-  if (!token) return { ...summary, busy: true };
+  if (!token) {
+    logCronEvent({ tag: "CRON_TELEGRAM", event: "busy", details: { message: "Another telegram outbox worker is active." } });
+    return { ...summary, busy: true };
+  }
   const started = Date.now();
+  logCronEvent({ tag: "CRON_TELEGRAM", event: "start", details: { limit } });
   try {
     const orders = await Order.find({ telegramNotifications: { $elemMatch: due(new Date()) } })
       .select("orderNumber telegramNotifications").sort({ updatedAt: 1 }).limit(50).lean();

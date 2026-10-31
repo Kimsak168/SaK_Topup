@@ -66,6 +66,10 @@ export interface IOrder extends Document {
   paymentVerification?: { gateway: string; transactionId: string; status: string; checkedAt: Date };
   telegramNotifications: TelegramNotificationEvent[];
   notificationRevision: number;
+  paymentPollAttempts?: number;
+  paymentPollNextAt?: Date;
+  paymentPollLockedUntil?: Date;
+  paymentPollToken?: string;
   supplierPollAttempts?: number;
   supplierNextPollAt?: Date;
   supplierPollLockedUntil?: Date;
@@ -283,6 +287,10 @@ const OrderSchema = new Schema<IOrder>(
       default: [],
     },
     notificationRevision: { type: Number, default: 0 },
+    paymentPollAttempts: { type: Number, default: 0 },
+    paymentPollNextAt: { type: Date },
+    paymentPollLockedUntil: { type: Date },
+    paymentPollToken: { type: String },
     supplierPollAttempts: { type: Number, default: 0 },
     supplierNextPollAt: { type: Date },
     supplierPollLockedUntil: { type: Date },
@@ -346,7 +354,8 @@ function dispatchTelegramEvents() {
   }
 }
 
-OrderSchema.post("init", function (doc) {
+OrderSchema.post("init", function (doc: any) {
+  doc.$locals = doc.$locals || {};
   doc.$locals.notificationSnapshot = {
     paymentStatus: doc.paymentStatus,
     fulfillmentStatus: doc.fulfillmentStatus,
@@ -355,7 +364,7 @@ OrderSchema.post("init", function (doc) {
 });
 
 OrderSchema.pre("save", async function () {
-  const orderDoc = this as typeof this & { $where?: Record<string, unknown>; $locals: Record<string, unknown> };
+  const orderDoc = this as any;
   if (orderDoc.isNew) {
     orderDoc.telegramNotifications.push(...createOrderStatusEvents({}, orderDoc.toObject() as unknown as Record<string, unknown>));
     return;
@@ -368,7 +377,7 @@ OrderSchema.pre("save", async function () {
     .select("paymentStatus fulfillmentStatus notificationRevision")
     .lean();
   if (!previous) return;
-  const snapshot = orderDoc.$locals.notificationSnapshot as Record<string, unknown> | undefined;
+  const snapshot = orderDoc.$locals?.notificationSnapshot as Record<string, unknown> | undefined;
   if (snapshot && (Number(snapshot.notificationRevision || 0) !== Number(previous.notificationRevision || 0) ||
     snapshot.paymentStatus !== previous.paymentStatus || snapshot.fulfillmentStatus !== previous.fulfillmentStatus)) {
     throw new Error("Order status changed concurrently. Reload before updating.");
@@ -384,6 +393,7 @@ OrderSchema.pre("save", async function () {
     fulfillmentStatus: previous.fulfillmentStatus,
     notificationRevision: previous.notificationRevision ?? { $exists: false },
   };
+  orderDoc.$locals = orderDoc.$locals || {};
   orderDoc.$locals.telegramNotificationsChanged = true;
 });
 
@@ -423,8 +433,9 @@ OrderSchema.pre(["findOneAndUpdate", "updateOne"], async function () {
   query.setUpdate(updateRecord);
 });
 
-OrderSchema.post("save", async function (order) {
+OrderSchema.post("save", async function (order: any) {
   order.$where = {};
+  order.$locals = order.$locals || {};
   order.$locals.notificationSnapshot = {
     paymentStatus: order.paymentStatus, fulfillmentStatus: order.fulfillmentStatus,
     notificationRevision: order.notificationRevision,
@@ -434,8 +445,8 @@ OrderSchema.post("save", async function (order) {
   }
 });
 
-OrderSchema.post("findOneAndUpdate", async function (order) {
-  const update = this.getUpdate() as Record<string, unknown> | null;
+OrderSchema.post("findOneAndUpdate", async function (order: any) {
+  const update = (this as any).getUpdate() as Record<string, unknown> | null;
   if (order?.orderNumber && update?.$inc && "notificationRevision" in (update.$inc as object)) {
     dispatchTelegramEvents();
   }
@@ -455,6 +466,7 @@ OrderSchema.index(
   { name: "telegram_notification_outbox_due" }
 );
 OrderSchema.index({ "telegramNotifications.state": 1, "telegramNotifications.lockedAt": 1 }, { name: "telegram_notification_stale" });
+OrderSchema.index({ paymentPollNextAt: 1, createdAt: 1 }, { name: "payment_status_poll_due", sparse: true });
 OrderSchema.index({ supplierNextPollAt: 1, createdAt: 1 }, { name: "supplier_status_poll_due" });
 OrderSchema.index(
   { idempotencyKey: 1 },
