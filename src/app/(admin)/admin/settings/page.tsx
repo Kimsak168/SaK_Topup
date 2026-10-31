@@ -14,6 +14,7 @@ import {
   Wallet,
   Sparkles,
 } from "lucide-react";
+import { TelegramNotificationSettings } from "@/components/admin/TelegramNotificationSettings";
 
 export default function AdminSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -405,6 +406,9 @@ export default function AdminSettingsPage() {
           </button>
         </div>
       </form>
+
+      {/* Section: Telegram Bot Admin Notifications */}
+      <TelegramNotificationSettings />
     </div>
   );
 }

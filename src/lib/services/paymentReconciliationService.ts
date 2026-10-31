@@ -39,8 +39,17 @@ export async function reconcileOrderPayment(orderNumber: string, fulfill = true)
     let reason: string | undefined;
     let raw: unknown;
     if (gateway === "aba_payway_v2" || gateway === "vngzz2" || gateway === "khqr") {
-      const result = await checkVngZz2Transaction(transactionId);
-      if (!result.success) return order;
+      let result;
+      try {
+        result = await checkVngZz2Transaction(transactionId);
+      } catch (err) {
+        if (err && typeof err === "object" && "code" in err && err.code === "INVALID_RESPONSE") {
+          throw new PaymentVerificationError("Verified transaction does not match this order.", true);
+        }
+        // Provider is temporarily unreachable or returned a transient 503 error; leave order in its current state
+        return order;
+      }
+      if (!result || !result.success) return order;
       status = result.state;
       amount = result.amount;
       currency = result.currency;

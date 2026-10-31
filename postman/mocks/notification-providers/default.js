@@ -32,6 +32,19 @@ const server = http.createServer(async (req, res) => {
     if (reference.includes("unavailable")) return reply(503, { success: false, message: "Unavailable" });
     return reply(200, { success: true, data: { order_id: reference, reference, order_status: reference.includes("deliverysuccess") ? "completed" : reference.includes("deliveryfailed") ? "failed" : "pending", message: "Supplier confirmed outcome" } });
   }
+  if (url.pathname.endsWith("/getMe")) {
+    return reply(200, { ok: true, result: { id: 7123456789, is_bot: true, first_name: "SakSuu Top-Up Bot", username: "SakSuuBot" } });
+  }
+  if (url.pathname.endsWith("/getChat")) {
+    const chatId = url.searchParams.get("chat_id") || "";
+    if (chatId.includes("invalid") || chatId.includes("403")) {
+      return reply(400, { ok: false, error_code: 400, description: "Bad Request: chat not found" });
+    }
+    return reply(200, { ok: true, result: { id: chatId || -1001234567890, title: "SakSuu", type: "supergroup" } });
+  }
+  if (url.pathname.endsWith("/getWebhookInfo")) {
+    return reply(200, { ok: true, result: { url: "", has_custom_certificate: false, pending_update_count: 0 } });
+  }
   if (url.pathname.endsWith("/sendMessage")) {
     messages.push(body);
     if (body.text.includes("TG429")) return reply(429, { ok: false, error_code: 429, description: "Too Many Requests", parameters: { retry_after: 2 } });

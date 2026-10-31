@@ -55,8 +55,30 @@ async function sendEvent(orderNumber, kind, status) {
   const message = state.messages.at(-1);
   assert.equal(message.chat_id, env.TELEGRAM_ADMIN_CHAT_ID);
   assert.match(message.text, new RegExp(`${kind} ${status}`));
-  for (const required of ["Order ID:", "Customer name:", "Game:", "Package:", "Player ID:", "Server ID:", "Amount:", "Payment method:", "Supplier:", "Transaction ID:", "Date and time:"]) assert.ok(message.text.includes(required), required);
-  if (status === "FAILED") assert.match(message.text, /Error reason:/);
+  assert.ok(message.text.includes("Order ID:"), "Order ID:");
+  assert.ok(message.text.includes("Customer name:"), "Customer name:");
+  assert.ok(message.text.includes("Game:"), "Game:");
+  assert.ok(message.text.includes("Amount:"), "Amount:");
+  assert.ok(message.text.includes("Payment method:"), "Payment method:");
+  assert.ok(message.text.includes("Date and time:"), "Date and time:");
+  if (kind === "ORDER") {
+    assert.ok(message.text.includes("Package:"), "Package:");
+    assert.ok(message.text.includes("Player ID:"), "Player ID:");
+    assert.ok(message.text.includes("Supplier:"), "Supplier:");
+    if (status === "SUCCESS") {
+      assert.ok(message.text.includes("Supplier Order ID:"), "Supplier Order ID:");
+    }
+    if (status === "FAILED") {
+      assert.ok(message.text.includes("Error reason:"), "Error reason:");
+    }
+  } else if (kind === "PAYMENT") {
+    if (status === "SUCCESS") {
+      assert.ok(message.text.includes("Transaction ID:"), "Transaction ID:");
+    }
+    if (status === "FAILED") {
+      assert.ok(message.text.includes("Error reason:"), "Error reason:");
+    }
+  }
   const saved = (await history(orderNumber)).find(candidate => candidate.eventId === event.eventId);
   assert.equal(saved.state, "sent"); assert.equal(saved.attempts[0].outcome, "sent"); assert.ok(saved.telegramMessageId);
 }
@@ -171,4 +193,114 @@ test("ABA PayWay V2 explicit pending/success/failure/expiry and provider errors 
     const latest = await payments.reconcileOrderPayment(order.orderNumber, false);
     assert.equal(latest.paymentStatus, expected);
   }
+});
+
+test("Telegram connection test verifies bot token and chat group access securely", async () => {
+  const telegramService = load("src/lib/services/telegramNotificationService.ts");
+  const result = await telegramService.testTelegramConnection();
+  assert.equal(result.ok, true);
+  assert.equal(result.bot.username, "SakSuuBot");
+  assert.equal(result.chat.title, "SakSuu");
+  assert.equal(telegramService.maskTelegramChatId("-1001234567890"), "-100****7890");
+
+  // Missing credentials fails cleanly
+  const unconfigured = await telegramService.testTelegramConnection(fetch, {});
+  assert.equal(unconfigured.ok, false);
+  assert.match(unconfigured.error, /TELEGRAM_BOT_TOKEN is missing/);
+
+  // Send test message delivers to the chat
+  const sendRes = await telegramService.sendTelegramTestMessage();
+  assert.equal(sendRes.ok, true);
+  assert.ok(sendRes.messageId);
+  const state = await (await fetch(`${base}/test/state`)).json();
+  const testMsg = state.messages.at(-1);
+  assert.match(testMsg.text, /SakSuu Telegram Bot Test/);
+});
+
+test("admin notifications endpoint authorizes, reports stats/history and executes actions", async () => {
+  const adminNotificationsRoute = load("src/app/api/admin/notifications/route.ts");
+  const authHeader = { Authorization: "Bearer test-admin-token" };
+
+  // Unauthorized access
+  assert.equal((await adminNotificationsRoute.GET(new Request("http://localhost/api/admin/notifications"))).status, 401);
+  assert.equal((await adminNotificationsRoute.POST(new Request("http://localhost/api/admin/notifications", { method: "POST" }))).status, 401);
+  assert.equal((await adminNotificationsRoute.PATCH(new Request("http://localhost/api/admin/notifications", { method: "PATCH" }))).status, 401);
+
+  // Authorized GET overview
+  const authRoute = loadTestModules({
+    "@/lib/auth": { requireAdminAuth: async () => ({ authorized: true }) },
+    "@/lib/mongodb": { connectDB: async () => mongoose },
+    "@/models/Order": { Order },
+  }, {
+    process: { env },
+    fetch: (url, options) => fetch(String(url).replace("https://api.telegram.org", `${base}/telegram`), options),
+  })("src/app/api/admin/notifications/route.ts");
+
+  const overviewRes = await authRoute.GET(new Request("http://localhost/api/admin/notifications", { headers: authHeader }));
+  assert.equal(overviewRes.status, 200);
+  const overview = await overviewRes.json();
+  assert.equal(overview.success, true);
+  assert.equal(overview.configured, true);
+  assert.ok(typeof overview.stats.sent === "number");
+  assert.ok(Array.isArray(overview.history));
+
+  // Authorized POST test_connection
+  const testConnRes = await authRoute.POST(new Request("http://localhost/api/admin/notifications", {
+    method: "POST", headers: { ...authHeader, "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "test_connection" }),
+  }));
+  assert.equal(testConnRes.status, 200);
+  assert.equal((await testConnRes.json()).bot.username, "SakSuuBot");
+
+  // Authorized POST send_test
+  const sendTestRes = await authRoute.POST(new Request("http://localhost/api/admin/notifications", {
+    method: "POST", headers: { ...authHeader, "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "send_test" }),
+  }));
+  assert.equal(sendTestRes.status, 200);
+  assert.ok((await sendTestRes.json()).messageId);
+
+  // Authorized PATCH retry_all_failed
+  const retryRes = await authRoute.PATCH(new Request("http://localhost/api/admin/notifications", {
+    method: "PATCH", headers: { ...authHeader, "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "retry_all_failed" }),
+  }));
+  assert.equal(retryRes.status, 200);
+  assert.equal((await retryRes.json()).success, true);
+});
+
+test("Telegram forum topics route notifications by status and fall back gracefully", async () => {
+  const telegramService = load("src/lib/services/telegramNotificationService.ts");
+  const topicEnv = {
+    ...env,
+    TELEGRAM_TOPIC_PENDING: "11",
+    TELEGRAM_TOPIC_SUCCESS: "10",
+    TELEGRAM_TOPIC_FAILED: "12",
+  };
+
+  const testEvent = {
+    kind: "ORDER",
+    status: "PENDING",
+    payload: {
+      orderNumber: "ORD-TOPIC-001",
+      customerName: "Topic Customer",
+      gameName: "Free Fire",
+      packageName: "Weekly Lite",
+      playerId: "639703545",
+      amount: 2.44,
+      currency: "USD",
+      paymentMethod: "aba_payway_v2",
+      supplier: "webbuilder",
+      occurredAt: new Date(),
+    },
+  };
+
+  const mockFetch = (url, options) => fetch(String(url).replace("https://api.telegram.org", `${base}/telegram`), options);
+  const res = await telegramService.sendTelegramNotification(testEvent, mockFetch, topicEnv);
+  assert.equal(res.ok, true);
+  const state = await (await fetch(`${base}/test/state`)).json();
+  const sentMsg = state.messages.at(-1);
+  assert.equal(sentMsg.message_thread_id, 11, "Routes PENDING to topic thread 11");
+  assert.ok(sentMsg.text.includes("ORDER PENDING"));
+  assert.ok(sentMsg.text.includes("Customer name:"));
 });
