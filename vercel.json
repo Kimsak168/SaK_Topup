@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "crons": [
-    { "path": "/api/cron/telegram", "schedule": "* * * * *" },
-    { "path": "/api/cron/order-status", "schedule": "* * * * *" }
+    { "path": "/api/cron/telegram", "schedule": "0 0 * * *" },
+    { "path": "/api/cron/order-status", "schedule": "0 1 * * *" }
   ]
 }
