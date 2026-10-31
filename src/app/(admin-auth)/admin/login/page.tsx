@@ -71,7 +71,7 @@ function LoginForm() {
         <div className="text-center mb-7 flex flex-col items-center">
           <div className="mb-3 flex items-center justify-center">
             <Image
-              src="/images/logo.png"
+              src="/images/asura-store-logo.png"
               alt="SakSuuu Logo"
               width={56}
               height={56}

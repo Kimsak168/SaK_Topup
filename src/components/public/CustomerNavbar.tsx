@@ -179,7 +179,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
       <div className={styles.shell}>
         <Link href="/" aria-label="SakSuuu Home" className={styles.brand}>
           <Image
-            src={resolvedLogoUrl || "/images/logo.png"}
+            src={resolvedLogoUrl || "/images/asura-store-logo.png"}
             alt=""
             width={44}
             height={44}
@@ -265,7 +265,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
           >
             <div className={styles.drawerHeader}>
               <Link href="/" className={styles.drawerBrand} aria-label="SakSuuu Home" onClick={closeDrawer}>
-                <Image src={resolvedLogoUrl || "/images/logo.png"} alt="" width={38} height={38} />
+                <Image src={resolvedLogoUrl || "/images/asura-store-logo.png"} alt="" width={38} height={38} />
                 <span aria-hidden="true" className={styles.drawerWordmark}>
                   <span>Sak</span><strong>Suuu</strong>
                 </span>

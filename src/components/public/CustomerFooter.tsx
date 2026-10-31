@@ -38,7 +38,7 @@ export function CustomerFooter() {
         <div className="storefront-footer-grid">
           <div className="storefront-footer-brand">
             <Link href="/" className="inline-flex items-center gap-2.5 rounded-lg">
-              <Image src="/images/logo.png" alt="" width={40} height={40} className="size-10 object-contain" />
+              <Image src="/images/asura-store-logo.png" alt="" width={40} height={40} className="size-10 object-contain" />
               <div>
                 <span className="block text-lg font-bold tracking-tight text-[#172033]">SakSuuu</span>
                 <span className="block text-[11px] text-[#64748B]">Your game top-up store</span>
