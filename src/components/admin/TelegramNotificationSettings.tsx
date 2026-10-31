@@ -121,7 +121,7 @@ export function TelegramNotificationSettings() {
           webhook: data.webhook,
         });
         toast.success(
-          `Connected! Bot @${data.bot?.username || "bot"} verified in "${data.chat?.title || "SakSuu"}"`
+          `Connected! Bot @${data.bot?.username || "bot"} verified in "${data.chat?.title || "Asura Store"}"`
         );
       } else {
         toast.error(data.error || "Connection test failed. Check environment variables.");
@@ -224,7 +224,7 @@ export function TelegramNotificationSettings() {
               Telegram Bot Admin Notifications
             </h2>
             <p className="text-xs text-[#94A3B8]">
-              Automated 6-status real-time alerts dispatched to your private SakSuu admin group.
+              Automated 6-status real-time alerts dispatched to your private Asura Store admin group.
             </p>
           </div>
         </div>
@@ -254,7 +254,7 @@ export function TelegramNotificationSettings() {
           </p>
           <div className="space-y-1">
             <p className="text-sm font-semibold text-[#F8FAFC]">
-              {connectionDetails?.chat?.title || "SakSuu Private Group"}
+              {connectionDetails?.chat?.title || "Asura Store Private Group"}
             </p>
             <p className="text-xs text-[#94A3B8]">
               Chat ID: <code className="text-[#38BDF8] bg-[#0B132B] px-2 py-0.5 rounded text-[11px]">{chatIdMasked}</code>
@@ -269,7 +269,7 @@ export function TelegramNotificationSettings() {
           </p>
           <div className="space-y-1">
             <p className="text-sm font-semibold text-[#F8FAFC]">
-              {connectionDetails?.bot?.firstName || (configured ? "SakSuu Top-Up Bot" : "Not Connected")}
+              {connectionDetails?.bot?.firstName || (configured ? "Asura Store Top-Up Bot" : "Not Connected")}
             </p>
             <p className="text-xs text-[#94A3B8]">
               {connectionDetails?.bot?.username ? (

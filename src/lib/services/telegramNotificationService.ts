@@ -326,7 +326,7 @@ export async function testTelegramConnection(
       return {
         ok: false,
         bot: botInfo,
-        error: `Bot cannot access admin chat (${chatId}): ${desc || `HTTP ${chatRes.status}`}. Make sure the bot is added to the SakSuu group as a member or administrator.`,
+        error: `Bot cannot access admin chat (${chatId}): ${desc || `HTTP ${chatRes.status}`}. Make sure the bot is added to the Asura Store group as a member or administrator.`,
       };
     }
   } catch (err) {
@@ -393,15 +393,21 @@ export async function sendTelegramTestMessage(
   }).format(new Date());
 
   const testLines = [
-    `🟢 <b>SakSuu Telegram Bot Test</b>`,
-    `🧾 <b>Order ID:</b> <code>ORD-TEST-000000</code>`,
-    `👤 <b>Customer name:</b> Admin Tester`,
-    `🎮 <b>Game:</b> SakSuu System`,
-    `📦 <b>Package:</b> Connection Verification`,
-    `💵 <b>Amount:</b> 0.00 USD`,
-    `💳 <b>Payment method:</b> ABA PayWay V2`,
-    `🏭 <b>Supplier:</b> WebBuilder`,
-    `🕒 <b>Date and time:</b> ${nowStr} (Asia/Phnom_Penh)`,
+    `CONNECTION TEST`,
+    `━━━━━━━━━━━━━━━━━━`,
+    `Store: SakSuuu Game Top-Up`,
+    `Order ID: <code>ASURA-TEST-000000</code>`,
+    `IGN: <code>Admin Tester</code>`,
+    `Game: Free Fire`,
+    `Package: Connection Verification`,
+    `Player ID: <code>123456789</code>`,
+    `Amount: 0.00 USD`,
+    `Profit: 0.00 USD`,
+    `Payment method: ABA PayWay V2`,
+    `Supplier: WebBuilder`,
+    `Status: VERIFIED / CONNECTED`,
+    `Date and time: ${nowStr} (Asia/Phnom_Penh)`,
+    `━━━━━━━━━━━━━━━━━━`,
   ];
 
   const payload: Record<string, unknown> = {

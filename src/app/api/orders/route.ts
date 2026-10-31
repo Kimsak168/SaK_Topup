@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Create unique internal transaction ID and order number
-    const orderNumber = `ORD-${Date.now().toString().slice(-6)}-${crypto
+    const orderNumber = `ASURA-${Date.now().toString().slice(-6)}-${crypto
       .randomBytes(2)
       .toString("hex")
       .toUpperCase()}`;

@@ -14,6 +14,8 @@ export interface TelegramNotificationPayload {
   serverId?: string;
   amount: number;
   currency?: string;
+  profit?: number;
+  storeName?: string;
   paymentMethod?: string;
   paymentGateway?: string;
   supplier?: string;
@@ -135,7 +137,7 @@ export function createTelegramNotificationEvent(params: {
     status: params.status,
     payload: {
       orderNumber: text(order.orderNumber, "Unknown order", 160),
-      customerName: text(order.customerName || order.playerName, "Customer", 120),
+      customerName: text(order.playerName || order.customerName, "N/A", 120),
       customerContact: text(order.customerContact, "", 180),
       gameName: text(order.gameName, "Unknown game", 180),
       packageName: text(order.packageName, "Unknown package", 180),
@@ -143,6 +145,12 @@ export function createTelegramNotificationEvent(params: {
       serverId: text(order.serverId, "", 120),
       amount: typeof order.amount === "number" && Number.isFinite(order.amount) ? order.amount : 0,
       currency: text(order.currency, "USD", 8),
+      profit: typeof order.profit === "number" && Number.isFinite(order.profit)
+        ? order.profit
+        : (typeof order.amount === "number" && typeof order.buyingPrice === "number"
+          ? Math.max(0, Number((order.amount - order.buyingPrice).toFixed(2)))
+          : undefined),
+      storeName: text(order.storeName, "SakSuuu Game Top-Up", 120),
       paymentMethod: text(order.paymentMethod, "ABA PayWay V2", 80),
       paymentGateway: text(order.paymentGateway, "", 80),
       supplier: text(order.supplier, "", 80),
@@ -170,94 +178,84 @@ export function formatTelegramNotificationMessage(event: Pick<TelegramNotificati
   const paymentLabel = PAYMENT_LABELS[paymentKey] || payload.paymentMethod || payload.paymentGateway || "ABA KHQR";
   const supplierLabel = payload.supplier ? SUPPLIER_LABELS[payload.supplier.toLowerCase()] || payload.supplier : "";
   const amount = Number.isFinite(payload.amount) ? payload.amount.toFixed(2) : "0.00";
-  const customerName = payload.customerName && payload.customerName !== "Not collected" ? payload.customerName : "Customer";
+  const ign = payload.customerName && payload.customerName !== "Not collected" ? payload.customerName : "N/A";
   const dateTime = formatOccurredAt(payload.occurredAt);
 
   const divider = "━━━━━━━━━━━━━━━━━━";
 
-  // Header emoji and title
+  // Calculate profit
+  const profitNum = typeof payload.profit === "number" && Number.isFinite(payload.profit)
+    ? payload.profit
+    : 0;
+  const profitStr = profitNum.toFixed(2);
+
+  // Clean title without emoji
   let titleBadge = `${kind} ${status}`;
-  let emoji = "⏳";
-  if (status === "PENDING") {
-    emoji = "🟡";
-  } else if (status === "SUCCESS") {
-    emoji = "🟢";
-  } else if (status === "FAILED") {
-    emoji = "🔴";
-  } else if (status === "EXPIRED") {
-    emoji = "⌛";
-  }
+  if (kind === "ORDER" && status === "PENDING") titleBadge = "ORDER PENDING";
+  else if (kind === "ORDER" && status === "SUCCESS") titleBadge = "ORDER SUCCESS";
+  else if (kind === "ORDER" && status === "FAILED") titleBadge = "ORDER FAILED";
+  else if (kind === "PAYMENT" && status === "PENDING") titleBadge = "PAYMENT PENDING";
+  else if (kind === "PAYMENT" && status === "SUCCESS") titleBadge = "PAYMENT SUCCESS";
+  else if (kind === "PAYMENT" && status === "FAILED") titleBadge = "PAYMENT FAILED";
+  else if (kind === "PAYMENT" && status === "EXPIRED") titleBadge = "PAYMENT EXPIRED";
+
+  // Status description
+  let statusDetail = `${kind} ${status}`;
+  if (kind === "ORDER" && status === "PENDING") statusDetail = "FULFILLMENT IN PROGRESS";
+  else if (kind === "ORDER" && status === "SUCCESS") statusDetail = "COMPLETED / DELIVERED";
+  else if (kind === "ORDER" && status === "FAILED") statusDetail = "DELIVERY FAILED";
+  else if (kind === "PAYMENT" && status === "PENDING") statusDetail = "PAYMENT PENDING";
+  else if (kind === "PAYMENT" && status === "SUCCESS") statusDetail = "VERIFIED / PAID";
+  else if (kind === "PAYMENT" && status === "FAILED") statusDetail = "PAYMENT FAILED";
+  else if (kind === "PAYMENT" && status === "EXPIRED") statusDetail = "PAYMENT EXPIRED";
+
+  const storeName = payload.storeName || "SakSuuu Game Top-Up";
 
   const lines: string[] = [
-    `${emoji} <b>${titleBadge}</b>`,
+    titleBadge,
     divider,
-    `🏪 <b>Store:</b> SakSuuu Game Top-Up`,
-    `🧾 <b>Order ID:</b> <code>${escapeTelegramHtml(payload.orderNumber)}</code>`,
-    `👤 <b>Customer name:</b> ${escapeTelegramHtml(customerName)}`,
-    `🎮 <b>Game:</b> ${escapeTelegramHtml(payload.gameName)}`,
+    `Store: ${escapeTelegramHtml(storeName)}`,
+    `Order ID: <code>${escapeTelegramHtml(payload.orderNumber)}</code>`,
+    `IGN: <code>${escapeTelegramHtml(ign)}</code>`,
+    `Game: ${escapeTelegramHtml(payload.gameName)}`,
+    `Package: ${escapeTelegramHtml(payload.packageName)}`,
   ];
 
-  if (payload.packageName) {
-    lines.push(`📦 <b>Package:</b> ${escapeTelegramHtml(payload.packageName)}`);
-  }
-
   if (payload.playerId && payload.playerId !== "Not provided") {
-    lines.push(`🆔 <b>Player ID:</b> <code>${escapeTelegramHtml(payload.playerId)}</code>`);
+    lines.push(`Player ID: <code>${escapeTelegramHtml(payload.playerId)}</code>`);
   }
 
   if (payload.serverId) {
-    lines.push(`🌐 <b>Server ID:</b> <code>${escapeTelegramHtml(payload.serverId)}</code>`);
+    lines.push(`Server ID: <code>${escapeTelegramHtml(payload.serverId)}</code>`);
   }
 
-  lines.push(`💰 <b>Amount:</b> ${escapeTelegramHtml(`${amount} ${payload.currency || "USD"}`)}`);
-  lines.push(`💳 <b>Payment method:</b> ${escapeTelegramHtml(paymentLabel)}`);
+  lines.push(`Amount: ${escapeTelegramHtml(`${amount} ${payload.currency || "USD"}`)}`);
+  lines.push(`Profit: ${escapeTelegramHtml(`${profitStr} ${payload.currency || "USD"}`)}`);
+  lines.push(`Payment method: ${escapeTelegramHtml(paymentLabel)}`);
 
   if (kind === "ORDER" || supplierLabel) {
-    lines.push(`🏭 <b>Supplier:</b> ${escapeTelegramHtml(supplierLabel || "WebBuilder")}`);
+    lines.push(`Supplier: ${escapeTelegramHtml(supplierLabel || "WebBuilder")}`);
   }
 
   if (kind === "ORDER" && status === "SUCCESS" && payload.supplierOrderId) {
-    lines.push(`📦 <b>Supplier Order ID:</b> <code>${escapeTelegramHtml(payload.supplierOrderId)}</code>`);
+    lines.push(`Supplier Order ID: <code>${escapeTelegramHtml(payload.supplierOrderId)}</code>`);
   }
 
   if (payload.transactionId && payload.transactionId !== "N/A" && (status === "SUCCESS" || kind === "PAYMENT")) {
-    lines.push(`🔗 <b>Transaction ID:</b> <code>${escapeTelegramHtml(payload.transactionId)}</code>`);
+    lines.push(`Transaction ID: <code>${escapeTelegramHtml(payload.transactionId)}</code>`);
   }
 
   if (status === "FAILED" || status === "EXPIRED") {
     lines.push(
-      `⚠️ <b>${status === "EXPIRED" ? "Expiry reason" : "Error reason"}:</b> ${escapeTelegramHtml(
-        payload.errorReason || (kind === "PAYMENT" ? "Payment rejected or cancelled by provider." : "Supplier delivery failed.")
+      `${status === "EXPIRED" ? "Expiry reason" : "Error reason"}: ${escapeTelegramHtml(
+        payload.errorReason || (kind === "PAYMENT" ? "Payment expired or cancelled by provider." : "Supplier delivery failed.")
       )}`
     );
   }
 
-  // Common fields
-  let statusDetail = `${kind} ${status}`;
-  if (kind === "PAYMENT" && status === "SUCCESS") statusDetail = "PAYMENT CONFIRMED";
-  if (kind === "PAYMENT" && status === "PENDING") statusDetail = "PAYMENT PENDING";
-  if (kind === "ORDER" && status === "PENDING") statusDetail = "FULFILLMENT IN PROGRESS";
-  if (kind === "ORDER" && status === "SUCCESS") statusDetail = "COMPLETED / DELIVERED";
-  if (kind === "ORDER" && status === "FAILED") statusDetail = "DELIVERY FAILED";
-
-  lines.push(`📌 <b>Status:</b> ${statusDetail}`);
-  lines.push(`🕒 <b>Date and time:</b> ${escapeTelegramHtml(dateTime)} (Asia/Phnom_Penh)`);
+  lines.push(`Status: ${statusDetail}`);
+  lines.push(`Date and time: ${escapeTelegramHtml(dateTime)} (Asia/Phnom_Penh)`);
   lines.push(divider);
-
-  // Footer messages
-  if (kind === "PAYMENT" && status === "PENDING") {
-    lines.push(`📱 Customer payment QR is attached below.`);
-  } else if (kind === "PAYMENT" && status === "SUCCESS") {
-    lines.push(`🚀 Order is queued for automated fulfillment.`);
-  } else if (kind === "PAYMENT" && status === "EXPIRED") {
-    lines.push(`⚠️ QR code expired without payment confirmation.`);
-  } else if (kind === "ORDER" && status === "PENDING") {
-    lines.push(`⚡ Delivering to game server...`);
-  } else if (kind === "ORDER" && status === "SUCCESS") {
-    lines.push(`🎉 Customer top-up has been successfully delivered!`);
-  } else if (kind === "ORDER" && status === "FAILED") {
-    lines.push(`🚨 Manual admin intervention required!`);
-  }
 
   return lines.join("\n");
 }

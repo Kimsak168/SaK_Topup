@@ -53,9 +53,10 @@
 .wordmark {
   display: inline-block;
   min-width: max-content;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 21px;
   font-weight: 750;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
   line-height: 1;
 }
 
@@ -73,7 +74,7 @@
 }
 
 .wordmarkTyping {
-  animation: type-saksuuu 820ms steps(7, end) both, wordmark-color-cycle 4s linear infinite alternate;
+  animation: type-saksuuu 820ms steps(11, end) both, wordmark-color-cycle 4s linear infinite alternate;
 }
 
 @keyframes type-saksuuu {
@@ -247,7 +248,10 @@
 }
 
 .drawerBrand img { width: 52px; height: 52px; flex: none; object-fit: contain; }
-.drawerWordmark { display: none; }
+.drawerWordmark {
+  display: none;
+  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
 .drawerWordmark strong { color: var(--storefront-nav-active, #A94776); font-weight: inherit; }
 
 .drawerClose {

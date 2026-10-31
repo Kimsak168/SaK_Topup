@@ -353,7 +353,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
         currency: data.currency || "USD",
         packageName: packageToPurchase.name,
         gameName: game.name,
-        merchantName: "Sak Topup",
+        merchantName: "Asura Store",
         qrString: data.qrString,
         qrImage: data.qrImage,
         qrPngUrl: data.qrPngUrl,

@@ -14,12 +14,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!group) {
     return {
-      title: "Digital Product Not Found | SakSuuu",
+      title: "Digital Product Not Found | Asura Store",
     };
   }
 
   return {
-    title: `${group.khmerName || group.name} — ទិញភ្លាមៗ 24/7 | SakSuuu Digital Shop`,
+    title: `${group.khmerName || group.name} — ទិញភ្លាមៗ 24/7 | Asura Store Digital Shop`,
     description: group.description,
   };
 }

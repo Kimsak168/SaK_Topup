@@ -19,11 +19,11 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SakSuuu Top-Up — Fast & Secure Automated Game Top-Up",
+  title: "Asura Store — Fast & Secure Automated Game Top-Up",
   description:
     "Instant automated game top-up for Free Fire, PUBG Mobile, Mobile Legends, and more. Direct official WebBuilder API integration with 24/7 delivery.",
   keywords: [
-    "SakSuuu",
+    "Asura Store",
     "Game Top Up",
     "Free Fire Diamonds",
     "PUBG Mobile UC",

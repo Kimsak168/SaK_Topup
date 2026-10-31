@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 const DEFAULT_SETTINGS = {
   key: "general",
-  siteName: "SakSuuu Game Top-Up",
+  siteName: "Asura Store",
   siteTagline: "Official Direct Game Recharge & 24/7 Fast Delivery",
   logoUrl: "",
   telegramSupport: "https://t.me/saksuuu_support",
@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS = {
   currencyRateKHR: 4100,
   maintenanceMode: false,
   announcement:
-    "Welcome to SakSuuu Top-Up! Direct wholesale supplier pricing for Free Fire, PUBG Mobile & Mobile Legends.",
+    "Welcome to Asura Store! Direct wholesale supplier pricing for Free Fire, PUBG Mobile & Mobile Legends.",
   enabledGateways: ["khqr", "aba", "wing", "binance"],
 };
 

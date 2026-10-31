@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      const generatedOrderNumber = `ORD-${Date.now().toString().slice(-6)}-${crypto
+      const generatedOrderNumber = `ASURA-${Date.now().toString().slice(-6)}-${crypto
         .randomBytes(2)
         .toString("hex")
         .toUpperCase()}`;

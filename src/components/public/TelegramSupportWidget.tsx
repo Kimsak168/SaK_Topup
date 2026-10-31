@@ -37,8 +37,8 @@ export function TelegramSupportWidget() {
           target="_blank"
           rel="noopener noreferrer"
           className={styles.telegramButton}
-          aria-label="Contact SakSuuu Support on Telegram"
-          title="Contact SakSuuu Support on Telegram"
+          aria-label="Contact Asura Store Support on Telegram"
+          title="Contact Asura Store Support on Telegram"
         >
           <svg aria-hidden="true" viewBox="0 0 24 24" className={styles.telegramIcon}>
             <path d={telegramIconPath} />

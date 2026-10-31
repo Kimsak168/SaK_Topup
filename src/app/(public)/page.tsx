@@ -14,8 +14,8 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "SakSuuu Game Top-Up & Social Media Services — 24/7",
-  description: "Game top-up and social media services for Cambodia.",
+  title: "Asura Store — Game Top-Up & Social Media Services — 24/7",
+  description: "Asura Store — Game top-up and social media services for Cambodia.",
 };
 
 async function HomeBanners() {

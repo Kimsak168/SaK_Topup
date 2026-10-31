@@ -177,18 +177,20 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
     <header className={`${styles.header} public-navbar`}>
       <a href="#main-content" className="skip-link">Skip to content</a>
       <div className={styles.shell}>
-        <Link href="/" aria-label="SakSuuu Home" className={styles.brand}>
+        <Link href="/" aria-label="Asura Store Home" className={styles.brand}>
           <Image
             src={resolvedLogoUrl || "/images/asura-store-logo.png"}
-            alt=""
-            width={44}
-            height={44}
+            alt="Asura Store"
+            width={64}
+            height={64}
+            quality={100}
+            unoptimized
             priority
             className={styles.logo}
           />
           <span aria-hidden="true" className={styles.wordmark}>
             <span className={`${styles.wordmarkText} ${brandTyping ? styles.wordmarkTyping : ""}`}>
-              SakSuuu
+              Asura Store
             </span>
           </span>
         </Link>
@@ -264,10 +266,10 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
             className={styles.drawer}
           >
             <div className={styles.drawerHeader}>
-              <Link href="/" className={styles.drawerBrand} aria-label="SakSuuu Home" onClick={closeDrawer}>
-                <Image src={resolvedLogoUrl || "/images/asura-store-logo.png"} alt="" width={38} height={38} />
+              <Link href="/" className={styles.drawerBrand} aria-label="Asura Store Home" onClick={closeDrawer}>
+                <Image src={resolvedLogoUrl || "/images/asura-store-logo.png"} alt="Asura Store" width={48} height={48} quality={100} unoptimized />
                 <span aria-hidden="true" className={styles.drawerWordmark}>
-                  <span>Sak</span><strong>Suuu</strong>
+                  <span>Asura</span> <strong>Store</strong>
                 </span>
               </Link>
               <button

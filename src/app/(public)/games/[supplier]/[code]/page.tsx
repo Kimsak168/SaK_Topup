@@ -18,19 +18,19 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
 
     if (result?.shouldRedirect || !result || !result.game) {
       return {
-        title: "Game Top-Up — SakSuuu",
+        title: "Game Top-Up — Asura Store",
       };
     }
 
     const { game } = result;
 
     return {
-      title: `Top Up ${game.name} — SakSuuu Game Top-Up`,
+      title: `Top Up ${game.name} — Asura Store`,
       description: `Recharge ${game.name} ${game.currencyName} instantly. Official direct API delivery with 24/7 automation.`,
     };
   } catch {
     return {
-      title: "Game Top-Up — SakSuuu",
+      title: "Game Top-Up — Asura Store",
     };
   }
 }

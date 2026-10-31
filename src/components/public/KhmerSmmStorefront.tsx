@@ -117,7 +117,7 @@ export default function KhmerSmmStorefront() {
           packageName: selectedProduct.name,
           gameName: "TikTok Khmer",
           paymentStatus: data.paymentStatus,
-          merchantName: "SakSuuu Growth",
+          merchantName: "Asura Store",
           qrString: data.qrData.qrString,
           qrImage: data.qrData.qrImage,
           qrPngUrl: data.qrData.qrPngUrl,

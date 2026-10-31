@@ -3,7 +3,7 @@ import { AdminDashboardShell } from "@/components/admin/AdminDashboardShell";
 import "./admin-dashboard.css";
 
 export const metadata = {
-  title: "Admin HQ — SakSuuu Game Top-Up",
+  title: "Admin HQ — Asura Store",
   description:
     "Official Administrator Dashboard for game catalogue synchronization, supplier routing, orders, and pricing.",
 };

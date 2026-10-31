@@ -94,7 +94,7 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
           packageName: selectedProduct.name,
           gameName: group.name,
           paymentStatus: "pending",
-          merchantName: "SakSuuu Digital",
+          merchantName: "Asura Store",
           qrString: data.qrData.qrString,
           qrImage: data.qrData.qrImage,
           qrPngUrl: data.qrData.qrPngUrl,
@@ -240,11 +240,10 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
                       key={p.product_code}
                       type="button"
                       onClick={() => setSelectedProductCode(p.product_code)}
-                      className={`relative text-left p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between gap-3 ${
-                        isSelected
-                          ? "bg-purple-950/40 border-purple-500 ring-1 ring-purple-500/50 shadow-lg shadow-purple-500/20"
-                          : "bg-slate-950/80 border-slate-800/90 hover:border-slate-700"
-                      }`}
+                      className={`relative text-left p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between gap-3 ${isSelected
+                        ? "bg-purple-950/40 border-purple-500 ring-1 ring-purple-500/50 shadow-lg shadow-purple-500/20"
+                        : "bg-slate-950/80 border-slate-800/90 hover:border-slate-700"
+                        }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
@@ -258,11 +257,10 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
                           )}
                         </div>
                         <div
-                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${
-                            isSelected
-                              ? "bg-purple-500 border-purple-400 text-white"
-                              : "border-slate-700 bg-slate-900"
-                          }`}
+                          className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSelected
+                            ? "bg-purple-500 border-purple-400 text-white"
+                            : "border-slate-700 bg-slate-900"
+                            }`}
                         >
                           {isSelected && <Check className="w-3 h-3 stroke-[3]" />}
                         </div>

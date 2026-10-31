@@ -56,7 +56,7 @@ async function sendEvent(orderNumber, kind, status) {
   assert.equal(message.chat_id, env.TELEGRAM_ADMIN_CHAT_ID);
   assert.match(message.text, new RegExp(`${kind} ${status}`));
   assert.ok(message.text.includes("Order ID:"), "Order ID:");
-  assert.ok(message.text.includes("Customer name:"), "Customer name:");
+  assert.ok(message.text.includes("IGN:"), "IGN:");
   assert.ok(message.text.includes("Game:"), "Game:");
   assert.ok(message.text.includes("Amount:"), "Amount:");
   assert.ok(message.text.includes("Payment method:"), "Payment method:");
@@ -214,7 +214,7 @@ test("Telegram connection test verifies bot token and chat group access securely
   assert.ok(sendRes.messageId);
   const state = await (await fetch(`${base}/test/state`)).json();
   const testMsg = state.messages.at(-1);
-  assert.match(testMsg.text, /SakSuu Telegram Bot Test/);
+  assert.match(testMsg.text, /CONNECTION TEST/);
 });
 
 test("admin notifications endpoint authorizes, reports stats/history and executes actions", async () => {
@@ -302,5 +302,5 @@ test("Telegram forum topics route notifications by status and fall back graceful
   const sentMsg = state.messages.at(-1);
   assert.equal(sentMsg.message_thread_id, 11, "Routes PENDING to topic thread 11");
   assert.ok(sentMsg.text.includes("ORDER PENDING"));
-  assert.ok(sentMsg.text.includes("Customer name:"));
+  assert.ok(sentMsg.text.includes("IGN:"));
 });

@@ -25,7 +25,7 @@ const SettingSchema = new Schema<ISetting>(
     },
     siteName: {
       type: String,
-      default: "SakSuuu Game Top-Up",
+      default: "Asura Store",
     },
     siteTagline: {
       type: String,
@@ -56,7 +56,7 @@ const SettingSchema = new Schema<ISetting>(
     },
     announcement: {
       type: String,
-      default: "Welcome to SakSuuu Top-Up! Direct supplier pricing for Free Fire, PUBG Mobile & Mobile Legends.",
+      default: "Welcome to Asura Store! Direct supplier pricing for Free Fire, PUBG Mobile & Mobile Legends.",
     },
     enabledGateways: {
       type: [String],

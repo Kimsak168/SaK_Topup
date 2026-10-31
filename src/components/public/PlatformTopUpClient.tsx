@@ -296,7 +296,7 @@ export function PlatformTopUpClient({
           packageName: `${selectedService.name} (${quantity.toLocaleString()} units)`,
           gameName: `${platformName} Services`,
           paymentStatus: data.paymentStatus,
-          merchantName: "SakSuuu Growth",
+          merchantName: "Asura Store",
           qrString: data.qrData.qrString,
           qrImage: data.qrData.qrImage,
           qrPngUrl: data.qrData.qrPngUrl,

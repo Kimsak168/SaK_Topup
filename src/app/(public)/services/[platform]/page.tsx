@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PlatformPageProps): Promise<M
   const { platform } = await params;
   const name = PLATFORM_NAMES[platform.toLowerCase()] || (platform.charAt(0).toUpperCase() + platform.slice(1));
   return {
-    title: `Top Up ${name} Services — Followers, Likes & Views — SakSuuu`,
+    title: `Top Up ${name} Services — Followers, Likes & Views — Asura Store`,
     description: `Browse ${name} engagement services, choose a package, and pay securely with KHQR checkout.`,
   };
 }

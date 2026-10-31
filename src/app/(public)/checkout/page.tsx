@@ -175,7 +175,7 @@ function CheckoutContent() {
         currency: data.currency || "USD",
         packageName,
         gameName: game,
-        merchantName: "Sak Topup",
+        merchantName: "Asura Store",
         qrString: data.qrString,
         qrImage: data.qrImage,
         qrPngUrl: data.qrPngUrl,

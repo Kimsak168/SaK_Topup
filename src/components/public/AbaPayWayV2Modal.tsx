@@ -313,7 +313,7 @@ export default function AbaPayWayV2Modal({
             {/* Merchant Details & Amount Due */}
             <div className="pt-2 pb-3 text-center">
               <div className="text-[14px] font-medium text-slate-600">
-                {data.merchantName || "Sak Topup"}
+                {data.merchantName || "Asura Store"}
               </div>
               <div className="flex items-baseline justify-center gap-2 mt-1.5">
                 <span className="text-[36px] sm:text-[38px] font-bold text-slate-950 tracking-tight leading-none tabular-nums font-sans">

@@ -221,7 +221,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
             >
               <Image
                 src="/images/asura-store-logo.png"
-                alt="SakSuuu Admin Logo"
+                alt="Asura Store Admin Logo"
                 width={30}
                 height={30}
                 priority
@@ -229,7 +229,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               />
               {!collapsed && (
                 <div className="min-w-0 leading-tight">
-                  <strong className="block truncate text-sm font-bold tracking-tight text-[#F8FAFC]">SakSuuu</strong>
+                  <strong className="block truncate text-sm font-bold tracking-tight text-[#F8FAFC]">Asura Store</strong>
                   <p className="text-[11px] font-medium text-[#64748B]">Admin workspace</p>
                 </div>
               )}
@@ -467,13 +467,13 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               <div className="flex items-center gap-2.5">
                 <Image
                   src="/images/asura-store-logo.png"
-                  alt="SakSuuu Admin Logo"
+                  alt="Asura Store Admin Logo"
                   width={28}
                   height={28}
                   className="h-7 w-7 shrink-0 object-contain"
                 />
                 <div>
-                  <strong className="block text-sm font-bold text-[#F8FAFC]">SakSuuu</strong>
+                  <strong className="block text-sm font-bold text-[#F8FAFC]">Asura Store</strong>
                   <span className="text-[11px] font-medium text-[#64748B]">Admin workspace</span>
                 </div>
               </div>

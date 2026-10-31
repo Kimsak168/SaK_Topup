@@ -489,7 +489,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
           packageName: `${selectedService.name} (${quantity.toLocaleString()} units)`,
           gameName: selectedService.category,
           paymentStatus: data.paymentStatus,
-          merchantName: "SakSuuu Growth",
+          merchantName: "Asura Store",
           qrString: data.qrData.qrString,
           qrImage: data.qrData.qrImage,
           qrPngUrl: data.qrData.qrPngUrl,
