@@ -11,6 +11,7 @@ import {
 import { placeVizoOrder } from "@/lib/suppliers/vizo";
 import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
 import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
+import { createKhmerSmmProductOrder, getKhmerSmmOrderStatus } from "@/lib/suppliers/vngzz2SmmKhmer";
 import { DIGITAL_SHOP_UNAVAILABLE_MESSAGE } from "@/lib/services/digitalShopService";
 
 export interface FulfillmentResult {
@@ -81,6 +82,36 @@ export async function triggerAutomaticFulfillment(
   try {
     if (order.serviceType === "smm") {
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
+
+      if (order.packageId === "smm-khmer") {
+        const khmerResult = await createKhmerSmmProductOrder({
+          productId: order.supplierProductCode,
+          link: order.targetLink || order.playerId,
+          reference: order.orderNumber,
+        });
+        const status = khmerResult.status === "completed" ? "completed"
+          : khmerResult.status === "failed" ? "failed"
+            : "processing";
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            supplierOrderId: khmerResult.orderCode || order.orderNumber,
+            fulfillmentStatus: status,
+            lastSupplierStatus: khmerResult.supplierStatus,
+            fulfilledAt: status === "completed" ? new Date() : undefined,
+            errorLog: status === "failed" ? khmerResult.message : undefined,
+            updatedAt: new Date(),
+          },
+        });
+
+        return {
+          success: status !== "failed",
+          orderNumber: order.orderNumber,
+          fulfillmentStatus: status,
+          supplierOrderId: khmerResult.orderCode || order.orderNumber,
+          message: khmerResult.message,
+        };
+      }
+
       const smmRes = await createVngzzSmmOrder({
         serviceId: order.supplierProductCode,
         link: order.targetLink || order.playerId,
@@ -139,11 +170,10 @@ export async function triggerAutomaticFulfillment(
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
       const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId, serverId: order.serverId, reference: order.orderNumber });
       await Order.findByIdAndUpdate(order._id, { $set: {
-        supplierOrderId: result.id, fulfillmentStatus: result.status, lastSupplierStatus: result.supplierStatus,
-        ...(result.status === "completed" ? { fulfilledAt: new Date() } : {}),
-        ...(result.status === "failed" ? { errorLog: result.message } : {}),
+        supplierOrderId: result.id, fulfillmentStatus: "processing", lastSupplierStatus: result.supplierStatus,
+        supplierNextPollAt: new Date(Date.now() + 60_000),
       } });
-      return { success: result.status !== "failed", orderNumber, fulfillmentStatus: result.status, supplierOrderId: result.id, message: result.message };
+      return { success: true, orderNumber, fulfillmentStatus: "processing", supplierOrderId: result.id, message: "Supplier submission recorded; delivery awaits a status check." };
     }
     // 1. Vizo Fulfillment (Free Fire legacy / fallback supplier)
     if (order.supplier === "vizo") {
@@ -359,6 +389,10 @@ export async function reconcileSupplierFulfillment(
     };
   }
 
+  if (String(order.paymentStatus).toUpperCase() !== "PAID" || ["completed", "delivered", "failed"].includes(String(order.fulfillmentStatus).toLowerCase())) {
+    return { success: String(order.fulfillmentStatus).toLowerCase() !== "failed", orderNumber, fulfillmentStatus: order.fulfillmentStatus, supplierOrderId: order.supplierOrderId, message: "No in-flight paid delivery to reconcile." };
+  }
+
   if (order.serviceType === "digital") {
     if (String(order.paymentStatus).toUpperCase() !== "PAID") {
       return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
@@ -386,6 +420,31 @@ export async function reconcileSupplierFulfillment(
       message: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
     };
   }
+
+  if (order.serviceType === "smm" && order.packageId === "smm-khmer") {
+    if (String(order.paymentStatus).toUpperCase() !== "PAID") {
+      return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
+    }
+    const orderCode = order.supplierOrderId || order.orderNumber;
+    const result = await getKhmerSmmOrderStatus(orderCode);
+    const currentStatus = String(order.fulfillmentStatus).toLowerCase();
+    if (!(["completed", "delivered"].includes(currentStatus)) && result.status !== "unknown") {
+      order.fulfillmentStatus = result.status;
+      order.lastSupplierStatus = result.supplierStatus;
+      if (result.status === "completed") order.fulfilledAt = new Date();
+      if (result.status === "failed") order.errorLog = result.message;
+      await order.save();
+    }
+    return {
+      success: !["failed"].includes(String(order.fulfillmentStatus).toLowerCase()),
+      orderNumber,
+      fulfillmentStatus: order.fulfillmentStatus,
+      supplierOrderId: order.supplierOrderId,
+      message: result.message,
+    };
+  }
+
+  if (order.serviceType === "smm") return { success: true, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "No documented status contract for this SMM service; an administrator must verify delivery." };
 
   if (order.supplier === "vngzz2") {
     if (String(order.paymentStatus).toUpperCase() !== "PAID") return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
@@ -450,6 +509,7 @@ export async function reconcileSupplierFulfillment(
   }
 
   // WebBuilder Reconciliation
+  if (order.supplier !== "webbuilder") return { success: true, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "This supplier requires an admin delivery check." };
   const wbOrder = await getWebBuilderOrder(order.supplierOrderId);
   if (wbOrder) {
     if (wbOrder.status === "succeeded") {

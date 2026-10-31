@@ -179,7 +179,7 @@ export function verifyAnajakPayWebhookSignature(
 
 export interface AnajakPayVerifyV2Result {
   success: boolean;
-  status: "PENDING" | "PAID" | "NOT_FOUND" | "FAILED" | "ERROR";
+  status: "PENDING" | "PAID" | "NOT_FOUND" | "FAILED" | "EXPIRED" | "ERROR";
   responseCode: number;
   responseMessage?: string;
   amount?: number;
@@ -298,6 +298,11 @@ export async function checkAnajakPayTransactionV2(
         };
       }
 
+      // Only an explicit transaction status in a successful inquiry is terminal.
+      if (statusRaw === "failed" || statusRaw === "expired") {
+        return { success: true, status: statusRaw === "failed" ? "FAILED" : "EXPIRED", responseCode: 0,
+          responseMessage: responseMsg || `Payment ${statusRaw}`, transactionId: cleanTxnId, raw: data };
+      }
       // responseCode 0 with status pending: keep payment PENDING
       return {
         success: true,

@@ -137,7 +137,7 @@ export async function PATCH(req: NextRequest) {
   try {
     await connectDB();
     const body = await req.json();
-    const { orderId, fulfillmentStatus, paymentStatus, adminNotes, supplierOrderId } = body;
+    const { orderId, fulfillmentStatus, paymentStatus, adminNotes, supplierOrderId, deliveryVerified } = body;
 
     if (!orderId) {
       return NextResponse.json(
@@ -146,33 +146,56 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
+    if (typeof orderId !== "string" || !/^[a-f\d]{24}$/i.test(orderId) ||
+      (fulfillmentStatus !== undefined && (typeof fulfillmentStatus !== "string" || !["NOT_STARTED", "PENDING", "PROCESSING", "COMPLETED", "DELIVERED", "FAILED"].includes(fulfillmentStatus.toUpperCase()))) ||
+      (adminNotes !== undefined && (typeof adminNotes !== "string" || adminNotes.length > 2000)) ||
+      (supplierOrderId !== undefined && (typeof supplierOrderId !== "string" || supplierOrderId.length > 256))) {
+      return NextResponse.json({ success: false, error: "Invalid order update" }, { status: 400 });
+    }
+    const current = await Order.findById(orderId);
+    if (!current) return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
+    const nextDelivery = String(fulfillmentStatus || current.fulfillmentStatus).toLowerCase();
+    const changedDelivery = nextDelivery !== String(current.fulfillmentStatus).toLowerCase();
+    if (changedDelivery && ["completed", "delivered", "failed"].includes(nextDelivery) &&
+      (deliveryVerified !== true || typeof adminNotes !== "string" || adminNotes.trim().length < 5)) {
+      return NextResponse.json({ success: false, error: "Confirm the supplier outcome and add a verification reason (at least 5 characters)." }, { status: 400 });
+    }
+    if (changedDelivery && ["completed", "delivered"].includes(nextDelivery) && String(current.paymentStatus).toUpperCase() !== "PAID") {
+      return NextResponse.json({ success: false, error: "Payment must be verified before confirming delivery." }, { status: 400 });
+    }
+    if (changedDelivery && ["completed", "delivered"].includes(String(current.fulfillmentStatus).toLowerCase())) {
+      return NextResponse.json({ success: false, error: "A confirmed delivery cannot be downgraded." }, { status: 409 });
+    }
+
     const updateFields: Record<string, unknown> = {
       updatedAt: new Date(),
     };
 
-    if (fulfillmentStatus) updateFields.fulfillmentStatus = fulfillmentStatus;
+    if (fulfillmentStatus) updateFields.fulfillmentStatus = nextDelivery === "not_started" ? "NOT_STARTED" : nextDelivery;
+    if (changedDelivery && ["completed", "delivered"].includes(nextDelivery)) updateFields.fulfilledAt = new Date();
+    if (changedDelivery && nextDelivery === "failed") updateFields.errorLog = String(adminNotes).trim();
     
     // Protect payment integrity: Do not allow arbitrary manual bypass to PAID without verification.
     // If setting to cancelled or failed, allow it; but changing to PAID must go through payment reconciliation.
     if (paymentStatus) {
       const pUpper = String(paymentStatus).toUpperCase();
-      if (pUpper === "PAID") {
+      if (pUpper !== String(current.paymentStatus).toUpperCase() && pUpper !== "CANCELLED") {
         return NextResponse.json(
           {
             success: false,
-            error: "Payment verification bypass is not permitted. Please use 'Reconcile' to verify authentic settlement with AnajakPay.",
+            error: "Payment statuses require provider verification. Use Reconcile; refunds use the refund workflow.",
           },
           { status: 400 }
         );
       }
-      updateFields.paymentStatus = paymentStatus;
+      if (pUpper === "CANCELLED" && String(current.paymentStatus).toUpperCase() === "PENDING") updateFields.paymentStatus = "CANCELLED";
     }
 
     if (adminNotes !== undefined) updateFields.adminNotes = String(adminNotes).trim();
     if (supplierOrderId !== undefined) updateFields.supplierOrderId = String(supplierOrderId).trim();
 
-    const updated = await Order.findByIdAndUpdate(orderId, updateFields, {
-      new: true,
+    const updated = await Order.findOneAndUpdate({ _id: orderId, paymentStatus: current.paymentStatus, fulfillmentStatus: current.fulfillmentStatus }, { $set: updateFields }, {
+      new: true, runValidators: true,
     }).lean();
 
     if (!updated) {

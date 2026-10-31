@@ -1,0 +1,10 @@
+version: 1
+name: notification-providers
+slug: notification-providers
+protocol: http
+port: 4510
+interceptRequests: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

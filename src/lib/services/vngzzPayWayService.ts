@@ -369,16 +369,8 @@ export async function checkVngZz2Transaction(
   if (!response.ok || body.success === false) {
     const errorMsg = (body.message as string) || "Failed to check transaction";
     const code = (body.code as string) || "CHECK_ERROR";
-    return {
-      success: false,
-      transactionId: cleanTxnId,
-      state: "FAILED",
-      isPaid: false,
-      amount: 0,
-      currency: "USD",
-      message: errorMsg,
-      code,
-    };
+    // A failed status inquiry is not evidence that the payment failed.
+    throw new VngZz2ApiError(errorMsg, response.status, code);
   }
 
   const data = ((body.data && typeof body.data === "object" ? body.data : body) || {}) as Record<string, unknown>;
@@ -386,19 +378,20 @@ export async function checkVngZz2Transaction(
   const state: CheckTransactionResult["state"] =
     rawState === "PAID" ? "PAID" : rawState === "FAILED" ? "FAILED" : rawState === "EXPIRED" ? "EXPIRED" : "PENDING";
 
-  const isPaid =
-    Boolean(data.is_paid) ||
-    state === "PAID" ||
-    data.action === "approved" ||
-    data.code === "00";
+  // The documented transaction state is authoritative. Transport result codes,
+  // truthy strings and API acceptance never establish settlement.
+  const isPaid = rawState === "PAID" && (data.is_paid === undefined || data.is_paid === true);
+  if (["PAID", "FAILED", "EXPIRED"].includes(rawState) && (typeof data.transaction_id !== "string" || data.transaction_id !== cleanTxnId)) {
+    throw new VngZz2ApiError("Payment status response has a mismatched transaction reference.", 502, "INVALID_RESPONSE");
+  }
 
   return {
     success: true,
     transactionId: String(data.transaction_id || cleanTxnId),
-    state: isPaid ? "PAID" : state,
+    state: rawState === "PAID" && !isPaid ? "PENDING" : state,
     isPaid,
     amount: typeof data.amount === "number" ? data.amount : parseFloat(String(data.amount || 0)),
-    currency: String(data.currency || "USD").toUpperCase(),
+    currency: String(data.currency || "").toUpperCase(),
     action: data.action ? String(data.action) : undefined,
     code: data.code ? String(data.code) : undefined,
     paywayTransactionId: data.payway_transaction_id ? String(data.payway_transaction_id) : undefined,

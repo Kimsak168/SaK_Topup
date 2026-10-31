@@ -1,0 +1,6 @@
+simulation: notifications
+routing: path
+mocks:
+  - name: notification-providers
+    routeKey: providers
+    path: postman/mocks/notification-providers/config.yaml

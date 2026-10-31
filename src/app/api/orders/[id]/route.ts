@@ -41,77 +41,18 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Active Verify V2 Inquiry for PENDING orders
-    // Automatically checks transaction status with AnajakPay Verify V2
-    if (
-      String(order.paymentStatus).toUpperCase() === "PENDING" &&
-      order.transactionId
-    ) {
+    if (["PENDING", "EXPIRED", "PAID"].includes(String(order.paymentStatus).toUpperCase()) && order.transactionId) {
       try {
-        const { checkAnajakPayTransactionV2, formatAnajakAmount } = await import(
-          "@/lib/services/anajakPayService"
-        );
-        const { triggerAutomaticFulfillment } = await import(
-          "@/lib/services/fulfillmentService"
-        );
-        const { Payment } = await import("@/models/Payment");
-
-        const checkResult = await checkAnajakPayTransactionV2(order.transactionId);
-
-        if (checkResult.status === "PAID") {
-          if (typeof checkResult.amount !== "number" || !Number.isFinite(checkResult.amount) || checkResult.amount <= 0) {
-            throw new Error("Payment verification did not provide a valid amount");
-          }
-          const expectedAmount = formatAnajakAmount(order.amount);
-          const callbackAmount = formatAnajakAmount(checkResult.amount);
-
-          if (expectedAmount === callbackAmount) {
-            const updated = await Order.findOneAndUpdate(
-              {
-                _id: order._id,
-                paymentStatus: { $in: ["PENDING", "pending"] },
-              },
-              {
-                $set: {
-                  paymentStatus: "PAID",
-                  paidAt: new Date(),
-                  updatedAt: new Date(),
-                },
-              },
-              { new: true }
-            );
-
-            if (updated) {
-              await Payment.findOneAndUpdate(
-                { orderNumber: order.orderNumber },
-                {
-                  $set: {
-                    status: "PAID",
-                    paidAt: new Date(),
-                    rawResponse: checkResult.raw,
-                  },
-                },
-                { upsert: true }
-              );
-
-              // Submit top-up to correct supplier exactly once
-              const fulfillment = await triggerAutomaticFulfillment(order.orderNumber);
-
-              order.paymentStatus = "PAID";
-              order.paidAt = updated.paidAt;
-              if (fulfillment) order.fulfillmentStatus = fulfillment.fulfillmentStatus as typeof order.fulfillmentStatus;
-            }
-          } else {
-            console.warn(
-              `[Order Status Verify] Amount mismatch on ${order.orderNumber}: expected ${expectedAmount}, provider reported ${callbackAmount}`
-            );
-          }
-        }
-      } catch (verifyErr) {
-        console.error("[Order Status Verify Error]:", verifyErr);
+        const { reconcileOrderPayment } = await import("@/lib/services/paymentReconciliationService");
+        const latest = await reconcileOrderPayment(order.orderNumber);
+        order.paymentStatus = latest.paymentStatus;
+        order.fulfillmentStatus = latest.fulfillmentStatus;
+        order.paidAt = latest.paidAt;
+        order.fulfilledAt = latest.fulfilledAt;
+      } catch {
+        // An unavailable inquiry does not change either business status.
       }
     }
-
     // Return authoritative, sanitized customer data only
     // NEVER expose wholesale costs, supplier credentials, or internal raw debug traces!
     const sanitized = {
