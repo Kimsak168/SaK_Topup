@@ -29,9 +29,22 @@ export async function dispatchTelegramNotificationEvent(orderNumber: string, eve
       $inc: { "telegramNotifications.$.attemptCount": 1 },
       $push: { "telegramNotifications.$.attempts": { at: now, outcome: "sending" } },
     }, { new: true },
-  ).select("orderNumber telegramNotifications").lean();
+  ).select("orderNumber qrString qrImage qrPngUrl transactionId telegramNotifications").lean();
   if (!claimed) return "skipped";
   const event = (claimed.telegramNotifications as TelegramNotificationEvent[]).find(e => e.eventId === eventId)!;
+  if (!event) return "skipped";
+  if (claimed.qrString && !event.payload.qrString) {
+    event.payload.qrString = claimed.qrString;
+  }
+  if (claimed.qrImage && !event.payload.qrImage) {
+    event.payload.qrImage = claimed.qrImage;
+  }
+  if (claimed.qrPngUrl && !event.payload.qrPngUrl) {
+    event.payload.qrPngUrl = claimed.qrPngUrl;
+  }
+  if (claimed.transactionId && !event.payload.transactionId) {
+    event.payload.transactionId = claimed.transactionId;
+  }
   const result = await sendTelegramNotification(event);
   const finishedAt = new Date();
   const state = result.ok ? "sent" : result.retryable && event.attemptCount < MAX_ATTEMPTS ? "retrying" : "failed";
@@ -90,4 +103,21 @@ export async function dispatchPendingTelegramNotifications(limit = 20) {
   } finally {
     await releaseJobLease("telegram-outbox", token);
   }
+}
+
+export async function dispatchOrderNotifications(orderNumber: string): Promise<number> {
+  if (!process.env.TELEGRAM_BOT_TOKEN?.trim() || !process.env.TELEGRAM_ADMIN_CHAT_ID?.trim()) return 0;
+  const order = await Order.findOne({ orderNumber })
+    .select("orderNumber qrString qrImage qrPngUrl transactionId telegramNotifications")
+    .lean();
+  if (!order || !Array.isArray(order.telegramNotifications)) return 0;
+  const pendingEvents = (order.telegramNotifications as TelegramNotificationEvent[]).filter(
+    (e) => e.state === "queued" || (e.state === "sending" && new Date(e.lockedAt!).getTime() <= Date.now() - STALE_MS)
+  );
+  let sent = 0;
+  for (const event of pendingEvents) {
+    const outcome = await dispatchTelegramNotificationEvent(order.orderNumber, event.eventId);
+    if (outcome === "sent") sent++;
+  }
+  return sent;
 }

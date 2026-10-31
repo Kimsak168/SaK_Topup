@@ -11,7 +11,10 @@ import {
   isVngZz2Configured,
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
-import { dispatchPendingTelegramNotifications } from "@/lib/services/telegramNotificationService";
+import {
+  dispatchOrderNotifications,
+  dispatchPendingTelegramNotifications,
+} from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 
@@ -229,6 +232,7 @@ export async function POST(req: NextRequest) {
         pendingPaymentEvent.payload.qrPngUrl = qrResult.qrPngUrl;
         pendingPaymentEvent.payload.transactionId = qrResult.transactionId;
       }
+      targetOrder.markModified("telegramNotifications");
     }
     await targetOrder.save();
 
@@ -247,8 +251,10 @@ export async function POST(req: NextRequest) {
       { upsert: true, new: true }
     );
 
-    // Proactively dispatch notification event (e.g. PAYMENT PENDING)
-    void dispatchPendingTelegramNotifications(4).catch(() => {});
+    // Immediately dispatch this order's pending notification and await delivery
+    await dispatchOrderNotifications(targetOrder.orderNumber).catch((err) => {
+      console.warn("[VngZz2 Create] Direct notification dispatch error:", err);
+    });
 
     return NextResponse.json({
       success: true,

@@ -22,7 +22,8 @@ export function loadTestModules(mocks = {}, globals = {}) {
     };
     vm.runInNewContext(source, { module, exports: module.exports, require: localRequire,
       process, console, Date, Error, SyntaxError, TypeError, Buffer, setTimeout, clearTimeout,
-      Request, Response, Headers, AbortSignal, AbortController, URL, URLSearchParams, fetch: globalThis.fetch, ...globals }, { filename: path });
+      Request, Response, Headers, AbortSignal, AbortController, URL, URLSearchParams, fetch: globalThis.fetch,
+      FormData: globalThis.FormData, Blob: globalThis.Blob, ...globals }, { filename: path });
     return module.exports;
   }
   return load;

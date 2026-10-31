@@ -3,7 +3,10 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { verifyVngZz2WebhookSignature } from "@/lib/services/vngzzPayWayService";
 import { isPermanentVerificationConflict, paymentGatewayForOrder, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
-import { dispatchPendingTelegramNotifications } from "@/lib/services/telegramNotificationService";
+import {
+  dispatchOrderNotifications,
+  dispatchPendingTelegramNotifications,
+} from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
     if (paymentGatewayForOrder(order) !== "aba_payway_v2") return NextResponse.json({ success: false, error: "Payment gateway mismatch" }, { status: 400 });
     // Callback status is never trusted, even with a valid signature.
     const latest = await reconcileOrderPayment(order.orderNumber);
-    void dispatchPendingTelegramNotifications(6).catch(() => {});
+    await dispatchOrderNotifications(order.orderNumber).catch(() => {});
     return NextResponse.json({ success: true, orderNumber: latest.orderNumber, paymentStatus: latest.paymentStatus, isPaid: String(latest.paymentStatus).toUpperCase() === "PAID" });
   } catch (error) {
     if (error instanceof SyntaxError) return NextResponse.json({ success: false, error: "Invalid callback JSON" }, { status: 400 });

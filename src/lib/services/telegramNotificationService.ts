@@ -436,4 +436,8 @@ export async function sendTelegramTestMessage(
   }
 }
 
-export { dispatchPendingTelegramNotifications, dispatchTelegramNotificationEvent } from "@/lib/services/telegramOutboxService";
+export {
+  dispatchPendingTelegramNotifications,
+  dispatchTelegramNotificationEvent,
+  dispatchOrderNotifications,
+} from "@/lib/services/telegramOutboxService";
