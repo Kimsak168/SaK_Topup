@@ -5,6 +5,8 @@ import { GamePackage } from "@/models/GamePackage";
 import { Game } from "@/models/Game";
 import { requireAdminAuth } from "@/lib/auth";
 import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
+import { isPersistentImageReference } from "@/lib/blob-shared";
+import { invalidateLegacyImage } from "@/lib/services/legacyImageService";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,7 @@ export async function GET(req: NextRequest) {
     const game = searchParams.get("game")?.trim() || "";
     const supplier = searchParams.get("supplier")?.trim().toLowerCase() || "all";
     const status = searchParams.get("status")?.trim().toLowerCase() || "all"; // all | active | inactive | unconfigured | configured
+    const supplierAvailability = searchParams.get("supplierAvailability")?.trim().toLowerCase() || "available";
     const { page, limit } = getAdminPagination(searchParams, 50, 250);
 
     const filter: Record<string, unknown> = {};
@@ -27,6 +30,12 @@ export async function GET(req: NextRequest) {
 
     if (supplier !== "all") {
       filter.supplier = supplier;
+    }
+
+    if (supplierAvailability === "available") {
+      filter.supplierAvailable = { $ne: false };
+    } else if (supplierAvailability === "unavailable") {
+      filter.supplierAvailable = false;
     }
 
     if (game && game !== "all") {
@@ -61,10 +70,11 @@ export async function GET(req: NextRequest) {
       .lean();
 
     // Stats
+    const availablePackages = { supplierAvailable: { $ne: false } };
     const [totalPkgs, configuredPkgs, webbuilderPkgs] = await Promise.all([
-      GamePackage.countDocuments().catch(() => 0),
-      GamePackage.countDocuments({ sellingPrice: { $gt: 0 } }).catch(() => 0),
-      GamePackage.countDocuments({ supplier: "webbuilder" }).catch(() => 0),
+      GamePackage.countDocuments(availablePackages).catch(() => 0),
+      GamePackage.countDocuments({ ...availablePackages, sellingPrice: { $gt: 0 } }).catch(() => 0),
+      GamePackage.countDocuments({ ...availablePackages, supplier: "webbuilder" }).catch(() => 0),
     ]);
 
     // Distinct games for filter dropdown
@@ -88,6 +98,7 @@ export async function GET(req: NextRequest) {
         badge: p.badge || "",
         isActive: p.isActive !== false,
         adminConfigured: p.adminConfigured || false,
+        supplierAvailable: p.supplierAvailable !== false,
         customImage: p.customImage || null,
         sortOrder: p.sortOrder || 0,
         syncedAt: p.syncedAt,
@@ -125,13 +136,22 @@ export async function PATCH(req: NextRequest) {
   if (!auth.authorized) return auth.response;
 
   try {
-    await connectDB();
     const body = await req.json();
     const { packageId, sellingPrice, originalPrice, isActive, badge, customImage, sortOrder } = body;
 
     if (!packageId) {
       return NextResponse.json({ success: false, error: "Missing packageId" }, { status: 400 });
     }
+
+    const normalizedCustomImage = typeof customImage === "string" ? customImage.trim() : undefined;
+    if (normalizedCustomImage && !isPersistentImageReference(normalizedCustomImage)) {
+      return NextResponse.json(
+        { success: false, error: "Use a permanent HTTP(S) image URL or upload the image file." },
+        { status: 400 }
+      );
+    }
+
+    await connectDB();
 
     const updateFields: Record<string, unknown> = {
       updatedAt: new Date(),
@@ -162,7 +182,11 @@ export async function PATCH(req: NextRequest) {
 
     if (typeof isActive === "boolean") updateFields.isActive = isActive;
     if (typeof badge === "string") updateFields.badge = badge.trim();
-    if (typeof customImage === "string") updateFields.customImage = customImage.trim();
+    if (normalizedCustomImage !== undefined) {
+      updateFields.customImage = normalizedCustomImage;
+      updateFields.imageData = null;
+      updateFields.imageContentType = null;
+    }
     if (typeof sortOrder === "number") updateFields.sortOrder = sortOrder;
 
     const updated = await GamePackage.findByIdAndUpdate(packageId, updateFields, { new: true }).lean();
@@ -171,6 +195,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Package not found" }, { status: 404 });
     }
 
+    if (normalizedCustomImage !== undefined) invalidateLegacyImage(`package:${packageId}`);
     invalidateCatalogueCache();
     return NextResponse.json({
       success: true,

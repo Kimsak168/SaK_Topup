@@ -9,6 +9,28 @@ if (!API_KEY || !MONGODB_URI) {
   process.exit(1);
 }
 
+function isFreeFireKhsgmyProduct(product) {
+  const metadata = product.metadata && typeof product.metadata === "object" ? product.metadata : {};
+  const metadataLabels = Object.entries(metadata).flatMap(([key, value]) => {
+    if (!/region|country|market|game/i.test(key)) return [];
+    if (typeof value === "string") return [value];
+    return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
+  });
+  const regions = [product.region, ...(Array.isArray(product.regions) ? product.regions : []), ...metadataLabels]
+    .filter(Boolean)
+    .map((value) => String(value).toLowerCase());
+  const identity = [product.game, product.name, product.id, ...metadataLabels].filter(Boolean).join(" ").toLowerCase();
+  const allLabels = [identity, ...regions].join(" ");
+  const isFreeFire = /free[\s_-]*fire|freefire/.test(identity);
+  const isKhsgmy = /khsgmy/.test(allLabels);
+  const isCambodia = [product.game, ...regions].some((region) => /cambodia|cambodian|khmer|(?:^|[^a-z])kh(?:$|[^a-z])/.test(String(region || "")));
+  const hasOtherRegion = [product.game, product.name, product.id, ...regions]
+    .filter(Boolean)
+    .some((value) => /\b(?:sgmy|global|thailand|indonesia|philippines|vietnam)\b/i.test(String(value)));
+
+  return isFreeFire && (isKhsgmy || isCambodia) && !hasOtherRegion;
+}
+
 const WEBBUILDER_GAMES = [
   {
     name: "Free Fire (KHSGMY)",
@@ -17,7 +39,7 @@ const WEBBUILDER_GAMES = [
     category: "Battle Royale",
     currencyName: "Diamonds",
     publisher: "Garena",
-    filter: (p) => Boolean(p.game && p.game.toLowerCase().includes("free fire")),
+    filter: isFreeFireKhsgmyProduct,
     requiresServer: false,
     userIdLabel: "Player ID (UID)",
     image: "https://api.g2bulk.com/images/freefire_global.png",

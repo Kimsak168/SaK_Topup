@@ -9,7 +9,7 @@ import { loadTestModules } from "./lib/load-test-module.mjs";
 
 const require = createRequire(import.meta.url);
 let mongo, fixture, base, load, Order, Payment, worker, payments, fulfillment;
-const env = { NODE_ENV: "test", VNGZZ2_PRIMARY_API_KEY: "fixture-key", ANAJAKPAY_PROFILE_ID: "fixture", ANAJAKPAY_SECRET_KEY: "fixture-secret", TELEGRAM_BOT_TOKEN: "fixture-token", TELEGRAM_ADMIN_CHAT_ID: "1234567", VNGZZ2_PAYMENT_WEBHOOK_SECRET: "fixture-signing-secret", CRON_SECRET: "fixture-cron-secret" };
+const env = { NODE_ENV: "test", VNGZZ2_PRIMARY_API_KEY: "fixture-key", TELEGRAM_BOT_TOKEN: "fixture-token", TELEGRAM_ADMIN_CHAT_ID: "1234567", VNGZZ2_PAYMENT_WEBHOOK_SECRET: "fixture-signing-secret", CRON_SECRET: "fixture-cron-secret" };
 
 before(async () => {
   base = process.env.NOTIFICATION_SIMULATION_URL;
@@ -20,7 +20,7 @@ before(async () => {
   }
   mongo = await MongoMemoryServer.create({ binary: { downloadDir: resolve("node_modules/.cache/mongodb-memory-server") }, instance: { dbName: "notification_tests" } });
   await mongoose.connect(mongo.getUri(), { dbName: "notification_tests", autoIndex: false });
-  Object.assign(env, { VNGZZ2_PAYMENT_BASE_URL: `${base}/vng`, VNGZZ2_GAME_BASE_URL: `${base}/vng`, ANAJAKPAY_API_BASE_URL: `${base}/anajak` });
+  Object.assign(env, { VNGZZ2_PAYMENT_BASE_URL: `${base}/vng`, VNGZZ2_GAME_BASE_URL: `${base}/vng` });
   load = loadTestModules({ "next/server": { ...require("next/server"), after() {} }, "@/lib/mongodb": { connectDB: async () => mongoose } }, {
     process: { env },
     fetch: (url, options) => fetch(String(url).replace("https://api.telegram.org", `${base}/telegram`), options),
@@ -165,9 +165,9 @@ test("cron and notification history require authorization; invalid supplier call
   assert.equal((await hook.POST(new Request("http://localhost/hook", { method: "POST", body: "{}", headers: { "x-signature": "invalid" } }))).status, 401);
 });
 
-test("AnajakPay explicit pending/success/failure/expiry and provider errors obey the same transition rules", async () => {
+test("ABA PayWay V2 explicit pending/success/failure/expiry and provider errors obey transition rules", async () => {
   for (const [scenario, expected] of [["pending", "PENDING"], ["success", "PAID"], ["failed", "FAILED"], ["expired", "EXPIRED"], ["unavailable", "PENDING"]]) {
-    const order = await createOrder(scenario, { paymentGateway: "anajakpay", paymentMethod: "khqr" });
+    const order = await createOrder(scenario, { paymentGateway: "aba_payway_v2", paymentMethod: "aba_payway_v2" });
     const latest = await payments.reconcileOrderPayment(order.orderNumber, false);
     assert.equal(latest.paymentStatus, expected);
   }

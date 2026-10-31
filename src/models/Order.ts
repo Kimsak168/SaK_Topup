@@ -11,7 +11,7 @@ export interface IOrder extends Document {
   orderNumber: string;
   gameSlug: string;
   gameName: string;
-  supplier: "vizo" | "g2bulk" | "webbuilder" | "vngzz2";
+  supplier: "g2bulk" | "webbuilder" | "vngzz2";
   serviceType?: "game" | "smm" | "digital";
   targetLink?: string;
   quantity?: number;
@@ -25,8 +25,8 @@ export interface IOrder extends Document {
   buyingPrice?: number; // Supplier wholesale cost in USD
   profit?: number; // amount - buyingPrice
   currency: string;
-  paymentMethod: "khqr" | "aba" | "wing" | "binance" | "manual" | "aba_payway_v2";
-  paymentGateway?: "anajakpay" | "aba_payway_v2" | string;
+  paymentMethod: "aba_payway_v2" | "khqr" | "aba" | "wing" | "binance" | "manual";
+  paymentGateway?: "aba_payway_v2" | "manual" | string;
   paymentStatus:
     | "pending"
     | "paid"
@@ -99,7 +99,7 @@ const OrderSchema = new Schema<IOrder>(
     },
     supplier: {
       type: String,
-      enum: ["vizo", "g2bulk", "webbuilder", "vngzz2"],
+      enum: ["g2bulk", "webbuilder", "vngzz2"],
       default: "webbuilder",
       required: true,
       index: true,
@@ -163,13 +163,13 @@ const OrderSchema = new Schema<IOrder>(
     },
     paymentMethod: {
       type: String,
-      enum: ["khqr", "aba", "wing", "binance", "manual", "aba_payway_v2"],
-      default: "khqr",
+      enum: ["aba_payway_v2", "khqr", "aba", "wing", "binance", "manual"],
+      default: "aba_payway_v2",
     },
     paymentGateway: {
       type: String,
-      enum: ["anajakpay", "aba_payway_v2", "manual"],
-      default: "anajakpay",
+      enum: ["aba_payway_v2", "manual"],
+      default: "aba_payway_v2",
     },
     paymentStatus: {
       type: String,

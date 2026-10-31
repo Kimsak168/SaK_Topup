@@ -17,7 +17,6 @@ import {
   Lock,
 } from "lucide-react";
 import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
-import { openKhqrInPageCheckout } from "@/lib/khqrPlugin";
 import type { DigitalGroup, DigitalProduct } from "@/lib/services/digitalShopService";
 
 interface DigitalTopUpClientProps {
@@ -36,7 +35,7 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
     return firstAvailable ? firstAvailable.product_code : group.products[0]?.product_code || "";
   });
   const [contact, setContact] = useState<string>("");
-  const [paymentMethod, setPaymentMethod] = useState<"aba_payway_v2" | "khqr">("aba_payway_v2");
+  const [paymentMethod, setPaymentMethod] = useState<"aba_payway_v2">("aba_payway_v2");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // ABA PayWay Modal State
@@ -86,7 +85,7 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
 
       toast.dismiss("checkout");
 
-      if (paymentMethod === "aba_payway_v2" && data.qrData) {
+      if (data.qrData) {
         setPayWayModalData({
           orderNumber: data.orderNumber,
           transactionId: data.transactionId,
@@ -104,20 +103,9 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
           expireInSec: data.qrData.expireInSec,
         });
         setIsPayWayModalOpen(true);
-        toast.success("ABA PayWay QR generated", {
+        toast.success("KHQR generated", {
           id: "checkout",
           description: "Scan with ABA Mobile or any banking app.",
-        });
-      } else if (data.checkoutUrl) {
-        await openKhqrInPageCheckout({
-          checkoutUrl: data.checkoutUrl,
-          onSuccess: () => {
-            toast.success("Payment confirmed!");
-            router.push(`/orders?orderNumber=${encodeURIComponent(data.orderNumber)}`);
-          },
-          onClose: () => {
-            router.push(`/orders?orderNumber=${encodeURIComponent(data.orderNumber)}`);
-          },
         });
       } else {
         toast.success("Order created!", { description: `Order #${data.orderNumber}` });
@@ -305,42 +293,23 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
                 </h2>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("aba_payway_v2")}
-                  className={`p-3 min-h-[72px] rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-center ${
-                    paymentMethod === "aba_payway_v2"
-                      ? "bg-[#004B87]/20 border-[#004B87] ring-1 ring-[#004B87] shadow-lg shadow-[#004B87]/20"
-                      : "bg-slate-950 border-slate-800 hover:border-slate-700"
-                  }`}
+              <div className="grid grid-cols-1 gap-3">
+                <div
+                  className="p-3.5 min-h-[72px] rounded-xl border border-[#004B87] bg-[#004B87]/20 ring-1 ring-[#004B87] shadow-lg shadow-[#004B87]/20 flex items-center justify-between"
                 >
-                  <div className="flex items-center gap-2">
-                    <Image src="/images/aba-logo.png" alt="ABA" width={24} height={24} className="h-6 w-6 rounded-md object-contain" />
+                  <div className="flex items-center gap-3">
+                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
+                      <Image src="/images/aba-logo.png" alt="ABA" fill sizes="40px" className="object-cover" />
+                    </div>
                     <div>
-                      <span className="payment-method-title text-xs font-bold text-slate-900 dark:text-white block">KHQR V2</span>
-                      <span className="text-[10px] text-slate-400">Scan &amp; Pay Instant</span>
+                      <span className="payment-method-title text-sm font-bold text-slate-900 dark:text-white block">KHQR</span>
+                      <span className="text-[11px] text-slate-400">ABA Mobile &amp; All Cambodian Banks (KHQR)</span>
                     </div>
                   </div>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("khqr")}
-                  className={`p-3 min-h-[72px] rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-center ${
-                    paymentMethod === "khqr"
-                      ? "bg-rose-950/20 border-rose-500/80 ring-1 ring-rose-500/50 shadow-lg shadow-rose-500/20"
-                      : "bg-slate-950 border-slate-800 hover:border-slate-700"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Image src="/images/aba-logo.png" alt="KHQR" width={24} height={24} className="h-6 w-6 rounded-md object-contain" />
-                    <div>
-                      <span className="payment-method-title text-xs font-bold text-slate-900 dark:text-white block">KHQR</span>
-                      <span className="text-[10px] text-slate-400">All Mobile Banking</span>
-                    </div>
-                  </div>
-                </button>
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#004B87] text-white">
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </div>
               </div>
             </section>
           </div>
@@ -376,7 +345,7 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">វិធីសាស្ត្រទូទាត់:</span>
                   <span className="text-cyan-400 font-semibold uppercase">
-                    {paymentMethod === "aba_payway_v2" ? "KHQR V2" : "KHQR"}
+                    KHQR (ABA PayWay)
                   </span>
                 </div>
 

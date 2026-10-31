@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerificationGame } from "@/lib/services/verificationGameService";
-import { checkVizoPlayer } from "@/lib/suppliers/vizo";
 import { checkG2BulkPlayer } from "@/lib/suppliers/g2bulk";
 import { checkWebBuilderPlayer } from "@/lib/suppliers/webbuilder";
 import { checkVngzzPlayer } from "@/lib/suppliers/vngzz2";
@@ -67,8 +66,6 @@ export async function POST(req: NextRequest) {
     return AbortSignal.any([supplierSignal, AbortSignal.timeout(5000)]);
   };
 
-  const verifyVizo = (game: string, id: string, server?: string) =>
-    timed("vizo", () => checkVizoPlayer(game, id, server, signal()));
   const verifyG2Bulk = (game: string, id: string, server?: string) =>
     timed(game === "mlbb_global" ? "g2bulk_global" : "g2bulk", () => checkG2BulkPlayer(game, id, server, signal()));
   const verifyWebBuilder = (productId: string, id: string, server?: string) =>
@@ -216,7 +213,7 @@ export async function POST(req: NextRequest) {
 
       if (isFreeFire && wbRes.isUnavailable) {
         console.warn(
-          `[PlayerVerify] WebBuilder Free Fire check was unavailable (${wbRes.message}). Attempting Vizo fallback...`
+          `[PlayerVerify] WebBuilder Free Fire check was unavailable (${wbRes.message}). Attempting G2Bulk fallback...`
         );
       } else {
         return respond({
@@ -228,32 +225,9 @@ export async function POST(req: NextRequest) {
     }
 
     // ==========================================
-    // 1. FREE FIRE (Primary: Vizo, Fallback: G2Bulk)
+    // 1. FREE FIRE (G2Bulk fallback)
     // ==========================================
     if (isFreeFire) {
-      // Free Fire on Vizo /player_info/check endpoint requires 'freefire_sgmy'
-      const vizoRes = await verifyVizo("freefire_sgmy", cleanUserId, cleanServerId);
-      const duration = Date.now() - startTime;
-
-      if (vizoRes.success) {
-        console.log(
-          `[PlayerVerify] Free Fire via Vizo: SUCCESS (IGN: ${vizoRes.playerName}) in ${duration}ms [UID: ${maskId(cleanUserId)}]`
-        );
-        return respond(vizoRes);
-      }
-
-      // If Vizo explicitly confirmed the player ID is invalid, do not false-report
-      if (vizoRes.isInvalidId) {
-        console.log(
-          `[PlayerVerify] Free Fire via Vizo: INVALID_ID in ${duration}ms [UID: ${maskId(cleanUserId)}]`
-        );
-        return respond(vizoRes, { status: 400 });
-      }
-
-      // If Vizo encountered an auth/network/timeout issue, try resilient fallback to G2Bulk freefire_sgmy
-      console.warn(
-        `[PlayerVerify] Free Fire Vizo check was not conclusive (${vizoRes.message}). Attempting G2Bulk fallback...`
-      );
       const g2Res = await verifyG2Bulk("freefire_sgmy", cleanUserId, cleanServerId);
       const totalDuration = Date.now() - startTime;
 
@@ -303,15 +277,6 @@ export async function POST(req: NextRequest) {
           );
           return respond(g2GlobalRes);
         }
-      }
-
-      // 2c. Also try Vizo mlbb as secondary validation
-      const vizoRes = await verifyVizo("mlbb", cleanUserId, cleanServerId);
-      if (vizoRes.success) {
-        console.log(
-          `[PlayerVerify] MLBB via Vizo fallback: SUCCESS (IGN: ${vizoRes.playerName}) [UID: ${maskId(cleanUserId)}]`
-        );
-        return respond(vizoRes);
       }
 
       if (g2Res.isInvalidId) {

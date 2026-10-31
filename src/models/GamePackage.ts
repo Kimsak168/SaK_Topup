@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IGamePackage extends Document {
   gameSlug: string;
   gameCode?: string;
-  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
+  supplier: "webbuilder" | "g2bulk" | "vngzz2";
   supplierProductCode: string; // WebBuilder product id
   name: string;
   diamondsOrPoints?: string;
@@ -44,7 +44,7 @@ const GamePackageSchema = new Schema<IGamePackage>(
     },
     supplier: {
       type: String,
-      enum: ["webbuilder", "vizo", "g2bulk", "vngzz2"],
+      enum: ["webbuilder", "g2bulk", "vngzz2"],
       default: "webbuilder",
       required: true,
       index: true,

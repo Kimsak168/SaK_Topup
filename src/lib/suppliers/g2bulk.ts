@@ -43,6 +43,7 @@ export interface G2BulkProductItem {
   stock: number;
   face_value?: number | null;
   description?: string;
+  image_url?: string | null;
 }
 
 export interface G2BulkFieldsInfo {
@@ -191,7 +192,7 @@ export async function getG2BulkCatalogue(gameCode: string): Promise<G2BulkCatalo
 
   // Strict validation: Do not use G2Bulk for Free Fire
   if (code.includes("freefire") || code === "ff") {
-    throw new G2BulkError("Free Fire is not available via G2Bulk. Please use Vizo supplier.", 400);
+    throw new G2BulkError("Free Fire is not available via G2Bulk.", 400);
   }
 
   // Handle Roblox catalogue from products
@@ -579,7 +580,7 @@ export async function purchaseG2BulkProduct(
     const errorMsg = data?.error || data?.message || `G2Bulk purchase failed (HTTP ${response.status})`;
     return {
       success: false,
-      status: "failed",
+      status: !data || response.status >= 500 || response.status === 429 ? "processing" : "failed",
       message: errorMsg,
       raw: data,
     };
@@ -593,7 +594,7 @@ export async function purchaseG2BulkProduct(
     }
     return {
       success: false,
-      status: "failed",
+      status: "processing",
       message: err instanceof Error ? err.message : "G2Bulk purchase error",
     };
   }
@@ -654,7 +655,7 @@ export async function placeG2BulkOrder(
     const errorMsg = data?.error || `G2Bulk order failed (HTTP ${response.status})`;
     return {
       success: false,
-      status: "failed",
+      status: !data || response.status >= 500 || response.status === 429 ? "processing" : "failed",
       message: errorMsg,
       raw: data,
     };
@@ -668,7 +669,7 @@ export async function placeG2BulkOrder(
     }
     return {
       success: false,
-      status: "failed",
+      status: "processing",
       message: err instanceof Error ? err.message : "G2Bulk order error",
     };
   }

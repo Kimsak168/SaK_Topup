@@ -20,7 +20,7 @@ interface AdminOrder {
   gameSlug: string;
   gameName: string;
   packageName: string;
-  supplier: "webbuilder" | "vizo" | "g2bulk" | string;
+  supplier: "webbuilder" | "g2bulk" | "vngzz2" | string;
   supplierProductCode: string;
   playerId: string;
   serverId: string | null;
@@ -76,6 +76,7 @@ export default function AdminOrdersPage() {
   const [editFulfillment, setEditFulfillment] = useState<string>("pending");
   const [editPayment, setEditPayment] = useState<string>("pending");
   const [editNotes, setEditNotes] = useState<string>("");
+  const [deliveryVerified, setDeliveryVerified] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [reconcilingId, setReconcilingId] = useState<string | null>(null);
 
@@ -184,6 +185,7 @@ export default function AdminOrdersPage() {
     setEditFulfillment(order.fulfillmentStatus === "NOT_STARTED" ? "NOT_STARTED" : order.fulfillmentStatus.toLowerCase());
     setEditPayment(order.paymentStatus.toLowerCase() === "refunded" ? "refunded" : order.paymentStatus.toUpperCase());
     setEditNotes(order.adminNotes || "");
+    setDeliveryVerified(false);
   };
 
   const handleSaveOrder = async () => {
@@ -198,6 +200,7 @@ export default function AdminOrdersPage() {
           fulfillmentStatus: editFulfillment,
           paymentStatus: editPayment.toUpperCase() === selectedOrder.paymentStatus.toUpperCase() ? undefined : editPayment,
           adminNotes: editNotes,
+          deliveryVerified,
         }),
       });
 
@@ -403,7 +406,6 @@ export default function AdminOrdersPage() {
             <option value="webbuilder">WebBuilder</option>
             <option value="vngzz2">VNGZZ2</option>
             <option value="g2bulk">G2Bulk</option>
-            <option value="vizo">Vizo</option>
           </select>
         </div>
       </div>
@@ -432,7 +434,7 @@ export default function AdminOrdersPage() {
                   <th className="py-2.5 px-3.5">Game & Package</th>
                   <th className="py-2.5 px-3.5">Player Details</th>
                   <th className="py-2.5 px-3.5">Amount</th>
-                  <th className="py-2.5 px-3.5">AnajakPay Txn</th>
+                  <th className="py-2.5 px-3.5">Payment Txn</th>
                   <th className="py-2.5 px-3.5">Payment</th>
                   <th className="py-2.5 px-3.5">Fulfillment</th>
                   <th className="py-2.5 px-3.5">Timestamps</th>
@@ -528,7 +530,7 @@ export default function AdminOrdersPage() {
                           onClick={() => handleReconcileOrder(order)}
                           disabled={isReconciling}
                           className="admin-table-action cursor-pointer"
-                          title="Protected Reconcile (AnajakPay & Supplier)"
+                          title="Protected Reconcile (Payment & Supplier)"
                         >
                           <ShieldCheck className={`h-3.5 w-3.5 ${isReconciling ? "animate-spin" : ""}`} />
                         </button>
@@ -684,7 +686,7 @@ export default function AdminOrdersPage() {
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-[#94A3B8]">AnajakPay Txn:</span>
+                  <span className="text-[#94A3B8]">Payment Txn:</span>
                   <span className="font-mono text-[#22C55E] truncate max-w-[160px] select-all">
                     {selectedOrder.transactionId || "—"}
                   </span>
@@ -748,16 +750,11 @@ export default function AdminOrdersPage() {
                     onChange={(e) => setEditPayment(e.target.value)}
                     className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3 py-2 text-xs text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
                   >
-                    <option value="PENDING">PENDING</option>
-                    <option value="FAILED">FAILED</option>
-                    <option value="CANCELLED">CANCELLED</option>
-                    <option value="refunded">Refunded</option>
-                    {String(selectedOrder.paymentStatus).toUpperCase() === "PAID" && (
-                      <option value="PAID">PAID (Verified)</option>
-                    )}
+                    <option value={selectedOrder.paymentStatus.toLowerCase() === "refunded" ? "refunded" : selectedOrder.paymentStatus.toUpperCase()}>{selectedOrder.paymentStatus.toUpperCase()}</option>
+                    {selectedOrder.paymentStatus.toUpperCase() === "PENDING" && <option value="CANCELLED">CANCELLED</option>}
                   </select>
                   <p className="text-[10px] text-[#64748B]">
-                    To mark as PAID, use &ldquo;Reconcile Now&rdquo; to confirm real AnajakPay settlement.
+                    Use &ldquo;Reconcile Now&rdquo; to verify payment with the configured provider.
                   </p>
                 </div>
               </div>
@@ -774,6 +771,12 @@ export default function AdminOrdersPage() {
                   className="w-full rounded-lg border border-[#243047] bg-[#151F31] p-3 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none"
                 />
               </div>
+              {["completed", "delivered", "failed"].includes(editFulfillment.toLowerCase()) && editFulfillment.toLowerCase() !== selectedOrder.fulfillmentStatus.toLowerCase() && (
+                <label className="flex items-start gap-2 text-xs text-slate-300">
+                  <input type="checkbox" checked={deliveryVerified} onChange={(event) => setDeliveryVerified(event.target.checked)} />
+                  I verified this delivery outcome with the supplier. My notes record the evidence or failure reason.
+                </label>
+              )}
 
               <div className="flex justify-end gap-2 pt-2">
                 <button

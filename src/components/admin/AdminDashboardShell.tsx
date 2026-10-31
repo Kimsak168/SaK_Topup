@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   CreditCard,
   CircleDollarSign,
+  CalendarDays,
   Image as ImageIcon,
   Server,
   Share2,
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
   { title: "OPERATIONS", items: [
     { href: "/admin/payments", label: "Payment Gateways", icon: CreditCard },
     { href: "/admin/finance", label: "Finance & Reconciliation", icon: CircleDollarSign },
+    { href: "/admin/events", label: "Game Events", icon: CalendarDays },
     { href: "/admin/banners", label: "Promo Banners", icon: ImageIcon },
   ] },
   { title: "PLATFORM", items: [

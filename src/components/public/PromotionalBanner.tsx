@@ -133,11 +133,9 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
                       alt={banner.title || "SakSuuu Banner"}
                       fill
                       quality={80}
-                      priority={isFirstSlide}
+                      preload={isFirstSlide}
                       sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1147px) calc(100vw - 48px), 1100px"
-                      className={`relative z-10 object-contain object-center select-none transition-opacity duration-300 ease-out ${
-                        isLoaded ? "opacity-100" : "opacity-0"
-                      }`}
+                      className="relative z-10 object-contain object-center select-none"
                       onLoad={(event) => {
                         setLoadedImages((prev) => ({ ...prev, [banner.imageUrl]: true }));
                         const img = event.currentTarget;

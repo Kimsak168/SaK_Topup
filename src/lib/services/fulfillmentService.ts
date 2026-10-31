@@ -8,7 +8,6 @@ import {
   generateWebBuilderIdempotencyKey,
   computeOrderRequestHash,
 } from "@/lib/suppliers/webbuilder";
-import { placeVizoOrder } from "@/lib/suppliers/vizo";
 import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
 import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
 import { createKhmerSmmProductOrder, getKhmerSmmOrderStatus } from "@/lib/suppliers/vngzz2SmmKhmer";
@@ -23,7 +22,7 @@ export interface FulfillmentResult {
 }
 
 /**
- * Automatically fulfill an order with the appropriate supplier (WebBuilder, Vizo, or G2Bulk).
+ * Automatically fulfill an order with the appropriate supplier (WebBuilder, G2Bulk, or VngZz2).
  * Implements atomic fulfillment claiming to guarantee that duplicate purchases cannot be submitted.
  */
 export async function triggerAutomaticFulfillment(
@@ -175,41 +174,8 @@ export async function triggerAutomaticFulfillment(
       } });
       return { success: true, orderNumber, fulfillmentStatus: "processing", supplierOrderId: result.id, message: "Supplier submission recorded; delivery awaits a status check." };
     }
-    // 1. Vizo Fulfillment (Free Fire legacy / fallback supplier)
-    if (order.supplier === "vizo") {
-      const vizoRes = await placeVizoOrder({
-        productCode: order.supplierProductCode,
-        userId: order.playerId,
-        serverId: order.serverId,
-        refOrder: order.orderNumber,
-      });
 
-      const isCompleted = vizoRes.status === "completed";
-      const isFailed = vizoRes.status === "failed";
-      const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
-
-      await Order.findByIdAndUpdate(order._id, {
-        $set: {
-          supplierOrderId: vizoRes.supplierOrderId || vizoRes.transactionId,
-          fulfillmentStatus: newStatus,
-          lastSupplierStatus: vizoRes.status,
-          fulfilledAt: isCompleted ? new Date() : undefined,
-          errorLog: isFailed ? vizoRes.message : undefined,
-          adminNotes: `Vizo order ${vizoRes.status}: ${vizoRes.message || ""}`,
-          updatedAt: new Date(),
-        },
-      });
-
-      return {
-        success: isCompleted || vizoRes.status === "processing",
-        orderNumber: order.orderNumber,
-        fulfillmentStatus: newStatus,
-        supplierOrderId: vizoRes.supplierOrderId || vizoRes.transactionId,
-        message: vizoRes.message || `Vizo order status: ${vizoRes.status}`,
-      };
-    }
-
-    // 2. G2Bulk Fulfillment (Roblox product purchase & SMM protocol)
+    // G2Bulk Fulfillment (Roblox product purchase & SMM protocol)
     if (order.supplier === "g2bulk") {
       const g2Res = await placeG2BulkOrder({
         catalogueId: order.supplierProductCode,

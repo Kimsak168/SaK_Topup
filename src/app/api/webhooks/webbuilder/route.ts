@@ -77,6 +77,7 @@ export async function POST(req: NextRequest) {
 
     // 4. Locate order in database
     const order = await Order.findOne({
+      supplier: "webbuilder",
       $or: [
         ...(wbOrderId ? [{ supplierOrderId: wbOrderId }] : []),
         ...(reference ? [{ orderNumber: reference }] : []),
@@ -125,7 +126,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Durable database update
-    await Order.findByIdAndUpdate(order._id, updateQuery);
+    await Order.findOneAndUpdate({
+      _id: order._id,
+      paymentStatus: { $in: ["PAID", "paid"] },
+      fulfillmentStatus: { $in: ["processing", "PROCESSING", "pending", "NOT_STARTED"] },
+      webhookEvents: { $ne: effectiveEventId },
+    }, updateQuery);
 
     console.log(
       `[WebBuilder Webhook] Durably recorded event ${effectiveEventId} (${eventType}) for order ${order.orderNumber}`

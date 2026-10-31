@@ -202,7 +202,7 @@ function SuccessContent() {
                 <strong className="text-[#22C55E]">
                   ${order.amount.toFixed(2)} USD
                 </strong>{" "}
-                was cryptographically verified with AnajakPay KHQR.
+                was cryptographically verified via KHQR.
               </p>
             </>
           )}

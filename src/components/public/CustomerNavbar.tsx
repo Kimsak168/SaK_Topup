@@ -14,6 +14,8 @@ const navLinks = [
   { href: "/#services", label: "Services", Icon: Sparkles },
 ];
 
+const telegramIconPath = "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 5.29 3.87c.97.54 1.67.26 1.91-.9L23.67 4c.35-1.44-.55-2.09-1.48-1.67L1.84 10.18c-1.39.56-1.38 1.33-.25 1.67l5.22 1.63L18.9 5.86c.57-.35 1.09-.16.66.23Z";
+
 type HomeSection = "home" | "games" | "services";
 
 function isCurrentPage(pathname: string, href: string, activeHomeSection: HomeSection): boolean {
@@ -38,7 +40,7 @@ const drawerSocialLinks = [
   {
     label: "Telegram",
     href: validSocialUrl(SOCIAL_URLS.telegram),
-    path: "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 5.29 3.87c.97.54 1.67.26 1.91-.9L23.67 4c.35-1.44-.55-2.09-1.48-1.67L1.84 10.18c-1.39.56-1.38 1.33-.25 1.67l5.22 1.63L18.9 5.86c.57-.35 1.09-.16.66.23Z",
+    path: telegramIconPath,
   },
   {
     label: "Facebook",
@@ -54,6 +56,7 @@ const drawerSocialLinks = [
 
 export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
   const pathname = usePathname();
+  const [resolvedLogoUrl, setResolvedLogoUrl] = useState(logoUrl);
   const [activeHomeSection, setActiveHomeSection] = useState<HomeSection>("home");
   const [brandTyping, setBrandTyping] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -66,6 +69,30 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
     const timer = window.setTimeout(() => setBrandTyping(false), 900);
     return () => window.clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (logoUrl) {
+      setResolvedLogoUrl(logoUrl);
+      return;
+    }
+
+    let active = true;
+    void fetch("/api/settings/public-logo", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Public logo request failed");
+        const result = (await response.json()) as { logoUrl?: unknown };
+        if (active && typeof result.logoUrl === "string" && result.logoUrl.trim()) {
+          setResolvedLogoUrl(result.logoUrl);
+        }
+      })
+      .catch(() => {
+        console.error("[CustomerNavbar] Unable to load the saved logo setting.");
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [logoUrl]);
 
   useEffect(() => {
     if (pathname !== "/") {
@@ -144,6 +171,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
     setDrawerOpen(false);
     window.requestAnimationFrame(() => drawerTriggerRef.current?.focus({ preventScroll: true }));
   };
+  const telegramSupportUrl = validSocialUrl(SOCIAL_URLS.telegram);
 
   return (
     <header className={`${styles.header} public-navbar`}>
@@ -151,7 +179,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
       <div className={styles.shell}>
         <Link href="/" aria-label="SakSuuu Home" className={styles.brand}>
           <Image
-            src={logoUrl || "/images/logo.png"}
+            src={resolvedLogoUrl || "/images/logo.png"}
             alt=""
             width={44}
             height={44}
@@ -190,6 +218,20 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
           >
             <Search aria-hidden="true" />
           </Link>
+          {telegramSupportUrl ? (
+            <a
+              href={telegramSupportUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${styles.searchButton} ${styles.telegramButton}`}
+              aria-label="Telegram support (opens in a new tab)"
+              title="Telegram support"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor">
+                <path d={telegramIconPath} />
+              </svg>
+            </a>
+          ) : null}
           <button
             ref={drawerTriggerRef}
             type="button"
@@ -223,7 +265,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
           >
             <div className={styles.drawerHeader}>
               <Link href="/" className={styles.drawerBrand} aria-label="SakSuuu Home" onClick={closeDrawer}>
-                <Image src={logoUrl || "/images/logo.png"} alt="" width={38} height={38} />
+                <Image src={resolvedLogoUrl || "/images/logo.png"} alt="" width={38} height={38} />
                 <span aria-hidden="true" className={styles.drawerWordmark}>
                   <span>Sak</span><strong>Suuu</strong>
                 </span>

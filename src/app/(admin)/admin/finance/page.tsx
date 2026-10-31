@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, ArrowDownRight, ArrowUpRight, CircleDollarSign, RefreshCw, ShieldAlert, Wallet } from "lucide-react";
+import { Activity, ArrowDownRight, ArrowUpRight, RefreshCw, ShieldAlert, Wallet } from "lucide-react";
 import {
   Area,
   AreaChart,

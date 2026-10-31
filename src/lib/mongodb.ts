@@ -1,7 +1,35 @@
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const MONGODB_DB_NAME = process.env.MONGODB_DB_NAME || "test";
+const isProduction = process.env.NODE_ENV === "production";
+const INVALID_DATABASE_NAME_CHARACTERS = ["/", "\\", ".", '"', "$", "*", "<", ">", ":", "|", "?", "\0"];
+
+function resolveDatabaseName(): string {
+  const configuredDatabaseName = process.env.MONGODB_DB_NAME;
+  if (!configuredDatabaseName || !configuredDatabaseName.trim()) {
+    if (isProduction) {
+      throw new Error(
+        "MONGODB_DB_NAME is required in Production. Set it to the confirmed MongoDB database name."
+      );
+    }
+    return "test";
+  }
+
+  const hasReservedCharacters = INVALID_DATABASE_NAME_CHARACTERS.some((character) =>
+    configuredDatabaseName.includes(character)
+  );
+  if (
+    configuredDatabaseName !== configuredDatabaseName.trim() ||
+    hasReservedCharacters ||
+    Buffer.byteLength(configuredDatabaseName, "utf8") >= 64
+  ) {
+    throw new Error(
+      "MONGODB_DB_NAME is invalid. Use a MongoDB database name under 64 bytes without reserved characters or surrounding whitespace."
+    );
+  }
+
+  return configuredDatabaseName;
+}
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -30,6 +58,8 @@ export function getMaskedMongoUri(uri?: string): string {
 }
 
 export async function connectDB(): Promise<typeof mongoose> {
+  const databaseName = resolveDatabaseName();
+
   if (!MONGODB_URI) {
     throw new Error("MONGODB_URI is missing. Please set it in your environment variables.");
   }
@@ -50,12 +80,12 @@ export async function connectDB(): Promise<typeof mongoose> {
     const opts: mongoose.ConnectOptions = {
       bufferCommands: false,
       autoIndex: false, // Indexes are maintained explicitly, never during a public request.
-      serverSelectionTimeoutMS: 5000, // Fail fast (5s) instead of stalling requests for 30s
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000, // Allow cold Vercel functions time to establish Atlas connections.
+      connectTimeoutMS: 10000,
       socketTimeoutMS: 20000,
       maxPoolSize: 10,
       minPoolSize: 0,
-      dbName: MONGODB_DB_NAME,
+      dbName: databaseName,
     };
 
     cached.promise = mongoose
@@ -63,14 +93,19 @@ export async function connectDB(): Promise<typeof mongoose> {
       .then((m) => {
         return m;
       })
-      .catch((err) => {
+      .catch((error: unknown) => {
         cached.promise = null;
         cached.conn = null;
-        console.error(
-          `[MongoDB] Connection error (${getMaskedMongoUri(MONGODB_URI)}):`,
-          err instanceof Error ? err.message : String(err)
-        );
-        throw err;
+        // Log only safe error metadata; driver messages can contain connection details.
+        const details = error && typeof error === "object"
+          ? error as { name?: unknown; code?: unknown }
+          : {};
+        const name = typeof details.name === "string" ? details.name : "UnknownError";
+        const code = typeof details.code === "string" || typeof details.code === "number"
+          ? details.code
+          : undefined;
+        console.error("[MongoDB] Connection failed.", { name, ...(code === undefined ? {} : { code }) });
+        throw new Error("MongoDB connection failed. Verify MONGODB_URI and Atlas Network Access.");
       });
   }
 

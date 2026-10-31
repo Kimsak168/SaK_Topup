@@ -4,6 +4,8 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import {
   getWebBuilderProducts,
+  isFreeFireKhsgmyProduct,
+  isMobileLegendsProduct,
   WebBuilderProduct,
 } from "@/lib/suppliers/webbuilder";
 import { invalidateCatalogueCache } from "@/lib/services/cacheService";
@@ -54,6 +56,18 @@ export function emptyG2BulkStats(): SyncStats {
     total: 0,
     errors: [],
   };
+}
+
+function getPersistentSupplierImageUrl(value?: string | null): string | undefined {
+  const imageUrl = value?.trim();
+  if (!imageUrl || /^(?:blob|data):/i.test(imageUrl)) return undefined;
+  if (imageUrl.startsWith("/") && !imageUrl.startsWith("//")) return imageUrl;
+
+  try {
+    return new URL(imageUrl).protocol === "https:" ? imageUrl : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export const G2BULK_ROBLOX_GAME = {
@@ -166,6 +180,8 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
         const computedOriginalPrice = Math.round(computedSellingPrice * 1.15 * 100) / 100;
 
         const isCard = prod.title.toLowerCase().includes("us") || prod.title.toLowerCase().includes("$");
+        const fallbackImage = isCard ? "/images/roblox.jpg" : "/images/robux-coin.jpg";
+        const supplierImage = getPersistentSupplierImageUrl(prod.image_url);
         const badge = prod.title.includes("800") || prod.title.includes("20$") ? "HOT" : prod.title.includes("1000") || prod.title.includes("200 Robux") ? "POPULAR" : "";
 
         const existing = await GamePackage.findOne({
@@ -185,7 +201,7 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
             sellingPrice: computedSellingPrice,
             originalPrice: computedOriginalPrice,
             currency: "USD",
-            customImage: isCard ? "/images/roblox.jpg" : "/images/robux-coin.jpg",
+            customImage: supplierImage || fallbackImage,
             badge,
             isActive: true,
             supplierAvailable: prod.stock !== 0,
@@ -208,6 +224,11 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
           if (!existing.adminConfigured) {
             updateFields.sellingPrice = computedSellingPrice;
             updateFields.originalPrice = computedOriginalPrice;
+          }
+
+          // Supplier artwork can replace only the sync-generated fallback; keep admin image choices intact.
+          if (supplierImage && (!existing.customImage || existing.customImage === fallbackImage)) {
+            updateFields.customImage = supplierImage;
           }
 
           await GamePackage.updateOne({ _id: existing._id }, { $set: updateFields });
@@ -251,7 +272,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     category: "Battle Royale",
     currencyName: "Diamonds",
     publisher: "Garena",
-    filter: (p) => Boolean(p.game && p.game.toLowerCase().includes("free fire")),
+    filter: isFreeFireKhsgmyProduct,
     requiresServer: false,
     userIdLabel: "Player ID (UID)",
     image: "https://api.g2bulk.com/images/freefire_global.png",
@@ -266,7 +287,12 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     category: "MOBA",
     currencyName: "Diamonds",
     publisher: "Moonton",
-    filter: (p) => Boolean(p.game && p.game.toLowerCase().includes("mobile legend")),
+    filter: (p) =>
+      isMobileLegendsProduct(p) &&
+      [p.region, ...(p.regions || [])].some((region) => {
+        const normalized = String(region || "").trim().toLowerCase();
+        return normalized.includes("cambodia") || normalized.split(/[\s,|;]+/).includes("kh");
+      }),
     requiresServer: true,
     serverLabel: "Zone ID (4-5 digits)",
     userIdLabel: "User ID",
@@ -603,6 +629,26 @@ export async function syncPackagesFromSuppliers(options: {
             `Failed to sync package ${supplierProductCode}: ${pkgErr instanceof Error ? pkgErr.message : String(pkgErr)}`
           );
         }
+      }
+
+      // Older MLBB syncs imported every region. Hide packages outside the
+      // selected Cambodia catalogue after every successful refresh.
+      // Keep admin activation and pricing intact so these can be restored if
+      // the supplier later re-enables them for Cambodia.
+      if (def.code === "mlbb") {
+        const allowedProductCodes = productsForGame
+          .map((product) => String(product.id || "").trim())
+          .filter(Boolean);
+        const cleanup = await GamePackage.updateMany(
+          {
+            supplier: "webbuilder",
+            $or: [{ gameCode: def.code }, { gameSlug: def.slug }],
+            supplierProductCode: { $nin: allowedProductCodes },
+            supplierAvailable: { $ne: false },
+          },
+          { $set: { supplierAvailable: false, syncedAt: new Date() } }
+        );
+        webbuilderStats.skipped += cleanup.modifiedCount;
       }
     }
   } catch (err: unknown) {

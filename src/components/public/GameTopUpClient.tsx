@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { ClientGame, ClientPackage } from "@/types/game";
 import { PackageOptions } from "./PackageOptions";
-import { openKhqrInPageCheckout, closeKhqrInPageCheckout } from "@/lib/khqrPlugin";
 import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
 
 interface GameTopUpClientProps {
@@ -67,25 +66,13 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
       toast.success("Package selected", { id: "package-selection", description: `${pkg.name} • ${price}`, duration: 3000 });
     }
   }, [selectedPackage]);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"khqr" | "aba_payway_v2">("khqr");
-  const [gatewayDown, setGatewayDown] = useState(false);
-  const [gatewayDownMessage, setGatewayDownMessage] = useState<string | null>(null);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"aba_payway_v2">("aba_payway_v2");
   const [paywayV2ModalData, setPaywayV2ModalData] = useState<AbaPayWayV2ModalData | null>(null);
   const [isPaywayV2Open, setIsPaywayV2Open] = useState(false);
 
   const [isVngConfigured, setIsVngConfigured] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch("/api/payment/anajakpay/health")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.available === false) {
-          setGatewayDown(true);
-          setGatewayDownMessage(data.message || "AnajakPay KHQRcc rail is temporarily undergoing maintenance.");
-        }
-      })
-      .catch(() => {});
-
     fetch("/api/payment/vngzz2/health")
       .then((res) => res.json())
       .then((data) => {
@@ -131,7 +118,6 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
       if (pollingRef.current) {
         clearInterval(pollingRef.current);
       }
-      closeKhqrInPageCheckout();
     };
   }, []);
 
@@ -233,7 +219,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
     transactionId: string
   ) => {
     try {
-      const res = await fetch("/api/payment/anajakpay/check", {
+      const res = await fetch("/api/payment/vngzz2/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderNumber, transactionId }),
@@ -244,7 +230,6 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
       const data = await res.json();
       if (data.success && data.paymentStatus === "PAID") {
         stopPolling();
-        closeKhqrInPageCheckout();
         setActiveOrder((prev) =>
           prev
             ? {
@@ -321,82 +306,8 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
     setIsCheckingOut(true);
 
     try {
-      if (selectedPaymentMethod === "aba_payway_v2") {
-        toast.loading("Generating ABA PayWay QR...", { id: "checkout" });
-        const res = await fetch("/api/payment/vngzz2/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            gameSlug: game.slug || game.code,
-            supplier: game.supplier,
-            supplierProductCode: packageToPurchase.supplierProductCode || packageToPurchase.id,
-            expectedPrice: packageToPurchase.sellingPrice,
-            playerId: userId.trim(),
-            serverId: serverId.trim() || undefined,
-            playerName: verifiedName || undefined,
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          toast.error("Unable to start ABA PayWay payment", {
-            id: "checkout",
-            description: data?.error || "Please try again or select AnajakPay KHQR.",
-          });
-          return;
-        }
-
-        const newOrderInfo: ActiveOrderInfo = {
-          orderNumber: data.orderNumber,
-          transactionId: data.transactionId,
-          amount: data.amount,
-          packageName: packageToPurchase.name,
-          playerId: userId.trim(),
-          serverId: serverId.trim() || undefined,
-          playerName: verifiedName || undefined,
-          paymentStatus: "PENDING",
-          fulfillmentStatus: "NOT_STARTED",
-        };
-        setActiveOrder(newOrderInfo);
-
-        setPaywayV2ModalData({
-          orderNumber: data.orderNumber,
-          transactionId: data.transactionId,
-          amount: data.amount,
-          currency: data.currency || "USD",
-          packageName: packageToPurchase.name,
-          gameName: game.name,
-          merchantName: "Sak Topup",
-          qrString: data.qrString,
-          qrImage: data.qrImage,
-          qrPngUrl: data.qrPngUrl,
-          deepLink: data.deepLink,
-          payUrl: data.payUrl,
-          expireInSec: data.expireInSec,
-        });
-        setIsPaywayV2Open(true);
-        toast.success("PayWay QR generated", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
-
-        // If on mobile device, directly navigate to ABA Mobile app
-        const isMobileDevice =
-          typeof window !== "undefined" &&
-          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (isMobileDevice && data.deepLink) {
-          try {
-            window.location.href = data.deepLink;
-          } catch (e) {
-            console.warn("[GameTopUp] Deep link navigation error:", e);
-          }
-        }
-        return;
-      }
-
-      // Default: AnajakPay KHQR integration
-      toast.loading("Preparing secure checkout...", { id: "checkout" });
-      const res = await fetch("/api/payment/anajakpay/create", {
+      toast.loading("Generating KHQR...", { id: "checkout" });
+      const res = await fetch("/api/payment/vngzz2/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -414,17 +325,11 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
 
       const data = await res.json();
 
-      if (!res.ok || !data.success || !data.checkoutUrl) {
-        if (data?.isMaintenance || res.status === 503) {
-          setGatewayDown(true);
-          setGatewayDownMessage(data?.details || "AnajakPay KHQRcc rail is temporarily undergoing maintenance.");
-          toast.error("AnajakPay KHQR Rail Temporarily Down", {
-            id: "checkout",
-            description: "AnajakPay's KHQR banking rail is undergoing maintenance. Please try again shortly or contact support.",
-          });
-          return;
-        }
-        toast.error("Unable to start payment", { id: "checkout", description: data?.error || "Please try again or contact support if the problem continues." });
+      if (!res.ok || !data.success) {
+        toast.error("Unable to start payment", {
+          id: "checkout",
+          description: data?.error || "Please try again or contact support if the problem continues.",
+        });
         return;
       }
 
@@ -440,35 +345,36 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
         fulfillmentStatus: "NOT_STARTED",
       };
       setActiveOrder(newOrderInfo);
-      toast.success("Order created successfully", { id: "order-creation" });
 
-      // Open official AnajakPay checkout plugin in-page modal without leaving the game page
-      const openResult = await openKhqrInPageCheckout({
-        checkoutUrl: data.checkoutUrl,
-        onSuccess: () => {
-          // Trigger immediate server-side payment verification
-          verifyPaymentStatus(data.orderNumber, data.transactionId);
-        },
-        onError: (err) => {
-          console.warn("[AnajakPay] Plugin reported event:", err);
-          toast.error("Unable to start payment", { id: "checkout", description: "Please try again or contact support if the problem continues." });
-        },
-        onClose: () => {
-          // User closed checkout: keep order pending
-          stopPolling();
-          verifyPaymentStatus(data.orderNumber, data.transactionId);
-          toast.info("Payment window closed", { id: "checkout", description: "Your pending order is saved." });
-        },
+      setPaywayV2ModalData({
+        orderNumber: data.orderNumber,
+        transactionId: data.transactionId,
+        amount: data.amount,
+        currency: data.currency || "USD",
+        packageName: packageToPurchase.name,
+        gameName: game.name,
+        merchantName: "Sak Topup",
+        qrString: data.qrString,
+        qrImage: data.qrImage,
+        qrPngUrl: data.qrPngUrl,
+        deepLink: data.deepLink,
+        payUrl: data.payUrl,
+        expireInSec: data.expireInSec,
       });
+      setIsPaywayV2Open(true);
+      toast.success("KHQR generated", { id: "checkout", description: "Scan with ABA Mobile or any KHQR banking app." });
 
-      if (!openResult.opened) {
-        toast.error("Unable to start payment", { id: "checkout", description: "Your pending order is saved. Please contact support if checkout does not open." });
-        return;
+      // If on mobile device, directly navigate to ABA Mobile app
+      const isMobileDevice =
+        typeof window !== "undefined" &&
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      if (isMobileDevice && data.deepLink) {
+        try {
+          window.location.href = data.deepLink;
+        } catch (e) {
+          console.warn("[GameTopUp] Deep link navigation error:", e);
+        }
       }
-
-      toast.success("Checkout ready", { id: "checkout", description: "Scan with ABA Mobile or any KHQR app." });
-      // Polling interval of ~3 seconds for up to 3 minutes
-      startPaymentVerificationPolling(data.orderNumber, data.transactionId);
     } catch {
       toast.error("Unable to start payment", { id: "checkout", description: "Check your connection and try again." });
     } finally {
@@ -676,108 +582,38 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
                 <span className="topup-step-number">3</span>
                 <h2 className="text-sm sm:text-base font-bold">Payment method</h2>
               </div>
-              <span className="text-xs font-semibold text-[#64748B]">Choose one</span>
+              <span className="text-xs font-semibold text-[#64748B]">Scan & Pay</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {/* Option 1: AnajakPay KHQR */}
-              <button
-                type="button"
-                aria-pressed={selectedPaymentMethod === "khqr"}
-                onClick={() => setSelectedPaymentMethod("khqr")}
-                className={`topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-all cursor-pointer ${
-                  selectedPaymentMethod === "khqr"
-                    ? "border-[#16A34A] bg-[#F0FDF4] ring-2 ring-[#16A34A]/20"
-                    : "border-slate-200 hover:border-slate-300 bg-white"
-                }`}
+            <div className="grid grid-cols-1 gap-3">
+              <div
+                className="topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20 p-3 text-left transition-all"
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
-                    <Image src="/images/aba-logo.png" alt="" fill sizes="44px" className="object-cover" />
+                    <Image src="/images/aba-logo.png" alt="ABA" fill sizes="44px" className="object-cover" />
                   </span>
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 flex-wrap">
                       <span className="payment-method-title text-sm font-bold text-foreground">KHQR</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                        Universal
-                      </span>
-                    </span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">All Cambodian Banks (KHQR)</span>
-                  </span>
-                </span>
-                <span className={`topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                  selectedPaymentMethod === "khqr" ? "bg-[#16A34A] text-white" : "border border-slate-300"
-                }`}>
-                  {selectedPaymentMethod === "khqr" ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
-                </span>
-              </button>
-
-              {/* Option 2: ABA PayWay V2 */}
-              <button
-                type="button"
-                aria-pressed={selectedPaymentMethod === "aba_payway_v2"}
-                onClick={() => {
-                  setSelectedPaymentMethod("aba_payway_v2");
-                  if (isVngConfigured === false) {
-                    toast.info("KHQR V2 (Sandbox Demo)", {
-                      id: "payway-v2-mode",
-                      description: "Operating in test mode. Add VNGZZ2_PRIMARY_API_KEY in .env.local for live gateway.",
-                    });
-                  }
-                }}
-                className={`topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border p-3 text-left transition-all cursor-pointer ${
-                  selectedPaymentMethod === "aba_payway_v2"
-                    ? "border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20"
-                    : "border-slate-200 hover:border-slate-300 bg-white"
-                }`}
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#004B87] flex items-center justify-center text-white">
-                    <QrCode className="h-6 w-6" />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="flex items-center gap-1.5 flex-wrap">
-                      <span className="payment-method-title text-sm font-bold text-foreground">KHQR V2</span>
                       <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
                         isVngConfigured === false
                           ? "bg-amber-100 text-amber-800"
-                          : "bg-sky-100 text-[#004B87]"
+                          : "bg-emerald-100 text-emerald-800"
                       }`}>
-                        {isVngConfigured === false ? "Sandbox Demo" : "Direct ABA"}
+                        {isVngConfigured === false ? "Sandbox Demo" : "Instant"}
                       </span>
                     </span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">
-                      {isVngConfigured === false ? "Requires VNGZZ2_PRIMARY_API_KEY" : "PayWay QR & ABA Mobile App"}
+                      ABA Mobile &amp; All Cambodian Banks (KHQR)
                     </span>
                   </span>
                 </span>
-                <span className={`topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
-                  selectedPaymentMethod === "aba_payway_v2" ? "bg-[#004B87] text-white" : "border border-slate-300"
-                }`}>
-                  {selectedPaymentMethod === "aba_payway_v2" ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+                <span className="topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#004B87] text-white">
+                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
                 </span>
-              </button>
-            </div>
-
-            {selectedPaymentMethod === "khqr" && gatewayDown && (
-              <div
-                role="alert"
-                className="flex items-start gap-3 rounded-xl border border-amber-300/80 bg-amber-50/90 dark:bg-amber-950/30 dark:border-amber-500/30 p-3.5 text-xs text-amber-900 dark:text-amber-200 animate-in fade-in"
-              >
-                <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
-                <div className="space-y-1">
-                  <div className="font-bold flex items-center gap-1.5 flex-wrap">
-                    <span>AnajakPay KHQR Rail Temporarily Down</span>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold uppercase bg-amber-200/80 dark:bg-amber-900/60 text-amber-950 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
-                      Bank Maintenance
-                    </span>
-                  </div>
-                  <p className="text-[11px] opacity-90 leading-relaxed">
-                    {gatewayDownMessage || "AnajakPay's banking rail is currently reporting service maintenance. You can choose ABA PayWay V2 above to continue your purchase without delay."}
-                  </p>
-                </div>
               </div>
-            )}
+            </div>
           </section>
 
         </div>
@@ -829,7 +665,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
               <div className="topup-summary-row">
                 <span className="topup-summary-label">Payment</span>
                 <span className="topup-summary-value font-bold">
-                  {selectedPaymentMethod === "aba_payway_v2" ? "KHQR V2" : "KHQR"}
+                  KHQR (ABA PayWay)
                 </span>
               </div>
             </div>
@@ -868,8 +704,6 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
                 ? "Verify your account to continue."
                 : !selectedPackage
                 ? "Choose your package to continue."
-                : selectedPaymentMethod === "aba_payway_v2"
-                ? "Continue to KHQR V2 checkout."
                 : "Continue to secure KHQR checkout."}
             </p>
 

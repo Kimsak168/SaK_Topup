@@ -3,7 +3,9 @@ import { unstable_cache, revalidatePath, revalidateTag } from "next/cache";
 
 export const CATALOGUE_TAG = "catalogue";
 export const BANNERS_TAG = "banners";
+export const GAME_EVENTS_TAG = "game-events";
 export const SETTINGS_TAG = "public-settings";
+export const SMM_CATALOGUE_TAG = "smm-catalogue";
 
 // This app uses the documented non-Cache-Components model. The Data Cache is
 // shared across Vercel instances; a process-local TTL Map cannot be invalidated
@@ -45,7 +47,19 @@ export function invalidateBannerCache(): void {
   revalidatePath("/");
 }
 
+export function invalidateGameEventsCache(): void {
+  revalidateTag(GAME_EVENTS_TAG, { expire: 0 });
+  revalidatePath("/");
+}
+
 export function invalidatePublicSettingsCache(): void {
   revalidateTag(SETTINGS_TAG, { expire: 0 });
   revalidatePath("/", "layout");
+}
+
+export function invalidateSmmCatalogueCache(): void {
+  revalidateTag(SMM_CATALOGUE_TAG, { expire: 0 });
+  revalidatePath("/");
+  revalidatePath("/services");
+  revalidatePath("/services/[platform]", "page");
 }

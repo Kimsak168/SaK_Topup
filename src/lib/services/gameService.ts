@@ -7,6 +7,27 @@ import type { ClientGame, ClientPackage } from "@/types/game";
 import { cachePublicQuery, CATALOGUE_TAG, invalidateCatalogueCache } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
 
+// These uploads share the same black-background artwork. Match the stored
+// upload revision so price edits retain the cutout and future uploads take over.
+const LEGACY_LEVEL_UP_ARTWORK = new Set([
+  "/api/packages/6ad6452f92d124dc45126345/image?v=d70ce864-3114-4500-ac6e-6f6482501389",
+  "/api/packages/6ad6452f92d124dc45126346/image?v=2cac64c0-3fba-4423-bbfc-c559b5737979",
+  "/api/packages/6ad6452f92d124dc45126347/image?v=f9bbc8e9-3d7e-4a0d-ae34-9297a5eeb48e",
+  "/api/packages/6ad6452f92d124dc45126348/image?v=e14beeb5-b373-4f05-9aca-0d61abbf8132",
+  "/api/packages/6ad6453092d124dc45126349/image?v=ffcd9587-3fa7-43a3-98a3-5837ece53b47",
+  "/api/packages/6ad6453092d124dc4512634a/image?v=d552c80e-13a5-4685-8f0c-21479eece5db",
+]);
+
+const FREE_FIRE_MEMBERSHIP_ARTWORK = {
+  weekly: "/images/packages/freefire-weekly-transparent.png",
+  monthly: "/images/packages/freefire-monthly-transparent.png",
+};
+
+const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
+  "/api/packages/6ad6453092d124dc4512634c/image?v=6e8d4fb0-e796-43fb-adf6-b82934eed2fd": FREE_FIRE_MEMBERSHIP_ARTWORK.weekly,
+  "/api/packages/6ad6453092d124dc4512634f/image?v=d5d87a6a-eed4-4ffc-932c-8fac92011a5b": FREE_FIRE_MEMBERSHIP_ARTWORK.monthly,
+};
+
 // Current App Store cover art for the standard game catalogue. Admin-uploaded
 // customImage values still take priority over these defaults.
 const CURRENT_GAME_COVER_ART: Record<string, string> = {
@@ -25,13 +46,16 @@ const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Pr
     const games = await Game.find({ isActive: true })
       .select("slug name supplier supplierGameCode category image customImage banner publisher currencyName description requiresServer checkoutSupported serverLabel userIdLabel instruction badge isPopular isTrending sortOrder")
       .sort({ isPopular: -1, sortOrder: 1, name: 1 }).maxTimeMS(4000).lean();
-    return games.map(g => {
+    const publicGames = games.map(g => {
       const supplier = g.supplier;
-      const code = g.supplierGameCode || g.slug;
+      const storedCode = g.supplierGameCode || g.slug;
+      const isWebBuilderFreeFire = supplier === "webbuilder" && /free[\s_-]*fire|khsgmy|sgmy/i.test(`${g.slug} ${g.name} ${storedCode}`);
+      const slug = isWebBuilderFreeFire ? "free-fire-khsgmy" : g.slug;
+      const code = isWebBuilderFreeFire ? "freefire_khsgmy" : storedCode;
       return {
-        id: String(g._id), slug: g.slug, name: g.name, code, supplier,
+        id: String(g._id), slug, name: isWebBuilderFreeFire ? "Free Fire (KHSGMY)" : g.name, code, supplier,
         path: `/games/${supplier}/${code}`, category: g.category,
-        image: g.customImage || CURRENT_GAME_COVER_ART[g.slug] || g.image, banner: g.banner, publisher: g.publisher,
+        image: g.customImage || CURRENT_GAME_COVER_ART[slug] || g.image, banner: g.banner, publisher: g.publisher,
         currencyName: g.currencyName, description: g.description,
         requiresServer: g.requiresServer, serverLabel: g.serverLabel || "Server ID",
         checkoutSupported: g.checkoutSupported !== false,
@@ -39,6 +63,8 @@ const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Pr
         badge: g.badge, isPopular: g.isPopular, isTrending: g.isTrending,
       };
     });
+    // A stale regional alias must not create a second card pointing at KHSGMY.
+    return [...new Map(publicGames.map(game => [`${game.supplier}:${game.code}`, game] as const)).values()];
   }))
 ));
 
@@ -68,54 +94,59 @@ export const getGameBySupplierAndCode = cache(async (
   rawSupplier: string,
   rawCode: string
 ): Promise<{ game: ClientGame | null; shouldRedirect?: string }> => {
-  const supplier = rawSupplier.toLowerCase().trim();
-  // VNGZZ2 regional codes are distinct products, not legacy aliases. Resolve
-  // the exact supplier/code before applying any WebBuilder compatibility rules.
-  if (supplier === "vngzz2") {
-    const identifier = rawCode.trim().toLowerCase();
+  try {
+    const supplier = rawSupplier.toLowerCase().trim();
+    // VNGZZ2 regional codes are distinct products, not legacy aliases. Resolve
+    // the exact supplier/code before applying any WebBuilder compatibility rules.
+    if (supplier === "vngzz2") {
+      const identifier = rawCode.trim().toLowerCase();
+      const games = await getCatalogue();
+      const game = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === identifier || g.slug === identifier));
+      return game && game.code !== rawCode ? { game: null, shouldRedirect: game.path } : { game: game || null };
+    }
+    const aliases: Record<string, string> = {
+      "free-fire": "freefire_khsgmy", freefire: "freefire_khsgmy", ff: "freefire_khsgmy",
+      "free-fire-sgmy": "freefire_khsgmy", "freefire-sgmy": "freefire_khsgmy", "ff-sgmy": "freefire_khsgmy",
+      "freefire_sgmy": "freefire_khsgmy",
+      "freefire_global": "freefire_khsgmy", "free-fire-global": "freefire_khsgmy",
+      "freefire_khsgmy": "freefire_khsgmy", "free-fire-khsgmy": "freefire_khsgmy", "ff-khsgmy": "freefire_khsgmy",
+      khsgmy: "freefire_khsgmy",
+      "pubg-mobile": "pubgm", pubg: "pubgm", "pubg_mobile": "pubgm",
+      "mobile-legends": "mlbb", mlbb_global: "mlbb",
+      "honor-of-kings": "hok", honor_of_kings: "hok",
+      "blood-strike": "bloodstrike",
+      "magic-chess-gogo": "magic_chess", "magic-chess": "magic_chess",
+      "8-ball-pool": "8ballpool", "8ball": "8ballpool",
+      telegram: "telegram", "telegram-stars": "telegram", "telegram_stars": "telegram", tg: "telegram",
+      roblox: "roblox", robux: "roblox",
+    };
+    const raw = rawCode.toLowerCase().trim();
+    const code = aliases[raw] || raw;
     const games = await getCatalogue();
-    const game = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === identifier || g.slug === identifier));
-    return game && game.code !== rawCode ? { game: null, shouldRedirect: game.path } : { game: game || null };
+    const matched = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === code || g.slug === code))
+      || games.find(g => g.supplier !== "vngzz2" && (g.code.toLowerCase() === code || g.slug === code));
+    const targetSupplier = matched?.supplier || (
+      (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
+      : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
+      : ["pubgm", "pubg-mobile"].includes(code) ? (matched?.supplier || "g2bulk")
+      : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
+      : (code === "roblox" || code === "robux") ? "g2bulk"
+      : supplier
+    );
+    if (!["g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
+    if (targetSupplier !== supplier || raw !== code) {
+      return { game: null, shouldRedirect: `/games/${targetSupplier}/${code}` };
+    }
+    // Share the same catalogue across metadata, page, and package slug resolution.
+    const game = games.find(g => g.supplier === targetSupplier && (g.code.toLowerCase() === code || g.slug === code));
+    if (game && (game.supplier !== supplier || game.code !== raw)) {
+      return { game: null, shouldRedirect: game.path };
+    }
+    return { game: game || null };
+  } catch (error) {
+    console.error("[getGameBySupplierAndCode] Error loading game:", error);
+    return { game: null };
   }
-  const aliases: Record<string, string> = {
-    "free-fire": "freefire_khsgmy", freefire: "freefire_khsgmy", ff: "freefire_khsgmy",
-    "free-fire-sgmy": "freefire_khsgmy", "freefire-sgmy": "freefire_khsgmy", "ff-sgmy": "freefire_khsgmy",
-    "freefire_sgmy": "freefire_khsgmy",
-    "freefire_global": "freefire_khsgmy", "free-fire-global": "freefire_khsgmy",
-    "freefire_khsgmy": "freefire_khsgmy", "free-fire-khsgmy": "freefire_khsgmy", "ff-khsgmy": "freefire_khsgmy",
-    khsgmy: "freefire_khsgmy",
-    "pubg-mobile": "pubgm", pubg: "pubgm", "pubg_mobile": "pubgm",
-    "mobile-legends": "mlbb", mlbb_global: "mlbb",
-    "honor-of-kings": "hok", honor_of_kings: "hok",
-    "blood-strike": "bloodstrike",
-    "magic-chess-gogo": "magic_chess", "magic-chess": "magic_chess",
-    "8-ball-pool": "8ballpool", "8ball": "8ballpool",
-    telegram: "telegram", "telegram-stars": "telegram", "telegram_stars": "telegram", tg: "telegram",
-    roblox: "roblox", robux: "roblox",
-  };
-  const raw = rawCode.toLowerCase().trim();
-  const code = aliases[raw] || raw;
-  const games = await getCatalogue();
-  const matched = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === code || g.slug === code))
-    || games.find(g => g.supplier !== "vngzz2" && (g.code.toLowerCase() === code || g.slug === code));
-  const targetSupplier = matched?.supplier || (
-    (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
-    : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
-    : ["pubgm", "pubg-mobile"].includes(code) ? (matched?.supplier || "g2bulk")
-    : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
-    : (code === "roblox" || code === "robux") ? "g2bulk"
-    : supplier
-  );
-  if (!["vizo", "g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
-  if (targetSupplier !== supplier || raw !== code) {
-    return { game: null, shouldRedirect: `/games/${targetSupplier}/${code}` };
-  }
-  // Share the same catalogue across metadata, page, and package slug resolution.
-  const game = games.find(g => g.supplier === targetSupplier && (g.code.toLowerCase() === code || g.slug === code));
-  if (game && (game.supplier !== supplier || game.code !== raw)) {
-    return { game: null, shouldRedirect: game.path };
-  }
-  return { game: game || null };
 });
 
 export async function updatePackageSellingPrice(
@@ -140,12 +171,22 @@ export async function updatePackageSellingPrice(
 // Supplier sync is an explicit admin action. Failed reads throw and are never
 // cached as a successful empty catalogue. Only customer fields leave the server.
 const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
-  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2", code: string, slug: string
+  supplier: "webbuilder" | "g2bulk" | "vngzz2", code: string, slug: string
 ): Promise<ClientPackage[]> => withCatalogueTimeout(catalogueQuery("packages", async () => {
-  const configs = await GamePackage.find({
-    supplier,
-    $or: [{ gameCode: code }, { gameSlug: { $in: [...new Set([code, slug])] } }],
-  })
+  const isCanonicalFreeFire = supplier === "webbuilder" && code === "freefire_khsgmy";
+  const packageFilter = isCanonicalFreeFire
+    ? {
+        supplier,
+        $or: [
+          { gameCode: code },
+          { gameCode: { $exists: false }, gameSlug: { $in: [...new Set([code, slug])] } },
+        ],
+      }
+    : {
+        supplier,
+        $or: [{ gameCode: code }, { gameSlug: { $in: [...new Set([code, slug])] } }],
+      };
+  const configs = await GamePackage.find(packageFilter)
     .select("supplierProductCode name diamondsOrPoints sellingPrice originalPrice currency badge bonus isFeatured isActive supplierAvailable customImage sortOrder updatedAt")
     .sort({ sortOrder: 1, sellingPrice: 1 }).maxTimeMS(4000).lean();
 
@@ -179,7 +220,21 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
       : isRoblox
       ? "/images/robux-coin.jpg"
       : null;
-    const image = cfg.customImage || (isDiamondPackage || isRoblox ? defaultDiamondImage : null);
+    const customImage = cfg.customImage && LEGACY_LEVEL_UP_ARTWORK.has(cfg.customImage)
+      ? "/images/packages/freefire-level-up-transparent.png"
+      : (cfg.customImage && LEGACY_MEMBERSHIP_ARTWORK[cfg.customImage]) || cfg.customImage;
+    const membershipType = /^(weekly|monthly)(?:\s+membership)?(?:\s*[×x]\s*\d+)?$/i.exec(baseName.trim())?.[1].toLowerCase();
+    const membershipPrefix = /^(weekly|monthly)(?=$|[\s×x]|lite|elite|card|pass)/i.exec(baseName.trim())?.[1].toLowerCase();
+    const selectedMembershipType = membershipType || membershipPrefix;
+    const membershipImage = isFreeFire && selectedMembershipType === "weekly"
+      ? FREE_FIRE_MEMBERSHIP_ARTWORK.weekly
+      : isFreeFire && selectedMembershipType === "monthly"
+        ? FREE_FIRE_MEMBERSHIP_ARTWORK.monthly
+        : null;
+    const levelUpImage = isFreeFire && /level\s*up/i.test(baseName)
+      ? "/images/packages/freefire-level-up-transparent.png"
+      : null;
+    const image = levelUpImage || membershipImage || customImage || (isDiamondPackage || isRoblox ? defaultDiamondImage : null);
     return {
       id: cfg.supplierProductCode, supplierProductCode: cfg.supplierProductCode,
       name, diamondsOrPoints,
@@ -195,13 +250,18 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
 })));
 
 export const getNormalizedPackages = cache(async (supplier: string, code: string): Promise<ClientPackage[]> => {
-  const result = await getGameBySupplierAndCode(supplier, code);
-  if (result.shouldRedirect) {
-    const [, , nextSupplier, nextCode] = result.shouldRedirect.split("/");
-    return getNormalizedPackages(nextSupplier, nextCode);
+  try {
+    const result = await getGameBySupplierAndCode(supplier, code);
+    if (result.shouldRedirect) {
+      const [, , nextSupplier, nextCode] = result.shouldRedirect.split("/");
+      return getNormalizedPackages(nextSupplier, nextCode);
+    }
+    if (!result.game) return [];
+    const game = result.game;
+    const packages = await getSavedPackages(game.supplier, game.code, game.slug);
+    return game.checkoutSupported === false ? packages.map(pkg => ({ ...pkg, isAvailable: false })) : packages;
+  } catch (error) {
+    console.error("[getNormalizedPackages] Error loading packages:", error);
+    return [];
   }
-  if (!result.game) return [];
-  const game = result.game;
-  const packages = await getSavedPackages(game.supplier, game.code, game.slug);
-  return game.checkoutSupported === false ? packages.map(pkg => ({ ...pkg, isAvailable: false })) : packages;
 });

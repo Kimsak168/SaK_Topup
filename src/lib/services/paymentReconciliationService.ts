@@ -2,11 +2,26 @@ import "server-only";
 import { Order, type IOrder } from "@/models/Order";
 import { Payment } from "@/models/Payment";
 import { checkVngZz2Transaction } from "@/lib/services/vngzzPayWayService";
-import { checkAnajakPayTransactionV2 } from "@/lib/services/anajakPayService";
 import { triggerAutomaticFulfillment } from "@/lib/services/fulfillmentService";
 
+// A provider that contradicts the order is a permanent conflict an operator must
+// inspect; a provider that cannot answer yet is transient and safe to retry.
+// Collapsing the two hides real mismatches behind a retryable status.
+export class PaymentVerificationError extends Error {
+  readonly permanent: boolean;
+  constructor(message: string, permanent: boolean) {
+    super(message);
+    this.name = "PaymentVerificationError";
+    this.permanent = permanent;
+  }
+}
+
+export function isPermanentVerificationConflict(error: unknown): boolean {
+  return error instanceof PaymentVerificationError && error.permanent;
+}
+
 export function paymentGatewayForOrder(order: Pick<IOrder, "paymentGateway" | "paymentMethod">) {
-  return order.paymentGateway || (order.paymentMethod === "aba_payway_v2" ? "aba_payway_v2" : "anajakpay");
+  return order.paymentGateway || "aba_payway_v2";
 }
 
 export async function reconcileOrderPayment(orderNumber: string, fulfill = true) {
@@ -23,7 +38,7 @@ export async function reconcileOrderPayment(orderNumber: string, fulfill = true)
     let reference: string | undefined;
     let reason: string | undefined;
     let raw: unknown;
-    if (gateway === "aba_payway_v2" || gateway === "vngzz2") {
+    if (gateway === "aba_payway_v2" || gateway === "vngzz2" || gateway === "khqr") {
       const result = await checkVngZz2Transaction(transactionId);
       if (!result.success) return order;
       status = result.state;
@@ -32,25 +47,22 @@ export async function reconcileOrderPayment(orderNumber: string, fulfill = true)
       reference = result.transactionId;
       reason = result.message;
       raw = result;
-    } else if (gateway === "anajakpay") {
-      const result = await checkAnajakPayTransactionV2(transactionId);
-      if (!result.success) return order;
-      status = result.status;
-      amount = result.amount;
-      reference = result.transactionId;
-      currency = "USD"; // The existing AnajakPay checkout rail settles in USD.
-      reason = result.responseMessage;
-      raw = result.raw;
     } else {
       throw new Error("This gateway has no configured payment verification.");
     }
-    if (reference !== transactionId) throw new Error("Verified transaction does not match this order.");
+    if (reference !== transactionId) throw new PaymentVerificationError("Verified transaction does not match this order.", true);
     if (!["PAID", "FAILED", "EXPIRED"].includes(status)) return order;
     const nextStatus = status as "PAID" | "FAILED" | "EXPIRED";
-    if (status === "PAID" && (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0 ||
-      Math.round(amount * 100) !== Math.round(order.amount * 100) ||
-      currency !== String(order.currency || "USD").toUpperCase())) {
-      throw new Error("Verified payment amount or currency does not match the order.");
+    if (status === "PAID") {
+      // An unusable amount means the inquiry proved nothing: stay retryable and
+      // never settle. A usable amount that disagrees is a permanent conflict.
+      if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
+        throw new PaymentVerificationError("Payment verification did not return a usable amount.", false);
+      }
+      if (Math.round(amount * 100) !== Math.round(order.amount * 100) ||
+        currency !== String(order.currency || "USD").toUpperCase()) {
+        throw new PaymentVerificationError("Verified payment amount or currency does not match the order.", true);
+      }
     }
     // The documented grace sweep can settle expired QR payments late.
     const allowed: IOrder["paymentStatus"][] = status === "PAID" ? ["PENDING", "pending", "EXPIRED", "expired"] : ["PENDING", "pending"];

@@ -89,7 +89,6 @@ function formatOccurredAt(value: Date | string): string {
 
 const PAYMENT_LABELS: Record<string, string> = {
   aba_payway_v2: "ABA PayWay V2",
-  anajakpay: "AnajakPay KHQR",
   khqr: "KHQR",
   aba: "ABA",
   wing: "Wing",
@@ -100,7 +99,6 @@ const PAYMENT_LABELS: Record<string, string> = {
 const SUPPLIER_LABELS: Record<string, string> = {
   vngzz2: "VNGZZ2",
   webbuilder: "WebBuilder",
-  vizo: "Vizo",
   g2bulk: "G2Bulk",
 };
 

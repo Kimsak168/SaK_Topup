@@ -502,23 +502,27 @@ export function isHonorOfKingsProduct(prod: WebBuilderProduct): boolean {
   );
 }
 
-/**
- * Filter products specifically for Free Fire.
- */
-export function isFreeFireProduct(prod: WebBuilderProduct): boolean {
-  const name = (prod.name || "").toLowerCase();
-  const game = (prod.game || "").toLowerCase();
-  const id = (prod.id || "").toLowerCase();
-  return (
-    game.includes("free fire") ||
-    game.includes("freefire") ||
-    game.includes("khsgmy") ||
-    name.includes("free fire") ||
-    name.includes("freefire") ||
-    name.includes("khsgmy") ||
-    id.includes("freefire") ||
-    id.includes("khsgmy")
+/** Keep only Free Fire products explicitly identified for KHSGMY/Cambodia. */
+export function isFreeFireKhsgmyProduct(prod: WebBuilderProduct): boolean {
+  const metadataLabels = Object.entries(prod.metadata || {}).flatMap(([key, value]) => {
+    if (!/region|country|market|game/i.test(key)) return [];
+    if (typeof value === "string") return [value];
+    return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  });
+  const sourceRegions = [prod.region, ...(Array.isArray(prod.regions) ? prod.regions : []), ...metadataLabels];
+  const regionLabels = sourceRegions.filter(Boolean).map(value => String(value).toLowerCase());
+  const identity = [prod.game, prod.name, prod.id, ...metadataLabels].filter(Boolean).join(" ").toLowerCase();
+  const allLabels = [identity, ...regionLabels].join(" ");
+  const isFreeFire = /free[\s_-]*fire|freefire/.test(identity);
+  const isKhsgmy = /khsgmy/.test(allLabels);
+  const isCambodia = [prod.game, ...regionLabels].some(region =>
+    /cambodia|cambodian|khmer|(?:^|[^a-z])kh(?:$|[^a-z])/.test(String(region || ""))
   );
+  const hasOtherRegion = [prod.game, prod.name, prod.id, ...sourceRegions]
+    .filter(Boolean)
+    .some(value => /\b(?:sgmy|global|thailand|indonesia|philippines|vietnam)\b/i.test(String(value)));
+
+  return isFreeFire && (isKhsgmy || isCambodia) && !hasOtherRegion;
 }
 
 /**
@@ -584,7 +588,7 @@ export async function getWebBuilderProducts(options?: {
       targetCode === "ff" ||
       targetCode.includes("khsgmy")
     ) {
-      return rawList.filter(isFreeFireProduct);
+      return rawList.filter(isFreeFireKhsgmyProduct);
     }
     if (targetCode.includes("mlbb") || targetCode.includes("mobile-legends")) {
       return rawList.filter(isMobileLegendsProduct);

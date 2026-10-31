@@ -1,40 +1,38 @@
-/* Sakura Dream keeps the storefront bright, airy, and readable. */
+/* Use a clean white and blush canvas with clear pink accents. */
 :root:has(.public-theme),
 :root[data-storefront-theme="dark"]:has(.public-theme) {
   color-scheme: light;
-  --background: #FFF8FC;
-  --foreground: #3B2D39;
+  --background: #FFF7FB;
+  --foreground: #3B2433;
   --card: #FFFFFF;
-  --card-foreground: #3B2D39;
+  --card-foreground: #3B2433;
   --popover: #FFFFFF;
-  --popover-foreground: #3B2D39;
-  --secondary: #FDF2F8;
-  --secondary-foreground: #4D3748;
-  --muted: #FDF2F8;
-  --muted-foreground: #766477;
-  --accent: #FCE7F3;
-  --accent-foreground: #8C72A5;
-  --border: #F0C6DA;
-  --border-soft: #F6DDE9;
-  --input: #F0C6DA;
-  --card-border: #F0C6DA;
-  --ring: #B54779;
+  --popover-foreground: #3B2433;
+  --secondary: #FDEAF3;
+  --secondary-foreground: #3B2433;
+  --muted: #FDEAF3;
+  --muted-foreground: #866878;
+  --accent: #F9D9E9;
+  --accent-foreground: #8F2457;
+  --border: #EAC0D4;
+  --border-soft: #F1D9E5;
+  --input: #EAC0D4;
+  --card-border: #EAC0D4;
+  --ring: #F472B6;
 }
 
 :root .public-theme,
 :root[data-storefront-theme="dark"] .public-theme {
   background:
-    radial-gradient(ellipse at 10% 15%, rgb(251 207 232 / .65), transparent 40%),
-    radial-gradient(ellipse at 90% 75%, rgb(221 214 254 / .55), transparent 42%),
-    linear-gradient(135deg, #FFF8FC 0%, #FDF2F8 50%, #FFF5FA 100%);
+    radial-gradient(ellipse at 8% 0%, rgb(236 72 153 / .14), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgb(249 168 212 / .16), transparent 44%),
+    linear-gradient(135deg, #FFF7FB 0%, #FCE7F3 55%, #FFF5FA 100%);
   color: var(--foreground);
 }
 
 :root .public-ambient,
 :root[data-storefront-theme="dark"] .public-ambient {
-  background:
-    radial-gradient(ellipse at 12% 24%, rgb(251 207 232 / .26), transparent 42%),
-    radial-gradient(ellipse at 88% 82%, rgb(221 214 254 / .2), transparent 38%);
+  background: none;
 }
 
 /* Map the storefront's existing light palette so all public routes stay legible. */
@@ -47,7 +45,7 @@
 ) { background-color: var(--secondary); }
 
 :root[data-storefront-theme="dark"] .public-theme [class~="bg-emerald-50"][class~="text-[#22C55E]"] {
-  background-color: rgb(34 197 94 / .12);
+  background-color: color-mix(in srgb, var(--storefront-primary, #DB2777) 12%, var(--card));
 }
 
 :root[data-storefront-theme="dark"] .public-theme :is(
@@ -97,4 +95,4 @@
 
 :root[data-storefront-theme="dark"] .public-theme :is(
   [class~="hover:text-[#16A34A]"]:hover, [class~="active:text-[#16A34A]"]:active
-) { color: var(--storefront-primary-hover, #963A66); }
+) { color: var(--storefront-primary-hover, #EC4899); }

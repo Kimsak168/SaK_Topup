@@ -69,7 +69,7 @@ export async function proxy(request: NextRequest) {
       const rawCode = parts[2].toLowerCase();
 
       // Preserve exact supplier and regional codes for imported catalogs.
-      if (["vngzz2", "vizo", "g2bulk"].includes(supplier)) {
+      if (["vngzz2", "g2bulk"].includes(supplier)) {
         return NextResponse.next();
       }
 

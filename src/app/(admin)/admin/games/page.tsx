@@ -26,7 +26,7 @@ interface AdminGame {
   id: string;
   slug: string;
   name: string;
-  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
+  supplier: "webbuilder" | "g2bulk" | "vngzz2";
   supplierGameCode: string;
   category: string;
   image: string;
@@ -462,8 +462,6 @@ export default function AdminGamesPage() {
                             ? "bg-blue-500/10 border border-blue-500/20 text-blue-400"
                             : game.supplier === "g2bulk"
                             ? "bg-purple-500/10 border border-purple-500/20 text-purple-400"
-                            : game.supplier === "vizo"
-                            ? "bg-amber-500/10 border border-amber-500/20 text-amber-400"
                             : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
                         }`}
                       >

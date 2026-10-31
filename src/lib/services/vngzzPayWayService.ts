@@ -137,7 +137,13 @@ export function getVngZz2Config(): VngZz2Config {
  * Accepts numbers or strings, validates > 0 and max 2 decimal places.
  */
 export function formatVngZzAmount(amount: number | string): string {
-  const numeric = typeof amount === "number" ? amount : parseFloat(String(amount).trim());
+  if (typeof amount === "string") {
+    const trimmed = amount.trim();
+    if (!trimmed || !/^\d+(\.\d{1,2})?$/.test(trimmed)) {
+      throw new Error(`Invalid payment amount: "${amount}". Must be a positive finite number.`);
+    }
+  }
+  const numeric = typeof amount === "number" ? amount : Number(amount);
   if (!Number.isFinite(numeric) || numeric <= 0) {
     throw new Error(`Invalid payment amount: "${amount}". Must be a positive finite number.`);
   }

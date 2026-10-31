@@ -2,7 +2,7 @@
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
-import { reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
+import { isPermanentVerificationConflict, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
 import { reconcileSupplierFulfillment } from "@/lib/services/fulfillmentService";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
       paymentStatus: latest.paymentStatus, fulfillmentStatus: latest.fulfillmentStatus,
       paidAt: latest.paidAt, fulfilledAt: latest.fulfilledAt, supplierOrderId: latest.supplierOrderId,
     } : null });
-  } catch {
+  } catch (error) {
+    if (isPermanentVerificationConflict(error)) return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Payment verification conflict" }, { status: 400 });
     return NextResponse.json({ success: false, error: "Reconciliation unavailable; inspect the provider before retrying." }, { status: 503 });
   }
 }

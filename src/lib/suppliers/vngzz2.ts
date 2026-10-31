@@ -48,10 +48,12 @@ function object(value: unknown): JsonObject {
   return value as JsonObject;
 }
 
-async function request(path: string, body?: JsonObject): Promise<JsonObject> {
-  const { baseUrl, apiKey, timeoutMs } = getVngzzGameConfig();
+async function request(path: string, body?: JsonObject, polling = false): Promise<JsonObject> {
+  const config = getVngzzGameConfig();
+  const { baseUrl, apiKey } = config;
+  const timeoutMs = polling ? Math.min(5000, config.timeoutMs) : config.timeoutMs;
   // Never replay a purchase automatically, even after a timeout or 5xx.
-  const attempts = body ? 1 : 3;
+  const attempts = body || polling ? 1 : 3;
   for (let attempt = 0; attempt < attempts; attempt++) {
     let response: Response;
     try {
@@ -182,6 +184,7 @@ export interface VngzzOrderResult {
 
 function normalizeOrder(data: JsonObject, reference: string): VngzzOrderResult {
   const order = object(data.data ?? data.order ?? data);
+  if (order.reference !== undefined && order.reference !== reference) throw new VngzzGameError("Supplier order reference mismatch.", 502, "ORDER_MISMATCH");
   const supplierStatus = String(order.order_status ?? order.status ?? "pending").toLowerCase();
   return {
     id: String(order.order_id ?? order.id ?? reference),
@@ -202,7 +205,7 @@ export async function createVngzzOrder(params: { productCode: string; playerId: 
 }
 
 export async function checkVngzzOrder(reference: string) {
-  return normalizeOrder(await request(`/check_order?${new URLSearchParams({ reference })}`), reference);
+  return normalizeOrder(await request(`/check_order?${new URLSearchParams({ reference })}`, undefined, true), reference);
 }
 
 export interface VngzzPlayerCheckResult {

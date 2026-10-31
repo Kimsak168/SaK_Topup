@@ -2,6 +2,7 @@ import "server-only";
 import { put, del } from "@vercel/blob";
 import { connectDB } from "@/lib/mongodb";
 import { Banner } from "@/models/Banner";
+import { GameEvent } from "@/models/GameEvent";
 import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import { Setting } from "@/models/Setting";
@@ -61,7 +62,7 @@ export async function uploadToBlob({
 
 /**
  * Safely delete an old Blob ONLY if it is not used anywhere else in the database.
- * Checks Banners, Games, GamePackages, and Settings.
+ * Checks Banners, GameEvents, Games, GamePackages, and Settings.
  */
 export async function safeDeleteBlobIfOrphaned(
   blobUrl?: string | null
@@ -80,14 +81,15 @@ export async function safeDeleteBlobIfOrphaned(
     await connectDB();
 
     // Check if any other entity still references this blobUrl
-    const [bannerInUse, gameInUse, packageInUse, settingInUse] = await Promise.all([
+    const [bannerInUse, gameEventInUse, gameInUse, packageInUse, settingInUse] = await Promise.all([
       Banner.exists({ imageUrl: blobUrl }),
+      GameEvent.exists({ imageUrl: blobUrl }),
       Game.exists({ $or: [{ customImage: blobUrl }, { image: blobUrl }, { banner: blobUrl }] }),
       GamePackage.exists({ customImage: blobUrl }),
       Setting.exists({ logoUrl: blobUrl }),
     ]);
 
-    if (bannerInUse || gameInUse || packageInUse || settingInUse) {
+    if (bannerInUse || gameEventInUse || gameInUse || packageInUse || settingInUse) {
       return {
         deleted: false,
         reason: "Blob URL is still in use by other resources in the database.",

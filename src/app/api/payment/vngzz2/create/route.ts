@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       Array.isArray(body) ||
       ["orderNumber", "gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName"].some(
         (key) => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      ) || (body.supplier !== undefined && !["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(body.supplier))
+      ) || (body.supplier !== undefined && !["webbuilder", "g2bulk", "vngzz2"].includes(body.supplier))
     ) {
       return NextResponse.json({ success: false, error: "Invalid checkout details" }, { status: 400 });
     }
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
       const cleanPlayerId = String(playerId || "").trim();
       const cleanProductCode = String(supplierProductCode || "").trim();
       const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
-      const cleanSupplier = (supplier || "webbuilder") as "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
+      const cleanSupplier = (supplier || "webbuilder") as "webbuilder" | "g2bulk" | "vngzz2";
 
       if (!cleanPlayerId) {
         return NextResponse.json({ success: false, error: "Player ID is required" }, { status: 400 });
@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
     if (error instanceof VngZz2ConfigError) {
       console.warn("[VngZz2 Create] Configuration note:", error.message);
       return NextResponse.json(
-        { success: false, error: "ABA PayWay V2 is unconfigured. Please select AnajakPay or contact support." },
+        { success: false, error: "Payment gateway is temporarily unconfigured. Please contact support." },
         { status: 400 }
       );
     }

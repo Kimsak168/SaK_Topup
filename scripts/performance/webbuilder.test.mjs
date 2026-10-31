@@ -405,7 +405,10 @@ test("WebBuilder webhook deduplicates replayed X-WebBuilder-Event and durably re
     "@/models/Order": {
       Order: {
         findOne: async () => existingOrder,
-        findByIdAndUpdate: async (_id, update) => {
+        findOneAndUpdate: async (filter, update) => {
+          assert.equal(filter.supplier, undefined);
+          assert.equal(filter.webhookEvents.$ne.startsWith('evt-'), true);
+          assert.deepEqual(Array.from(filter.paymentStatus.$in), ['PAID', 'paid']);
           writes.push(update);
           return existingOrder;
         },
@@ -491,7 +494,6 @@ test("Fulfillment service handles all WebBuilder statuses correctly", async () =
           findOne: async () => orderDoc,
         },
       },
-      "@/lib/suppliers/vizo": {},
       "@/lib/suppliers/g2bulk": {},
       "@/lib/suppliers/webbuilder": {
         createWebBuilderOrder: async () => ({ id: "wb-ord-lifecycle", status, price_cents: 85 }),

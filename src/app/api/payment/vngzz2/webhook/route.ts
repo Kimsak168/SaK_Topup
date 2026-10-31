@@ -2,7 +2,7 @@
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { verifyVngZz2WebhookSignature } from "@/lib/services/vngzzPayWayService";
-import { paymentGatewayForOrder, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
+import { isPermanentVerificationConflict, paymentGatewayForOrder, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
     const latest = await reconcileOrderPayment(order.orderNumber);
     return NextResponse.json({ success: true, orderNumber: latest.orderNumber, paymentStatus: latest.paymentStatus, isPaid: String(latest.paymentStatus).toUpperCase() === "PAID" });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error instanceof SyntaxError ? "Invalid callback JSON" : "Callback verification temporarily unavailable" }, { status: error instanceof SyntaxError ? 400 : 503 });
+    if (error instanceof SyntaxError) return NextResponse.json({ success: false, error: "Invalid callback JSON" }, { status: 400 });
+    if (isPermanentVerificationConflict(error)) return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Payment verification conflict" }, { status: 400 });
+    return NextResponse.json({ success: false, error: "Callback verification temporarily unavailable" }, { status: 503 });
   }
 }

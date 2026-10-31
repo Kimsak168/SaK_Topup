@@ -7,21 +7,109 @@ import type { ClientPackage } from "@/types/game";
 
 const DEFAULT_DIAMOND_IMAGE = "/images/diamond-crystals.png";
 
+function removeWhiteBackground(image: HTMLImageElement): string | null {
+  const { naturalWidth: width, naturalHeight: height } = image;
+  if (!width || !height || width * height > 1_000_000) return null;
+
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return null;
+
+    context.drawImage(image, 0, 0);
+    const pixels = context.getImageData(0, 0, width, height);
+    const { data } = pixels;
+    const pixelCount = width * height;
+    const visited = new Uint8Array(pixelCount);
+    const queue = new Int32Array(pixelCount);
+    let head = 0;
+    let tail = 0;
+
+    const isWhiteBackground = (pixel: number) => {
+      const offset = pixel * 4;
+      const red = data[offset];
+      const green = data[offset + 1];
+      const blue = data[offset + 2];
+      const minimum = Math.min(red, green, blue);
+      const maximum = Math.max(red, green, blue);
+      return minimum >= 224 && maximum - minimum <= 36;
+    };
+
+    const visit = (pixel: number) => {
+      if (visited[pixel]) return;
+      visited[pixel] = 1;
+      if (isWhiteBackground(pixel)) queue[tail++] = pixel;
+    };
+
+    for (let x = 0; x < width; x++) {
+      visit(x);
+      visit((height - 1) * width + x);
+    }
+    for (let y = 1; y < height - 1; y++) {
+      visit(y * width);
+      visit(y * width + width - 1);
+    }
+
+    if (tail === 0) return null;
+
+    while (head < tail) {
+      const pixel = queue[head++];
+      const x = pixel % width;
+      if (x > 0) visit(pixel - 1);
+      if (x + 1 < width) visit(pixel + 1);
+      if (pixel >= width) visit(pixel - width);
+      if (pixel + width < pixelCount) visit(pixel + width);
+    }
+
+    for (let pixel = 0; pixel < pixelCount; pixel++) {
+      if (!visited[pixel] || !isWhiteBackground(pixel)) continue;
+
+      const offset = pixel * 4;
+      const minimum = Math.min(data[offset], data[offset + 1], data[offset + 2]);
+      const alpha = 1 - minimum / 255;
+      if (alpha <= 0) {
+        data[offset] = 0;
+        data[offset + 1] = 0;
+        data[offset + 2] = 0;
+        data[offset + 3] = 0;
+        continue;
+      }
+
+      // Remove the white matte from edge pixels so it does not leave a pale halo.
+      for (let channel = 0; channel < 3; channel++) {
+        data[offset + channel] = Math.max(
+          0,
+          Math.min(255, Math.round((data[offset + channel] - 255 * (1 - alpha)) / alpha))
+        );
+      }
+      data[offset + 3] = Math.round(alpha * 255);
+    }
+
+    context.putImageData(pixels, 0, 0);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return null;
+  }
+}
+
 interface PackageCardProps {
   pkg: ClientPackage;
   isDiamond: boolean;
   isSelected: boolean;
+  loadImageEagerly: boolean;
   defaultDiamondImage?: string;
   onSelect: (pkg: ClientPackage) => void;
 }
 
-const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defaultDiamondImage = DEFAULT_DIAMOND_IMAGE, onSelect }: PackageCardProps) {
+const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, loadImageEagerly, defaultDiamondImage = DEFAULT_DIAMOND_IMAGE, onSelect }: PackageCardProps) {
   const isAvailable = pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
   const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
     : 0;
   const [failedImage, setFailedImage] = useState<string | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [processedImage, setProcessedImage] = useState<string | null>(null);
   const customImageSrc = pkg.customImage?.trim();
   const diamondImage = defaultDiamondImage;
   const imageSrc = customImageSrc && failedImage !== customImageSrc
@@ -33,12 +121,13 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
     <button
       key={pkg.id}
       type="button"
+      title={pkg.name}
       aria-pressed={isSelected}
       disabled={!isAvailable}
       onClick={() => {
         if (isAvailable) onSelect(pkg);
       }}
-      className={`package-option group relative flex min-h-[50px] min-[360px]:min-h-[54px] sm:min-h-[58px] w-full flex-row items-center gap-2 min-[360px]:gap-2.5 sm:gap-3 rounded-xl border px-2 py-1.5 min-[360px]:px-2.5 min-[360px]:py-2 sm:px-3 sm:py-2 text-left cursor-pointer transition-all focus-visible:outline-2 focus-visible:outline-[#C084FC] focus-visible:outline-offset-2 ${
+      className={`package-option group relative flex min-h-[50px] min-[360px]:min-h-[54px] sm:min-h-[58px] w-full flex-row items-center gap-2 sm:gap-2.5 rounded-xl border px-2 py-1 min-[360px]:px-2.5 text-left cursor-pointer transition-all focus-visible:outline-2 focus-visible:outline-[#C084FC] focus-visible:outline-offset-2 ${
         !isAvailable
           ? "opacity-50 bg-[#0D0914]/40 border-[#2E1F45]/60 cursor-not-allowed"
           : isSelected
@@ -46,28 +135,36 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
           : "bg-[#0D0914] border-[#2E1F45] hover:border-[#C084FC]/60 hover:bg-[#140D24] hover:shadow-[0_4px_14px_rgba(192,132,252,0.1)] active:scale-[0.985]"
       }`}
     >
-      {/* Badge */}
-      {pkg.badge && (
-        <span className="absolute -top-2 left-2 rounded-full px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] sm:text-[7.5px] font-black uppercase tracking-wider bg-gradient-to-r from-[#A855F7] to-[#7C3AED] text-white shadow-xs z-10 pointer-events-none">
-          {pkg.badge}
-        </span>
-      )}
-
-      {/* Package Image — picture on left (big, prominent, fills frame) */}
-      <div className="relative h-10 w-10 min-[360px]:h-11 min-[360px]:w-11 sm:h-12 sm:w-12 shrink-0 rounded-xl overflow-hidden bg-[#FFF8FC] border border-[#F0C6DA] flex items-center justify-center group-hover:scale-105 transition-transform shadow-sm">
+      <div className="package-option-artwork relative shrink-0 flex items-center justify-center transition-transform group-hover:scale-[1.03]">
         {imageSrc ? (
           <Image
-            src={imageSrc}
-            alt={pkg.name}
+            src={processedImage || imageSrc}
+            alt=""
             fill
-            sizes="(max-width: 639px) 44px, 48px"
-            loading="lazy"
-            className={`object-contain scale-115 transition-opacity duration-200 ease-out ${
-              isLoaded ? "opacity-100" : "opacity-0"
-            }`}
-            onLoad={() => setIsLoaded(true)}
+            sizes="96px"
+            quality={80}
+            loading={loadImageEagerly ? "eager" : "lazy"}
+            className="package-option-image object-contain"
+            onLoad={(event) => {
+              if (processedImage) return;
+
+              const image = event.currentTarget;
+              const processImage = () => {
+                const transparentImage = removeWhiteBackground(image);
+                if (transparentImage) setProcessedImage(transparentImage);
+              };
+
+              const idleWindow = window as Window & {
+                requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+              };
+              if (idleWindow.requestIdleCallback) {
+                idleWindow.requestIdleCallback(processImage, { timeout: 1500 });
+              } else {
+                window.setTimeout(processImage, 0);
+              }
+            }}
             onError={() => {
-              setIsLoaded(true);
+              setProcessedImage(null);
               setFailedImage(imageSrc);
             }}
           />
@@ -79,32 +176,39 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, defa
       </div>
 
       {/* Info — on right (compact & clean) */}
-      <div className="flex-1 min-w-0 flex flex-col justify-center text-left">
-        <div className="min-h-[2.2em] text-[11px] min-[360px]:text-xs sm:text-[13px] font-bold text-[#F8F5FF] leading-tight line-clamp-2 whitespace-normal break-words">
+      <div className="package-option-info min-w-0 flex-1 flex flex-col justify-center text-left">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <div className="package-option-title min-w-0 flex-1 line-clamp-1 font-bold leading-tight">
           {(() => {
             const raw = (pkg.diamondsOrPoints || pkg.name).trim();
             const levelUp = raw.replace(/Level\s*Up\s*(?:Package|Pass)?\s*[-–—:]*\s*(?:Level|Lv\.?)?\s*(\d+)/i, "Level Up $1");
             return isDiamond && !/diamonds?/i.test(levelUp) ? `${levelUp} Diamonds` : levelUp;
           })()}
+          </div>
+          {pkg.badge && (
+            <span className="package-option-badge shrink-0 rounded-full px-2 py-1 font-black uppercase leading-none">
+              {pkg.badge}
+            </span>
+          )}
         </div>
         {pkg.bonus ? (
-          <div className="mt-0.5 truncate text-[7.5px] min-[360px]:text-[8.5px] font-semibold text-[#22C55E] leading-none">
+          <div className="package-option-bonus mt-1 truncate font-semibold leading-none">
             {pkg.bonus}
           </div>
         ) : null}
 
         {isAvailable && pkg.sellingPrice !== null ? (
-          <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5 mt-0.5 sm:mt-1 leading-none">
-            <span className="text-[12px] min-[360px]:text-[13px] sm:text-sm font-black text-[#C084FC] tracking-tight">
+          <div className="package-option-prices mt-1 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 leading-none">
+            <span className="package-option-selling-price font-black tracking-tight">
               ${pkg.sellingPrice.toFixed(2)}
             </span>
             {pkg.originalPrice && pkg.originalPrice > pkg.sellingPrice && (
-              <span className="text-[8px] min-[360px]:text-[8.5px] text-[#64748B] line-through font-medium">
+              <span className="package-option-original-price font-medium line-through">
                 ${pkg.originalPrice.toFixed(2)}
               </span>
             )}
             {discountPercent > 0 && (
-              <span className="rounded px-1.5 py-0.5 text-[6.5px] min-[360px]:text-[7px] font-black leading-none bg-[#FCE7F3] text-[#A94776] border border-[#F0C6DA]">
+              <span className="package-option-discount rounded px-1.5 py-1 font-black leading-none">
                 {discountPercent}% off
               </span>
             )}
@@ -158,8 +262,9 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
     }
     return { validPackages, specialPackages, diamondPackages };
   }, [packages]);
-  const renderPackageCard = (pkg: ClientPackage, isDiamond: boolean) => (
-    <PackageCard key={pkg.id} pkg={pkg} isDiamond={isDiamond} isSelected={selectedId === pkg.id} defaultDiamondImage={defaultDiamondImage} onSelect={onSelect} />
+  const eagerSpecialCount = Math.min(specialPackages.length, 3);
+  const renderPackageCard = (pkg: ClientPackage, isDiamond: boolean, loadImageEagerly: boolean) => (
+    <PackageCard key={pkg.id} pkg={pkg} isDiamond={isDiamond} isSelected={selectedId === pkg.id} loadImageEagerly={loadImageEagerly} defaultDiamondImage={defaultDiamondImage} onSelect={onSelect} />
   );
 
   return (
@@ -186,7 +291,7 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
                 <span>Packages</span>
               </div>
               <div className="topup-package-grid">
-                {specialPackages.map((pkg) => renderPackageCard(pkg, false))}
+                {specialPackages.map((pkg, index) => renderPackageCard(pkg, false, index < 3))}
               </div>
             </div>
           )}
@@ -199,7 +304,7 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
                 <span>Diamonds</span>
               </div>
               <div className="topup-package-grid">
-                {diamondPackages.map((pkg) => renderPackageCard(pkg, true))}
+                {diamondPackages.map((pkg, index) => renderPackageCard(pkg, true, index < 3 - eagerSpecialCount))}
               </div>
             </div>
           )}

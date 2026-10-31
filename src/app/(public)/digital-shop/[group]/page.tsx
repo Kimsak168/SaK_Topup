@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { getDigitalGroup, getDigitalShopCatalogue } from "@/lib/services/digitalShopService";
+import { getDigitalGroup } from "@/lib/services/digitalShopService";
 import { DigitalTopUpClient } from "@/components/public/DigitalTopUpClient";
 
 interface PageProps {

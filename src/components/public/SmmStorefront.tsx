@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { toast } from "sonner";
 import styles from "./SmmStorefront.module.css";
@@ -27,15 +28,20 @@ import {
   ChevronRight,
   ArrowUpDown,
 } from "lucide-react";
-import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
+import type { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
 import { PlatformCard, PlatformItem } from "./PlatformCard";
 
+const AbaPayWayV2Modal = dynamic(() => import("./AbaPayWayV2Modal"), {
+  loading: () => <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white">Preparing secure payment…</div>,
+});
+
 const STANDARD_PLATFORMS: PlatformItem[] = [
-  { id: "tiktok", name: "TikTok", count: 218 },
-  { id: "telegram", name: "Telegram", count: 780 },
-  { id: "facebook", name: "Facebook", count: 371 },
-  { id: "instagram", name: "Instagram", count: 217 },
-  { id: "youtube", name: "YouTube", count: 91 },
+  { id: "tiktok", name: "TikTok" },
+  { id: "tiktok-khmer", name: "TikTok Khmer" },
+  { id: "telegram", name: "Telegram" },
+  { id: "facebook", name: "Facebook" },
+  { id: "instagram", name: "Instagram" },
+  { id: "youtube", name: "YouTube" },
 ];
 
 export interface SmmServiceItem {
@@ -225,10 +231,14 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
   const [link, setLink] = useState("");
   const [quantity, setQuantity] = useState<number>(() => initialData?.services?.[0]?.min || 0);
   const [paymentMethod, setPaymentMethod] = useState<"aba_payway_v2" | "khqr">("aba_payway_v2");
-  const [isLoading, setIsLoading] = useState<boolean>(() => !initialData?.services || initialData.services.length === 0);
+  const [isLoading, setIsLoading] = useState<boolean>(() => !initialData?.services);
   const [loadError, setLoadError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isInitialMount = useRef(true);
+  // An empty server result is still loaded data. Remember successful queries
+  // rather than a mount flag, which runs twice in development Strict Mode.
+  const loadedQuery = useRef<string | null>(initialData?.services
+    ? JSON.stringify([1, "all", "all", "All", "", "recommended"])
+    : null);
   const orderDetailsRef = useRef<HTMLDivElement>(null);
 
   // PayWay V2 Modal State
@@ -237,6 +247,12 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
 
   const resetCatalogSelection = () => {
     setCurrentPage(1);
+    setSelectedService(null);
+    setQuantity(0);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
     setSelectedService(null);
     setQuantity(0);
   };
@@ -274,21 +290,12 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
   // The API returns a bounded MongoDB page, so filtering and pagination stay fast
   // even when the supplier catalog grows.
   useEffect(() => {
-    if (
-      isInitialMount.current &&
-      initialData?.services &&
-      initialData.services.length > 0 &&
-      selectedPlatform === "all" &&
-      selectedType === "all" &&
-      selectedCategory === "All" &&
-      !searchQuery &&
-      sortBy === "recommended" &&
-      currentPage === 1
-    ) {
-      isInitialMount.current = false;
+    const queryKey = JSON.stringify([currentPage, selectedPlatform, selectedType, selectedCategory, searchQuery, sortBy]);
+    if (loadedQuery.current === queryKey) {
+      setIsLoading(false);
+      setLoadError(false);
       return;
     }
-    isInitialMount.current = false;
 
     const controller = new AbortController();
     let active = true;
@@ -300,6 +307,8 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
       try {
         setIsLoading(true);
         setLoadError(false);
+        setSelectedService(null);
+        setQuantity(0);
         const params = new URLSearchParams({
           page: String(currentPage),
           limit: String(PAGE_SIZE),
@@ -322,8 +331,9 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
           setCatalogTotal(Number(data.catalogTotal) || 0);
           setResultTotal(Number(data.total) || 0);
           setTotalPages(Math.max(1, Number(data.pagination?.totalPages) || 1));
-          setSelectedService((selected) => selected || validServices[0] || null);
-          if (validServices[0]) setQuantity((current) => current || validServices[0].min);
+          setSelectedService(validServices[0] || null);
+          setQuantity(validServices[0]?.min || 0);
+          loadedQuery.current = queryKey;
         }
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
@@ -863,7 +873,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                     type="button"
                     aria-label="Previous page"
                     disabled={currentPage <= 1}
-                    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   >
                     <ChevronLeft aria-hidden="true" />
                   </button>
@@ -872,7 +882,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                     type="button"
                     aria-label="Next page"
                     disabled={currentPage >= pageCount}
-                    onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))}
+                    onClick={() => handlePageChange(Math.min(pageCount, currentPage + 1))}
                   >
                     <ChevronRight aria-hidden="true" />
                   </button>
@@ -1077,7 +1087,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
               {/* Submit Checkout Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !selectedService || !targetUrlIsValid || !quantityIsValid}
+                disabled={isSubmitting || isLoading || loadError || !selectedService || !targetUrlIsValid || !quantityIsValid}
                 className="w-full py-4 px-4 rounded-2xl bg-gradient-to-r from-violet-500 to-cyan-500 hover:from-violet-400 hover:to-cyan-400 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 text-slate-950 font-black text-sm tracking-wide transition-all shadow-xl shadow-violet-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99]"
               >
                 {isSubmitting ? (
@@ -1127,7 +1137,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
       ) : null}
 
       {/* ABA PayWay V2 KHQR Modal */}
-      <AbaPayWayV2Modal
+      {isPayWayModalOpen && <AbaPayWayV2Modal
         isOpen={isPayWayModalOpen}
         data={payWayModalData}
         onClose={() => setIsPayWayModalOpen(false)}
@@ -1136,7 +1146,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
           toast.success("Payment verified! Your order is now being processed.");
           router.push(`/orders?orderNumber=${encodeURIComponent(orderNumber)}`);
         }}
-      />
+      />}
     </div>
   );
 }

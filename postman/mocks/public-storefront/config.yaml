@@ -1,7 +1,0 @@
-version: 1
-name: public-storefront-toasts
-description: First-party response fixtures based on the existing SakSuuu public route handlers. Local UI verification only.
-interceptRequests: true
-scenarios:
-  - name: default
-    path: default.js

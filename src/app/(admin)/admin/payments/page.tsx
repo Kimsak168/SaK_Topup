@@ -83,18 +83,6 @@ export default function AdminPaymentsPage() {
             description: data.message || "Unable to reach VngZz2 payment server",
           });
         }
-      } else if (gatewayId === "anajakpay") {
-        const res = await fetch("/api/payment/anajakpay/health");
-        const data = await res.json();
-        if (data.available) {
-          toast.success("AnajakPay KHQRcc Rail is OPERATIONAL", {
-            description: "Bank rail online. Instant universal QR payments active.",
-          });
-        } else {
-          toast.error("AnajakPay Rail Maintenance", {
-            description: data.message || "AnajakPay reports temporary banking rail maintenance.",
-          });
-        }
       }
     } catch (err) {
       toast.error("Connection probe failed", {
@@ -165,7 +153,7 @@ export default function AdminPaymentsPage() {
         <div>
           <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#F8FAFC]">Payment Gateways</h1>
           <p className="text-xs sm:text-sm text-[#94A3B8] mt-0.5">
-            AnajakPay KHQR credentials, settlement telemetry, and live payment processing.
+            ABA PayWay KHQR credentials, settlement telemetry, and live payment processing.
           </p>
         </div>
 
@@ -194,7 +182,7 @@ export default function AdminPaymentsPage() {
             >
               <div className="flex items-center justify-between">
                 <div className="h-8 w-8 rounded-lg bg-[rgba(34,197,94,0.10)] border border-[rgba(34,197,94,0.25)] flex items-center justify-center text-[#22C55E]">
-                  {gw.id === "anajakpay" ? (
+                  {gw.id === "aba_payway_v2" ? (
                     <QrCode className="h-4 w-4" />
                   ) : gw.id === "aba" ? (
                     <CreditCard className="h-4 w-4" />
@@ -236,7 +224,7 @@ export default function AdminPaymentsPage() {
                   <span className="text-[#F8FAFC]">{gw.currency}</span>
                 </div>
 
-                {(gw.id === "aba_payway_v2" || gw.id === "anajakpay") && (
+                {gw.id === "aba_payway_v2" && (
                   <button
                     type="button"
                     onClick={() => handleTestConnection(gw.id)}
@@ -297,7 +285,7 @@ export default function AdminPaymentsPage() {
             <span>Manual Transaction Inquiry Tool</span>
           </h2>
           <p className="text-xs text-[#94A3B8]">
-            Query AnajakPay or bank transaction reference to audit payment receipt status.
+            Query ABA PayWay or bank transaction reference to audit payment receipt status.
           </p>
 
           <form onSubmit={handleVerifyLookup} className="flex gap-2 pt-1">
@@ -365,7 +353,7 @@ export default function AdminPaymentsPage() {
             <CreditCard className="h-10 w-10 text-[#64748B] mx-auto mb-2" />
             <p className="text-sm font-semibold text-[#F8FAFC]">No payment records yet</p>
             <p className="text-xs text-[#64748B] mt-1">
-              As customers complete purchases through AnajakPay KHQR or mobile banking, records are logged here.
+              As customers complete purchases through KHQR or mobile banking, records are logged here.
             </p>
           </div>
         ) : (
@@ -400,7 +388,7 @@ export default function AdminPaymentsPage() {
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                          AnajakPay
+                          KHQR
                         </span>
                       )}
                     </td>

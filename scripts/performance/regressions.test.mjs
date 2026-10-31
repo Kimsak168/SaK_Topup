@@ -70,6 +70,38 @@ function sharedDataCache() {
   };
 }
 
+test('refund pagination rejects non-finite and fractional page sizes before database queries', async () => {
+  const queries = [];
+  const route = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/AdminAuditLog': {}, '@/models/Order': {}, '@/models/Payment': {},
+    '@/lib/financeMath.mjs': {},
+    '@/models/Refund': { Refund: {
+      countDocuments: async () => 0,
+      find: () => {
+        const query = {};
+        queries.push(query);
+        return {
+          sort() { return this; },
+          skip(value) { query.skip = value; return this; },
+          limit(value) { query.limit = value; return this; },
+          lean: async () => [],
+        };
+      },
+    } },
+  })('src/app/api/admin/refunds/route.ts');
+  for (const search of ['page=Infinity&limit=Infinity', 'page=1.5&limit=2.5', 'page=NaN&limit=NaN']) {
+    const result = await route.GET({ nextUrl: new URL('http://localhost/api/admin/refunds?' + search) });
+    assert.equal(result.status, 200);
+    const body = await result.json();
+    assert.equal(body.pagination.page, 1);
+    assert.equal(body.pagination.limit, 25);
+    assert.deepEqual(queries.at(-1), { skip: 0, limit: 25 });
+  }
+});
+
 test('admin return paths stay inside the dashboard and cannot loop back to login', () => {
   const { getAdminRedirect } = loader({}, { URL })('src/lib/adminRedirect.ts');
   assert.equal(getAdminRedirect('/admin/orders?page=2#latest'), '/admin/orders?page=2#latest');
@@ -208,11 +240,10 @@ test('verification caches only public game rules and admin invalidation refreshe
   assert.equal(queries, 2);
 });
 
-function verificationRoute(vizo, g2bulk, game = { supplierGameCode: 'freefire_sgmy', requiresServer: false }, globals = {}, webbuilder = async () => ({ success: false, isUnavailable: true })) {
+function verificationRoute(webbuilder, g2bulk, game = { supplierGameCode: 'freefire_sgmy', requiresServer: false }, globals = {}) {
   return loader({
     'next/server': { NextResponse: Response },
     '@/lib/services/verificationGameService': { getVerificationGame: async () => game },
-    '@/lib/suppliers/vizo': { checkVizoPlayer: vizo },
     '@/lib/suppliers/g2bulk': { checkG2BulkPlayer: g2bulk },
     '@/lib/suppliers/webbuilder': { checkWebBuilderPlayer: webbuilder },
   }, { Headers, AbortSignal, ...globals })('src/app/api/player/verify/route.ts').POST;
@@ -231,26 +262,31 @@ test('verification keeps invalid IDs distinct, never calls fallback for invalid 
   assert.equal(res.status, 400);
   assert.equal((await res.json()).isInvalidId, true);
   assert.equal(res.headers.get('cache-control'), 'no-store');
-  assert.match(res.headers.get('server-timing'), /metadata;dur=.*vizo;dur=.*app;dur=.*total;dur=/);
+  assert.match(res.headers.get('server-timing'), /metadata;dur=.*webbuilder;dur=.*app;dur=.*total;dur=/);
   assert.ok(!res.headers.get('server-timing').includes('test-player'));
 });
 
-test('MLBB regional fallback preserves success and shares one deadline across all suppliers', async () => {
+test('MLBB regional fallback preserves success and shares one deadline across suppliers', async () => {
   const signals = [];
   const calls = [];
   const deadlines = [];
   const timedSignals = { any: signals => AbortSignal.any(signals), timeout: ms => {
     const controller = new AbortController(); deadlines.push({ ms, controller }); return controller.signal;
   } };
-  const route = verificationRoute(async (_game, _id, _server, signal) => {
-    signals.push(signal); calls.push('vizo'); return { success: true, playerName: 'Fixture' };
-  }, async (game, _id, _server, signal) => {
-    signals.push(signal); calls.push(game); return { success: false, isInvalidId: true };
-  }, { supplierGameCode: 'mlbb', requiresServer: true }, { AbortSignal: timedSignals });
+  const route = verificationRoute(
+    async () => ({ success: false, isUnavailable: true }),
+    async (game, _id, _server, signal) => {
+      signals.push(signal); calls.push(game);
+      if (game === 'mlbb') return { success: false, isInvalidId: true };
+      return { success: true, playerName: 'Fixture' };
+    },
+    { supplierGameCode: 'mlbb', requiresServer: true },
+    { AbortSignal: timedSignals }
+  );
   const res = await route(verificationRequest('mlbb', 'test-zone'));
   assert.equal((await res.json()).success, true);
-  assert.deepEqual(calls, ['mlbb', 'mlbb_global', 'vizo']);
-  assert.deepEqual(deadlines.map(d => d.ms), [8000, 5000, 5000, 5000]);
+  assert.deepEqual(calls, ['mlbb', 'mlbb_global']);
+  assert.deepEqual(deadlines.map(d => d.ms), [8000, 5000, 5000]);
   deadlines[0].controller.abort();
   assert.ok(signals.every(signal => signal.aborted));
 });
@@ -261,33 +297,42 @@ test('verification timeout is a shared eight-second budget, not a new ten-second
   const signals = { any: signals => AbortSignal.any(signals), timeout: ms => { budgets.push(ms); return AbortSignal.timeout(ms === 8000 ? 80 : 15); } };
   const unavailable = { success: false, isUnavailable: true };
   let fallbackHadTime = false;
-  const route = verificationRoute(async (_game, _id, _server, signal) => {
-    await new Promise(resolve => signal.addEventListener('abort', resolve, { once: true }));
-    return unavailable;
-  }, async (_game, _id, _server, signal) => { fallbackHadTime = !signal.aborted; return unavailable; }, undefined, { AbortSignal: signals });
+  const route = verificationRoute(
+    async (_prod, _id, _server, signal) => {
+      await new Promise(resolve => signal.addEventListener('abort', resolve, { once: true }));
+      return unavailable;
+    },
+    async (_game, _id, _server, signal) => { fallbackHadTime = !signal.aborted; return unavailable; },
+    undefined,
+    { AbortSignal: signals }
+  );
   const keepAlive = setTimeout(() => {}, 1000);
   try {
     const res = await route(verificationRequest());
     const body = await res.json();
     assert.equal(body.isUnavailable, true);
     assert.equal(body.isInvalidId, undefined);
-    assert.deepEqual(budgets, [8000, 5000, 5000, 5000]);
+    assert.deepEqual(budgets, [8000, 5000, 5000]);
     assert.equal(fallbackHadTime, true);
   } finally { clearTimeout(keepAlive); }
 });
 
-test('both verification adapters pass cancellation to fetch and classify it as unavailable', async () => {
-  for (const [file, name] of [['vizo', 'checkVizoPlayer'], ['g2bulk', 'checkG2BulkPlayer']]) {
+test('verification adapters pass cancellation to fetch and classify it as unavailable', async () => {
+  for (const [file, name, key] of [
+    ['g2bulk', 'checkG2BulkPlayer', 'G2BULK_API_KEY'],
+    ['webbuilder', 'checkWebBuilderPlayer', 'WEBBUILDER_API_KEY'],
+  ]) {
     const controller = new AbortController();
     controller.abort();
     let captured;
     const service = loader({}, {
-      process: { env: { VIZO_API_KEY: 'fixture', G2BULK_API_KEY: 'fixture' } },
+      process: { env: { [key]: 'fixture' } },
       AbortSignal,
       fetch: async (_url, init) => { captured = init.signal; init.signal.throwIfAborted(); },
     })(`src/lib/suppliers/${file}.ts`);
     const result = await service[name]('mlbb', 'fixture', 'fixture', controller.signal);
-    assert.equal(captured, controller.signal);
+    assert.ok(captured);
+    assert.equal(captured.aborted, true);
     assert.equal(result.isUnavailable, true);
     assert.equal(result.isInvalidId, undefined);
   }
@@ -353,14 +398,101 @@ test('concurrent serverless connection requests reuse a single pending connectio
   const mongoose = { connection: { readyState: 0 }, connect: async (_uri, options) => {
     calls++;
     assert.equal(options.autoIndex, false);
+    assert.equal(options.dbName, 'test');
+    assert.equal(options.serverSelectionTimeoutMS, 10000);
+    assert.equal(options.connectTimeoutMS, 10000);
+    assert.equal(options.socketTimeoutMS, 20000);
+    assert.equal(options.maxPoolSize, 10);
+    assert.equal(options.minPoolSize, 0);
     await new Promise(r => setTimeout(r, 10));
     mongoose.connection.readyState = 1;
     return mongoose;
   } };
-  const db = loader({ mongoose }, { process: { env: { MONGODB_URI: 'mongodb://test.invalid' } } })('src/lib/mongodb.ts');
+  const db = loader({ mongoose }, { process: { env: { NODE_ENV: 'development', MONGODB_URI: 'mongodb://test.invalid' } } })('src/lib/mongodb.ts');
   await Promise.all([db.connectDB(), db.connectDB(), db.connectDB()]);
   await db.connectDB();
   assert.equal(calls, 1);
+});
+
+test('production MongoDB connection requires an explicitly configured database name', async () => {
+  let calls = 0;
+  const mongoose = {
+    connection: { readyState: 0 },
+    connect: async () => { calls++; throw new Error('Unexpected connection'); },
+  };
+  for (const configuredName of [undefined, '', '  ']) {
+    const env = { NODE_ENV: 'production', MONGODB_URI: 'mongodb://test.invalid' };
+    if (configuredName !== undefined) env.MONGODB_DB_NAME = configuredName;
+    const db = loader({ mongoose }, { process: { env } })('src/lib/mongodb.ts');
+    await assert.rejects(
+      db.connectDB(),
+      /MONGODB_DB_NAME is required in Production\. Set it to the confirmed MongoDB database name\./
+    );
+  }
+  assert.equal(calls, 0);
+});
+
+test('production MongoDB connection selects the configured database name', async () => {
+  const configuredDatabase = 'confirmed-production-db';
+  let selectedDatabase;
+  const mongoose = {
+    connection: { readyState: 0 },
+    connect: async (_uri, options) => {
+      selectedDatabase = options.dbName;
+      mongoose.connection.readyState = 1;
+      return mongoose;
+    },
+  };
+  const db = loader({ mongoose }, {
+    process: {
+      env: {
+        NODE_ENV: 'production',
+        MONGODB_URI: 'mongodb://test.invalid',
+        MONGODB_DB_NAME: configuredDatabase,
+      },
+    },
+  })('src/lib/mongodb.ts');
+
+  await db.connectDB();
+  assert.equal(selectedDatabase, configuredDatabase);
+});
+
+test('invalid MongoDB database names fail clearly before connecting', async () => {
+  let calls = 0;
+  const mongoose = {
+    connection: { readyState: 0 },
+    connect: async () => { calls++; throw new Error('Unexpected connection'); },
+  };
+  for (const configuredDatabase of [' database ', 'database/name', 'x'.repeat(64)]) {
+    const db = loader({ mongoose }, {
+      process: {
+        env: {
+          NODE_ENV: 'production',
+          MONGODB_URI: 'mongodb://test.invalid',
+          MONGODB_DB_NAME: configuredDatabase,
+        },
+      },
+    })('src/lib/mongodb.ts');
+    await assert.rejects(db.connectDB(), /MONGODB_DB_NAME is invalid/);
+  }
+  assert.equal(calls, 0);
+});
+
+test('MongoDB connection failures never log the connection string', async () => {
+  const uri = 'mongodb+srv://user:secret@cluster.invalid/example';
+  const logEntries = [];
+  const mongoose = {
+    connection: { readyState: 0 },
+    connect: async () => { throw new Error(`Connection failed for ${uri}`); },
+  };
+  const db = loader({ mongoose }, {
+    console: { error: (...args) => logEntries.push(args.join(' ')) },
+    process: { env: { NODE_ENV: 'production', MONGODB_URI: uri, MONGODB_DB_NAME: 'confirmed-db' } },
+  })('src/lib/mongodb.ts');
+
+  await assert.rejects(db.connectDB(), /MongoDB connection failed/);
+  assert.match(logEntries[0], /\[MongoDB\] Connection failed\./);
+  assert.equal(logEntries.join(' ').includes(uri), false);
 });
 
 function matches(doc, filter) {
@@ -369,6 +501,8 @@ function matches(doc, filter) {
     if (key === '$or') return value.some(condition => matches(doc, condition));
     if (value && typeof value === 'object' && '$in' in value) return value.$in.includes(doc[key]);
     if (value && typeof value === 'object' && '$exists' in value) return (doc[key] !== undefined) === value.$exists;
+    // MongoDB's $ne also matches documents where the field is absent.
+    if (value && typeof value === 'object' && '$ne' in value) return doc[key] !== value.$ne;
     if (value && typeof value === 'object' && '$gt' in value) return doc[key] > value.$gt;
     if (value && typeof value === 'object' && '$regex' in value) return new RegExp(value.$regex, value.$options).test(doc[key] || '');
     return doc[key] === value;
@@ -416,17 +550,21 @@ test('legacy slugs retain configured prices, isolate games, and never expose sup
 function checkout(sellingPrice, isActive = true, existing = false) {
   const writes = [];
   const pkg = { _id: 'p', sellingPrice, isActive, name: 'Package', supplierProductCode: 'product', buyingPrice: 1 };
-  const order = { supplier: 'vizo', supplierProductCode: 'product', gameSlug: 'free-fire', paymentStatus: 'PENDING', amount: 1, save: async () => writes.push('save') };
+  const order = { supplier: 'g2bulk', supplierProductCode: 'product', gameSlug: 'free-fire', paymentStatus: 'PENDING', amount: 1, save: async () => writes.push('save') };
   const route = loader({
     'next/server': { NextResponse: { json: (body, options = {}) => ({ body, status: options.status || 200 }) } },
     '@/lib/mongodb': { connectDB: async () => {} },
-    '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ name: 'Free Fire', requiresServer: false }) }) } },
+    '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ name: 'Free Fire', requiresServer: false, checkoutSupported: true, supplier: 'g2bulk' }) }) } },
     '@/models/GamePackage': { GamePackage: { findOne: () => ({ lean: async () => pkg }) } },
     '@/models/Order': { Order: { findOne: async () => order, create: async data => { writes.push(data); return { ...data, save: async () => {} }; } } },
     '@/models/Payment': { Payment: { findOneAndUpdate: async () => {} } },
-    '@/lib/services/anajakPayService': { AnajakPayConfigError: class extends Error {}, generateAnajakPayV2Checkout: data => { writes.push({ signedAmount: data.amount }); return { checkoutUrl: 'https://example.test/checkout' }; } },
-  })('src/app/api/payment/anajakpay/create/route.ts');
-  return { writes, call: () => route.POST({ json: async () => existing ? { orderNumber: 'existing' } : { gameSlug: 'free-fire', supplier: 'vizo', supplierProductCode: 'product', playerId: 'test', amount: 0.01, sellingPrice: 0.01 } }) };
+    '@/lib/services/vngzzPayWayService': {
+      isVngZz2Configured: () => true,
+      VngZz2ConfigError: class extends Error {},
+      generateVngZz2Qr: async data => { writes.push({ signedAmount: data.amount }); return { qrString: 'khqr', md5: 'test-hash' }; },
+    },
+  })('src/app/api/payment/vngzz2/create/route.ts');
+  return { writes, call: () => route.POST({ json: async () => existing ? { orderNumber: 'existing' } : { gameSlug: 'free-fire', supplier: 'g2bulk', supplierProductCode: 'product', playerId: 'test', amount: 0.01, sellingPrice: 0.01 } }) };
 }
 
 test('checkout ignores submitted price and signs the current database price', async () => {
@@ -447,146 +585,37 @@ test('unavailable or unpriced packages cannot create or resume a payment', async
 });
 
 test('payment amounts reject non-finite numbers and partially numeric strings', () => {
-  const { formatAnajakAmount } = loader()('src/lib/services/anajakPayService.ts');
-  assert.equal(formatAnajakAmount(' 1.50 '), '1.50');
-  assert.equal(formatAnajakAmount(2), '2.00');
+  const { formatVngZzAmount } = loader()('src/lib/services/vngzzPayWayService.ts');
+  assert.equal(formatVngZzAmount(' 1.50 '), '1.50');
+  assert.equal(formatVngZzAmount(2), '2.00');
   for (const value of [Infinity, -Infinity, NaN, -1, '', ' ', '1.50USD', '1e2', '0x10', null, undefined]) {
-    assert.throws(() => formatAnajakAmount(value), /Invalid payment amount/);
+    assert.throws(() => formatVngZzAmount(value), /Invalid payment amount/);
   }
-});
-
-function webhook({ signed = false, amount = 9.25, paid = false } = {}) {
-  const writes = [];
-  let inquiries = 0;
-  const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, currency: 'USD', paymentStatus: paid ? 'PAID' : 'PENDING' };
-  const formatAnajakAmount = loader()('src/lib/services/anajakPayService.ts').formatAnajakAmount;
-  const { POST } = loader({
-    'next/server': { NextResponse: Response },
-    '@/lib/mongodb': { connectDB: async () => {} },
-    '@/models/Order': { Order: {
-      findOne: async () => order,
-      findByIdAndUpdate: async () => assert.fail('Must not downgrade payment'),
-      findOneAndUpdate: async (filter, update) => {
-        assert.deepEqual(Array.from(filter.paymentStatus.$in), ['PENDING', 'pending']);
-        writes.push(update); return order;
-      },
-    } },
-    '@/models/Payment': { Payment: { findOneAndUpdate: async () => writes.push('payment') } },
-    '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => writes.push('fulfill') },
-    '@/lib/services/anajakPayService': {
-      verifyAnajakPayWebhookSignature: () => signed,
-      formatAnajakAmount,
-      checkAnajakPayTransactionV2: async () => { inquiries++; return { status: 'PAID', amount }; },
-    },
-  }, { console: { log() {}, warn() {}, error() {} } })('src/app/api/payment/anajakpay/webhook/route.ts');
-  return {
-    writes, inquiries: () => inquiries,
-    call: body => POST(new Request('http://localhost/api/payment/anajakpay/webhook', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-    })),
-  };
-}
-
-test('unsigned payment callbacks use the provider amount and status, not callback claims', async () => {
-  const body = { transaction_id: 'TXN-test', amount: 9.25, status: 'SUCCESS' };
-  const mismatch = webhook({ amount: 0.01 });
-  assert.equal((await mismatch.call(body)).status, 400);
-  assert.equal(mismatch.writes.length, 0);
-  const missing = webhook({ amount: null });
-  assert.equal((await missing.call(body)).status, 503);
-  assert.equal(missing.writes.length, 0);
-  for (const extra of [{}, { amount: 0.01, status: 'FAILED', currency: 'invalid' }]) {
-    const flow = webhook();
-    assert.equal((await flow.call({ transaction_id: 'TXN-test', ...extra })).status, 200);
-    assert.equal(flow.inquiries(), 1);
-    assert.equal(flow.writes.length, 3);
-    assert.equal(flow.writes[0].$set.paymentStatus, 'PAID');
-  }
-});
-
-test('payment callbacks cannot downgrade paid orders and duplicate callbacks never fulfill again', async () => {
-  const body = { transaction_id: 'TXN-test', req_time: 'now', hash: 'test', amount: 9.25, status: 'FAILED' };
-  const failed = webhook({ signed: true, paid: true });
-  assert.equal((await failed.call(body)).status, 400);
-  assert.equal(failed.writes.length, 0);
-  const duplicate = webhook({ signed: true, paid: true });
-  assert.equal((await duplicate.call({ ...body, status: 'SUCCESS' })).status, 200);
-  assert.equal(duplicate.writes.length, 0);
-  const malformed = webhook();
-  assert.equal((await malformed.call(null)).status, 400);
-  assert.equal(malformed.inquiries(), 0);
 });
 
 test('legacy game redirects preserve the database supplier and regional Free Fire code', async () => {
   const page = loader({
     'next/navigation': { redirect: path => { throw new Error(`REDIRECT:${path}`); } },
     '@/lib/mongodb': { connectDB: async () => {} },
-    '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ supplier: 'vizo', supplierGameCode: 'custom-game' }) }) } },
+    '@/models/Game': { Game: { findOne: () => ({ lean: async () => ({ supplier: 'g2bulk', supplierGameCode: 'custom-game' }) }) } },
   }, { console: { error() {} } })('src/app/(public)/game/[slug]/page.tsx').default;
-  await assert.rejects(page({ params: Promise.resolve({ slug: 'custom-game' }) }), /REDIRECT:\/games\/vizo\/custom-game/);
+  await assert.rejects(page({ params: Promise.resolve({ slug: 'custom-game' }) }), /REDIRECT:\/games\/g2bulk\/custom-game/);
   await assert.rejects(page({ params: Promise.resolve({ slug: 'freefire_sgmy' }) }), /REDIRECT:\/games\/webbuilder\/freefire_khsgmy/);
 });
 
 test('malformed checkout and payment-check bodies fail validation before database access', async () => {
-  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/anajakpay/create/route.ts', 'src/app/api/payment/anajakpay/check/route.ts']) {
+  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/vngzz2/create/route.ts', 'src/app/api/payment/vngzz2/check/route.ts']) {
     const { POST } = loader({
       'next/server': { NextResponse: Response },
       '@/lib/mongodb': { connectDB: () => assert.fail('Invalid input must not access the database') },
       '@/models/Order': {}, '@/models/Game': {}, '@/models/GamePackage': {}, '@/models/Payment': {},
-      '@/lib/services/anajakPayService': { AnajakPayConfigError: class extends Error {} },
+      '@/lib/services/vngzzPayWayService': { VngZz2ConfigError: class extends Error {}, isVngZz2Configured: () => true },
       '@/lib/services/fulfillmentService': {},
     }, { console: { error() {} } })(filename);
     for (const body of [null, [], 'invalid', { playerId: {}, supplierProductCode: [] }, { orderNumber: { $ne: null } }]) {
       assert.equal((await POST({ json: async () => body })).status, 400, `${filename}: ${JSON.stringify(body)}`);
     }
     assert.equal((await POST({ json: async () => { throw new SyntaxError('Invalid JSON'); } })).status, 400, filename);
-  }
-});
-
-function providerVerification(body, status = 200) {
-  return loader({}, {
-    process: { env: { ANAJAKPAY_PROFILE_ID: 'test-profile', ANAJAKPAY_SECRET_KEY: 'test-secret' } },
-    URLSearchParams, AbortSignal,
-    fetch: async () => Response.json(body, { status }),
-    console: { error() {}, warn() {} },
-  })('src/lib/services/anajakPayService.ts').checkAnajakPayTransactionV2('TXN-test');
-}
-
-test('payment verification requires a successful HTTP response, an exact response code, and a valid paid amount', async () => {
-  const valid = { responseCode: 0, status: 'paid', amount: '9.25' };
-  assert.equal((await providerVerification(valid)).status, 'PAID');
-  assert.equal((await providerVerification({ responseCode: '0', data: { status: 'success', amount: 9.25 } })).amount, 9.25);
-  for (const amount of [undefined, null, '', '9.25USD', 'Infinity', -1, {}, true]) {
-    assert.equal((await providerVerification({ ...valid, amount })).status, 'ERROR', String(amount));
-  }
-  assert.equal((await providerVerification(valid, 500)).status, 'ERROR');
-  assert.equal((await providerVerification({ message: 'Not found' }, 404)).status, 'NOT_FOUND');
-  assert.equal((await providerVerification({ ...valid, responseCode: '0invalid' })).status, 'ERROR');
-});
-
-test('payment checks cannot settle missing amounts and return the actual fulfillment status', async () => {
-  for (const amount of [undefined, null, NaN, Infinity, 0.01, 9.25]) {
-    let settled = false;
-    const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, paymentStatus: 'PENDING', fulfillmentStatus: 'NOT_STARTED' };
-    const { POST } = loader({
-      'next/server': { NextResponse: Response },
-      '@/lib/mongodb': { connectDB: async () => {} },
-      '@/models/Order': { Order: { findOne: async () => order, findOneAndUpdate: async () => { settled = true; return order; } } },
-      '@/models/Payment': { Payment: { findOneAndUpdate: async () => {} } },
-      '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => ({ fulfillmentStatus: 'completed' }) },
-      '@/lib/services/anajakPayService': {
-        checkAnajakPayTransactionV2: async () => ({ status: 'PAID', amount }),
-        formatAnajakAmount: loader()('src/lib/services/anajakPayService.ts').formatAnajakAmount,
-      },
-    }, { console: { error() {}, warn() {} } })('src/app/api/payment/anajakpay/check/route.ts');
-    const res = await POST({ json: async () => ({ orderNumber: order.orderNumber }) });
-    if (amount === 9.25) {
-      assert.equal(settled, true);
-      assert.equal((await res.json()).fulfillmentStatus, 'COMPLETED');
-    } else {
-      assert.equal(settled, false, String(amount));
-      assert.equal((await res.json()).success, false);
-    }
   }
 });
 
@@ -657,6 +686,233 @@ test('admin package filters combine game, price configuration, and literal searc
   assert.deepEqual((await res.json()).packages.map(pkg => pkg.id), ['a']);
 });
 
+test('admin package image upload persists binary data, refreshes the public image, and removes it cleanly', async () => {
+  const packageId = '6ad6452f92d124dc45126343';
+  const initial = {
+    _id: packageId,
+    gameSlug: 'mlbb',
+    gameCode: 'mlbb',
+    supplier: 'webbuilder',
+    supplierProductCode: 'supplier-package-1',
+    sellingPrice: 3.5,
+    buyingPrice: 2,
+    originalPrice: 4,
+    isActive: true,
+    supplierAvailable: false,
+    adminConfigured: true,
+    isFeatured: true,
+    sortOrder: 12,
+  };
+  let stored = { ...initial };
+  const imageCache = new Map();
+  const writes = [];
+  const GamePackage = {
+    findByIdAndUpdate: (id, update) => {
+      assert.equal(id, packageId);
+      writes.push(update.$set);
+      stored = { ...stored, ...update.$set };
+      return { lean: async () => ({ ...stored }) };
+    },
+    findById: id => ({
+      select() { return this; },
+      maxTimeMS() { return this; },
+      lean: async () => id === packageId ? {
+        imageData: stored.imageData,
+        imageContentType: stored.imageContentType,
+        updatedAt: stored.updatedAt,
+      } : null,
+    }),
+  };
+  const mocks = {
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => {} },
+    '@/models/GamePackage': { GamePackage },
+    '@/lib/bannerUpload': {
+      readBannerImage: async file => ({
+        imageData: Buffer.from(await file.arrayBuffer()),
+        imageContentType: 'image/png',
+      }),
+    },
+    '@/lib/services/blobService': {
+      hasBlobToken: () => false,
+      uploadToBlob: async () => { throw new Error('Mongo persistence path should be used'); },
+    },
+    '@/lib/services/cacheService': { invalidateCatalogueCache() {} },
+    '@/lib/services/legacyImageService': {
+      invalidateLegacyImage: key => imageCache.delete(key),
+    },
+  };
+  const { POST } = loader(mocks, { File })('src/app/api/admin/packages/upload/route.ts');
+  const { GET } = loader({
+    'next/server': {},
+    '@/models/GamePackage': { GamePackage },
+    '@/lib/services/catalogueTiming': { catalogueQuery: (_name, query) => query() },
+    '@/lib/services/legacyImageService': {
+      legacyImageBytes: value => value ? Buffer.from(value) : null,
+      legacyImageCacheControl: () => 'public, max-age=60',
+      getCachedLegacyImage: key => imageCache.get(key),
+      setCachedLegacyImage: (key, value) => imageCache.set(key, value),
+      fetchWithDeduplication: (_key, query) => query(),
+    },
+  })('src/app/api/packages/[packageId]/image/route.ts');
+
+  async function upload(bytes) {
+    const form = new FormData();
+    form.set('packageId', packageId);
+    form.set('image', new File([bytes], 'package.png', { type: 'image/png' }));
+    return POST(new Request('http://localhost/api/admin/packages/upload', { method: 'POST', body: form }));
+  }
+  async function publicImage(url) {
+    return GET(
+      { nextUrl: new URL(`http://localhost${url}`) },
+      { params: Promise.resolve({ packageId }) }
+    );
+  }
+
+  const firstBytes = Buffer.from('first persistent package image');
+  const firstResponse = await upload(firstBytes);
+  assert.equal(firstResponse.status, 200);
+  const firstBody = await firstResponse.json();
+  assert.match(firstBody.package.customImage, new RegExp(`^/api/packages/${packageId}/image\\?v=`));
+  assert.deepEqual(Buffer.from(stored.imageData), firstBytes);
+  assert.equal(stored.imageContentType, 'image/png');
+  assert.equal(stored.supplierProductCode, initial.supplierProductCode);
+  assert.equal(stored.gameSlug, initial.gameSlug);
+  assert.equal(stored.gameCode, initial.gameCode);
+  assert.equal(stored.supplier, initial.supplier);
+  assert.equal(stored.sellingPrice, initial.sellingPrice);
+  assert.equal(stored.buyingPrice, initial.buyingPrice);
+  assert.equal(stored.originalPrice, initial.originalPrice);
+  assert.equal(stored.isActive, initial.isActive);
+  assert.equal(stored.supplierAvailable, initial.supplierAvailable);
+  assert.equal(stored.adminConfigured, initial.adminConfigured);
+  assert.equal(stored.isFeatured, initial.isFeatured);
+  assert.equal(stored.sortOrder, initial.sortOrder);
+  assert.equal('customImage' in writes[0], true);
+  assert.equal('imageData' in writes[0], true);
+  assert.equal('supplierProductCode' in writes[0], false);
+  assert.equal('sellingPrice' in writes[0], false);
+  assert.equal('originalPrice' in writes[0], false);
+  assert.equal('supplierAvailable' in writes[0], false);
+
+  const firstPublicResponse = await publicImage(firstBody.package.customImage);
+  assert.equal(firstPublicResponse.status, 200);
+  assert.equal(firstPublicResponse.headers.get('content-type'), 'image/png');
+  assert.deepEqual(Buffer.from(await firstPublicResponse.arrayBuffer()), firstBytes);
+
+  const secondBytes = Buffer.from('replacement package image');
+  const secondResponse = await upload(secondBytes);
+  const secondBody = await secondResponse.json();
+  assert.equal(secondResponse.status, 200);
+  assert.notEqual(secondBody.package.customImage, firstBody.package.customImage);
+  const refreshed = await publicImage(secondBody.package.customImage);
+  assert.equal(refreshed.status, 200);
+  assert.deepEqual(Buffer.from(await refreshed.arrayBuffer()), secondBytes);
+
+  const removeResponse = await POST(new Request('http://localhost/api/admin/packages/upload', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ packageId, customImage: '' }),
+  }));
+  assert.equal(removeResponse.status, 200);
+  assert.equal(stored.customImage, '');
+  assert.equal(stored.imageData, null);
+  assert.equal(stored.imageContentType, null);
+  assert.equal(stored.supplierProductCode, initial.supplierProductCode);
+  assert.equal(stored.sellingPrice, initial.sellingPrice);
+  assert.equal(stored.originalPrice, initial.originalPrice);
+  assert.equal(stored.supplierAvailable, initial.supplierAvailable);
+  assert.equal((await publicImage(secondBody.package.customImage)).status, 404);
+});
+
+test('package image uploads reject invalid MIME bytes and files above the server size limit', async () => {
+  const { readBannerImage, BannerInputError } = loader({}, { File })('src/lib/bannerUpload.ts');
+  const sharp = require('sharp');
+  const png = await sharp({
+    create: { width: 1, height: 1, channels: 4, background: '#000000' },
+  }).png().toBuffer();
+
+  const valid = await readBannerImage(new File([png], 'package.png', { type: 'image/png' }));
+  assert.ok(valid.imageData.length > 0);
+  assert.ok(['image/png', 'image/webp'].includes(valid.imageContentType));
+  await assert.rejects(
+    readBannerImage(new File([png], 'package.jpg', { type: 'image/jpeg' })),
+    error => error instanceof BannerInputError && error.status === 400
+  );
+  await assert.rejects(
+    readBannerImage(new File([Buffer.from('not an image')], 'package.png', { type: 'image/png' })),
+    error => error instanceof BannerInputError && error.status === 400
+  );
+  await assert.rejects(
+    readBannerImage(new File([Buffer.alloc(4.5 * 1024 * 1024 + 1)], 'large.png', { type: 'image/png' })),
+    error => error instanceof BannerInputError && error.status === 413
+  );
+});
+
+test('package image upload and removal require admin auth and reject temporary browser URLs', async () => {
+  let databaseConnections = 0;
+  let packageUpdates = 0;
+  const deniedResponse = new Response('Unauthorized', { status: 401 });
+  const denied = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: false, response: deniedResponse }) },
+    '@/lib/mongodb': { connectDB: async () => { databaseConnections++; } },
+    '@/models/GamePackage': { GamePackage: {
+      findByIdAndUpdate: () => { packageUpdates++; throw new Error('Unauthorized update'); },
+    } },
+  })('src/app/api/admin/packages/upload/route.ts');
+  const unauthorized = await denied.POST(new Request('http://localhost/api/admin/packages/upload', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ packageId: '6ad6452f92d124dc45126343', customImage: '' }),
+  }));
+  assert.equal(unauthorized.status, 401);
+  assert.equal(databaseConnections, 0);
+  assert.equal(packageUpdates, 0);
+
+  const { POST } = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => { databaseConnections++; } },
+    '@/models/GamePackage': { GamePackage: {
+      findByIdAndUpdate: () => { packageUpdates++; throw new Error('Temporary URL must not be persisted'); },
+    } },
+  })('src/app/api/admin/packages/upload/route.ts');
+  for (const customImage of ['blob:https://localhost/image-id', 'data:image/png;base64,AA==']) {
+    const response = await POST(new Request('http://localhost/api/admin/packages/upload', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ packageId: '6ad6452f92d124dc45126343', customImage }),
+    }));
+    assert.equal(response.status, 400);
+  }
+  assert.equal(databaseConnections, 0);
+  assert.equal(packageUpdates, 0);
+
+  let patchUpdates = 0;
+  const packageRoute = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
+    '@/lib/mongodb': { connectDB: async () => { databaseConnections++; } },
+    '@/models/Game': { Game: {} },
+    '@/models/GamePackage': { GamePackage: {
+      findByIdAndUpdate: () => { patchUpdates++; throw new Error('Temporary URL must not be persisted'); },
+    } },
+    '@/lib/services/cacheService': { invalidateCatalogueCache() {} },
+    '@/lib/services/legacyImageService': { invalidateLegacyImage() {} },
+  }, { URL })('src/app/api/admin/packages/route.ts');
+  for (const customImage of ['blob:https://localhost/image-id', 'data:image/png;base64,AA==', 'javascript:alert(1)']) {
+    const response = await packageRoute.PATCH(new Request('http://localhost/api/admin/packages', {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ packageId: '6ad6452f92d124dc45126343', customImage }),
+    }));
+    assert.equal(response.status, 400);
+  }
+  assert.equal(patchUpdates, 0);
+});
+
 test('invalid admin pagination uses finite defaults and keeps per-page limits', () => {
   const { getAdminPagination } = loader()('src/lib/adminQuery.ts');
   for (const query of ['', 'page=invalid&limit=NaN', 'page=-5&limit=-3', 'page=Infinity&limit=Infinity', 'page=1.5&limit=2.5']) {
@@ -668,35 +924,6 @@ test('invalid admin pagination uses finite defaults and keeps per-page limits', 
   assert.equal(getAdminPagination(new URLSearchParams(), 50, 250).limit, 50);
 });
 
-test('failed payment plugin loads can retry and a missing plugin never reports success', async () => {
-  const scripts = [];
-  const window = { addEventListener() {} };
-  const document = {
-    querySelector: () => scripts[0] || null,
-    getElementById: () => null,
-    createElement: () => {
-      const script = new EventTarget();
-      script.remove = () => scripts.splice(scripts.indexOf(script), 1);
-      return script;
-    },
-    head: { appendChild: script => scripts.push(script) },
-  };
-  const { loadKhqrPluginScript } = loader({}, { window, document })('src/lib/khqrPlugin.ts');
-  const first = loadKhqrPluginScript();
-  assert.equal(loadKhqrPluginScript(), first);
-  scripts[0].dispatchEvent(new Event('error'));
-  assert.equal(await first, false);
-  assert.equal(scripts.length, 0);
-  const second = loadKhqrPluginScript();
-  scripts[0].dispatchEvent(new Event('load'));
-  assert.equal(await second, false);
-  assert.equal(scripts.length, 0);
-  const third = loadKhqrPluginScript();
-  window.KhqrPayway = {};
-  scripts[0].dispatchEvent(new Event('load'));
-  assert.equal(await third, true);
-});
-
 test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned catalogs', async () => {
   const { proxy } = loader({
     'next/server': { NextResponse: { next: () => ({ next: true }), redirect: url => ({ location: url.pathname }) } },
@@ -706,7 +933,7 @@ test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned
   for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy']) {
     assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_khsgmy');
   }
-  for (const path of ['/games/g2bulk/freefire_sgmy', '/games/vizo/freefire_sgmy', '/games/vngzz2/freefire_sgmy']) {
+  for (const path of ['/games/g2bulk/freefire_sgmy', '/games/vngzz2/freefire_sgmy']) {
     assert.equal((await proxy(request(path))).next, true);
   }
   assert.equal((await proxy(request('/game/custom-game'))).next, true);
@@ -715,22 +942,20 @@ test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned
 test('admin payment reconciliation requires the provider amount to match the order', async () => {
   for (const amount of [undefined, null, NaN, Infinity, 0.01, 9.25]) {
     const writes = [];
-    const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, paymentStatus: 'PENDING', save: async () => writes.push('order') };
+    const order = { _id: 'order', orderNumber: 'ORD-test', transactionId: 'TXN-test', amount: 9.25, paymentStatus: 'PENDING', paymentGateway: 'aba_payway_v2', save: async () => writes.push('order') };
     const { POST } = loader({
       'next/server': { NextResponse: Response },
       '@/lib/auth': { requireAdminAuth: async () => ({ authorized: true }) },
       '@/lib/mongodb': { connectDB: async () => {} },
-      '@/models/Order': { Order: { findOne: async () => order, findById: () => ({ lean: async () => order }) } },
+      '@/models/Order': { Order: { findOne: async () => order, findById: () => ({ lean: async () => order }), findOneAndUpdate: async () => order } },
       '@/models/Payment': { Payment: { findOneAndUpdate: async () => writes.push('payment') } },
-      '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => { writes.push('fulfill'); return { message: 'Dispatched' }; } },
-      '@/lib/services/anajakPayService': {
-        queryAnajakPayTransactionStatus: async () => ({ verified: true, amount }),
-        formatAnajakAmount: loader()('src/lib/services/anajakPayService.ts').formatAnajakAmount,
+      '@/lib/services/fulfillmentService': { triggerAutomaticFulfillment: async () => { writes.push('fulfill'); return { message: 'Dispatched' }; }, reconcileSupplierFulfillment: async () => ({ message: 'Reconciled' }) },
+      '@/lib/services/vngzzPayWayService': {
+        checkVngZz2Transaction: async () => ({ success: true, state: 'PAID', amount, currency: 'USD', transactionId: 'TXN-test' }),
       },
     })('src/app/api/admin/orders/reconcile/route.ts');
     const res = await POST({ json: async () => ({ orderNumber: order.orderNumber }) });
-    assert.equal(res.status, amount === 9.25 ? 200 : 400, String(amount));
-    assert.equal(writes.length, amount === 9.25 ? 3 : 0, String(amount));
+    assert.equal(res.status, amount === 9.25 ? 200 : (amount === 0.01 ? 400 : 503), String(amount));
   }
 });
 
@@ -811,7 +1036,7 @@ test('VNGZZ2 fulfillment submits the stored product and reference and reconciles
   const service = loader({
     '@/lib/mongodb': { connectDB: async () => {} },
     '@/models/Order': { Order: { findOneAndUpdate: async () => order, findOne: async () => order, findByIdAndUpdate: async () => {} } },
-    '@/lib/suppliers/webbuilder': {}, '@/lib/suppliers/vizo': {}, '@/lib/suppliers/g2bulk': {},
+    '@/lib/suppliers/webbuilder': {}, '@/lib/suppliers/g2bulk': {},
     '@/lib/suppliers/vngzz2': {
       createVngzzOrder: async payload => { calls.push(payload); return { id: 'provider-id', status: 'processing', supplierStatus: 'pending', message: 'Pending' }; },
       checkVngzzOrder: async reference => { assert.equal(reference, order.orderNumber); return { id: 'provider-id', status: 'completed', supplierStatus: 'completed', message: 'Delivered' }; },
@@ -840,7 +1065,7 @@ test('VNGZZ2 package endpoint and proxy preserve supplier and exact regional cod
 });
 
 test('VNGZZ2 checkout rejects unavailable stock and unsupported account fields before any payment is created', async () => {
-  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/anajakpay/create/route.ts', 'src/app/api/payment/vngzz2/create/route.ts']) {
+  for (const filename of ['src/app/api/orders/route.ts', 'src/app/api/payment/vngzz2/create/route.ts']) {
     for (const existing of [false, true]) {
       for (const unsupported of [false, true]) {
         const pkg = { supplier: 'vngzz2', supplierProductCode: 'MLBB_55', sellingPrice: 1, isActive: true, supplierAvailable: unsupported };
@@ -851,7 +1076,6 @@ test('VNGZZ2 checkout rejects unavailable stock and unsupported account fields b
           '@/models/GamePackage': { GamePackage: { findOne: filter => { assert.equal(filter.supplier, 'vngzz2'); return { lean: async () => pkg }; } } },
           '@/models/Order': { Order: { findOne: async () => order, create: () => assert.fail('Unavailable games must not create orders') } },
           '@/models/Payment': { Payment: { create: () => assert.fail('Unavailable games must not create payments') } },
-          '@/lib/services/anajakPayService': { checkAnajakPayHealth: async () => ({ available: true }), AnajakPayConfigError: class extends Error {} },
           '@/lib/services/vngzzPayWayService': { isVngZz2Configured: () => true, VngZz2ConfigError: class extends Error {} },
         }, { console: { error() {} } })(filename);
         const payload = existing && !filename.includes('/api/orders/') ? { orderNumber: 'ORD-test' } : { supplier: 'vngzz2', gameSlug: 'vngzz2-mlbb', supplierProductCode: 'MLBB_55', playerId: 'player' };

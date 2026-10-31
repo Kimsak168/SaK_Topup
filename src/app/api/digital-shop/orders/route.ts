@@ -13,7 +13,6 @@ import {
   generateVngZz2SandboxQr,
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
-import { generateAnajakPayV2Checkout } from "@/lib/services/anajakPayService";
 
 export const dynamic = "force-dynamic";
 
@@ -55,13 +54,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (paymentMethod !== "aba_payway_v2" && paymentMethod !== "khqr") {
-      return NextResponse.json(
-        { success: false, error: "Please select a supported payment method" },
-        { status: 400 }
-      );
-    }
-
     const product = await getDigitalProduct(cleanProductCode);
     if (!product || product.price <= 0) {
       return NextResponse.json(
@@ -94,126 +86,79 @@ export async function POST(req: NextRequest) {
       buyingPrice: buyingPriceUsd,
       profit: buyingPriceUsd ? Number((amountUsd - buyingPriceUsd).toFixed(2)) : undefined,
       currency: "USD",
-      paymentMethod,
-      paymentGateway: paymentMethod === "aba_payway_v2" ? "aba_payway_v2" : "anajakpay",
+      paymentMethod: "aba_payway_v2",
+      paymentGateway: "aba_payway_v2",
       paymentStatus: "PENDING",
       fulfillmentStatus: "NOT_STARTED",
       customerContact: cleanContact,
       adminNotes: `Digital Shop delivery to: ${cleanContact}. Stock: ${product.stock || "Digital"}`,
     });
 
-    if (paymentMethod === "aba_payway_v2") {
-      try {
-        const isLive = isVngZz2Configured();
-        const qrResult = isLive
-          ? await generateVngZz2Qr({
-              amount: amountUsd,
-              currency: "USD",
-              orderNumber,
-              metadata: {
-                productName: product.name,
-                contact: cleanContact,
-              },
-            })
-          : generateVngZz2SandboxQr({
-              amount: amountUsd,
-              currency: "USD",
-              orderNumber,
-              metadata: {
-                productName: product.name,
-                contact: cleanContact,
-              },
-            });
-
-        newOrder.transactionId = qrResult.transactionId;
-        newOrder.checkoutUrl = qrResult.payUrl;
-        await newOrder.save();
-
-        await Payment.findOneAndUpdate(
-          { orderNumber },
-          {
-            paymentId: `PAY-${orderNumber}`,
-            orderNumber,
-            gateway: "aba_payway_v2",
-            transactionId: qrResult.transactionId,
+    try {
+      const isLive = isVngZz2Configured();
+      const qrResult = isLive
+        ? await generateVngZz2Qr({
             amount: amountUsd,
             currency: "USD",
-            status: "PENDING",
-          },
-          { upsert: true }
-        );
+            orderNumber,
+            metadata: {
+              productName: product.name,
+              contact: cleanContact,
+            },
+          })
+        : generateVngZz2SandboxQr({
+            amount: amountUsd,
+            currency: "USD",
+            orderNumber,
+            metadata: {
+              productName: product.name,
+              contact: cleanContact,
+            },
+          });
 
-        return NextResponse.json({
-          success: true,
+      newOrder.transactionId = qrResult.transactionId;
+      newOrder.checkoutUrl = qrResult.payUrl;
+      await newOrder.save();
+
+      await Payment.findOneAndUpdate(
+        { orderNumber },
+        {
+          paymentId: `PAY-${orderNumber}`,
           orderNumber,
+          gateway: "aba_payway_v2",
           transactionId: qrResult.transactionId,
           amount: amountUsd,
           currency: "USD",
-          paymentStatus: "PENDING",
-          qrData: {
-            transactionId: qrResult.transactionId,
-            qrString: qrResult.qrString,
-            qrImage: qrResult.qrImage,
-            qrPngUrl: qrResult.qrPngUrl,
-            deepLink: qrResult.deepLink,
-            payUrl: qrResult.payUrl,
-            expireInSec: qrResult.expireInSec,
-            isSandbox: !isLive,
-          },
-        });
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Failed to generate ABA PayWay QR";
-        console.error("[DigitalShopOrder] ABA PayWay generation error:", err);
-        newOrder.paymentStatus = "FAILED";
-        newOrder.errorLog = msg;
-        await newOrder.save();
-        return NextResponse.json({ success: false, error: msg }, { status: 502 });
-      }
-    } else {
-      // paymentMethod === "khqr" (AnajakPay)
-      try {
-        const checkoutResult = generateAnajakPayV2Checkout({
-          transactionId,
-          amount: amountUsd,
-          orderNumber,
-          remark: `SakSuuu Digital - ${product.name.slice(0, 30)}`,
-        });
+          status: "PENDING",
+        },
+        { upsert: true }
+      );
 
-        newOrder.checkoutUrl = checkoutResult.checkoutUrl;
-        await newOrder.save();
-
-        await Payment.findOneAndUpdate(
-          { orderNumber },
-          {
-            paymentId: `PAY-${orderNumber}`,
-            orderNumber,
-            gateway: "anajakpay",
-            transactionId,
-            amount: amountUsd,
-            currency: "USD",
-            status: "PENDING",
-            checkoutUrl: checkoutResult.checkoutUrl,
-          },
-          { upsert: true }
-        );
-
-        return NextResponse.json({
-          success: true,
-          orderNumber,
-          transactionId,
-          amount: amountUsd,
-          currency: "USD",
-          paymentStatus: "PENDING",
-          checkoutUrl: checkoutResult.checkoutUrl,
-        });
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : "Failed to create KHQR checkout";
-        console.error("[DigitalShopOrder] AnajakPay generation error:", err);
-        newOrder.paymentStatus = "FAILED";
-        newOrder.errorLog = msg;
-        await newOrder.save();
-        return NextResponse.json({ success: false, error: msg }, { status: 502 });
-      }
+      return NextResponse.json({
+        success: true,
+        orderNumber,
+        transactionId: qrResult.transactionId,
+        amount: amountUsd,
+        currency: "USD",
+        paymentStatus: "PENDING",
+        qrData: {
+          transactionId: qrResult.transactionId,
+          qrString: qrResult.qrString,
+          qrImage: qrResult.qrImage,
+          qrPngUrl: qrResult.qrPngUrl,
+          deepLink: qrResult.deepLink,
+          payUrl: qrResult.payUrl,
+          expireInSec: qrResult.expireInSec,
+          isSandbox: !isLive,
+        },
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Failed to generate ABA PayWay QR";
+      console.error("[DigitalShopOrder] ABA PayWay generation error:", err);
+      newOrder.paymentStatus = "FAILED";
+      newOrder.errorLog = msg;
+      await newOrder.save();
+      return NextResponse.json({ success: false, error: msg }, { status: 502 });
     }
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);

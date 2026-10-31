@@ -3,7 +3,6 @@ import { connectDB } from "@/lib/mongodb";
 import { Payment, type IPayment } from "@/models/Payment";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
-import { queryAnajakPayTransactionStatus, checkAnajakPayHealth } from "@/lib/services/anajakPayService";
 import { checkVngZz2Health, checkVngZz2Transaction, isVngZz2Configured } from "@/lib/services/vngzzPayWayService";
 import { getAdminPagination } from "@/lib/adminQuery";
 
@@ -41,7 +40,7 @@ export async function GET(req: NextRequest) {
       .catch(() => []);
 
     // Summary stats
-    const [totalSuccess, totalPending, totalFailed, successfulVolumeAgg, health, vngHealth] =
+    const [totalSuccess, totalPending, totalFailed, successfulVolumeAgg, vngHealth] =
       await Promise.all([
         Payment.countDocuments({ status: { $in: SUCCESS_STATUSES } }).catch(() => 0),
         Payment.countDocuments({ status: { $in: PENDING_STATUSES } }).catch(() => 0),
@@ -50,9 +49,6 @@ export async function GET(req: NextRequest) {
           { $match: { status: { $in: SUCCESS_STATUSES } } },
           { $group: { _id: null, total: { $sum: "$amount" } } },
         ]).catch(() => []),
-        typeof checkAnajakPayHealth === "function"
-          ? checkAnajakPayHealth().catch(() => ({ available: false, message: "Health check error" }))
-          : Promise.resolve({ available: false, message: "Gateway unconfigured" }),
         typeof checkVngZz2Health === "function"
           ? checkVngZz2Health().catch(() => ({ available: false, message: "Health check error" }))
           : Promise.resolve({ available: false, message: "Gateway unconfigured" }),
@@ -60,26 +56,14 @@ export async function GET(req: NextRequest) {
 
     const totalVolume = successfulVolumeAgg[0]?.total || 0;
 
-    // Gateway configs (with masked secret keys)
-    const anajakProfile = process.env.ANAJAKPAY_PROFILE_ID;
-    const anajakSecret = process.env.ANAJAKPAY_SECRET_KEY;
-
     const vngKey = (process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim();
     const vngSlot = process.env.VNGZZ2_PAYMENT_SLOT || "USD";
     const vngConfigured = typeof isVngZz2Configured === "function" ? isVngZz2Configured() : false;
 
     const gateways = [
       {
-        id: "anajakpay",
-        name: "AnajakPay (KHQR / Cambodian Banks)",
-        status: anajakProfile && anajakSecret ? (health.available ? "active" : "maintenance") : "unconfigured",
-        profileId: anajakProfile ? `${anajakProfile.slice(0, 6)}...${anajakProfile.slice(-4)}` : "Not Configured",
-        currency: "USD / KHR",
-        type: health.available ? "Instant KHQR Universal Pay" : "KHQRcc Rail Temporarily Down",
-      },
-      {
         id: "aba_payway_v2",
-        name: "ABA PayWay V2 (VngZz2)",
+        name: "ABA PayWay V2 (KHQR)",
         status: vngConfigured ? (vngHealth.available ? "active" : "maintenance") : "unconfigured",
         profileId: vngKey ? `Slot: ${vngSlot} (${vngKey.slice(0, 4)}...${vngKey.slice(-3)})` : "Not Configured",
         currency: "USD / KHR",
@@ -167,7 +151,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Lookup transaction in DB and AnajakPay gateway
+    // Lookup transaction in DB
     const payment = await Payment.findOne({
       $or: [{ transactionId }, { paymentId: transactionId }],
     }).lean();
@@ -176,30 +160,23 @@ export async function POST(req: NextRequest) {
       $or: [{ transactionId }, { orderNumber: transactionId }],
     }).lean();
 
-    // Determine whether this transaction is VngZz2 / ABA PayWay V2 or AnajakPay
-    const isVngZz2 = payment?.gateway === "aba_payway_v2" || payment?.gateway === "vngzz2" || relatedOrder?.paymentMethod === "aba_payway_v2";
-
     let gatewayCheck: Record<string, unknown>;
-    if (isVngZz2) {
-      try {
-        const vngRes = await checkVngZz2Transaction(transactionId);
-        gatewayCheck = {
-          provider: "aba_payway_v2",
-          status: vngRes.state,
-          isPaid: vngRes.isPaid,
-          amount: vngRes.amount,
-          paywayTransactionId: vngRes.paywayTransactionId,
-          receiptUrl: vngRes.receiptUrl,
-        };
-      } catch (err) {
-        gatewayCheck = {
-          provider: "aba_payway_v2",
-          status: "ERROR",
-          error: err instanceof Error ? err.message : String(err),
-        };
-      }
-    } else {
-      gatewayCheck = await queryAnajakPayTransactionStatus(transactionId);
+    try {
+      const vngRes = await checkVngZz2Transaction(transactionId);
+      gatewayCheck = {
+        provider: "aba_payway_v2",
+        status: vngRes.state,
+        isPaid: vngRes.isPaid,
+        amount: vngRes.amount,
+        paywayTransactionId: vngRes.paywayTransactionId,
+        receiptUrl: vngRes.receiptUrl,
+      };
+    } catch (err) {
+      gatewayCheck = {
+        provider: "aba_payway_v2",
+        status: "ERROR",
+        error: err instanceof Error ? err.message : String(err),
+      };
     }
 
     return NextResponse.json({

@@ -11,21 +11,27 @@ interface GamePageProps {
 }
 
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
-  const { supplier, code } = await params;
-  const result = await getGameBySupplierAndCode(supplier, code);
+  try {
+    const { supplier, code } = await params;
+    const result = await getGameBySupplierAndCode(supplier, code);
 
-  if (result?.shouldRedirect || !result || !result.game) {
+    if (result?.shouldRedirect || !result || !result.game) {
+      return {
+        title: "Game Top-Up — SakSuuu",
+      };
+    }
+
+    const { game } = result;
+
+    return {
+      title: `Top Up ${game.name} — SakSuuu Game Top-Up`,
+      description: `Recharge ${game.name} ${game.currencyName} instantly. Official direct API delivery with 24/7 automation.`,
+    };
+  } catch {
     return {
       title: "Game Top-Up — SakSuuu",
     };
   }
-
-  const { game } = result;
-
-  return {
-    title: `Top Up ${game.name} — SakSuuu Game Top-Up`,
-    description: `Recharge ${game.name} ${game.currencyName} instantly. Official direct API delivery with 24/7 automation.`,
-  };
 }
 
 export default async function GameDetailPage({ params, searchParams }: GamePageProps) {

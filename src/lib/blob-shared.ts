@@ -1,4 +1,4 @@
-export type BlobFolder = "banners" | "games" | "packages" | "branding";
+export type BlobFolder = "banners" | "game-events" | "games" | "packages" | "branding";
 
 export const ALLOWED_IMAGE_TYPES = [
   "image/png",
@@ -10,6 +10,23 @@ export const ALLOWED_IMAGE_TYPES = [
 
 export const MAX_SERVER_UPLOAD_BYTES = 4.5 * 1024 * 1024; // 4.5 MB (Vercel Functions request body limit)
 export const MAX_CLIENT_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB for direct client-to-blob uploads
+
+/** Accept stable same-site paths and HTTP(S) URLs, but never browser-local image references. */
+export function isPersistentImageReference(value: string): boolean {
+  if (!value || /[\u0000-\u001f\u007f]/.test(value) || /^(?:blob|data):/i.test(value)) {
+    return false;
+  }
+
+  if (value.startsWith("/")) {
+    return !value.startsWith("//") && !value.includes("\\");
+  }
+
+  try {
+    return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Validate image MIME type and file size (pure client/server safe)

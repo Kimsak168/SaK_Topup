@@ -28,7 +28,7 @@ export async function GET(
 
     // 1. Normalize supplier with multi-supplier fallback
     const normalizedSupplier = supplier.trim().toLowerCase();
-    if (!["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(normalizedSupplier)) {
+    if (!["webbuilder", "g2bulk", "vngzz2"].includes(normalizedSupplier)) {
       return NextResponse.json({ success: false, error: "Unknown game supplier.", packages: [] }, { status: 404 });
     }
 

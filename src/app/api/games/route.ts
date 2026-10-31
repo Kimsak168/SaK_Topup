@@ -11,7 +11,6 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get("search") || undefined;
 
     const games = await getClientGames(category, search, {
-      timeoutMs: 5000,
       throwOnError: true,
     });
 

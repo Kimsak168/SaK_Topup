@@ -3,8 +3,8 @@
   --services-accent-bright: var(--storefront-accent, #F9A8D4);
   --services-border: color-mix(in srgb, var(--storefront-border, #DB2777) 48%, transparent);
   background:
-    radial-gradient(ellipse at 12% 0%, rgb(249 168 212 / .18), transparent 36rem),
-    linear-gradient(180deg, #BE185D 0%, #831843 52%, #701A42 100%);
+    radial-gradient(ellipse at 12% 0%, rgb(236 72 153 / .18), transparent 36rem),
+    linear-gradient(180deg, #FFF7FB 0%, #FCE7F3 52%, #FFF5FA 100%);
 }
 
 .hero {
@@ -20,7 +20,7 @@
   border-radius: 30px;
   background:
     radial-gradient(ellipse at 93% 10%, rgb(249 168 212 / .2), transparent 36%),
-    linear-gradient(125deg, rgb(190 24 93 / .98), rgb(112 26 66 / .96) 66%, rgb(131 24 67 / .98));
+    linear-gradient(125deg, rgb(45 13 29 / .98), rgb(17 10 14 / .98) 66%, rgb(34 11 22 / .98));
   box-shadow: 0 24px 80px rgb(0 0 0 / 0.28), inset 0 1px rgb(255 255 255 / 0.035);
 }
 
@@ -76,7 +76,7 @@
 
 .heroTitle span {
   color: transparent;
-  background: linear-gradient(100deg, #FBCFE8 5%, #F9A8D4 48%, #DB2777 100%);
+  background: linear-gradient(100deg, var(--storefront-primary, #E9439C) 5%, var(--storefront-primary-hover, #F36FB4) 48%, var(--storefront-accent, #FFACD3) 100%);
   background-clip: text;
   -webkit-background-clip: text;
 }
@@ -98,7 +98,7 @@
   padding: 0 17px;
   border: 1px solid rgb(249 168 212 / .34);
   border-radius: 13px;
-  background: linear-gradient(115deg, #DB2777, #BE185D);
+  background: linear-gradient(110deg, var(--storefront-primary, #E9439C) 0%, var(--storefront-primary-hover, #F36FB4) 58%, var(--storefront-accent, #FFACD3) 100%);
   color: #fff;
   font-size: 12px;
   font-weight: 750;
@@ -397,14 +397,14 @@
 .page .catalogPanel,
 .page .orderPanel {
   border-color: var(--storefront-border, #F0C6DA);
-  background: rgb(255 255 255 / .88);
-  box-shadow: 0 10px 28px rgb(105 64 91 / .07);
+  background: color-mix(in srgb, var(--storefront-card, #0E0A0D) 92%, transparent);
+  box-shadow: 0 10px 28px rgb(0 0 0 / .24);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
 }
 
 .page .hero::after {
-  background: rgb(221 214 254 / .5);
+  background: rgb(236 72 153 / .42);
   filter: blur(90px);
   opacity: .32;
 }
@@ -414,7 +414,7 @@
 .page .heroTitle,
 .page .featureCard strong { color: var(--storefront-foreground, #3B2D39); }
 .page .heroTitle span {
-  background-image: linear-gradient(100deg, #B54779, #8C72A5 78%);
+  background-image: linear-gradient(100deg, var(--storefront-primary, #E9439C), var(--storefront-accent, #FFACD3) 78%);
   background-clip: text;
   -webkit-background-clip: text;
 }
@@ -426,14 +426,14 @@
 
 .page .heroLink {
   border-color: var(--storefront-primary, #B54779);
-  background: linear-gradient(115deg, #B54779, #8C72A5);
+  background: linear-gradient(110deg, var(--storefront-primary, #E9439C) 0%, var(--storefront-primary-hover, #F36FB4) 58%, var(--storefront-accent, #FFACD3) 100%);
   box-shadow: 0 4px 12px rgb(105 64 91 / .1);
 }
 .page .heroLink:hover { box-shadow: 0 6px 16px rgb(105 64 91 / .12); }
 
 .page .featureCard {
   border-color: var(--storefront-border-soft, #F6DDE9);
-  background: rgb(255 248 252 / .82);
+  background: color-mix(in srgb, var(--storefront-primary, #E9439C) 8%, var(--storefront-card, #FFFFFF));
 }
 .page .featureIcon,
 .page .featureIcon[data-tone="green"],
@@ -447,7 +447,7 @@
 .page .platformTab[aria-pressed="true"],
 .page .typeFilter[aria-pressed="true"] {
   border-color: var(--storefront-primary, #B54779);
-  background: linear-gradient(120deg, #B54779, #8C72A5);
+  background: linear-gradient(110deg, var(--storefront-primary, #E9439C) 0%, var(--storefront-primary-hover, #F36FB4) 58%, var(--storefront-accent, #FFACD3) 100%);
   color: #FFFFFF;
   box-shadow: 0 3px 10px rgb(105 64 91 / .1);
 }
@@ -461,7 +461,7 @@
 .page .typeFilter:focus-visible { outline-color: var(--storefront-primary, #B54779); }
 .page .orderPanel button[aria-pressed="true"] {
   border-color: var(--storefront-border, #F0C6DA);
-  background: color-mix(in srgb, var(--storefront-primary, #B54779) 8%, white);
+  background: color-mix(in srgb, var(--storefront-primary, #E9439C) 12%, var(--storefront-card, #FFFFFF));
   box-shadow: 0 2px 8px rgb(105 64 91 / .07);
 }
 .page .orderPanel button[aria-pressed="true"] svg { color: var(--storefront-primary, #B54779); }
@@ -485,17 +485,17 @@
 
 .page .serviceOption {
   border-color: var(--storefront-border-soft, #F6DDE9);
-  background: rgb(255 255 255 / .9);
+  background: var(--storefront-card, #0E0A0D);
   box-shadow: none;
 }
 .page .serviceOption[aria-pressed="true"],
 .page .serviceOption[data-platform][aria-pressed="true"] {
   border-color: color-mix(in srgb, var(--storefront-primary, #B54779) 48%, white);
-  background: color-mix(in srgb, var(--storefront-primary, #B54779) 7%, white);
+  background: color-mix(in srgb, var(--storefront-primary, #DB2777) 12%, var(--storefront-card, #0E0A0D));
   box-shadow: inset 3px 0 var(--storefront-primary, #B54779);
 }
 .page .serviceOption[aria-pressed="false"]:hover {
-  border-color: color-mix(in srgb, var(--storefront-primary, #B54779) 42%, white);
+  border-color: color-mix(in srgb, var(--storefront-primary, #DB2777) 42%, var(--storefront-border, #482236));
   background: var(--storefront-soft, #FDF2F8);
 }
 
@@ -529,11 +529,11 @@
   background: var(--storefront-soft, #FDF2F8);
   color: var(--storefront-primary, #B54779);
 }
-.page .paginationControls button:hover:not(:disabled) { background: #FCE7F3; }
+.page .paginationControls button:hover:not(:disabled) { background: color-mix(in srgb, var(--storefront-primary, #DB2777) 18%, var(--storefront-card, #1A0B14)); }
 .page .skeletonCard {
   border-color: var(--storefront-border-soft, #F6DDE9);
   background: var(--storefront-card, #FFFFFF);
 }
 .page .skeletonLine {
-  background: linear-gradient(90deg, #FDF2F8, #F6DDE9, #FDF2F8);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--storefront-primary, #E9439C) 7%, var(--storefront-card, #FFFFFF)), color-mix(in srgb, var(--storefront-primary, #E9439C) 20%, var(--storefront-card, #FFFFFF)), color-mix(in srgb, var(--storefront-primary, #E9439C) 7%, var(--storefront-card, #FFFFFF)));
 }

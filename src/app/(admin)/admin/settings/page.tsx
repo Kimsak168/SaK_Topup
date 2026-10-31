@@ -290,7 +290,7 @@ export default function AdminSettingsPage() {
               {
                 id: "khqr",
                 name: "KHQR (All Cambodian Banks)",
-                desc: "AnajakPay universal QR scanner",
+                desc: "Bakong & ABA PayWay KHQR scanner",
                 icon: QrCode,
               },
               {

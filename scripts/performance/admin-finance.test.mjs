@@ -9,13 +9,14 @@ import { addMinorUnits, currencyExponent, formatMinorUnits, toMinorUnits } from 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
 
-function loadTypeScript(filename, globals = {}) {
+function loadTypeScript(filename, globals = {}, mocks = {}) {
   const fullPath = resolve(filename);
   const loaded = { exports: {} };
   const js = ts.transpileModule(readFileSync(fullPath, "utf8"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText;
   const localRequire = name => {
+    if (name in mocks) return mocks[name];
     if (name === "server-only") return {};
     if (name.startsWith("@/")) throw new Error("Unexpected alias in supplier adapter test");
     if (name.startsWith(".")) return require(resolve(dirname(fullPath), name));
@@ -64,11 +65,74 @@ test("G2Bulk balance adapter accepts a real zero and rejects an absent balance",
   }
 });
 
-test("admin finance contract secures routes and keeps the three known supplier identities", () => {
-  const contract = JSON.parse(readFileSync("postman/contracts/admin-finance.openapi.json", "utf8"));
-  assert.deepEqual(contract.components.schemas.SupplierId.enum, ["vngzz2", "g2bulk", "webbuilder"]);
-  assert.equal(contract.components.securitySchemes.adminCookie.name, "saksuuu_admin_token");
-  for (const route of ["/api/admin/finance/summary", "/api/admin/finance/transactions", "/api/admin/finance/revenue-chart", "/api/admin/suppliers/{supplierId}/balance-history"]) {
-    assert.ok(contract.paths[route], `missing contract route ${route}`);
+test("admin finance routes authorize before reading data and supplier identities match the implementation", async () => {
+  let authChecks = 0;
+  let serviceCalls = 0;
+  const unauthorized = new Response(JSON.stringify({ success: false }), {
+    status: 401,
+    headers: { "content-type": "application/json" },
+  });
+  const financeServices = new Proxy({}, {
+    get: () => () => {
+      serviceCalls++;
+      throw new Error("Finance service must not run before authorization.");
+    },
+  });
+  const supplierServices = {
+    listSupplierAccounts: async () => {
+      serviceCalls++;
+      throw new Error("Supplier service must not run before authorization.");
+    },
+    recordManualSupplierBalance: async () => {
+      serviceCalls++;
+      throw new Error("Supplier service must not run before authorization.");
+    },
+  };
+  const routeFiles = [
+    "src/app/api/admin/finance/summary/route.ts",
+    "src/app/api/admin/finance/transactions/route.ts",
+    "src/app/api/admin/finance/revenue-chart/route.ts",
+    "src/app/api/admin/suppliers/route.ts",
+    "src/app/api/admin/suppliers/[supplierId]/balance-history/route.ts",
+  ];
+
+  for (const filename of routeFiles) {
+    const route = loadTypeScript(filename, {}, {
+      "next/server": { NextResponse: { json: () => { throw new Error("Unexpected response construction."); } } },
+      "@/lib/auth": {
+        requireAdminAuth: async () => {
+          authChecks++;
+          return { authorized: false, response: unauthorized };
+        },
+      },
+      "@/lib/mongodb": { connectDB: async () => { serviceCalls++; } },
+      "@/lib/services/adminFinanceService": financeServices,
+      "@/lib/services/supplierManager": { ...supplierServices, isSupplierId: () => true },
+      "@/models/SupplierBalanceSnapshot": { SupplierBalanceSnapshot: {} },
+    });
+    const response = await route.GET({ nextUrl: new URL("http://localhost/api/admin") });
+    assert.equal(response.status, 401, `${filename} must reject an unauthenticated request`);
   }
+
+  const manager = loadTypeScript("src/lib/services/supplierManager.ts", {}, {
+    mongoose: {},
+    "@/lib/mongodb": { connectDB: async () => {} },
+    "@/lib/suppliers/vngzz2": { getVngzzAccountProfile: async () => null },
+    "@/lib/suppliers/g2bulk": { getG2BulkSmmBalance: async () => null, testG2Bulk: async () => null },
+    "@/lib/suppliers/webbuilder": { getWebBuilderBalance: async () => null },
+    "@/models/AdminAuditLog": { AdminAuditLog: {} },
+    "@/models/SupplierBalanceSnapshot": { SupplierBalanceSnapshot: {} },
+    "@/models/SupplierConfiguration": { SupplierConfiguration: {} },
+  });
+
+  assert.deepEqual(
+    ["vngzz2", "g2bulk", "webbuilder"].filter(manager.isSupplierId),
+    ["vngzz2", "g2bulk", "webbuilder"]
+  );
+  assert.equal(manager.isSupplierId("vizo"), false);
+  assert.equal(authChecks, routeFiles.length);
+  assert.equal(serviceCalls, 0);
+
+  const auth = loadTypeScript("src/lib/auth.ts", {}, { "next/server": {} });
+  assert.equal(auth.ADMIN_COOKIE_NAME, "saksuuu_admin_token");
 });

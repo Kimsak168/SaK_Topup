@@ -6,12 +6,13 @@ import { connectDB } from "@/lib/mongodb";
 import { AdminAuditLog } from "@/models/AdminAuditLog";
 import { Order } from "@/models/Order";
 import { Payment } from "@/models/Payment";
-import { Refund } from "@/models/Refund";
+import { Refund, type IRefund, type RefundStatus } from "@/models/Refund";
+import { getAdminPagination } from "@/lib/adminQuery";
 import { formatMinorUnits, toMinorUnits } from "@/lib/financeMath.mjs";
 
 export const dynamic = "force-dynamic";
 
-function safeRefund(row: any) {
+function safeRefund(row: Omit<IRefund, keyof mongoose.Document>) {
   return {
     refundId: row.refundId,
     idempotencyKey: row.idempotencyKey,
@@ -37,11 +38,10 @@ export async function GET(req: NextRequest) {
   if (!auth.authorized) return auth.response;
   try {
     await connectDB();
-    const page = Math.max(1, Number(req.nextUrl.searchParams.get("page")) || 1);
-    const limit = Math.max(1, Math.min(100, Number(req.nextUrl.searchParams.get("limit")) || 25));
+    const { page, limit } = getAdminPagination(req.nextUrl.searchParams, 25, 100);
     const status = req.nextUrl.searchParams.get("status") || "all";
     if (status !== "all" && !["requested", "processing", "completed", "failed"].includes(status)) return NextResponse.json({ success: false, error: "Unsupported refund status." }, { status: 400 });
-    const filter = (status === "all" ? {} : { status }) as any;
+    const filter: { status?: RefundStatus } = status === "all" ? {} : { status: status as RefundStatus };
     const [rows, total] = await Promise.all([
       Refund.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(),
       Refund.countDocuments(filter),

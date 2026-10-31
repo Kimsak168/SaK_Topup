@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test scripts/performance/webbuilder.test.mjs scripts/performance/payment-integrations.test.mjs scripts/performance/regressions.test.mjs scripts/performance/admin-finance.test.mjs",
+    "test": "node --test scripts/performance/webbuilder.test.mjs scripts/performance/payment-integrations.test.mjs scripts/performance/regressions.test.mjs scripts/performance/admin-finance.test.mjs scripts/performance/smm-catalog.test.mjs scripts/performance/game-events.test.mjs",
     "test:payments": "node --test scripts/performance/payment-integrations.test.mjs",
     "test:webbuilder": "node --test scripts/performance/webbuilder.test.mjs",
     "sync:hok": "node --env-file=.env.local scripts/sync-webbuilder-hok.mjs",
@@ -25,6 +25,7 @@
     "@base-ui/react": "^1.8.0",
     "@hookform/resolvers": "^5.9.1",
     "@types/qrcode": "^1.5.6",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.0",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
@@ -39,6 +40,7 @@
     "react-hook-form": "^7.89.0",
     "recharts": "^3.10.1",
     "shadcn": "^4.21.1",
+    "sharp": "^0.35.5",
     "sonner": "^2.0.8",
     "tw-animate-css": "^1.4.0",
     "zod": "^4.6.5"
@@ -50,6 +52,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "mongodb-memory-server": "^11.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

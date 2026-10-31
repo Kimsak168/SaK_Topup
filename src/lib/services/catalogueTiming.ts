@@ -19,7 +19,9 @@ export async function catalogueQuery<T>(name: string, query: () => Promise<T>): 
   }
 }
 
-export async function withCatalogueTimeout<T>(request: Promise<T>, ms = 6000): Promise<T> {
+// Budget for a cold serverless MongoDB connection (up to 5s), the query budget
+// (up to 4s), and brief queueing when a page loads several catalogue sections.
+export async function withCatalogueTimeout<T>(request: Promise<T>, ms = 15000): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([

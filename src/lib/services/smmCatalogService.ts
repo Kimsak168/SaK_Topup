@@ -7,7 +7,7 @@ import { Payment } from "@/models/Payment";
 import { SmmCatalogAudit } from "@/models/SmmCatalogAudit";
 import { SmmCatalogBackup } from "@/models/SmmCatalogBackup";
 import { SmmService, type ISmmService, type SmmPlatform, type SmmServiceType } from "@/models/SmmService";
-import { calculateSmmCustomerRate } from "@/lib/services/smmPricing";
+import { getSmmDuplicateKeys } from "./smmPublicCatalogService";
 
 export { SMM_CUSTOMER_MARGIN } from "@/lib/services/smmPricing";
 
@@ -52,25 +52,6 @@ async function backupSmmRecords(
   }
   await SmmCatalogBackup.insertMany(batches, { ordered: true });
   return rows.length;
-}
-
-async function getSmmDuplicateKeys() {
-  const [fingerprints, supplierServiceIds] = await Promise.all([
-    SmmService.aggregate([
-      { $match: { supplier: "vngzz2", fingerprint: { $type: "string", $ne: "" } } },
-      { $group: { _id: "$fingerprint", count: { $sum: 1 } } },
-      { $match: { count: { $gt: 1 } } },
-    ]),
-    SmmService.aggregate([
-      { $match: { supplier: "vngzz2", supplierServiceId: { $type: "string", $ne: "" } } },
-      { $group: { _id: "$supplierServiceId", count: { $sum: 1 } } },
-      { $match: { count: { $gt: 1 } } },
-    ]),
-  ]);
-  return {
-    fingerprints: fingerprints.map((row: { _id: string }) => row._id),
-    supplierServiceIds: supplierServiceIds.map((row: { _id: string }) => row._id),
-  };
 }
 
 export interface PreparedSmmService {
@@ -308,135 +289,6 @@ export async function applySmmSupplierSync(actor: string, expectedHash: string) 
   };
   await SmmCatalogAudit.create({ action: "sync", actor, planHash: plan.hash, summary });
   return { conflict: false as const, plan, summary };
-}
-
-export interface PublicSmmCatalogQuery {
-  page: number;
-  limit: number;
-  platform: string;
-  type: string;
-  category: string;
-  search: string;
-  sort: "recommended" | "price-low" | "price-high" | "name";
-}
-
-function escapeRegex(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-export async function getPublicSmmCatalog(query: PublicSmmCatalogQuery) {
-  await connectDB();
-  const duplicates = await getSmmDuplicateKeys();
-  const activeFilter: Record<string, unknown> = {
-    supplier: "vngzz2",
-    isActive: true,
-    supplierAvailable: true,
-    requiresReview: false,
-    reviewFlags: { $size: 0 },
-    rate: { $type: "number", $gt: 0, $lte: Number.MAX_SAFE_INTEGER },
-    min: { $type: "number", $gt: 0, $lte: Number.MAX_SAFE_INTEGER, $mod: [1, 0] },
-    max: { $type: "number", $lte: Number.MAX_SAFE_INTEGER, $mod: [1, 0] },
-    name: { $type: "string", $ne: "" },
-    category: { $type: "string", $ne: "" },
-    platform: { $in: ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"] },
-    serviceType: { $in: ["followers", "likes", "views", "comments", "shares", "other"] },
-    supplierServiceId: { $type: "string", $ne: "", $nin: duplicates.supplierServiceIds },
-    fingerprint: { $type: "string", $ne: "", $nin: duplicates.fingerprints },
-    $expr: { $gte: ["$max", "$min"] },
-  };
-  const platformFilter = query.platform === "all" || !query.platform
-    ? {}
-    : { platform: query.platform };
-  const filter: Record<string, unknown> = { ...activeFilter, ...platformFilter };
-  if (["followers", "likes", "views", "comments", "shares", "other"].includes(query.type)) filter.serviceType = query.type;
-  if (query.category && query.category !== "All") filter.category = query.category;
-  if (query.search) {
-    const search = new RegExp(escapeRegex(query.search.slice(0, 100)), "i");
-    filter.$and = [
-      ...(Array.isArray(filter.$and) ? filter.$and as Record<string, unknown>[] : []),
-      { $or: [{ name: search }, { category: search }, { platform: search }, { description: search }] },
-    ];
-  }
-
-  const sort: Record<string, 1 | -1> = query.sort === "price-low"
-    ? { rate: 1, name: 1 }
-    : query.sort === "price-high"
-      ? { rate: -1, name: 1 }
-      : query.sort === "name"
-        ? { name: 1, platform: 1 }
-        : { platform: 1, serviceType: 1, rate: 1, name: 1 };
-  const [total, catalogTotal, rows, platformCounts, categoryNames] = await Promise.all([
-    SmmService.countDocuments(filter),
-    SmmService.countDocuments(activeFilter),
-    SmmService.find(filter).select("+rate").sort(sort).skip((query.page - 1) * query.limit).limit(query.limit).lean(),
-    SmmService.aggregate([
-      { $match: activeFilter },
-      { $group: { _id: "$platform", count: { $sum: 1 } } },
-    ]),
-    SmmService.distinct("category", query.platform === "all" || !query.platform ? activeFilter : { ...activeFilter, platform: query.platform }),
-  ]);
-
-  const services = rows.map((service) => {
-      const rate = calculateSmmCustomerRate(service.rate || 0);
-      return {
-        service: service.supplierServiceId,
-        name: service.name,
-        category: service.category,
-        platform: service.platform,
-        serviceType: service.serviceType,
-        ...(service.refill === null || service.refill === undefined ? {} : { refill: service.refill }),
-        rate,
-        min: service.min,
-        max: service.max,
-        ...(service.description ? { description: service.description } : {}),
-      };
-  });
-
-  const countByPlatform = new Map<string, number>(platformCounts.map((item: { _id: string; count: number }) => [item._id, item.count]));
-  const knownPlatformLabels: Record<string, string> = {
-    tiktok: "TikTok",
-    telegram: "Telegram",
-    facebook: "Facebook",
-    instagram: "Instagram",
-    youtube: "YouTube",
-    other: "Other Platforms",
-  };
-  const standardPlatforms = ["tiktok", "telegram", "facebook", "instagram", "youtube"];
-  const platforms = [
-    { id: "all", name: "All Platforms", count: catalogTotal },
-    ...standardPlatforms.map((id) => ({
-      id,
-      name: knownPlatformLabels[id] || id,
-      count: countByPlatform.get(id) || 0,
-    })),
-  ];
-  for (const item of platformCounts) {
-    if (item._id && !standardPlatforms.includes(item._id) && item._id !== "other") {
-      platforms.push({
-        id: item._id,
-        name: knownPlatformLabels[item._id] || item._id.charAt(0).toUpperCase() + item._id.slice(1),
-        count: item.count,
-      });
-    }
-  }
-  if (countByPlatform.has("other") && (countByPlatform.get("other") || 0) > 0) {
-    platforms.push({
-      id: "other",
-      name: "Other Platforms",
-      count: countByPlatform.get("other") || 0,
-    });
-  }
-  const categories = ["All", ...categoryNames.filter((value): value is string => typeof value === "string" && Boolean(value)).sort((a, b) => a.localeCompare(b))];
-  return {
-    success: true,
-    total,
-    catalogTotal,
-    platforms,
-    categories,
-    services,
-    pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
-    source: "mongodb" as const,
-  };
 }
 
 export async function getSmmCleanupPlan() {

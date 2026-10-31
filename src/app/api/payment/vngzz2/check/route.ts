@@ -1,7 +1,7 @@
 ﻿import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
-import { paymentGatewayForOrder, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
+import { isPermanentVerificationConflict, paymentGatewayForOrder, reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -22,7 +22,8 @@ export async function POST(req: NextRequest) {
     if (paymentGatewayForOrder(order) !== "aba_payway_v2") return NextResponse.json({ success: false, error: "Payment gateway mismatch" }, { status: 400 });
     const latest = await reconcileOrderPayment(order.orderNumber);
     return NextResponse.json({ success: true, orderNumber: latest.orderNumber, paymentStatus: String(latest.paymentStatus).toUpperCase(), fulfillmentStatus: latest.fulfillmentStatus, isPaid: String(latest.paymentStatus).toUpperCase() === "PAID" });
-  } catch {
+  } catch (error) {
+    if (isPermanentVerificationConflict(error)) return NextResponse.json({ success: false, error: error instanceof Error ? error.message : "Payment verification conflict" }, { status: 400 });
     return NextResponse.json({ success: false, error: "Payment verification temporarily unavailable" }, { status: 503 });
   }
 }

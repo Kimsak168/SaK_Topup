@@ -1,8 +1,0 @@
-simulation: vngzz2
-routing: path
-mocks:
-  - name: vngzz2
-    routeKey: vngzz2
-    origin:
-      - www.vngzz2game.site
-    path: postman/mocks/vngzz2/config.yaml

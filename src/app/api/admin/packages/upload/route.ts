@@ -5,8 +5,9 @@ import { connectDB } from "@/lib/mongodb";
 import { GamePackage } from "@/models/GamePackage";
 import { requireAdminAuth } from "@/lib/auth";
 import { readBannerImage } from "@/lib/bannerUpload";
-import { hasBlobToken, uploadToBlob } from "@/lib/services/blobService";
+import { hasBlobToken, safeDeleteBlobIfOrphaned, uploadToBlob } from "@/lib/services/blobService";
 import { invalidateLegacyImage } from "@/lib/services/legacyImageService";
+import { isPersistentImageReference, isVercelBlobUrl, MAX_SERVER_UPLOAD_BYTES } from "@/lib/blob-shared";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -16,6 +17,14 @@ export async function POST(req: NextRequest) {
   if (!auth.authorized) return auth.response;
 
   try {
+    const contentLength = Number(req.headers.get("content-length"));
+    if (Number.isFinite(contentLength) && contentLength > MAX_SERVER_UPLOAD_BYTES + 64 * 1024) {
+      return NextResponse.json(
+        { success: false, error: "Package images must be 4.5 MB or smaller." },
+        { status: 413 }
+      );
+    }
+
     const contentType = req.headers.get("content-type") || "";
     let packageId = "";
     let customImageUrl: string | null = null;
@@ -34,7 +43,7 @@ export async function POST(req: NextRequest) {
       }
 
       const urlInput = formData.get("customImage");
-      if (typeof urlInput === "string" && urlInput.trim()) {
+      if (typeof urlInput === "string") {
         customImageUrl = urlInput.trim();
       }
     } else {
@@ -45,6 +54,16 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (customImageUrl && !isPersistentImageReference(customImageUrl)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Use a permanent HTTP(S) image URL or upload the image file.",
+        },
+        { status: 400 }
+      );
+    }
+
     if (!packageId || !/^[a-f\d]{24}$/i.test(packageId)) {
       return NextResponse.json(
         { success: false, error: "A valid packageId is required." },
@@ -53,6 +72,17 @@ export async function POST(req: NextRequest) {
     }
 
     await connectDB();
+
+    const existingPackage = await GamePackage.findById(packageId).select("customImage").lean();
+    if (!existingPackage) {
+      return NextResponse.json(
+        { success: false, error: "Package not found." },
+        { status: 404 }
+      );
+    }
+    const previousImage = typeof existingPackage.customImage === "string"
+      ? existingPackage.customImage
+      : null;
 
     const updateFields: Record<string, unknown> = {
       updatedAt: new Date(),
@@ -78,10 +108,8 @@ export async function POST(req: NextRequest) {
       invalidateLegacyImage(`package:${packageId}`);
     } else if (customImageUrl !== null) {
       updateFields.customImage = customImageUrl;
-      if (!customImageUrl) {
-        updateFields.imageData = null;
-        updateFields.imageContentType = null;
-      }
+      updateFields.imageData = null;
+      updateFields.imageContentType = null;
       invalidateLegacyImage(`package:${packageId}`);
     }
 
@@ -96,6 +124,13 @@ export async function POST(req: NextRequest) {
         { success: false, error: "Package not found." },
         { status: 404 }
       );
+    }
+
+    if (previousImage && previousImage !== updated.customImage && isVercelBlobUrl(previousImage)) {
+      const cleanup = await safeDeleteBlobIfOrphaned(previousImage);
+      if (!cleanup.deleted && cleanup.reason !== "Blob URL is still in use by other resources in the database.") {
+        console.warn("[Admin Package Upload] Could not remove the replaced package image:", cleanup.reason);
+      }
     }
 
     invalidateCatalogueCache();

@@ -9,8 +9,8 @@ import {
   generateVngZz2SandboxQr,
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
-import { generateAnajakPayV2Checkout } from "@/lib/services/anajakPayService";
 import { calculateSmmCustomerRate, calculateSmmOrderAmount } from "@/lib/services/smmPricing";
+import { getKhmerSmmCatalog, VngzzKhmerSmmError } from "@/lib/suppliers/vngzz2SmmKhmer";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +22,11 @@ export async function POST(req: NextRequest) {
     }
 
     const { serviceId, link, quantity } = body;
+    const catalog = body.catalog === undefined ? "standard" : body.catalog;
+    if (catalog !== "standard" && catalog !== "khmer") {
+      return NextResponse.json({ success: false, error: "Unsupported SMM catalog" }, { status: 400 });
+    }
+    const isKhmerCatalog = catalog === "khmer";
     const paymentMethod = body.paymentMethod ?? "aba_payway_v2";
 
     const cleanServiceId = typeof serviceId === "string" || typeof serviceId === "number"
@@ -51,6 +56,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (isKhmerCatalog && targetUrl.hostname.toLowerCase() !== "tiktok.com" && !targetUrl.hostname.toLowerCase().endsWith(".tiktok.com")) {
+      return NextResponse.json({ success: false, error: "Please use a public TikTok link for TikTok Khmer packages." }, { status: 400 });
+    }
 
     if (!Number.isSafeInteger(qty) || qty <= 0) {
       return NextResponse.json({ success: false, error: "Please enter a whole number quantity" }, { status: 400 });
@@ -60,43 +68,60 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Selected service is invalid" }, { status: 400 });
     }
 
-    if (paymentMethod !== "aba_payway_v2" && paymentMethod !== "khqr") {
-      return NextResponse.json({ success: false, error: "Please select a supported payment method" }, { status: 400 });
-    }
-
     await connectDB();
 
-    // The active, reviewed MongoDB catalogue is authoritative for both checkout
-    // availability and pricing. Supplier IDs remain separate from Mongo IDs.
-    const matchingServices = await SmmService.find({
-      supplier: "vngzz2",
-      supplierServiceId: cleanServiceId,
-      isActive: true,
-      supplierAvailable: true,
-      requiresReview: false,
-      reviewFlags: { $size: 0 },
-    }).select("+rate").limit(2).lean();
-    const supplierIdMatches = await SmmService.countDocuments({ supplier: "vngzz2", supplierServiceId: cleanServiceId });
-    const storedService = matchingServices.length === 1 && supplierIdMatches === 1 ? matchingServices[0] : null;
-    const duplicateNameCount = storedService
-      ? await SmmService.countDocuments({ supplier: "vngzz2", fingerprint: storedService.fingerprint })
-      : 0;
-    const service = storedService && storedService.fingerprint && duplicateNameCount === 1 &&
-      ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"].includes(storedService.platform) &&
-      ["followers", "likes", "views", "comments", "shares", "other"].includes(storedService.serviceType) &&
-      storedService.category && storedService.category.trim() && storedService.name && storedService.name.trim() &&
-      typeof storedService.rate === "number" && storedService.rate > 0 && storedService.rate <= Number.MAX_SAFE_INTEGER &&
-      typeof storedService.min === "number" && Number.isSafeInteger(storedService.min) &&
-      typeof storedService.max === "number" && Number.isSafeInteger(storedService.max) && storedService.min > 0 && storedService.max >= storedService.min
-      ? {
-          service: storedService.supplierServiceId,
-          name: storedService.name,
-          category: storedService.category,
-          rate: storedService.rate,
-          min: storedService.min || 0,
-          max: storedService.max || 0,
-        }
-      : null;
+    let service: { service: string; name: string; category: string; rate: number; min: number; max: number } | null = null;
+
+    if (isKhmerCatalog) {
+      const khmerCatalog = await getKhmerSmmCatalog();
+      const product = khmerCatalog.products.find((candidate) => candidate.id === cleanServiceId);
+      if (!product) {
+        return NextResponse.json({ success: false, error: "Selected TikTok Khmer package is unavailable" }, { status: 400 });
+      }
+      if (qty !== product.quantity) {
+        return NextResponse.json({ success: false, error: "Selected TikTok Khmer package quantity has changed. Refresh and try again." }, { status: 409 });
+      }
+      service = {
+        service: product.id,
+        name: product.name,
+        category: "TikTok Khmer",
+        rate: product.price,
+        min: product.quantity,
+        max: product.quantity,
+      };
+    } else {
+      // The active, reviewed MongoDB catalogue is authoritative for standard SMM.
+      // Supplier IDs remain separate from Mongo IDs.
+      const matchingServices = await SmmService.find({
+        supplier: "vngzz2",
+        supplierServiceId: cleanServiceId,
+        isActive: true,
+        supplierAvailable: true,
+        requiresReview: false,
+        reviewFlags: { $size: 0 },
+      }).select("+rate").limit(2).lean();
+      const supplierIdMatches = await SmmService.countDocuments({ supplier: "vngzz2", supplierServiceId: cleanServiceId });
+      const storedService = matchingServices.length === 1 && supplierIdMatches === 1 ? matchingServices[0] : null;
+      const duplicateNameCount = storedService
+        ? await SmmService.countDocuments({ supplier: "vngzz2", fingerprint: storedService.fingerprint })
+        : 0;
+      service = storedService && storedService.fingerprint && duplicateNameCount === 1 &&
+        ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"].includes(storedService.platform) &&
+        ["followers", "likes", "views", "comments", "shares", "other"].includes(storedService.serviceType) &&
+        storedService.category && storedService.category.trim() && storedService.name && storedService.name.trim() &&
+        typeof storedService.rate === "number" && storedService.rate > 0 && storedService.rate <= Number.MAX_SAFE_INTEGER &&
+        typeof storedService.min === "number" && Number.isSafeInteger(storedService.min) &&
+        typeof storedService.max === "number" && Number.isSafeInteger(storedService.max) && storedService.min > 0 && storedService.max >= storedService.min
+        ? {
+            service: storedService.supplierServiceId,
+            name: storedService.name,
+            category: storedService.category,
+            rate: storedService.rate,
+            min: storedService.min || 0,
+            max: storedService.max || 0,
+          }
+        : null;
+    }
 
     if (!service) {
       return NextResponse.json({ success: false, error: "Selected service is unavailable" }, { status: 400 });
@@ -117,11 +142,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Match the public catalog's customer rate and ignore any browser-supplied price.
-    const customerRatePerK = calculateSmmCustomerRate(service.rate);
-    const finalAmount = calculateSmmOrderAmount(customerRatePerK, qty);
-    const buyingCost = Math.round(((service.rate * qty) / 1000) * 100) / 100;
+    const finalAmount = isKhmerCatalog
+      ? calculateSmmCustomerRate(service.rate)
+      : calculateSmmOrderAmount(calculateSmmCustomerRate(service.rate), qty);
+    const buyingCost = isKhmerCatalog
+      ? service.rate
+      : Math.round(((service.rate * qty) / 1000) * 100) / 100;
 
-    const orderNumber = `ORD-SMM-${Date.now().toString().slice(-6)}-${crypto
+    const orderNumber = `ORD-SMM${isKhmerCatalog ? "-KHMER" : ""}-${Date.now().toString().slice(-6)}-${crypto
       .randomBytes(2)
       .toString("hex")
       .toUpperCase()}`;
@@ -139,8 +167,8 @@ export async function POST(req: NextRequest) {
       gameName: service.category || "Social Media Service",
       supplier: "vngzz2",
       serviceType: "smm",
-      packageId: cleanServiceId,
-      packageName: `${service.name} (${qty.toLocaleString()} units)`,
+      packageId: isKhmerCatalog ? "smm-khmer" : cleanServiceId,
+      packageName: isKhmerCatalog ? service.name : `${service.name} (${qty.toLocaleString()} units)`,
       supplierProductCode: cleanServiceId,
       playerId: cleanLink,
       targetLink: cleanLink,
@@ -149,81 +177,66 @@ export async function POST(req: NextRequest) {
       buyingPrice: buyingCost,
       profit: finalAmount - buyingCost,
       currency: "USD",
-      paymentMethod,
-      paymentGateway: paymentMethod === "aba_payway_v2" ? "aba_payway_v2" : "anajakpay",
+      paymentMethod: "aba_payway_v2",
+      paymentGateway: "aba_payway_v2",
       paymentStatus: "PENDING",
       fulfillmentStatus: "NOT_STARTED",
     });
 
-    // 3. Generate Payment (ABA PayWay V2 or AnajakPay)
-    let qrData = null;
-    let checkoutUrl = "";
-
-    if (paymentMethod === "aba_payway_v2") {
-      const isLive = isVngZz2Configured();
-      const qrResult = isLive
-        ? await generateVngZz2Qr({
-            amount: finalAmount,
-            currency: "USD",
-            orderNumber,
-            metadata: {
-              serviceName: service.name,
-              category: service.category,
-              quantity: qty,
-              targetLink: cleanLink,
-            },
-          })
-        : generateVngZz2SandboxQr({
-            amount: finalAmount,
-            currency: "USD",
-            orderNumber,
-            metadata: {
-              serviceName: service.name,
-              category: service.category,
-              quantity: qty,
-              targetLink: cleanLink,
-            },
-          });
-
-      newOrder.transactionId = qrResult.transactionId;
-      newOrder.checkoutUrl = qrResult.payUrl;
-      await newOrder.save();
-
-      await Payment.findOneAndUpdate(
-        { orderNumber },
-        {
-          paymentId: `PAY-${orderNumber}`,
-          orderNumber,
-          gateway: "aba_payway_v2",
-          transactionId: qrResult.transactionId,
+    // 3. Generate Payment (ABA PayWay V2)
+    const isLive = isVngZz2Configured();
+    const qrResult = isLive
+      ? await generateVngZz2Qr({
           amount: finalAmount,
           currency: "USD",
-          status: "PENDING",
-        },
-        { upsert: true }
-      );
+          orderNumber,
+          metadata: {
+            serviceName: service.name,
+            category: service.category,
+            quantity: qty,
+            targetLink: cleanLink,
+          },
+        })
+      : generateVngZz2SandboxQr({
+          amount: finalAmount,
+          currency: "USD",
+          orderNumber,
+          metadata: {
+            serviceName: service.name,
+            category: service.category,
+            quantity: qty,
+            targetLink: cleanLink,
+          },
+        });
 
-      qrData = {
-        transactionId: qrResult.transactionId,
-        qrString: qrResult.qrString,
-        qrImage: qrResult.qrImage,
-        qrPngUrl: qrResult.qrPngUrl,
-        payUrl: qrResult.payUrl,
-        deepLink: qrResult.deepLink,
-        expireInSec: qrResult.expireInSec,
-        isSandbox: !isLive,
-      };
-    } else {
-      const checkoutResult = generateAnajakPayV2Checkout({
-        transactionId,
-        amount: finalAmount,
+    newOrder.transactionId = qrResult.transactionId;
+    newOrder.checkoutUrl = qrResult.payUrl;
+    await newOrder.save();
+
+    await Payment.findOneAndUpdate(
+      { orderNumber },
+      {
+        paymentId: `PAY-${orderNumber}`,
         orderNumber,
-        remark: `SakSuuu SMM - ${service.name.slice(0, 30)}`,
-      });
-      checkoutUrl = checkoutResult.checkoutUrl;
-      newOrder.checkoutUrl = checkoutUrl;
-      await newOrder.save();
-    }
+        gateway: "aba_payway_v2",
+        transactionId: qrResult.transactionId,
+        amount: finalAmount,
+        currency: "USD",
+        status: "PENDING",
+      },
+      { upsert: true }
+    );
+
+    const qrData = {
+      transactionId: qrResult.transactionId,
+      qrString: qrResult.qrString,
+      qrImage: qrResult.qrImage,
+      qrPngUrl: qrResult.qrPngUrl,
+      payUrl: qrResult.payUrl,
+      deepLink: qrResult.deepLink,
+      expireInSec: qrResult.expireInSec,
+      isSandbox: !isLive,
+    };
 
     return NextResponse.json({
       success: true,
@@ -232,10 +245,10 @@ export async function POST(req: NextRequest) {
       amount: finalAmount,
       currency: "USD",
       paymentStatus: String(newOrder.paymentStatus).toUpperCase(),
-      checkoutUrl,
       qrData,
       serviceName: service.name,
       quantity: qty,
+      catalog: isKhmerCatalog ? "khmer" : "standard",
     });
   } catch (error: unknown) {
     console.error("[SMM Order Creation Error]:", error);
@@ -244,7 +257,7 @@ export async function POST(req: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to create SMM order",
       },
-      { status: 500 }
+      { status: error instanceof VngzzKhmerSmmError ? error.status : 500 }
     );
   }
 }

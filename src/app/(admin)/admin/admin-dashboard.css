@@ -3,50 +3,50 @@
 .admin-theme {
   @apply font-sans text-[13px] leading-5 antialiased;
   color-scheme: light;
-  --admin-bg: #FFF8FC;
-  --admin-sidebar: #FFFFFF;
-  --admin-surface: #FFFFFF;
-  --admin-surface-soft: #FDF2F8;
-  --admin-surface-raised: #FFF1F7;
-  --admin-border: #F5D0E3;
+  --admin-bg: #F9DCEB;
+  --admin-sidebar: #FFF2F8;
+  --admin-surface: #FFF7FB;
+  --admin-surface-soft: #F7C7DD;
+  --admin-surface-raised: #F2B2CF;
+  --admin-border: #E59BBE;
   --admin-primary: #3B2433;
   --admin-secondary: #8B647C;
   --admin-muted: #8B647C;
-  --admin-accent: #F472B6;
-  --admin-highlight: #B54779;
-  --admin-accent-hover: #EC4899;
+  --admin-accent: #E9439C;
+  --admin-highlight: #A91F60;
+  --admin-accent-hover: #CE2F7F;
   --admin-accent-foreground: #3B2433;
   --admin-accent-hover-foreground: #3B2433;
-  --admin-accent-soft: rgb(244 114 182 / .13);
-  --admin-accent-border: rgb(181 71 121 / .28);
+  --admin-accent-soft: rgb(219 39 119 / .12);
+  --admin-accent-border: rgb(169 31 96 / .26);
   --admin-warning: #D97706;
   --admin-error: #DC2626;
-  --admin-success: #16A34A;
-  --admin-info: #8C72A5;
+  --admin-success: #DB2777;
+  --admin-info: #B54779;
 }
 
 .admin-shell-dark {
   color-scheme: dark;
-  --admin-bg: #17131B;
-  --admin-sidebar: #201A24;
-  --admin-surface: #251F29;
-  --admin-surface-soft: #1E1822;
-  --admin-surface-raised: #302834;
-  --admin-border: #443747;
+  --admin-bg: #2D0D21;
+  --admin-sidebar: #38152A;
+  --admin-surface: #421831;
+  --admin-surface-soft: #351326;
+  --admin-surface-raised: #4D1D39;
+  --admin-border: #613047;
   --admin-primary: #FFF8FC;
-  --admin-secondary: #EBDDE5;
-  --admin-muted: #B7A3B2;
-  --admin-accent: #F472B6;
+  --admin-secondary: #FFEAF4;
+  --admin-muted: #D8B0C3;
+  --admin-accent: #E9439C;
   --admin-highlight: #F9A8D4;
-  --admin-accent-hover: #EC4899;
+  --admin-accent-hover: #CE2F7F;
   --admin-accent-foreground: #3B2433;
   --admin-accent-hover-foreground: #3B2433;
-  --admin-accent-soft: rgb(244 114 182 / .16);
-  --admin-accent-border: rgb(249 168 212 / .34);
+  --admin-accent-soft: rgb(219 39 119 / .16);
+  --admin-accent-border: rgb(249 168 212 / .38);
   --admin-warning: #D97706;
   --admin-error: #DC2626;
-  --admin-success: #16A34A;
-  --admin-info: #D2C5EB;
+  --admin-success: #DB2777;
+  --admin-info: #D477A3;
   background: var(--admin-bg);
   color: var(--admin-primary);
 }
@@ -283,7 +283,7 @@
 .admin-supplier-card p { color: var(--admin-muted); font-size: .7rem; }
 .admin-supplier-icon { display: grid; place-items: center; height: 2rem; width: 2rem; border-radius: 8px; color: var(--admin-accent); background: var(--admin-accent-soft); }
 .admin-status { display: inline-flex; align-items: center; gap: .35rem; padding: .2rem .48rem; border-radius: 6px; border: 1px solid var(--admin-border); color: var(--admin-secondary); background: var(--admin-surface-raised); font-size: 11px; line-height: 16px; font-weight: 500; white-space: nowrap; text-transform: capitalize; }
-.admin-status-connected { color: #15803D; border-color: rgb(22 163 74 / .3); background: rgb(22 163 74 / .09); }
+.admin-status-connected { color: #9D174D; border-color: rgb(219 39 119 / .3); background: rgb(219 39 119 / .09); }
 .admin-status-failed { color: #fca5a5; border-color: rgba(239, 68, 68, .3); background: rgba(239, 68, 68, .1); }
 .admin-status-pending { @apply border-[#F59E0B]/25 bg-[#F59E0B]/10 text-[#F59E0B]; }
 .admin-supplier-balance { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; margin-top: .75rem; padding-top: .75rem; border-top: 1px solid var(--admin-border); }
@@ -400,30 +400,30 @@
 /* Light Sakura workspace mode */
 .admin-shell-light {
   color-scheme: light;
-  --admin-bg: #FFF8FC;
-  --admin-sidebar: #FFFFFF;
-  --admin-surface: #FFFFFF;
-  --admin-surface-soft: #FDF2F8;
-  --admin-surface-raised: #FFF1F7;
-  --admin-border: #F5D0E3;
+  --admin-bg: #F9DCEB;
+  --admin-sidebar: #FFF2F8;
+  --admin-surface: #FFF7FB;
+  --admin-surface-soft: #F7C7DD;
+  --admin-surface-raised: #F2B2CF;
+  --admin-border: #E59BBE;
   --admin-primary: #3B2433;
   --admin-secondary: #8B647C;
   --admin-muted: #8B647C;
-  --admin-accent: #F472B6;
-  --admin-highlight: #B54779;
-  --admin-accent-hover: #EC4899;
+  --admin-accent: #E9439C;
+  --admin-highlight: #A91F60;
+  --admin-accent-hover: #CE2F7F;
   --admin-accent-foreground: #3B2433;
   --admin-accent-hover-foreground: #3B2433;
-  --admin-accent-soft: rgb(244 114 182 / .13);
-  --admin-accent-border: rgb(181 71 121 / .28);
+  --admin-accent-soft: rgb(219 39 119 / .12);
+  --admin-accent-border: rgb(169 31 96 / .26);
   --admin-warning: #D97706;
   --admin-error: #DC2626;
-  --admin-info: #8C72A5;
+  --admin-info: #B54779;
   color: var(--admin-primary);
   background:
-    radial-gradient(ellipse at 10% 15%, rgb(251 207 232 / .42), transparent 38%),
-    radial-gradient(ellipse at 90% 78%, rgb(221 214 254 / .34), transparent 42%),
-    linear-gradient(135deg, #FFF8FC 0%, #FDF2F8 50%, #FFF5FA 100%);
+    radial-gradient(ellipse at 10% 15%, rgb(236 72 153 / .2), transparent 38%),
+    radial-gradient(ellipse at 90% 78%, rgb(219 39 119 / .14), transparent 42%),
+    linear-gradient(135deg, #F9DCEB 0%, #F7C7DD 50%, #FDEBF4 100%);
 }
 .admin-shell-light .admin-nav-heading { color: var(--admin-muted); }
 .admin-shell-light .admin-nav-link { color: var(--admin-secondary); }
@@ -452,9 +452,9 @@
 .admin-shell-light .admin-content table td { color: var(--admin-secondary); }
 .admin-shell-light .admin-content table tbody tr:hover { background: rgb(251 207 232 / .22); }
 .admin-shell-light .admin-content .admin-status { background: var(--admin-surface-raised); color: var(--admin-secondary); }
-.admin-shell-light .admin-content .admin-status-connected { background: #ECFDF5; color: #047857; }
+.admin-shell-light .admin-content .admin-status-connected { background: #FCE7F3; color: #9D174D; }
 .admin-shell-light .admin-content .admin-status-failed { background: #FEF2F2; color: #B91C1C; }
-.admin-shell-light .admin-content .admin-status-connected { border-color: rgb(22 163 74 / .28); background: rgb(22 163 74 / .08); color: #15803D; }
+.admin-shell-light .admin-content .admin-status-connected { border-color: rgb(219 39 119 / .28); background: rgb(219 39 119 / .08); color: #9D174D; }
 .admin-shell-light .admin-content .admin-status-pending { border-color: rgb(217 119 6 / .25); background: rgb(217 119 6 / .08); color: #B45309; }
 .admin-shell-light .admin-nav-link[aria-current="page"] { background: var(--admin-accent-soft); color: var(--admin-accent); }
 .admin-shell-light .admin-stat:hover { background: var(--admin-surface); border-color: var(--admin-border); }
@@ -472,7 +472,7 @@
 .admin-shell-light .admin-content dialog { box-shadow: 0 18px 44px rgb(72 42 63 / .16); }
 .admin-shell-light .admin-error,
 .admin-shell-light .admin-inline-error { color: #B91C1C; }
-.admin-shell-light .admin-content :is([class~="text-[#22C55E]"], [class~="text-green-400"], [class~="text-emerald-400"]) { color: #15803D; }
+.admin-shell-light .admin-content :is([class~="text-[#22C55E]"], [class~="text-green-400"], [class~="text-emerald-400"]) { color: #B54779; }
 .admin-shell-light .admin-content :is([class~="text-[#F59E0B]"], [class~="text-amber-400"], [class~="text-yellow-400"]) { color: #B45309; }
 .admin-shell-light .admin-content :is([class~="text-[#EF4444]"], [class~="text-red-400"], [class~="text-rose-400"]) { color: #B91C1C; }
 .admin-shell-light .admin-content [class~="text-[#38bdf8]"] { color: #655184; }

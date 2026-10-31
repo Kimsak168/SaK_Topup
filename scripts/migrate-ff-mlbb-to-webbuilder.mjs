@@ -14,6 +14,28 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
+function isFreeFireKhsgmyProduct(product) {
+  const metadata = product.metadata && typeof product.metadata === "object" ? product.metadata : {};
+  const metadataLabels = Object.entries(metadata).flatMap(([key, value]) => {
+    if (!/region|country|market|game/i.test(key)) return [];
+    if (typeof value === "string") return [value];
+    return Array.isArray(value) ? value.filter((item) => typeof item === "string") : [];
+  });
+  const regions = [product.region, ...(Array.isArray(product.regions) ? product.regions : []), ...metadataLabels]
+    .filter(Boolean)
+    .map((value) => String(value).toLowerCase());
+  const identity = [product.game, product.name, product.id, ...metadataLabels].filter(Boolean).join(" ").toLowerCase();
+  const allLabels = [identity, ...regions].join(" ");
+  const isFreeFire = /free[\s_-]*fire|freefire/.test(identity);
+  const isKhsgmy = /khsgmy/.test(allLabels);
+  const isCambodia = [product.game, ...regions].some((region) => /cambodia|cambodian|khmer|(?:^|[^a-z])kh(?:$|[^a-z])/.test(String(region || "")));
+  const hasOtherRegion = [product.game, product.name, product.id, ...regions]
+    .filter(Boolean)
+    .some((value) => /\b(?:sgmy|global|thailand|indonesia|philippines|vietnam)\b/i.test(String(value)));
+
+  return isFreeFire && (isKhsgmy || isCambodia) && !hasOtherRegion;
+}
+
 async function run() {
   console.log("=== Migrating Free Fire and MLBB to WebBuilder ===");
 
@@ -207,12 +229,7 @@ async function run() {
 
   // 6. Upsert WebBuilder Free Fire Packages
   console.log("\n--- Upserting WebBuilder Free Fire Packages ---");
-  const ffProducts = allProducts.filter(
-    (p) =>
-      p.game === "Free Fire KHSGMY" ||
-      p.game === "Free Fire SGMY" ||
-      (p.game && p.game.toLowerCase().includes("free fire"))
-  );
+  const ffProducts = allProducts.filter(isFreeFireKhsgmyProduct);
   console.log(`Found ${ffProducts.length} Free Fire KHSGMY products from WebBuilder.`);
 
   // Deactivate any stale WebBuilder Free Fire packages not in the live list
@@ -327,7 +344,15 @@ async function run() {
   // 7. Upsert WebBuilder MLBB Packages
   console.log("\n--- Upserting WebBuilder MLBB Packages ---");
   // Select standard Mobile Legends products and Global products
-  const mlbbProducts = allProducts.filter((p) => p.game === "Mobile Legends" || p.game === "Mobile Legends Global");
+  const isCambodiaProduct = (product) =>
+    [product.region, ...(Array.isArray(product.regions) ? product.regions : [])].some((region) => {
+      const normalized = String(region || "").trim().toLowerCase();
+      return normalized.includes("cambodia") || normalized.split(/[\s,|;]+/).includes("kh");
+    });
+  const mlbbProducts = allProducts.filter((p) =>
+    (p.game === "Mobile Legends" || p.game === "Mobile Legends Global") &&
+    isCambodiaProduct(p)
+  );
   console.log(`Found ${mlbbProducts.length} Mobile Legends products from WebBuilder.`);
 
   let mlbbImported = 0;
@@ -371,6 +396,7 @@ async function run() {
         currency: p.currency || "USD",
         badge: p.name === "86" ? "POPULAR" : p.name.includes("Weekly") ? "HOT" : "",
         isActive: isOrderable,
+        supplierAvailable: isOrderable,
         adminConfigured: true,
         sortOrder: i + 1,
         syncedAt: new Date(),
@@ -386,6 +412,7 @@ async function run() {
             buyingPrice: buyingPriceUsd,
             priceCents: p.price_cents,
             isActive: isOrderable,
+            supplierAvailable: isOrderable,
             name: existingPkg.name || displayName,
             syncedAt: new Date(),
             updatedAt: new Date(),
@@ -396,6 +423,17 @@ async function run() {
     }
   }
   console.log(`MLBB packages: ${mlbbImported} imported, ${mlbbUpdated} updated.`);
+
+  const cleanup = await pkgsColl.updateMany(
+    {
+      supplier: "webbuilder",
+      $or: [{ gameCode: "mlbb" }, { gameSlug: "mlbb" }],
+      supplierProductCode: { $nin: [...seenCodes] },
+      supplierAvailable: { $ne: false },
+    },
+    { $set: { supplierAvailable: false, syncedAt: new Date(), updatedAt: new Date() } }
+  );
+  console.log(`Marked ${cleanup.modifiedCount} stale non-Cambodia MLBB packages unavailable.`);
 
   await client.close();
   console.log("\n=== Migration completed successfully! ===");

@@ -1,4 +1,7 @@
+import sharp from "sharp";
+
 const MAX_IMAGE_BYTES = 4.5 * 1024 * 1024;
+const MAX_IMAGE_PIXELS = 40_000_000;
 
 export class BannerInputError extends Error {
   constructor(message: string, public status = 400) {
@@ -32,6 +35,23 @@ export async function readBannerImage(file: File) {
 
   if (!imageContentType || (file.type && file.type !== imageContentType)) {
     throw new BannerInputError("Upload a valid PNG, JPG, WebP, or GIF image.");
+  }
+
+  // Keep animation intact, while storing still artwork in a smaller, resized WebP.
+  if (imageContentType !== "image/gif") {
+    try {
+      const optimizedImage = await sharp(imageData, { limitInputPixels: MAX_IMAGE_PIXELS })
+        .rotate()
+        .resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true })
+        .webp({ quality: 85, alphaQuality: 100, effort: 4 })
+        .toBuffer();
+
+      if (optimizedImage.byteLength < imageData.byteLength) {
+        return { imageData: optimizedImage, imageContentType: "image/webp" };
+      }
+    } catch {
+      throw new BannerInputError("This image could not be optimized. Please upload a PNG, JPG, WebP, or GIF image.");
+    }
   }
 
   return { imageData, imageContentType };

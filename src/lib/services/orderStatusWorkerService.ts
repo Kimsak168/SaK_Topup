@@ -21,7 +21,7 @@ export async function reconcilePendingOrderStatuses(limit = 5) {
           { $or: [{ supplierPollLockedUntil: { $exists: false } }, { supplierPollLockedUntil: { $lte: now } }] },
           { $or: [{ supplierPollAttempts: { $exists: false } }, { supplierPollAttempts: { $lt: 48 } }] },
           { $or: [
-            { paymentStatus: { $in: ["PENDING", "pending", "EXPIRED", "expired"] }, transactionId: { $type: "string", $ne: "" }, paymentGateway: { $in: ["anajakpay", "aba_payway_v2"] } },
+            { paymentStatus: { $in: ["PENDING", "pending", "EXPIRED", "expired"] }, transactionId: { $type: "string", $ne: "" }, paymentGateway: { $in: ["aba_payway_v2", "vngzz2", "khqr"] } },
             { paymentStatus: { $in: ["PAID", "paid"] }, fulfillmentStatus: { $in: ["NOT_STARTED", "pending", "processing", "PROCESSING"] } },
           ] },
         ],

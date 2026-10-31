@@ -59,7 +59,7 @@ function paymentDateFilter(range: FinanceRange) {
   ] };
 }
 
-function orderDateFilter(range: FinanceRange): any {
+function orderDateFilter(range: FinanceRange): Record<string, unknown> {
   return { $or: [
     { paymentStatus: { $in: ORDER_PAID }, $or: [{ paidAt: dateRange(range) }, { paidAt: null, createdAt: dateRange(range) }] },
     { paymentStatus: { $in: ORDER_REFUNDED }, updatedAt: dateRange(range) },

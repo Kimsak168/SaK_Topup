@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getPublicSmmCatalog, type PublicSmmCatalogQuery } from "@/lib/services/smmCatalogService";
+import { getPublicSmmCatalog, type PublicSmmCatalogQuery } from "@/lib/services/smmPublicCatalogService";
 
 export const dynamic = "force-dynamic";
 

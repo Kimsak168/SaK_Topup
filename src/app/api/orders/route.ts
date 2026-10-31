@@ -5,7 +5,6 @@ import { Order } from "@/models/Order";
 import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import { Payment } from "@/models/Payment";
-import { generateAnajakPayV2Checkout } from "@/lib/services/anajakPayService";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +14,7 @@ export async function POST(req: NextRequest) {
     if (!body || typeof body !== "object" || Array.isArray(body) ||
       ["gameSlug", "supplier", "supplierProductCode", "playerId", "serverId", "playerName", "paymentMethod", "orderNumber"].some(
         key => body[key] !== undefined && (typeof body[key] !== "string" || body[key].length > 256)
-      ) || (body.supplier !== undefined && !["webbuilder", "vizo", "g2bulk", "vngzz2"].includes(body.supplier))) {
+      ) || (body.supplier !== undefined && !["webbuilder", "g2bulk", "vngzz2"].includes(body.supplier))) {
       return NextResponse.json({ success: false, error: "Invalid order details" }, { status: 400 });
     }
     const {
@@ -24,13 +23,13 @@ export async function POST(req: NextRequest) {
       playerId = "",
       serverId = "",
       playerName = "",
-      paymentMethod = "khqr",
+      paymentMethod = "aba_payway_v2",
     } = body;
 
     const cleanPlayerId = String(playerId || "").trim();
     const cleanProductCode = String(supplierProductCode || "").trim();
     const cleanGameSlug = String(gameSlug || "freefire_khsgmy").trim();
-    const cleanSupplier = (body.supplier || "webbuilder") as "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
+    const cleanSupplier = (body.supplier || "webbuilder") as "webbuilder" | "g2bulk" | "vngzz2";
 
     if (!cleanPlayerId) {
       return NextResponse.json(
@@ -129,23 +128,7 @@ export async function POST(req: NextRequest) {
       fulfillmentStatus: "NOT_STARTED" as const,
     };
 
-    let checkoutUrl: string | undefined;
-    try {
-      const checkoutResult = generateAnajakPayV2Checkout({
-        transactionId,
-        amount: pkg.sellingPrice,
-        orderNumber,
-        remark: `SakSuuu ${game?.name || "Game"} Top-Up`,
-      });
-      checkoutUrl = checkoutResult.checkoutUrl;
-    } catch (confErr) {
-      console.warn("AnajakPay checkout URL generator deferred:", confErr);
-    }
-
-    const created = await Order.create({
-      ...newOrderData,
-      checkoutUrl,
-    });
+    const created = await Order.create(newOrderData);
 
     // Record initial Payment record
     await Payment.findOneAndUpdate(
@@ -153,7 +136,7 @@ export async function POST(req: NextRequest) {
       {
         paymentId: `PAY-${created.orderNumber}`,
         orderNumber: created.orderNumber,
-        gateway: "anajakpay",
+        gateway: "aba_payway_v2",
         transactionId,
         amount: created.amount,
         currency: "USD",

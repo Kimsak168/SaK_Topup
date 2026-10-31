@@ -13,6 +13,7 @@ import {
 } from "@/lib/services/smmCatalogService";
 import { SmmCatalogAudit } from "@/models/SmmCatalogAudit";
 import { SmmService } from "@/models/SmmService";
+import { invalidateSmmCatalogueCache } from "@/lib/services/cacheService";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -154,6 +155,7 @@ export async function POST(req: NextRequest) {
   const auth = await requireAdminAuth(req);
   if (!auth.authorized) return auth.response;
 
+  let catalogueMayHaveChanged = false;
   try {
     const body = await req.json().catch(() => null);
     if (!body || typeof body !== "object" || Array.isArray(body) || typeof body.action !== "string") {
@@ -169,6 +171,7 @@ export async function POST(req: NextRequest) {
       if (body.confirmation !== "SYNC REAL SUPPLIER CATALOG" || typeof body.planHash !== "string" || !/^[a-f\d]{64}$/i.test(body.planHash)) {
         return responseError("Preview the sync and enter the exact confirmation phrase before applying.");
       }
+      catalogueMayHaveChanged = true;
       const result = await applySmmSupplierSync(actor, body.planHash);
       return NextResponse.json({ success: !result.conflict, ...result }, { status: result.conflict ? 409 : 200 });
     }
@@ -180,6 +183,7 @@ export async function POST(req: NextRequest) {
       if (body.confirmation !== "APPLY SMM CLEANUP" || typeof body.planHash !== "string" || !/^[a-f\d]{64}$/i.test(body.planHash)) {
         return responseError("Preview the cleanup and enter the exact confirmation phrase before applying.");
       }
+      catalogueMayHaveChanged = true;
       const result = await applySmmCleanup(actor, body.planHash);
       return NextResponse.json({ success: !result.conflict, ...result }, { status: result.conflict ? 409 : 200 });
     }
@@ -204,6 +208,7 @@ export async function POST(req: NextRequest) {
         ]);
         if (duplicateFingerprints.length) return responseError("Duplicate service candidates must be resolved before activation.", 409);
       }
+      catalogueMayHaveChanged = true;
       for (const service of selected) {
         service.isActive = body.status === "active";
         await service.save();
@@ -219,5 +224,9 @@ export async function POST(req: NextRequest) {
   } catch (error: unknown) {
     console.error("Admin SMM services POST error:", error);
     return responseError(error instanceof Error ? error.message : "SMM catalog action failed", 500);
+  } finally {
+    // Bulk writes can partially succeed before an error. Expire public results
+    // in that case too, so deactivated services and old rates aren't retained.
+    if (catalogueMayHaveChanged) invalidateSmmCatalogueCache();
   }
 }

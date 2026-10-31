@@ -26,7 +26,6 @@ import {
   Loader2,
 } from "lucide-react";
 import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
-import { openKhqrInPageCheckout } from "@/lib/khqrPlugin";
 
 export interface SmmServiceItem {
   service: string;
@@ -47,6 +46,7 @@ interface PlatformTopUpClientProps {
   initialServices: SmmServiceItem[];
   catalogTotal?: number;
   categories: string[];
+  catalogError?: string;
 }
 
 const PLATFORM_IMAGES: Record<string, string> = {
@@ -134,6 +134,7 @@ export function PlatformTopUpClient({
   initialServices,
   catalogTotal = initialServices.length,
   categories,
+  catalogError,
 }: PlatformTopUpClientProps) {
   const router = useRouter();
   const normPlatform = (platform || "tiktok").toLowerCase();
@@ -155,13 +156,14 @@ export function PlatformTopUpClient({
   const [selectedType, setSelectedType] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isServicePickerOpen, setIsServicePickerOpen] = useState(false);
 
   // Service & Package selection
   const [selectedService, setSelectedService] = useState<SmmServiceItem | null>(() => initialServices[0] || null);
   const [quantity, setQuantity] = useState<number>(() => initialServices[0]?.min || 1000);
 
   // Payment selection
-  const [paymentMethod, setPaymentMethod] = useState<"khqr" | "aba_payway_v2">("khqr");
+  const [paymentMethod, setPaymentMethod] = useState<"aba_payway_v2">("aba_payway_v2");
 
   // Modal & submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -199,6 +201,7 @@ export function PlatformTopUpClient({
 
   const handleSelectService = (item: SmmServiceItem) => {
     setSelectedService(item);
+    setIsServicePickerOpen(false);
     if (!Number.isInteger(quantity) || quantity < item.min) {
       setQuantity(item.min);
     } else if (quantity > item.max) {
@@ -284,7 +287,7 @@ export function PlatformTopUpClient({
 
       toast.dismiss("checkout");
 
-      if (paymentMethod === "aba_payway_v2" && data.qrData) {
+      if (data.qrData) {
         setPayWayModalData({
           orderNumber: data.orderNumber,
           transactionId: data.transactionId,
@@ -302,21 +305,9 @@ export function PlatformTopUpClient({
           expireInSec: data.qrData.expireInSec,
         });
         setIsPayWayModalOpen(true);
-        toast.success("ABA PayWay QR generated", {
+        toast.success("KHQR generated", {
           id: "checkout",
           description: "Scan with ABA Mobile or any KHQR banking app.",
-        });
-      } else if (data.checkoutUrl) {
-        // Open AnajakPay KHQR checkout modal
-        await openKhqrInPageCheckout({
-          checkoutUrl: data.checkoutUrl,
-          onSuccess: () => {
-            toast.success("Payment confirmed!");
-            router.push(`/orders?orderNumber=${encodeURIComponent(data.orderNumber)}`);
-          },
-          onClose: () => {
-            router.push(`/orders?orderNumber=${encodeURIComponent(data.orderNumber)}`);
-          },
         });
       } else {
         toast.success("Order created!", { description: `Order #${data.orderNumber}` });
@@ -343,7 +334,7 @@ export function PlatformTopUpClient({
             <span>Back to All Platforms</span>
           </Link>
           <span className="text-xs text-slate-400 font-mono">
-            {catalogTotal.toLocaleString()} services available
+            {catalogError ? "Catalogue unavailable" : `${catalogTotal.toLocaleString()} services available`}
           </span>
         </div>
 
@@ -458,12 +449,12 @@ export function PlatformTopUpClient({
                   </h2>
                 </div>
                 <span className="text-xs text-slate-400 font-mono">
-                  {filteredServices.length} options
+                  {catalogError ? "Unavailable" : `${filteredServices.length} options`}
                 </span>
               </div>
 
               {/* Sub-Filters: Service Types */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex flex-wrap items-center gap-2 pb-1">
                 {SERVICE_TYPE_FILTERS.map((f) => {
                   const Icon = f.icon;
                   const isActive = selectedType === f.id;
@@ -471,7 +462,10 @@ export function PlatformTopUpClient({
                     <button
                       key={f.id}
                       type="button"
-                      onClick={() => setSelectedType(f.id)}
+                      onClick={() => {
+                        setSelectedType(f.id);
+                        setIsServicePickerOpen(true);
+                      }}
                       className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
                         isActive
                           ? "bg-violet-600 text-white border-violet-400 shadow-md shadow-violet-500/25 font-bold"
@@ -491,8 +485,13 @@ export function PlatformTopUpClient({
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
                   <input
                     type="text"
+                    aria-label="Search services"
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setIsServicePickerOpen(true)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setIsServicePickerOpen(true);
+                    }}
                     placeholder="Search package (followers, likes, views)..."
                     className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
                   />
@@ -510,7 +509,11 @@ export function PlatformTopUpClient({
                 <div className="sm:col-span-5 relative">
                   <select
                     value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedCategory(e.target.value);
+                      setIsServicePickerOpen(true);
+                    }}
+                    aria-label="Filter by category"
                     className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 appearance-none truncate cursor-pointer pr-8"
                   >
                     <option value="All">All Categories</option>
@@ -524,42 +527,111 @@ export function PlatformTopUpClient({
                 </div>
               </div>
 
-              {/* Service selector includes every service matching the current filters. */}
-              {filteredServices.length === 0 ? (
+              {/* Service selector keeps the chosen package readable and opens a searchable list when needed. */}
+              {catalogError ? (
+                <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-5 text-center space-y-3">
+                  <AlertCircle className="mx-auto h-8 w-8 text-amber-300" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-amber-100">Service catalogue unavailable</p>
+                    <p className="text-xs text-amber-200/80">{catalogError}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => router.refresh()}
+                    className="inline-flex min-h-10 items-center justify-center rounded-xl border border-amber-300/40 px-4 text-xs font-bold text-amber-100 transition-colors hover:bg-amber-300/10"
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : filteredServices.length === 0 ? (
                 <div className="py-12 text-center text-slate-400 space-y-2 border border-dashed border-slate-800 rounded-2xl">
                   <AlertCircle className="w-8 h-8 mx-auto text-slate-600" />
                   <p className="text-sm font-semibold text-slate-300">No services match your filters</p>
                   <p className="text-xs text-slate-500">Try changing the category or search query.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  <label htmlFor="smm-service-select" className="block text-xs font-semibold text-slate-300">
-                    Select a service or package / {"\u1787\u17D2\u179A\u17BE\u179F\u17D2\u179A\u17BE\u179F\u17C1\u179C\u17B6\u1780\u1798\u17D2\u1798"}
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="smm-service-select"
-                      value={selectedService && filteredServices.some((service) => service.service === selectedService.service)
-                        ? selectedService.service
-                        : ""}
-                      onChange={(event) => {
-                        const service = filteredServices.find((item) => item.service === event.target.value);
-                        if (service) handleSelectService(service);
-                      }}
-                      className="w-full appearance-none rounded-xl border border-slate-800 bg-slate-950/90 py-3 pl-3 pr-10 text-sm text-white outline-none transition-colors focus:border-violet-500"
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="text-xs font-bold text-slate-700">Selected package</p>
+                      <p className="mt-0.5 text-[11px] text-slate-500">
+                        {filteredServices.length.toLocaleString()} matching {filteredServices.length === 1 ? "service" : "services"}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      aria-expanded={isServicePickerOpen}
+                      aria-controls="smm-service-options"
+                      onClick={() => setIsServicePickerOpen((open) => !open)}
+                      className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[#F0C6DA] bg-white px-3 text-xs font-bold text-[#8E4C70] transition-colors hover:bg-[#FDF2F8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B54779]"
                     >
-                      <option value="" disabled>Select from {filteredServices.length} services</option>
-                      {filteredServices.map((service) => (
-                        <option key={service.service} value={service.service}>
-                          {service.category} | {service.name} | {"$"}{service.rate.toFixed(2)} / 1k | {service.min.toLocaleString()}-{service.max.toLocaleString()}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                      {isServicePickerOpen ? "Close list" : "Change service"}
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isServicePickerOpen ? "rotate-180" : ""}`} />
+                    </button>
                   </div>
-                  <p className="text-[11px] text-slate-500">
-                    {filteredServices.length} services available in this list. Use search or category filters to narrow it down.
-                  </p>
+
+                  {selectedService && (
+                    <div className="rounded-2xl border border-[#F0C6DA] bg-[#FFF8FC] p-3.5 sm:p-4">
+                      <div className="flex min-w-0 items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <span className="inline-flex max-w-full items-center rounded-full border border-[#F0C6DA] bg-white px-2.5 py-1 text-[10px] font-bold text-[#8E4C70]">
+                            <span className="truncate">{selectedService.category}</span>
+                          </span>
+                          <p className="mt-2 text-sm font-bold leading-snug text-[#3B2D39] [overflow-wrap:anywhere]">
+                            {selectedService.name}
+                          </p>
+                          <p className="mt-1.5 text-[11px] text-[#766477]">
+                            Min {selectedService.min.toLocaleString()} <span aria-hidden="true">·</span> Max {selectedService.max.toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="shrink-0 text-right">
+                          <p className="text-base font-black tabular-nums text-[#A94776]">${selectedService.rate.toFixed(2)}</p>
+                          <p className="text-[10px] text-[#766477]">per 1,000</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {isServicePickerOpen && (
+                    <div
+                      id="smm-service-options"
+                      className="max-h-[25rem] space-y-2 overflow-y-auto overscroll-contain rounded-2xl border border-[#F6DDE9] bg-[#FFFCFE] p-2"
+                    >
+                      {filteredServices.map((service) => {
+                        const isSelected = selectedService?.service === service.service;
+                        return (
+                          <button
+                            key={service.service}
+                            type="button"
+                            aria-pressed={isSelected}
+                            onClick={() => handleSelectService(service)}
+                            className={`grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B54779] ${
+                              isSelected
+                                ? "border-[#D99AB8] bg-[#FDF2F8]"
+                                : "border-transparent bg-white hover:border-[#F0C6DA] hover:bg-[#FFF8FC]"
+                            }`}
+                          >
+                            <span className="min-w-0">
+                              <span className="block text-[10px] font-semibold text-[#8E4C70]">{service.category}</span>
+                              <span className="mt-0.5 block text-xs font-bold leading-snug text-[#3B2D39] [overflow-wrap:anywhere]">
+                                {service.name}
+                              </span>
+                              <span className="mt-1 block text-[10px] text-[#766477]">
+                                {service.min.toLocaleString()}–{service.max.toLocaleString()} units
+                              </span>
+                            </span>
+                            <span className="flex shrink-0 items-center gap-2 text-right">
+                              <span>
+                                <span className="block text-sm font-black tabular-nums text-[#A94776]">${service.rate.toFixed(2)}</span>
+                                <span className="block text-[9px] text-[#766477]">per 1,000</span>
+                              </span>
+                              {isSelected ? <Check className="h-4 w-4 text-[#A94776]" /> : null}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -626,58 +698,12 @@ export function PlatformTopUpClient({
                     Payment Method / វិធីសាស្ត្រទូទាត់
                   </h2>
                 </div>
-                <span className="text-xs text-slate-400">Choose one</span>
+                <span className="text-xs text-slate-400">Scan &amp; Pay</span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {/* KHQR */}
-                <button
-                  type="button"
-                  aria-pressed={paymentMethod === "khqr"}
-                  onClick={() => setPaymentMethod("khqr")}
-                  className={`flex min-h-[72px] items-center justify-between gap-3 rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
-                    paymentMethod === "khqr"
-                      ? "border-emerald-400 bg-emerald-950/20 ring-1 ring-emerald-400/50 shadow-lg shadow-emerald-500/10"
-                      : "border-slate-800 bg-slate-950/80 hover:border-slate-700"
-                  }`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#004B87] shrink-0 border border-emerald-500/30">
-                      <Image src="/images/aba-logo.png" alt="ABA" fill sizes="40px" className="object-contain" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="payment-method-title text-xs sm:text-sm font-bold text-slate-900 dark:text-white">KHQR</span>
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
-                          Universal
-                        </span>
-                      </div>
-                      <span className="text-[11px] text-slate-400 block mt-0.5">
-                        All Cambodian Banks (Bakong KHQR)
-                      </span>
-                    </div>
-                  </div>
-                  <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
-                      paymentMethod === "khqr"
-                        ? "bg-emerald-400 text-slate-950"
-                        : "border border-slate-700"
-                    }`}
-                  >
-                    {paymentMethod === "khqr" ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : null}
-                  </span>
-                </button>
-
-                {/* KHQR V2 */}
-                <button
-                  type="button"
-                  aria-pressed={paymentMethod === "aba_payway_v2"}
-                  onClick={() => setPaymentMethod("aba_payway_v2")}
-                  className={`flex min-h-[72px] items-center justify-between gap-3 rounded-2xl border p-3.5 text-left transition-all cursor-pointer ${
-                    paymentMethod === "aba_payway_v2"
-                      ? "border-cyan-400 bg-cyan-950/20 ring-1 ring-cyan-400/50 shadow-lg shadow-cyan-500/10"
-                      : "border-slate-800 bg-slate-950/80 hover:border-slate-700"
-                  }`}
+              <div className="grid grid-cols-1 gap-3">
+                <div
+                  className="flex min-h-[72px] items-center justify-between gap-3 rounded-2xl border border-cyan-400 bg-cyan-950/20 p-3.5 text-left ring-1 ring-cyan-400/50 shadow-lg shadow-cyan-500/10"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#004B87] shrink-0 border border-cyan-400/30">
@@ -685,26 +711,22 @@ export function PlatformTopUpClient({
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="payment-method-title text-xs sm:text-sm font-bold text-slate-900 dark:text-white">KHQR V2</span>
+                        <span className="payment-method-title text-xs sm:text-sm font-bold text-slate-900 dark:text-white">KHQR</span>
                         <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300">
                           Instant
                         </span>
                       </div>
                       <span className="text-[11px] text-slate-400 block mt-0.5">
-                        ABA Mobile &amp; KHQR Scanner
+                        ABA Mobile &amp; All Cambodian Banks (KHQR)
                       </span>
                     </div>
                   </div>
                   <span
-                    className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
-                      paymentMethod === "aba_payway_v2"
-                        ? "bg-cyan-400 text-slate-950"
-                        : "border border-slate-700"
-                    }`}
+                    className="w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-cyan-400 text-slate-950"
                   >
-                    {paymentMethod === "aba_payway_v2" ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : null}
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </span>
-                </button>
+                </div>
               </div>
             </section>
           </div>
@@ -760,7 +782,7 @@ export function PlatformTopUpClient({
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">Payment</span>
                   <span className="font-bold text-slate-900 dark:text-white">
-                    {paymentMethod === "aba_payway_v2" ? "KHQR V2" : "KHQR"}
+                    KHQR (ABA PayWay)
                   </span>
                 </div>
               </div>

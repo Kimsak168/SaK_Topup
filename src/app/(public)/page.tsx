@@ -1,9 +1,12 @@
-import { getClientGames } from "@/lib/services/gameService";
+import { Suspense } from "react";
+import { getClientGames, getNormalizedPackages } from "@/lib/services/gameService";
 import { getPublicBanners } from "@/lib/services/bannerService";
-import { getPublicSmmCatalog } from "@/lib/services/smmCatalogService";
 import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { HomeCatalogue } from "@/components/public/HomeCatalogue";
-import SmmStorefront from "@/components/public/SmmStorefront";
+import { HomeFeaturedPackages } from "@/components/public/HomeFeaturedPackages";
+import { HomePlatforms } from "@/components/public/HomePlatforms";
+import { HomeGameEvents } from "@/components/public/HomeGameEvents";
+import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 
 // Read the database-backed catalogue at request time. Its unstable_cache entries
@@ -11,66 +14,62 @@ import { Metadata } from "next";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "SakSuuu Game Top-Up & Social Media Services ? 24/7",
+  title: "SakSuuu Game Top-Up & Social Media Services — 24/7",
   description: "Game top-up and social media services for Cambodia.",
 };
 
-export default async function HomePage() {
-  const [banners, gamesResult, smmCatalogResult] = await Promise.all([
-    getPublicBanners().catch(() => []),
-    getClientGames(undefined, undefined, { throwOnError: true }).catch(() => null),
-    getPublicSmmCatalog({
-      page: 1,
-      limit: 12,
-      platform: "all",
-      type: "all",
-      category: "All",
-      search: "",
-      sort: "recommended",
-    }).catch(() => null),
-  ]);
+async function HomeBanners() {
+  const banners = await getPublicBanners().catch(() => []);
+  return <PromotionalBanner banners={banners} />;
+}
 
-  const games = gamesResult || [];
-  const initialError = gamesResult === null ? "The game catalog is temporarily unavailable." : null;
+async function HomeGames() {
+  const games = await getClientGames(undefined, undefined, { throwOnError: true }).catch(() => null);
+  const catalogue = games || [];
+  const featuredGroups = await Promise.all(catalogue
+    .filter((game) => game.supplier === "webbuilder" && game.checkoutSupported !== false)
+    .map(async (game) => ({
+      game,
+      packages: await getNormalizedPackages(game.supplier, game.code).catch(() => []),
+      variant: /free\s*fire|freefire/i.test(`${game.name} ${game.slug} ${game.code}`)
+        ? "free-fire" as const
+        : /mobile\s*legends|mlbb/i.test(`${game.name} ${game.slug} ${game.code}`)
+          ? "mobile-legends" as const
+          : "other" as const,
+    })));
 
-  const initialSmmData = smmCatalogResult?.success
-    ? {
-        services: smmCatalogResult.services
-          .filter((s): s is typeof s & { min: number; max: number } =>
-            typeof s.min === "number" && typeof s.max === "number" && s.min > 0 && s.max >= s.min
-          )
-          .map((s) => ({
-            service: s.service,
-            name: s.name,
-            category: s.category,
-            platform: s.platform,
-            serviceType: s.serviceType,
-            rate: s.rate,
-            min: s.min,
-            max: s.max,
-            ...(typeof s.refill === "boolean" ? { refill: s.refill } : {}),
-            ...(s.description ? { description: s.description } : {}),
-          })),
-        platforms: smmCatalogResult.platforms,
-        categories: smmCatalogResult.categories,
-        catalogTotal: smmCatalogResult.catalogTotal,
-        total: smmCatalogResult.total,
-        totalPages: smmCatalogResult.pagination?.totalPages || 1,
-      }
-    : undefined;
+  return (
+    <>
+      <HomeFeaturedPackages groups={featuredGroups} />
+      <HomeCatalogue games={catalogue} initialError={games === null ? "The game catalog is temporarily unavailable." : null} />
+    </>
+  );
+}
 
+export default function HomePage() {
   return (
     <div className="storefront-home storefront-container">
       {/* 1. Promotional Banner */}
-      <div className="storefront-banner-wrap mb-6 sm:mb-8">
-        <PromotionalBanner banners={banners} />
+      <div className="storefront-banner-wrap mb-3 sm:mb-4">
+        <Suspense fallback={<BannerSkeleton />}>
+          <HomeBanners />
+        </Suspense>
       </div>
 
       {/* 2. Games Section with Game Icons */}
-      <HomeCatalogue games={games} initialError={initialError} />
+      <Suspense fallback={<CatalogueSkeleton />}>
+        <HomeGames />
+      </Suspense>
 
       {/* 3. All Platforms (Social Media Growth) */}
-      <SmmStorefront homeLayout initialData={initialSmmData} />
+      <Suspense fallback={<PlatformsSkeleton />}>
+        <HomePlatforms />
+      </Suspense>
+
+      {/* 4. Game events follow the services section */}
+      <Suspense fallback={<GameEventsSkeleton />}>
+        <HomeGameEvents />
+      </Suspense>
     </div>
   );
 }

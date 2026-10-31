@@ -22,7 +22,7 @@ interface AdminPackage {
   id: string;
   gameSlug: string;
   gameCode: string;
-  supplier: "webbuilder" | "vizo" | "g2bulk" | "vngzz2";
+  supplier: "webbuilder" | "g2bulk" | "vngzz2";
   supplierProductCode: string;
   name: string;
   buyingPrice: number | null; // Private supplier wholesale cost
@@ -31,6 +31,7 @@ interface AdminPackage {
   currency: string;
   badge: string;
   isActive: boolean;
+  supplierAvailable: boolean;
   adminConfigured: boolean;
   customImage: string | null;
   sortOrder: number;
@@ -50,6 +51,17 @@ interface AvailableGame {
   supplier: string;
 }
 
+interface BulkImageRow {
+  file: File;
+  packageId: string;
+  status: "queued" | "uploading" | "done" | "error";
+  error?: string;
+}
+
+function normalizeImageMatch(value: string): string {
+  return value.toLowerCase().replace(/\.png$/i, "").replace(/[^a-z0-9]/g, "");
+}
+
 export default function AdminPackagesPage() {
   const [packages, setPackages] = useState<AdminPackage[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +78,7 @@ export default function AdminPackagesPage() {
   const debouncedSearch = useDebouncedValue(search);
   const [gameFilter, setGameFilter] = useState("all");
   const [supplierFilter, setSupplierFilter] = useState("all");
+  const [supplierAvailability, setSupplierAvailability] = useState("available");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState("50");
@@ -99,6 +112,13 @@ export default function AdminPackagesPage() {
   const [urlInput, setUrlInput] = useState("");
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isBulkImageModalOpen, setIsBulkImageModalOpen] = useState(false);
+  const [bulkImagePackages, setBulkImagePackages] = useState<AdminPackage[]>([]);
+  const [bulkImageRows, setBulkImageRows] = useState<BulkImageRow[]>([]);
+  const [isLoadingBulkPackages, setIsLoadingBulkPackages] = useState(false);
+  const [isUploadingBulkImages, setIsUploadingBulkImages] = useState(false);
+  const [bulkUploadProgress, setBulkUploadProgress] = useState(0);
+  const bulkFileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch packages
   const fetchPackages = useCallback(async () => {
@@ -108,6 +128,7 @@ export default function AdminPackagesPage() {
         search: debouncedSearch,
         game: gameFilter,
         supplier: supplierFilter,
+        supplierAvailability,
         status: statusFilter,
         page: String(page),
         limit: pageSize,
@@ -156,7 +177,7 @@ export default function AdminPackagesPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, gameFilter, supplierFilter, statusFilter, page, pageSize]);
+  }, [debouncedSearch, gameFilter, supplierFilter, supplierAvailability, statusFilter, page, pageSize]);
 
   useEffect(() => {
     if (search === debouncedSearch) void fetchPackages();
@@ -386,6 +407,153 @@ export default function AdminPackagesPage() {
     }
   };
 
+  const openBulkImageModal = async () => {
+    setIsBulkImageModalOpen(true);
+    setIsLoadingBulkPackages(true);
+    setBulkImageRows([]);
+    setBulkUploadProgress(0);
+
+    try {
+      const allPackages: AdminPackage[] = [];
+      let totalPages = 1;
+
+      for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+        const params = new URLSearchParams({
+          search: "",
+          game: "all",
+          supplier: "all",
+          supplierAvailability: "all",
+          status: "all",
+          page: String(pageNumber),
+          limit: "250",
+        });
+        const response = await fetch(`/api/admin/packages?${params.toString()}`, { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok || !data.success || !Array.isArray(data.packages)) {
+          throw new Error(data.error || "Could not load packages for bulk image upload.");
+        }
+
+        allPackages.push(...(data.packages as AdminPackage[]));
+        totalPages = Math.max(1, Number(data.pagination?.totalPages) || 1);
+      }
+
+      setBulkImagePackages(allPackages);
+      if (allPackages.length === 0) toast.error("No packages are available for image upload.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Could not load packages for bulk image upload.");
+      setIsBulkImageModalOpen(false);
+    } finally {
+      setIsLoadingBulkPackages(false);
+    }
+  };
+
+  const closeBulkImageModal = () => {
+    if (isUploadingBulkImages) return;
+    setIsBulkImageModalOpen(false);
+    setBulkImageRows([]);
+    setBulkUploadProgress(0);
+    if (bulkFileInputRef.current) bulkFileInputRef.current.value = "";
+  };
+
+  const handleBulkPngSelection = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(event.target.files || []);
+    event.target.value = "";
+    if (selectedFiles.length === 0) return;
+
+    const pngFiles = selectedFiles.filter((file) => file.type === "image/png" || file.name.toLowerCase().endsWith(".png"));
+    const oversizedFiles = pngFiles.filter((file) => file.size > 3 * 1024 * 1024);
+    const validFiles = pngFiles.filter((file) => file.size <= 3 * 1024 * 1024);
+    if (pngFiles.length !== selectedFiles.length) toast.error("Only PNG files can be added.");
+    if (oversizedFiles.length > 0) toast.error("Each PNG must be 3 MB or smaller.");
+    if (validFiles.length === 0) return;
+
+    const rows = validFiles.map((file): BulkImageRow => {
+      const fileKey = normalizeImageMatch(file.name);
+      const matches = bulkImagePackages.filter((pkg) =>
+        [pkg.id, pkg.supplierProductCode, pkg.name].some((value) => normalizeImageMatch(value) === fileKey)
+      );
+      return {
+        file,
+        packageId: matches.length === 1 ? matches[0].id : "",
+        status: "queued",
+      };
+    });
+    setBulkImageRows(rows);
+    setBulkUploadProgress(0);
+  };
+
+  const handleBulkImageUpload = async () => {
+    const rowsToUpload = [...bulkImageRows];
+    if (rowsToUpload.length === 0 || rowsToUpload.some((row) => !row.packageId)) {
+      toast.error("Choose a package for every PNG before uploading.");
+      return;
+    }
+
+    const targetIds = rowsToUpload.map((row) => row.packageId);
+    if (new Set(targetIds).size !== targetIds.length) {
+      toast.error("Each PNG must be assigned to a different package.");
+      return;
+    }
+
+    setIsUploadingBulkImages(true);
+    setBulkUploadProgress(0);
+    let uploadedCount = 0;
+
+    for (let index = 0; index < rowsToUpload.length; index++) {
+      const row = rowsToUpload[index];
+      setBulkUploadProgress(index + 1);
+      setBulkImageRows((previous) => previous.map((item, itemIndex) =>
+        itemIndex === index ? { ...item, status: "uploading", error: undefined } : item
+      ));
+
+      try {
+        const formData = new FormData();
+        formData.append("packageId", row.packageId);
+        formData.append("image", row.file);
+        const response = await fetch("/api/admin/packages/upload", { method: "POST", body: formData });
+        const data = await response.json();
+        if (!response.ok || !data.success || typeof data.package?.customImage !== "string") {
+          throw new Error(data.error || `Upload failed for ${row.file.name}.`);
+        }
+
+        const customImage = data.package.customImage as string;
+        setPackages((previous) => previous.map((pkg) =>
+          pkg.id === row.packageId ? { ...pkg, customImage } : pkg
+        ));
+        setEditMap((previous) => ({
+          ...previous,
+          [row.packageId]: { ...previous[row.packageId], customImage },
+        }));
+        setBulkImageRows((previous) => previous.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, status: "done", error: undefined } : item
+        ));
+        uploadedCount++;
+      } catch (error) {
+        const message = error instanceof Error ? error.message : `Upload failed for ${row.file.name}.`;
+        setBulkImageRows((previous) => previous.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, status: "error", error: message } : item
+        ));
+      }
+    }
+
+    const failedCount = rowsToUpload.length - uploadedCount;
+    setIsUploadingBulkImages(false);
+    await fetchPackages();
+    if (failedCount > 0) {
+      setBulkImageRows((previous) => previous.filter((row) => row.status !== "done"));
+      toast.error(`${uploadedCount} PNG uploaded; ${failedCount} failed. You can retry the failed files.`);
+    } else {
+      toast.success(`Uploaded ${uploadedCount} package PNG${uploadedCount === 1 ? "" : "s"}.`);
+      setIsBulkImageModalOpen(false);
+      setBulkImageRows([]);
+      if (bulkFileInputRef.current) bulkFileInputRef.current.value = "";
+    }
+  };
+
+  const bulkTargetIds = bulkImageRows.map((row) => row.packageId).filter(Boolean);
+  const hasDuplicateBulkTargets = new Set(bulkTargetIds).size !== bulkTargetIds.length;
+  const canUploadBulkImages = bulkImageRows.length > 0 && bulkImageRows.every((row) => row.packageId) && !hasDuplicateBulkTargets;
+
   return (
     <div className="admin-page">
       {/* Top Header & Sync Action */}
@@ -405,6 +573,16 @@ export default function AdminPackagesPage() {
 
         {/* Sync Packages Button */}
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={openBulkImageModal}
+            disabled={isLoadingBulkPackages || isUploadingBulkImages}
+            className="inline-flex items-center gap-2 rounded-lg border border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 px-4 py-2 text-xs sm:text-sm font-bold text-violet-200 transition-colors disabled:opacity-50 cursor-pointer"
+          >
+            <Upload className="h-4 w-4" />
+            <span>Bulk PNG Upload</span>
+          </button>
+
           <label className="hidden sm:flex items-center gap-2 text-xs text-[#94A3B8] cursor-pointer">
             <input
               type="checkbox"
@@ -431,10 +609,10 @@ export default function AdminPackagesPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
         <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
           <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-            Total Synced Packages
+            Supplier-Available Packages
           </span>
           <div className="text-2xl font-bold tracking-tight text-[#F8FAFC]">{kpi.totalPkgs}</div>
-          <span className="text-[10px] text-[#64748B]">From WebBuilder API</span>
+          <span className="text-[10px] text-[#64748B]">Unavailable supplier items excluded</span>
         </div>
 
         <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
@@ -455,10 +633,10 @@ export default function AdminPackagesPage() {
 
         <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
           <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-            Active Supplier
+            WebBuilder Packages
           </span>
           <div className="text-lg font-bold text-emerald-400">
-            {kpi.totalPkgs} across all suppliers
+            {kpi.webbuilderPkgs} available from WebBuilder
           </div>
           <span className="text-[10px] text-[#64748B]">Automated wholesale pricing</span>
         </div>
@@ -511,6 +689,21 @@ export default function AdminPackagesPage() {
             <option value="webbuilder">WebBuilder</option>
             <option value="vngzz2">VNGZZ2</option>
             <option value="g2bulk">G2Bulk</option>
+          </select>
+
+          {/* Hide supplier-disabled regional products by default. */}
+          <select
+            value={supplierAvailability}
+            onChange={(e) => {
+              setSupplierAvailability(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
+            aria-label="Supplier availability"
+          >
+            <option value="available">Supplier available</option>
+            <option value="unavailable">Supplier unavailable</option>
+            <option value="all">All supplier statuses</option>
           </select>
 
           {/* Price Configuration Filter */}
@@ -643,13 +836,16 @@ export default function AdminPackagesPage() {
                               ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
                               : pkg.supplier === "g2bulk"
                               ? "bg-purple-500/10 text-purple-400 border border-purple-500/30"
-                              : pkg.supplier === "vizo"
-                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
                               : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
                           }`}
                         >
                           {pkg.supplier || "WebBuilder"}
                         </span>
+                        {!pkg.supplierAvailable && (
+                          <span className="ml-1 inline-block rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.2 text-[9px] font-bold text-amber-300">
+                            Supplier unavailable
+                          </span>
+                        )}
                       </td>
 
                       {/* Product Code */}
@@ -786,6 +982,119 @@ export default function AdminPackagesPage() {
           </div>
         </div>
       </div>
+
+      {isBulkImageModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div role="dialog" aria-modal="true" aria-label="Bulk package PNG upload" className="relative w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl bg-[#111A2B] border border-[#243047] shadow-2xl">
+            <div className="flex items-center justify-between p-5 border-b border-[#243047]">
+              <div>
+                <div className="flex items-center gap-2 text-violet-300">
+                  <Upload className="h-5 w-5" />
+                  <h3 className="text-base font-bold text-[#F8FAFC]">Bulk Upload Package PNGs</h3>
+                </div>
+                <p className="mt-1 text-xs text-[#94A3B8]">Choose one PNG for each package. Matching filenames are assigned automatically; you can change each match.</p>
+              </div>
+              <button
+                type="button"
+                onClick={closeBulkImageModal}
+                disabled={isUploadingBulkImages}
+                className="p-1 rounded-lg hover:bg-[#151F31] text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
+                aria-label="Close bulk image upload"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-5 space-y-4 overflow-y-auto">
+              <label className="block rounded-lg border border-dashed border-violet-500/40 bg-violet-500/5 p-4 text-center cursor-pointer hover:bg-violet-500/10 transition-colors">
+                <input
+                  ref={bulkFileInputRef}
+                  type="file"
+                  accept=".png,image/png"
+                  multiple
+                  disabled={isLoadingBulkPackages || isUploadingBulkImages}
+                  onChange={handleBulkPngSelection}
+                  className="sr-only"
+                />
+                <span className="text-sm font-bold text-violet-200">Select multiple PNG files</span>
+                <span className="block mt-1 text-[11px] text-[#94A3B8]">Up to 3 MB each. Filenames matching a package name, product code, or ID will be preselected.</span>
+              </label>
+
+              {isLoadingBulkPackages ? (
+                <div className="flex items-center justify-center gap-2 py-8 text-sm text-[#94A3B8]">
+                  <RefreshCw className="h-4 w-4 animate-spin text-violet-300" />
+                  Loading all packages...
+                </div>
+              ) : bulkImageRows.length > 0 ? (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-[#94A3B8]">
+                    <span>{bulkImageRows.length} PNG file{bulkImageRows.length === 1 ? "" : "s"} selected</span>
+                    <span>{bulkImagePackages.length} packages available</span>
+                  </div>
+                  <div className="max-h-[42vh] space-y-2 overflow-y-auto pr-1">
+                    {bulkImageRows.map((row, index) => (
+                      <div key={`${row.file.name}-${row.file.lastModified}-${index}`} className="grid grid-cols-1 gap-2 rounded-lg border border-[#243047] bg-[#0D1422] p-3 sm:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] sm:items-center">
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-semibold text-[#F8FAFC]" title={row.file.name}>{row.file.name}</p>
+                          <p className="mt-1 text-[10px] text-[#64748B]">{(row.file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                          {row.error ? <p className="mt-1 text-[10px] text-red-300">{row.error}</p> : null}
+                        </div>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <select
+                            value={row.packageId}
+                            disabled={isUploadingBulkImages || row.status === "done"}
+                            onChange={(event) => setBulkImageRows((previous) => previous.map((item, itemIndex) =>
+                              itemIndex === index ? { ...item, packageId: event.target.value } : item
+                            ))}
+                            aria-label={`Package for ${row.file.name}`}
+                            className="min-w-0 flex-1 rounded-lg border border-[#243047] bg-[#151F31] px-2.5 py-2 text-xs text-[#F8FAFC] focus:border-violet-400 focus:outline-none"
+                          >
+                            <option value="">Choose package...</option>
+                            {bulkImagePackages.map((pkg) => (
+                              <option key={pkg.id} value={pkg.id}>
+                                {pkg.gameSlug} · {pkg.name} · {pkg.supplierProductCode}
+                              </option>
+                            ))}
+                          </select>
+                          <span className={`w-16 shrink-0 text-right text-[10px] font-bold ${
+                            row.status === "done" ? "text-emerald-300" : row.status === "error" ? "text-red-300" : row.status === "uploading" ? "text-violet-300" : "text-[#64748B]"
+                          }`}>
+                            {row.status === "done" ? "Uploaded" : row.status === "error" ? "Retry" : row.status === "uploading" ? "Uploading" : "Ready"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {hasDuplicateBulkTargets ? <p className="text-xs text-amber-300">Assign each PNG to a different package.</p> : null}
+                  {bulkImageRows.some((row) => !row.packageId) ? <p className="text-xs text-amber-300">Choose a package for every PNG before uploading.</p> : null}
+                </div>
+              ) : (
+                <p className="py-5 text-center text-xs text-[#64748B]">Selected PNGs will appear here for package matching.</p>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between gap-3 border-t border-[#243047] p-5">
+              <button
+                type="button"
+                onClick={closeBulkImageModal}
+                disabled={isUploadingBulkImages}
+                className="rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-xs font-semibold text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBulkImageUpload}
+                disabled={!canUploadBulkImages || isLoadingBulkPackages || isUploadingBulkImages}
+                className="inline-flex items-center gap-2 rounded-lg bg-violet-500 px-4 py-2 text-xs font-bold text-white hover:bg-violet-400 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploadingBulkImages ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                <span>{isUploadingBulkImages ? `Uploading ${bulkUploadProgress} of ${bulkImageRows.length}...` : `Upload ${bulkImageRows.length || ""} PNG${bulkImageRows.length === 1 ? "" : "s"}`}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Custom Image Upload Modal */}
       {imageModalPkg && (

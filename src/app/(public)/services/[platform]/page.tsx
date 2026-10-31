@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { getPublicSmmCatalog } from "@/lib/services/smmCatalogService";
+import { getPublicSmmCatalog } from "@/lib/services/smmPublicCatalogService";
 import { PlatformTopUpClient } from "@/components/public/PlatformTopUpClient";
 
 export const dynamic = "force-dynamic";
@@ -30,15 +30,25 @@ export default async function PlatformServicePage({ params }: PlatformPageProps)
   const normPlatform = platform.toLowerCase();
   const platformName = PLATFORM_NAMES[normPlatform] || (normPlatform.charAt(0).toUpperCase() + normPlatform.slice(1));
 
-  const catalogResult = await getPublicSmmCatalog({
-    page: 1,
-    limit: 250,
-    platform: normPlatform,
-    type: "all",
-    category: "All",
-    search: "",
-    sort: "recommended",
-  }).catch(() => null);
+  let catalogResult: Awaited<ReturnType<typeof getPublicSmmCatalog>> | null = null;
+  let catalogError: string | undefined;
+  try {
+    catalogResult = await getPublicSmmCatalog({
+      page: 1,
+      limit: 250,
+      platform: normPlatform,
+      type: "all",
+      category: "All",
+      search: "",
+      sort: "recommended",
+    });
+  } catch (error) {
+    console.error(
+      "[Public SMM Platform Page] Catalogue query failed:",
+      error instanceof Error ? error.name : "UnknownError",
+    );
+    catalogError = "The service catalogue is temporarily unavailable. Please try again.";
+  }
 
   const rawServices = catalogResult?.services || [];
   const services = rawServices
@@ -63,8 +73,9 @@ export default async function PlatformServicePage({ params }: PlatformPageProps)
       platform={normPlatform}
       platformName={platformName}
       initialServices={services}
-      catalogTotal={catalogResult?.total || services.length}
+      catalogTotal={catalogResult?.total ?? services.length}
       categories={catalogResult?.categories || ["All"]}
+      catalogError={catalogError}
     />
   );
 }
