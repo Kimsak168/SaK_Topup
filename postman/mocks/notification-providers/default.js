@@ -45,11 +45,19 @@ const server = http.createServer(async (req, res) => {
   if (url.pathname.endsWith("/getWebhookInfo")) {
     return reply(200, { ok: true, result: { url: "", has_custom_certificate: false, pending_update_count: 0 } });
   }
-  if (url.pathname.endsWith("/sendMessage")) {
-    messages.push(body);
-    if (body.text.includes("TG429")) return reply(429, { ok: false, error_code: 429, description: "Too Many Requests", parameters: { retry_after: 2 } });
-    if (body.text.includes("TG503")) return reply(503, { ok: false, error_code: 503, description: "Unavailable" });
-    if (body.text.includes("TG403")) return reply(403, { ok: false, error_code: 403, description: "Forbidden" });
+  if (url.pathname.endsWith("/sendMessage") || url.pathname.endsWith("/sendPhoto")) {
+    let text = body.text || body.caption || "";
+    let chatId = body.chat_id;
+    if (!text && typeof input === "string") {
+      const matchCaption = input.match(/name="caption"\r?\n\r?\n([\s\S]*?)\r?\n--/);
+      if (matchCaption) text = matchCaption[1];
+      const matchChatId = input.match(/name="chat_id"\r?\n\r?\n([\s\S]*?)\r?\n--/);
+      if (matchChatId) chatId = matchChatId[1];
+    }
+    messages.push({ ...body, text, chat_id: chatId || body.chat_id });
+    if (text.includes("TG429")) return reply(429, { ok: false, error_code: 429, description: "Too Many Requests", parameters: { retry_after: 2 } });
+    if (text.includes("TG503")) return reply(503, { ok: false, error_code: 503, description: "Unavailable" });
+    if (text.includes("TG403")) return reply(403, { ok: false, error_code: 403, description: "Forbidden" });
     return reply(200, { ok: true, result: { message_id: nextTelegramId++ } });
   }
   return reply(501, { error: "Fixture does not model this endpoint" });

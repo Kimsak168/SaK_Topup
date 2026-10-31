@@ -213,7 +213,23 @@ export async function POST(req: NextRequest) {
     targetOrder.paymentMethod = "aba_payway_v2";
     targetOrder.paymentGateway = "aba_payway_v2";
     targetOrder.checkoutUrl = qrResult.payUrl || targetOrder.checkoutUrl;
+    targetOrder.qrString = qrResult.qrString;
+    targetOrder.qrImage = qrResult.qrImage;
+    targetOrder.qrPngUrl = qrResult.qrPngUrl;
     targetOrder.paymentStatus = "PENDING";
+
+    // Attach real QR code data and transactionId to the queued PAYMENT PENDING event
+    if (Array.isArray(targetOrder.telegramNotifications)) {
+      const pendingPaymentEvent = targetOrder.telegramNotifications.find(
+        (e: any) => e.kind === "PAYMENT" && e.status === "PENDING" && (e.state === "queued" || e.state === "sending")
+      );
+      if (pendingPaymentEvent && pendingPaymentEvent.payload) {
+        pendingPaymentEvent.payload.qrString = qrResult.qrString;
+        pendingPaymentEvent.payload.qrImage = qrResult.qrImage;
+        pendingPaymentEvent.payload.qrPngUrl = qrResult.qrPngUrl;
+        pendingPaymentEvent.payload.transactionId = qrResult.transactionId;
+      }
+    }
     await targetOrder.save();
 
     // Upsert Payment model record

@@ -1,4 +1,5 @@
 import "server-only";
+import QRCode from "qrcode";
 
 import {
   formatTelegramNotificationMessage,
@@ -46,9 +47,111 @@ export async function sendTelegramNotification(
   }
 
   const topicId = getTelegramTopicThreadId(event.status, env);
+  const formattedText = formatTelegramNotificationMessage(event);
+
+  // 1. If this is a PAYMENT PENDING event with QR data, attempt to send real QR photo via sendPhoto
+  if (event.kind === "PAYMENT" && event.status === "PENDING") {
+    const { qrString, qrImage, qrPngUrl } = event.payload;
+    let photoBuffer: Buffer | null = null;
+    let photoUrl: string | null = null;
+
+    if (qrString) {
+      try {
+        photoBuffer = await QRCode.toBuffer(qrString, {
+          type: "png",
+          width: 512,
+          margin: 2,
+          errorCorrectionLevel: "M",
+        });
+      } catch (err) {
+        console.warn("[Telegram] QR PNG generation error:", err);
+      }
+    } else if (qrImage && typeof qrImage === "string") {
+      try {
+        const base64Data = qrImage.replace(/^data:image\/\w+;base64,/, "");
+        photoBuffer = Buffer.from(base64Data, "base64");
+      } catch (err) {
+        console.warn("[Telegram] QR base64 buffer error:", err);
+      }
+    } else if (qrPngUrl && /^https?:\/\//i.test(qrPngUrl)) {
+      photoUrl = qrPngUrl;
+    }
+
+    if (photoBuffer || photoUrl) {
+      try {
+        const formData = new FormData();
+        formData.append("chat_id", chatId);
+        if (typeof topicId === "number") {
+          formData.append("message_thread_id", String(topicId));
+        }
+        formData.append("caption", formattedText.slice(0, 1024));
+        formData.append("parse_mode", "HTML");
+        if (photoBuffer) {
+          const blob = new Blob([new Uint8Array(photoBuffer)], { type: "image/png" });
+          formData.append("photo", blob, `khqr-${event.payload.orderNumber || "payment"}.png`);
+        } else if (photoUrl) {
+          formData.append("photo", photoUrl);
+        }
+
+        let photoResp = await fetcher(`https://api.telegram.org/bot${token}/sendPhoto`, {
+          method: "POST",
+          body: formData,
+          cache: "no-store",
+          redirect: "error",
+          signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+        });
+
+        let photoBody = (await photoResp.json().catch(() => null)) as Record<string, unknown> | null;
+
+        // Fallback: If thread not found, retry sendPhoto without topic thread ID
+        if (
+          !photoResp.ok &&
+          typeof topicId === "number" &&
+          typeof photoBody?.description === "string" &&
+          photoBody.description.toLowerCase().includes("thread not found")
+        ) {
+          const fallbackForm = new FormData();
+          fallbackForm.append("chat_id", chatId);
+          fallbackForm.append("caption", formattedText.slice(0, 1024));
+          fallbackForm.append("parse_mode", "HTML");
+          if (photoBuffer) {
+            const blob = new Blob([new Uint8Array(photoBuffer)], { type: "image/png" });
+            fallbackForm.append("photo", blob, `khqr-${event.payload.orderNumber || "payment"}.png`);
+          } else if (photoUrl) {
+            fallbackForm.append("photo", photoUrl);
+          }
+          photoResp = await fetcher(`https://api.telegram.org/bot${token}/sendPhoto`, {
+            method: "POST",
+            body: fallbackForm,
+            cache: "no-store",
+            redirect: "error",
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+          });
+          photoBody = (await photoResp.json().catch(() => null)) as Record<string, unknown> | null;
+        }
+
+        if (photoResp.ok && photoBody?.ok === true) {
+          const result = photoBody.result && typeof photoBody.result === "object" ? (photoBody.result as Record<string, unknown>) : {};
+          return { ok: true, ...(result.message_id ? { messageId: String(result.message_id) } : {}) };
+        }
+
+        // If Telegram rejected sendPhoto with fatal error (403 forbidden), return immediately
+        if (photoResp.status === 403 || photoBody?.error_code === 403) {
+          const desc = cleanError(photoBody?.description, token);
+          return { ok: false, retryable: false, error: desc || "Telegram rejected the message (HTTP 403)." };
+        }
+
+        console.warn(`[Telegram] sendPhoto returned HTTP ${photoResp.status}, falling back to sendMessage`);
+      } catch (err) {
+        console.warn("[Telegram] sendPhoto error, falling back to sendMessage:", err);
+      }
+    }
+  }
+
+  // 2. Standard text message fallback via sendMessage
   const payloadJson: Record<string, unknown> = {
     chat_id: chatId,
-    text: formatTelegramNotificationMessage(event),
+    text: formattedText,
     parse_mode: "HTML",
     link_preview_options: { is_disabled: true },
   };
@@ -75,10 +178,15 @@ export async function sendTelegramNotification(
     };
   }
 
-  let body = await response.json().catch(() => null) as Record<string, unknown> | null;
+  let body = (await response.json().catch(() => null)) as Record<string, unknown> | null;
 
   // Graceful fallback: If topic thread was deleted/not found, retry without thread_id
-  if (!response.ok && typeof topicId === "number" && typeof body?.description === "string" && body.description.toLowerCase().includes("thread not found")) {
+  if (
+    !response.ok &&
+    typeof topicId === "number" &&
+    typeof body?.description === "string" &&
+    body.description.toLowerCase().includes("thread not found")
+  ) {
     delete payloadJson.message_thread_id;
     try {
       response = await fetcher(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -89,14 +197,14 @@ export async function sendTelegramNotification(
         redirect: "error",
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
-      body = await response.json().catch(() => null) as Record<string, unknown> | null;
+      body = (await response.json().catch(() => null)) as Record<string, unknown> | null;
     } catch {
       // Ignore fallback failure, handled below
     }
   }
 
   if (response.ok && body?.ok === true) {
-    const result = body.result && typeof body.result === "object" ? body.result as Record<string, unknown> : {};
+    const result = body.result && typeof body.result === "object" ? (body.result as Record<string, unknown>) : {};
     return { ok: true, ...(result.message_id ? { messageId: String(result.message_id) } : {}) };
   }
 
@@ -104,12 +212,14 @@ export async function sendTelegramNotification(
   if (!body || typeof body.ok !== "boolean") return { ok: false, retryable: true, error: "Telegram returned an invalid response." };
   const description = cleanError(body?.description, token);
   if (apiCode === 429 || response.status === 429) {
-    const parameters = body?.parameters && typeof body.parameters === "object"
-      ? body.parameters as Record<string, unknown>
-      : {};
-    const retryAfter = typeof parameters.retry_after === "number" && Number.isFinite(parameters.retry_after)
-      ? Math.max(1, Math.min(86400, Math.ceil(parameters.retry_after)))
-      : undefined;
+    const parameters =
+      body?.parameters && typeof body.parameters === "object"
+        ? (body.parameters as Record<string, unknown>)
+        : {};
+    const retryAfter =
+      typeof parameters.retry_after === "number" && Number.isFinite(parameters.retry_after)
+        ? Math.max(1, Math.min(86400, Math.ceil(parameters.retry_after)))
+        : undefined;
     return { ok: false, retryable: true, error: description || "Telegram rate limit reached.", ...(retryAfter ? { retryAfterSeconds: retryAfter } : {}) };
   }
   if (response.status >= 500 || apiCode >= 500) {

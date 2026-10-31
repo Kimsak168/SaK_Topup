@@ -52,6 +52,9 @@ export interface IOrder extends Document {
     | "DELIVERED";
   transactionId?: string;
   checkoutUrl?: string;
+  qrString?: string;
+  qrImage?: string;
+  qrPngUrl?: string;
   supplierOrderId?: string;
   idempotencyKey?: string;
   requestHash?: string;
@@ -218,6 +221,15 @@ const OrderSchema = new Schema<IOrder>(
     checkoutUrl: {
       type: String,
       trim: true,
+    },
+    qrString: {
+      type: String,
+    },
+    qrImage: {
+      type: String,
+    },
+    qrPngUrl: {
+      type: String,
     },
     supplierOrderId: {
       type: String,
