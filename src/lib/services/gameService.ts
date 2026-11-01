@@ -34,7 +34,7 @@ const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
 const CURRENT_GAME_COVER_ART: Record<string, string> = {
   "free-fire-khsgmy": "/images/freefire.jpg?v=naruto",
   hok: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/10/e4/fe/10e4fe00-2610-bd44-4cab-f68e49518979/AppIcon-1x_U007emarketing-0-6-0-85-220-0.png/512x512bb.jpg",
-  mlbb: "/images/mlbb/mlbb_global.jpg?v=2026",
+  mlbb: "/images/mlbb/mlbb.jpg?v=kh",
   "webbuilder-mlbb-global": "/images/mlbb/mlbb_global.jpg?v=2026",
   "webbuilder-mlbb-id": "/images/mlbb/mlbb_id.jpg?v=2026",
   "webbuilder-mlbb-ph": "/images/mlbb/mlbb_ph.jpg?v=2026",
