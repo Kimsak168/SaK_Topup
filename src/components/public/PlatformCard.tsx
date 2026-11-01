@@ -26,15 +26,15 @@ export const PlatformCard = memo(function PlatformCard({
   platform: PlatformItem;
 }) {
   const normId = platform.id.toLowerCase();
-  const isKhmerCurated = normId === "khmer" || normId === "tiktok-khmer";
+  const isKhmerCurated = normId === "khmer" || normId === "tiktok-khmer" || normId === "boost-tiktok-khmer";
   const imgSrc = PLATFORM_IMAGES[normId] || platform.image || "/images/logo.png";
-  const href = `/services/${normId}`;
+  const href = isKhmerCurated ? "/services/tiktok-khmer" : `/services/${normId}`;
 
   return (
     <Link
       href={href}
       prefetch={false}
-      aria-label={isKhmerCurated ? "Browse TikTok Khmer SMM packages" : `View ${platform.name} services`}
+      aria-label={isKhmerCurated ? "Browse Boost TikTok Khmer packages" : `View ${platform.name} services`}
       title={platform.name}
       className="game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-white outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:-translate-y-[2px] motion-reduce:transition-none sm:rounded-[16px]"
     >
@@ -44,7 +44,7 @@ export const PlatformCard = memo(function PlatformCard({
           <div aria-hidden="true" className="absolute -bottom-12 -right-8 size-40 rounded-full bg-violet-400/25 blur-3xl" />
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-pink-100/25 bg-black/20 px-2.5 py-1 text-[9px] font-extrabold tracking-[0.16em] text-pink-50 sm:left-4 sm:top-4 sm:text-[10px]">
             <Sparkles aria-hidden="true" className="size-3 text-pink-200" />
-            TIKTOK KHMER
+            BOOST TIKTOK KHMER
           </span>
           <div className="relative flex items-center gap-2.5 sm:gap-3" aria-hidden="true">
             <span className="grid size-11 place-items-center rounded-2xl border border-white/15 bg-white/10 shadow-lg shadow-black/10 sm:size-14">
@@ -80,7 +80,7 @@ export const PlatformCard = memo(function PlatformCard({
       {isKhmerCurated ? (
         <div className="flex min-h-[82px] min-w-0 shrink-0 flex-col items-center justify-center gap-1 bg-white px-2 py-2 text-center sm:min-h-[92px] sm:px-3">
           <h3 className="line-clamp-1 w-full min-w-0 text-[13px] leading-4 font-extrabold text-[#35102C] sm:text-[15px] sm:leading-5">
-            TikTok Khmer
+            Boost TikTok Khmer
           </h3>
           <span className="text-[10px] font-medium text-[#72566B] sm:text-xs">Khmer likes, views &amp; followers</span>
           <span className="mt-0.5 text-[10px] font-bold text-[#C02670] sm:text-[11px]">

@@ -20,7 +20,9 @@ function getConfig() {
     process.env.VNGZZ2_SMM_KHMER_BASE_URL ||
     "https://www.vngzz2game.site/api/v1/smm-khmer"
   ).trim().replace(/\/+$/, "");
-  const apiKey = process.env.VNGZZ2_GAME_API_KEY?.trim() ||
+  const apiKey =
+    process.env.VNGZZ2_SMM_KHMER_API_KEY?.trim() ||
+    process.env.VNGZZ2_GAME_API_KEY?.trim() ||
     process.env.VNGZZ2_PRIMARY_API_KEY?.trim() ||
     process.env.VNGZZ2_PAYMENT_API_KEY?.trim();
   const configuredTimeout = Number(process.env.VNGZZ2_SMM_KHMER_TIMEOUT_MS);
@@ -108,6 +110,7 @@ function parseKhmerSmmProduct(value: unknown): KhmerSmmProduct {
 
   const id = typeof record.id === "string" ? record.id.trim() : "";
   const name = typeof record.name === "string" ? record.name.replace(/\s+/g, " ").trim() : "";
+  const icon = typeof record.icon === "string" ? record.icon.trim() : "";
   const kind = typeof record.kind === "string" ? record.kind.replace(/\s+/g, " ").trim() : "Social media growth";
   const quantity = record.quantity;
   const price = record.price;
@@ -125,6 +128,7 @@ function parseKhmerSmmProduct(value: unknown): KhmerSmmProduct {
   return {
     id,
     name,
+    icon: icon || undefined,
     kind: kind.slice(0, 100),
     quantity,
     price,

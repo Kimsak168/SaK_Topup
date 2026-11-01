@@ -21,6 +21,7 @@ function isPublicProduct(value: unknown): value is KhmerSmmProduct {
     typeof product.kind === "string" &&
     typeof product.quantity === "number" && Number.isSafeInteger(product.quantity) && product.quantity > 0 &&
     typeof product.customerPrice === "number" && Number.isFinite(product.customerPrice) && product.customerPrice > 0 &&
+    (product.icon === undefined || typeof product.icon === "string") &&
     product.currency === "USD";
 }
 
@@ -147,15 +148,14 @@ export default function KhmerSmmStorefront() {
 
         <section className="mb-8 rounded-3xl border border-violet-400/20 bg-gradient-to-br from-violet-950/60 via-slate-950/80 to-cyan-950/30 p-5 shadow-xl sm:p-8">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-200">
-            <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> TikTok Khmer packages
+            <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> Boost TikTok Khmer
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">TikTok Khmer growth packages</h1>
+          <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">Boost TikTok Khmer</h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-            Choose a fixed package, add your public TikTok link, then pay through the usual checkout.
-            Supplier fulfillment starts after payment is verified.
+            Choose a curated package to boost your TikTok presence with real engagement. Enter your public TikTok link, and your order starts processing immediately after payment verification.
           </p>
           <div className="mt-5 inline-flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200">
-            <ShieldCheck aria-hidden="true" className="h-4 w-4" /> Secure customer checkout
+            <ShieldCheck aria-hidden="true" className="h-4 w-4" /> Instant automated fulfillment
           </div>
         </section>
 
@@ -202,7 +202,10 @@ export default function KhmerSmmStorefront() {
                           {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5" />}
                         </span>
                       </div>
-                      <p className="mt-3 min-h-10 text-sm font-bold leading-5 text-white">{product.name}</p>
+                      <p className="mt-3 min-h-10 text-sm font-bold leading-5 text-white flex items-center gap-2">
+                        {product.icon && <span className="text-base shrink-0">{product.icon}</span>}
+                        <span>{product.name}</span>
+                      </p>
                       <div className="mt-4 flex items-end justify-between gap-3">
                         <span className="text-xs text-slate-400">{product.quantity.toLocaleString()} units</span>
                         <span className="text-xl font-black text-cyan-200">${product.customerPrice.toFixed(2)}</span>

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import KhmerSmmStorefront from "@/components/public/KhmerSmmStorefront";
 
 export const metadata: Metadata = {
-  title: "TikTok Khmer Packages | Asura Store",
-  description: "Choose curated TikTok likes, views, and follower packages for Khmer creators.",
+  title: "Boost TikTok Khmer | Asura Store",
+  description: "Boost TikTok Khmer with curated likes, views, and followers packages for Khmer creators.",
 };
 
 export default function TikTokKhmerPage() {

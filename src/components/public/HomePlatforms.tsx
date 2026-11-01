@@ -2,6 +2,7 @@ import { getPublicSmmCatalogSummary } from "@/lib/services/smmPublicCatalogServi
 import { PlatformCard } from "./PlatformCard";
 
 const PLATFORMS = [
+  { id: "tiktok-khmer", name: "Boost TikTok Khmer" },
   { id: "tiktok", name: "TikTok" },
   { id: "telegram", name: "Telegram" },
   { id: "facebook", name: "Facebook" },

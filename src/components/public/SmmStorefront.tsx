@@ -36,8 +36,8 @@ const AbaPayWayV2Modal = dynamic(() => import("./AbaPayWayV2Modal"), {
 });
 
 const STANDARD_PLATFORMS: PlatformItem[] = [
+  { id: "tiktok-khmer", name: "Boost TikTok Khmer" },
   { id: "tiktok", name: "TikTok" },
-  { id: "tiktok-khmer", name: "TikTok Khmer" },
   { id: "telegram", name: "Telegram" },
   { id: "facebook", name: "Facebook" },
   { id: "instagram", name: "Instagram" },
