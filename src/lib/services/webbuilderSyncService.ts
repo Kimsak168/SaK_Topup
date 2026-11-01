@@ -26,8 +26,7 @@ export async function syncWebBuilderCatalogue(options: {
     for (const product of products) {
       const definition = getWebBuilderGame(product);
       if (!definition) {
-        packages.errors.push(`Unmapped WebBuilder game: ${product.game || product.id}`);
-        packages.failed++;
+        packages.skipped++;
         continue;
       }
       const list = byGame.get(definition.code) || [];
