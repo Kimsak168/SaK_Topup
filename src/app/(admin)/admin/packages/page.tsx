@@ -739,7 +739,7 @@ function PackagesManagerContent() {
       <div className="admin-package-stats">
         {[
           { label: "WebBuilder", value: kpi.webbuilderPkgs, detail: `${(kpi.webbuilderConfiguredPkgs ?? 0).toLocaleString("en-US")} prices configured`, icon: Globe, tone: "sky", active: supplierFilter === "webbuilder", action: () => handleSwitchSupplier("webbuilder") },
-          { label: "VNGZZ2", value: kpi.vngzz2Pkgs ?? 0, detail: `${(kpi.vngzz2ConfiguredPkgs ?? 0).toLocaleString("en-US")} prices configured`, icon: Zap, tone: "violet", active: supplierFilter === "vngzz2", action: () => handleSwitchSupplier("vngzz2") },
+          { label: "G2Bulk (Roblox)", value: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs), detail: "Roblox Robux packages", icon: Package, tone: "violet", active: supplierFilter === "g2bulk", action: () => handleSwitchSupplier("g2bulk") },
           { label: "Prices configured", value: kpi.configuredPkgs, detail: "Packages with a selling price", icon: CheckCircle2, tone: "green", active: statusFilter === "configured", action: () => { setStatusFilter(previous => previous === "configured" ? "all" : "configured"); setPage(1); } },
           { label: "Needs a price", value: kpi.unconfiguredPkgs, detail: "Review before making available", icon: AlertCircle, tone: "amber", active: statusFilter === "unconfigured", action: () => { setStatusFilter(previous => previous === "unconfigured" ? "all" : "unconfigured"); setPage(1); } },
         ].map(stat => {
@@ -761,8 +761,7 @@ function PackagesManagerContent() {
           {[
             { id: "all", label: "All suppliers", count: kpi.totalPkgs, icon: Layers },
             { id: "webbuilder", label: "WebBuilder", count: kpi.webbuilderPkgs, icon: Globe },
-            { id: "vngzz2", label: "VNGZZ2", count: kpi.vngzz2Pkgs ?? 0, icon: Zap },
-            { id: "g2bulk", label: "G2Bulk", count: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs - (kpi.vngzz2Pkgs ?? 0)), icon: Package },
+            { id: "g2bulk", label: "G2Bulk", count: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs), icon: Package },
           ].map(tab => {
             const Icon = tab.icon;
             return <button key={tab.id} type="button" onClick={() => handleSwitchSupplier(tab.id)} aria-pressed={supplierFilter === tab.id} className="admin-supplier-tab"><Icon className="h-4 w-4" /><span>{tab.label}</span><small>{tab.count.toLocaleString("en-US")}</small></button>;
@@ -837,8 +836,8 @@ function PackagesManagerContent() {
             <option value="all">
               {supplierFilter === "webbuilder"
                 ? `All WebBuilder Games (${filteredGames.length})`
-                : supplierFilter === "vngzz2"
-                ? `All VNGZZ2 Games (${filteredGames.length})`
+                : supplierFilter === "g2bulk"
+                ? `All G2Bulk Games (${filteredGames.length})`
                 : `All Games (${availableGames.length})`}
             </option>
 
@@ -853,22 +852,13 @@ function PackagesManagerContent() {
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="VNGZZ2 Catalog Games">
-                  {availableGames
-                    .filter((g) => g.supplier === "vngzz2")
-                    .map((g) => (
-                      <option key={`vng:${g.code || g.slug}`} value={g.slug}>
-                        {g.name}
-                      </option>
-                    ))}
-                </optgroup>
-                {availableGames.filter((g) => g.supplier !== "webbuilder" && g.supplier !== "vngzz2").length > 0 && (
-                  <optgroup label="🛡️ Other Suppliers">
+                {availableGames.filter((g) => g.supplier === "g2bulk").length > 0 && (
+                  <optgroup label="G2Bulk Games">
                     {availableGames
-                      .filter((g) => g.supplier !== "webbuilder" && g.supplier !== "vngzz2")
+                      .filter((g) => g.supplier === "g2bulk")
                       .map((g) => (
-                        <option key={`oth:${g.code || g.slug}`} value={g.slug}>
-                          {g.name} ({g.supplier.toUpperCase()})
+                        <option key={`g2:${g.code || g.slug}`} value={g.slug}>
+                          {g.name}
                         </option>
                       ))}
                   </optgroup>

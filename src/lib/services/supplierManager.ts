@@ -37,9 +37,9 @@ export const SUPPLIERS: SupplierDefinition[] = [
     baseUrl: (process.env.VNGZZ2_GAME_BASE_URL || process.env.VNGZZ2_PAYMENT_BASE_URL || "https://www.vngzz2game.site/api").replace(/\/+$/, ""),
     configured: Boolean(process.env.VNGZZ2_GAME_API_KEY?.trim() || process.env.VNGZZ2_PRIMARY_API_KEY?.trim() || process.env.VNGZZ2_PAYMENT_API_KEY?.trim()),
     credentials: ["VNGZZ2_GAME_API_KEY", "VNGZZ2_PRIMARY_API_KEY", "VNGZZ2_PAYMENT_API_KEY"],
-    capabilities: ["game", "smm"],
-    balanceScopes: ["game", "smm"],
-    catalogModes: ["game", "smm"],
+    capabilities: ["smm"],
+    balanceScopes: ["smm"],
+    catalogModes: ["smm"],
   },
   {
     id: "g2bulk",
