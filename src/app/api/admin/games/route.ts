@@ -137,7 +137,7 @@ export async function PATCH(req: NextRequest) {
         }
       }
     }
-    if (typeof customImage === "string") updateFields.customImage = customImage.trim();
+    if (typeof customImage === "string") updateFields.customImage = customImage.trim() || null;
     if (typeof description === "string") updateFields.description = description.trim();
     if (typeof badge === "string") updateFields.badge = badge.trim();
     if (typeof sortOrder === "number") updateFields.sortOrder = sortOrder;

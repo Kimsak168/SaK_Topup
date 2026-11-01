@@ -8,7 +8,7 @@
 }
 
 /* Admin portals mount under body, so include the server-rendered admin scope. */
-@custom-variant dark (&:is(.dark *, :root:has(.admin-theme) *));
+@custom-variant dark (&:is(.dark:not(:has(.admin-theme)) *, .admin-shell-dark, .admin-shell-dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -113,48 +113,63 @@
 
 .admin-theme {
   color-scheme: light;
-  --admin-bg: #F9DCEB;
-  --admin-sidebar: #FFF2F8;
-  --admin-surface: #FFF7FB;
-  --admin-surface-soft: #F7C7DD;
-  --admin-surface-raised: #F2B2CF;
-  --admin-border: #E59BBE;
-  --admin-primary: #3B2433;
-  --admin-secondary: #8B647C;
-  --admin-muted: #8B647C;
-  --admin-accent: #E9439C;
-  --admin-highlight: #A91F60;
-  --admin-accent-hover: #CE2F7F;
-  --admin-accent-foreground: #3B2433;
-  --admin-accent-hover-foreground: #3B2433;
-  --admin-accent-soft: rgb(219 39 119 / .12);
-  --admin-accent-border: rgb(169 31 96 / .26);
-  --admin-warning: #D97706;
+  --admin-bg: #F5F7FB;
+  --admin-sidebar: #0F172A;
+  --admin-surface: #FFFFFF;
+  --admin-surface-soft: #F8FAFC;
+  --admin-surface-raised: #F1F5F9;
+  --admin-border: #E2E8F0;
+  --admin-primary: #172033;
+  --admin-secondary: #475569;
+  --admin-muted: #64748B;
+  --admin-accent: #DB2777;
+  --admin-highlight: #BE185D;
+  --admin-accent-hover: #BE185D;
+  --admin-accent-foreground: #FFFFFF;
+  --admin-accent-hover-foreground: #FFFFFF;
+  --admin-accent-soft: rgb(219 39 119 / .07);
+  --admin-accent-border: rgb(219 39 119 / .24);
+  --admin-warning: #B45309;
   --admin-error: #DC2626;
-  --admin-success: #DB2777;
-  --admin-info: #B54779;
+  --admin-success: #15803D;
+  --admin-info: #0369A1;
 }
 
 :root:has(.admin-theme) {
   color-scheme: light;
-  --background: #F9DCEB;
-  --foreground: #3B2433;
-  --card: #FFF7FB;
-  --card-foreground: #3B2433;
-  --popover: #FFF7FB;
-  --popover-foreground: #3B2433;
-  --primary: #F472B6;
-  --primary-foreground: #3B2433;
-  --secondary: #F7C7DD;
-  --secondary-foreground: #3B2433;
-  --muted: #F7C7DD;
-  --muted-foreground: #8B647C;
-  --accent: #FBCFE8;
-  --accent-foreground: #3B2433;
-  --border: #E59BBE;
-  --border-soft: #E59BBE;
-  --input: #E59BBE;
+  --background: #F5F7FB;
+  --foreground: #172033;
+  --card: #FFFFFF;
+  --card-foreground: #172033;
+  --popover: #FFFFFF;
+  --popover-foreground: #172033;
+  --primary: #DB2777;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #334155;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #FCE7F3;
+  --accent-foreground: #BE185D;
+  --border: #E2E8F0;
+  --border-soft: #E2E8F0;
+  --input: #E2E8F0;
   --ring: #DB2777;
+}
+:root:has(.admin-shell-dark) {
+  color-scheme: dark;
+  --background: #0B1120;
+  --foreground: #F1F5F9;
+  --card: #141E30;
+  --card-foreground: #F1F5F9;
+  --popover: #141E30;
+  --popover-foreground: #F1F5F9;
+  --secondary: #1E293B;
+  --secondary-foreground: #CBD5E1;
+  --muted: #1E293B;
+  --muted-foreground: #94A3B8;
+  --border: #2B3A50;
+  --input: #2B3A50;
 }
 
 @layer base {
@@ -559,7 +574,7 @@
   .public-nav-link:active, .package-option:active:not(:disabled) { transform: none; }
 }
 
-/* Keep the admin workspace and sign-in portal on the same rose-pink palette. */
+/* Adapt legacy admin utilities to the workspace theme. */
 .admin-theme :is([class~="bg-[#080D18]"]) { background-color: var(--admin-bg); }
 .admin-theme :is([class~="bg-[#0C1322]"]) { background-color: var(--admin-sidebar); }
 .admin-theme :is([class~="bg-[#0C1422]"]) { background-color: var(--admin-surface-soft); }
@@ -583,32 +598,12 @@
 .admin-theme :is([class~="focus:border-[#22C55E]"]:focus) { border-color: var(--admin-accent); }
 .admin-theme :is([class~="focus:ring-[#22C55E]"]:focus) { --tw-ring-color: var(--admin-accent); }
 .admin-theme :is([class~="accent-[#22C55E]"]) { accent-color: var(--admin-accent); }
-.admin-theme :is([class~="text-indigo-400"], [class~="text-purple-400"], [class~="text-[#38BDF8]"]) { color: var(--admin-highlight); }
-.admin-theme :is(
-  [class~="text-[#7C3AED]"], [class~="text-[#A855F7]"], [class~="text-[#C084FC]"],
-  [class~="text-purple-200"], [class~="text-purple-300"], [class~="text-purple-400"],
-  [class~="text-violet-200"], [class~="text-violet-300"], [class~="text-violet-400"]
-) { color: var(--admin-highlight); }
-.admin-theme .admin-content :is([class~="bg-purple-400"], [class~="bg-purple-500"]) { background-color: var(--admin-accent); }
-.admin-theme .admin-content :is([class~="bg-purple-500/10"], [class~="bg-purple-500/15"]) { background-color: var(--admin-accent-soft); }
-.admin-theme .admin-content :is([class*="border-purple-"], [class*="border-violet-"]) { border-color: var(--admin-accent-border); }
-.admin-theme [class~="bg-indigo-500/10"] { background-color: var(--admin-accent-soft); }
-.admin-theme [class~="border-indigo-500/20"] { border-color: var(--admin-accent-border); }
-.admin-theme :is([class~="text-[#22C55E]"], [class~="text-[#16A34A]"], [class*="text-emerald-"], [class*="text-green-"], [class*="text-cyan-"], [class*="text-sky-"], [class*="text-blue-"], [class*="text-indigo-"], [class*="text-violet-"], [class*="text-purple-"], [class*="text-fuchsia-"], [class*="text-teal-"]) { color: var(--admin-highlight); }
-.admin-theme :is([class~="bg-[#22C55E]"], [class~="bg-[#16A34A]"], [class~="bg-emerald-500"], [class~="bg-green-500"], [class~="bg-cyan-500"], [class~="bg-blue-500"], [class~="bg-indigo-500"], [class~="bg-violet-500"], [class~="bg-purple-500"], [class~="bg-fuchsia-500"], [class~="bg-teal-500"]) { background-color: var(--admin-accent); }
-.admin-theme :is([class~="bg-emerald-50"], [class~="bg-emerald-100"], [class~="bg-green-50"], [class~="bg-green-100"], [class~="bg-cyan-50"], [class~="bg-blue-50"], [class~="bg-indigo-50"], [class~="bg-violet-50"], [class~="bg-purple-50"], [class~="bg-fuchsia-50"], [class~="bg-teal-50"]) { background-color: var(--admin-accent-soft); }
-.admin-theme [class*="rgba(34,197,94"] { background-color: var(--admin-accent-soft); border-color: var(--admin-accent-border); }
-.admin-theme :is([class*="border-emerald-"], [class*="border-green-"], [class*="border-cyan-"], [class*="border-sky-"], [class*="border-blue-"], [class*="border-indigo-"], [class*="border-violet-"], [class*="border-purple-"], [class*="border-fuchsia-"], [class*="border-teal-"]) { border-color: var(--admin-accent-border); }
-.admin-theme :is([class*="ring-emerald-"], [class*="ring-green-"], [class*="ring-cyan-"], [class*="ring-indigo-"], [class*="ring-violet-"], [class*="ring-purple-"]) { --tw-ring-color: var(--admin-accent); }
-.admin-theme :is(button, a)[class~="bg-[#22C55E]"],
-.admin-theme :is(button, a)[class~="bg-[#16A34A]"],
-.admin-theme :is(button, a)[class~="bg-emerald-500"],
-.admin-theme :is(button, a)[class~="bg-green-500"] {
-  background-image: linear-gradient(110deg, #E9439C 0%, #F36FB4 58%, #FFACD3 100%);
-}
-.admin-theme :is(button, a)[class~="hover:bg-[#16A34A]"]:hover {
-  background-image: linear-gradient(110deg, #F36FB4 0%, #FFACD3 100%);
-}
+/* Preserve status meanings instead of recoloring every status as branding. */
+.admin-shell-light .admin-content :is([class*="text-emerald-"], [class*="text-green-"], [class~="text-[#22C55E]"]) { color: #15803D; }
+.admin-shell-light .admin-content :is([class*="text-indigo-"], [class*="text-violet-"], [class*="text-purple-"]) { color: #6D28D9; }
+.admin-shell-light .admin-content :is([class*="text-sky-"], [class*="text-cyan-"], [class*="text-blue-"]) { color: #0369A1; }
+.admin-shell-light .admin-content :is([class*="text-amber-"], [class*="text-yellow-"]) { color: #B45309; }
+.admin-shell-light .admin-content :is([class*="text-red-"], [class*="text-rose-"]) { color: #B91C1C; }
 .admin-theme .admin-shell-dark [class*="text-slate-300"] { color: var(--admin-secondary); }
 .admin-theme .admin-shell-dark :is([class*="text-slate-400"], [class*="text-slate-500"], [class*="text-slate-600"], [class*="text-slate-700"]) { color: var(--admin-muted); }
 .admin-theme .admin-shell-dark [class*="bg-slate-500/15"] { background-color: var(--admin-surface-raised); }

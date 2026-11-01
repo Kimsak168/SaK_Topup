@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test scripts/performance/webbuilder.test.mjs scripts/performance/payment-integrations.test.mjs scripts/performance/regressions.test.mjs scripts/performance/admin-finance.test.mjs scripts/performance/smm-catalog.test.mjs scripts/performance/game-events.test.mjs",
+    "test": "node --test scripts/performance/webbuilder.test.mjs scripts/performance/payment-integrations.test.mjs scripts/performance/regressions.test.mjs scripts/performance/admin-finance.test.mjs scripts/performance/smm-catalog.test.mjs scripts/performance/game-events.test.mjs scripts/performance/images.test.mjs",
     "test:payments": "node --test scripts/performance/payment-integrations.test.mjs",
     "test:webbuilder": "node --test scripts/performance/webbuilder.test.mjs",
     "sync:hok": "node --env-file=.env.local scripts/sync-webbuilder-hok.mjs",

@@ -172,15 +172,14 @@ export default function AdminOverviewPage() {
   ] : [];
 
   return (
-    <div className="admin-page">
+    <div className="admin-page admin-overview">
       {/* 5. PAGE HEADER */}
       <div className="admin-page-heading">
         <div>
-          <h1>
-            Dashboard Overview
-          </h1>
+          <p className="admin-eyebrow">Workspace overview</p>
+          <h1>Your store, at a glance.</h1>
           <p className="admin-page-description">
-            Store performance and recent activity
+            Review revenue, orders, and your catalogue in one place.
           </p>
         </div>
 
@@ -203,7 +202,7 @@ export default function AdminOverviewPage() {
                   : "bg-[#64748B]"
               }`}
             />
-            <span>{error ? "Data Unavailable" : data ? "MongoDB Connected" : "Checking..."}</span>
+            <span>{error ? "Data Unavailable" : data ? "Store data connected" : "Checking..."}</span>
           </div>
 
           <button
@@ -272,94 +271,12 @@ export default function AdminOverviewPage() {
             ))}
           </div>
 
-          {/* 8. SUPPLIER SECTION */}
-          <section className="admin-panel admin-panel-stack">
-            <div className="admin-section-heading">
-              <div>
-                <h2>Supplier Connections</h2>
-                <p className="admin-page-description">Fulfillment providers and account status</p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={verifySuppliers}
-                  disabled={checking}
-                  className="admin-button admin-button-secondary cursor-pointer"
-                >
-                  <RefreshCw size={12} className={checking ? "animate-spin" : ""} />
-                  <span>{checking ? "Verifying..." : "Verify Connections"}</span>
-                </button>
-                <Link
-                  href="/admin/suppliers"
-                  className="admin-button admin-button-secondary"
-                >
-                  <span>Details</span>
-                  <ArrowRight size={12} />
-                </Link>
-              </div>
-            </div>
-
-            <div className="grid gap-3 lg:grid-cols-2">
-              {(["webbuilder"] as const).map((key) => {
-                const configured = data.suppliers[key]?.configured ?? false;
-                const verified = supplierCheck?.[key];
-                const status = !configured ? "Unavailable" : !verified ? "Configured" :
-                  verified.status === "connected" ? "Connected" : "Failed";
-                const balance = verified?.status === "connected" && verified.reseller?.balance != null
-                  ? money(Number(verified.reseller.balance)) : "—";
-                return (
-                  <div
-                    key={key}
-                    className="min-w-0 rounded-[10px] bg-[#151F31] p-4 space-y-3"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <h3 className="text-[#F8FAFC]">WebBuilder</h3>
-                        <p className="text-[11px] text-[#94A3B8]">
-                          Automated fulfillment provider for all catalog games
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        <span className="sr-only">Status:</span>
-                        {getStatusBadge(status)}
-                      </div>
-                    </div>
-
-                    <dl className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3 min-[430px]:grid-cols-3">
-                      <div className="min-w-0">
-                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Wallet Balance</dt>
-                        <dd className="mt-1 text-[15px] leading-5 font-semibold tabular-nums text-[#F8FAFC]">{balance}</dd>
-                      </div>
-                      <div className="min-w-0">
-                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Account</dt>
-                        <dd className="mt-1 break-words text-[13px] leading-5 text-[#F8FAFC]">
-                          {verified?.status === "connected" ? verified.reseller?.username || "Active" : "—"}
-                        </dd>
-                      </div>
-                      <div>
-                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Last Verified</dt>
-                        <dd className="mt-1 text-[12px] leading-5 text-[#F8FAFC]">
-                          {supplierCheck && verified ? new Date(supplierCheck.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Not checked"}
-                        </dd>
-                      </div>
-                    </dl>
-
-                    {verified?.error && (
-                      <p className="text-[11px] text-[#EF4444] bg-[#EF4444]/10 p-2 rounded-lg border border-[#EF4444]/20">
-                        {verified.error}
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
+          <div className="admin-overview-grid">
           {/* 9. PERFORMANCE / SALES SECTION */}
           <section className="admin-panel admin-panel-stack">
             <div className="admin-section-heading">
               <div>
-                <h2>Sales & Order Activity</h2>
+                <h2>Revenue & orders</h2>
                 <p className="admin-page-description">Paid revenue and order volume</p>
               </div>
 
@@ -394,7 +311,7 @@ export default function AdminOverviewPage() {
                         <stop offset="100%" stopColor="#22C55E" stopOpacity={0.0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid vertical={false} stroke="#243047" strokeDasharray="3 3" />
+                    <CartesianGrid vertical={false} stroke="var(--admin-border)" strokeDasharray="3 3" />
                     <XAxis
                       dataKey="date"
                       tickFormatter={(val: string) => val.slice(5)}
@@ -425,10 +342,10 @@ export default function AdminOverviewPage() {
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "#151F31",
-                        borderColor: "#243047",
+                        backgroundColor: "var(--admin-surface)",
+                        borderColor: "var(--admin-border)",
                         borderRadius: "8px",
-                        color: "#F8FAFC",
+                        color: "var(--admin-primary)",
                         fontSize: "12px",
                       }}
                       formatter={(val, name) => [
@@ -482,6 +399,94 @@ export default function AdminOverviewPage() {
             )}
           </section>
 
+<div className="admin-overview-rail"><section className="admin-panel admin-quick-actions"><h2>Quick actions</h2><p className="admin-page-description">Keep your store moving.</p>
+  <Link href="/admin/orders"><span className="admin-quick-icon"><ShoppingCart size={17} /></span><span><strong>Review orders</strong><small>{compact(data.stats.pendingOrders)} pending orders</small></span><ArrowRight size={15} /></Link>
+  <Link href="/admin/packages"><span className="admin-quick-icon"><Package size={17} /></span><span><strong>Manage catalogue</strong><small>{compact(data.stats.activePackages)} active packages</small></span><ArrowRight size={15} /></Link>
+  <Link href="/admin/finance"><span className="admin-quick-icon"><DollarSign size={17} /></span><span><strong>View finances</strong><small>Revenue and transactions</small></span><ArrowRight size={15} /></Link>
+</section>          {/* 8. SUPPLIER SECTION */}
+          <section className="admin-panel admin-panel-stack">
+            <div className="admin-section-heading">
+              <div>
+                <h2>Supplier connection</h2>
+                <p className="admin-page-description">Fulfillment providers and account status</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={verifySuppliers}
+                  disabled={checking}
+                  className="admin-button admin-button-secondary cursor-pointer"
+                >
+                  <RefreshCw size={12} className={checking ? "animate-spin" : ""} />
+                  <span>{checking ? "Verifying..." : "Verify"}</span>
+                </button>
+                <Link
+                  href="/admin/suppliers"
+                  className="admin-button admin-button-secondary"
+                >
+                  <span>Details</span>
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid gap-3">
+              {(["webbuilder"] as const).map((key) => {
+                const configured = data.suppliers[key]?.configured ?? false;
+                const verified = supplierCheck?.[key];
+                const status = !configured ? "Unavailable" : !verified ? "Configured" :
+                  verified.status === "connected" ? "Connected" : "Failed";
+                const balance = verified?.status === "connected" && verified.reseller?.balance != null
+                  ? money(Number(verified.reseller.balance)) : "—";
+                return (
+                  <div
+                    key={key}
+                    className="min-w-0 rounded-[10px] bg-[#151F31] p-4 space-y-3"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-[#F8FAFC]">WebBuilder</h3>
+                        <p className="text-[11px] text-[#94A3B8]">
+                          Your configured fulfillment provider
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <span className="sr-only">Status:</span>
+                        {getStatusBadge(status)}
+                      </div>
+                    </div>
+
+                    <dl className="grid min-w-0 grid-cols-2 gap-x-3 gap-y-3 min-[430px]:grid-cols-3">
+                      <div className="min-w-0">
+                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Wallet Balance</dt>
+                        <dd className="mt-1 text-[15px] leading-5 font-semibold tabular-nums text-[#F8FAFC]">{balance}</dd>
+                      </div>
+                      <div className="min-w-0">
+                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Account</dt>
+                        <dd className="mt-1 break-words text-[13px] leading-5 text-[#F8FAFC]">
+                          {verified?.status === "connected" ? verified.reseller?.username || "Active" : "—"}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="text-[11px] leading-4 text-[#94A3B8]">Last Verified</dt>
+                        <dd className="mt-1 text-[12px] leading-5 text-[#F8FAFC]">
+                          {supplierCheck && verified ? new Date(supplierCheck.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Not checked"}
+                        </dd>
+                      </div>
+                    </dl>
+
+                    {verified?.error && (
+                      <p className="text-[11px] text-[#EF4444] bg-[#EF4444]/10 p-2 rounded-lg border border-[#EF4444]/20">
+                        {verified.error}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+</div></div>
           {/* 10. RECENT ORDERS */}
           <section className="admin-panel admin-panel-stack">
             <div className="admin-section-heading">

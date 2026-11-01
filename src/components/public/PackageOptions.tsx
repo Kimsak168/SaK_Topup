@@ -119,15 +119,16 @@ const PackageCard = memo(function PackageCard({
   const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
     : 0;
-  const [failedImage, setFailedImage] = useState<string | null>(null);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
+  const [failedImages, setFailedImages] = useState<Set<string>>(() => new Set());
+  const [processedImage, setProcessedImage] = useState<{ source: string; url: string } | null>(null);
   const customImageSrc = pkg.customImage?.trim();
   const currencyImage = defaultCurrencyImage;
-  const imageSrc = customImageSrc && failedImage !== customImageSrc
+  const imageSrc = customImageSrc && !failedImages.has(customImageSrc)
     ? customImageSrc
-    : isCurrency && currencyImage && failedImage !== currencyImage
+    : isCurrency && currencyImage && !failedImages.has(currencyImage)
     ? currencyImage
     : null;
+  const processedImageUrl = processedImage?.source === imageSrc ? processedImage.url : null;
 
   return (
     <button
@@ -150,7 +151,7 @@ const PackageCard = memo(function PackageCard({
       <div className="package-option-artwork relative shrink-0 flex items-center justify-center transition-transform group-hover:scale-[1.03]">
         {imageSrc ? (
           <Image
-            src={processedImage || imageSrc}
+            src={processedImageUrl || imageSrc}
             alt=""
             fill
             sizes="96px"
@@ -158,12 +159,12 @@ const PackageCard = memo(function PackageCard({
             loading={loadImageEagerly ? "eager" : "lazy"}
             className="package-option-image object-contain"
             onLoad={(event) => {
-              if (processedImage) return;
+              if (processedImageUrl) return;
 
               const image = event.currentTarget;
               const processImage = () => {
                 const transparentImage = removeWhiteBackground(image);
-                if (transparentImage) setProcessedImage(transparentImage);
+                if (transparentImage) setProcessedImage({ source: imageSrc, url: transparentImage });
               };
 
               const idleWindow = window as Window & {
@@ -177,7 +178,9 @@ const PackageCard = memo(function PackageCard({
             }}
             onError={() => {
               setProcessedImage(null);
-              setFailedImage(imageSrc);
+              // Remember both failures so custom and fallback artwork cannot
+              // alternate forever, downloading and rerendering on each error.
+              setFailedImages(previous => new Set(previous).add(imageSrc));
             }}
           />
         ) : isCurrency ? (

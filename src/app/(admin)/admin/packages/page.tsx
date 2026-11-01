@@ -19,8 +19,8 @@ import {
   X,
   Trash2,
   Layers,
-  Sparkles,
-  Check,
+  Globe,
+  Zap,
   Undo2,
 } from "lucide-react";
 
@@ -419,6 +419,11 @@ function PackagesManagerContent() {
   };
 
   // Open Image Modal
+  useEffect(() => {
+    if (!previewUrl?.startsWith("blob:")) return;
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+
   const openImageModal = (pkg: AdminPackage) => {
     setImageModalPkg(pkg);
     setSelectedFile(null);
@@ -709,260 +714,60 @@ function PackagesManagerContent() {
   const canUploadBulkImages = bulkImageRows.length > 0 && bulkImageRows.every((row) => row.packageId) && !hasDuplicateBulkTargets;
 
   return (
-    <div className="admin-page space-y-5">
-      {/* Top Header & Sync Action */}
-      <div className="admin-page-heading">
+    <div className="admin-page admin-packages-page">
+      <div className="admin-page-heading admin-packages-heading">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-400 mb-1">
-            <Package className="h-3.5 w-3.5" />
-            <span>Pricing &amp; Margins HQ</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Package Pricing &amp; Supplier Controls
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Separate WebBuilder wholesale top-up packages from VNGZZ2 catalog packages for easy pricing and stock control.
-          </p>
+          <p className="admin-eyebrow">Catalogue management</p>
+          <h1>Packages &amp; pricing</h1>
+          <p className="admin-page-description">Manage your product images, selling prices, and supplier availability.</p>
         </div>
-
-        {/* Sync & Bulk Action Buttons */}
-        <div className="flex items-center gap-3 flex-wrap">
-          <button
-            type="button"
-            onClick={openBulkImageModal}
-            disabled={isLoadingBulkPackages || isUploadingBulkImages}
-            className="inline-flex items-center gap-2 rounded-lg border border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 px-3.5 py-2 text-xs font-bold text-violet-200 transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            <Upload className="h-4 w-4" />
-            <span>Bulk PNG Upload</span>
+        <div className="admin-heading-actions">
+          <button type="button" onClick={openBulkImageModal} disabled={isLoadingBulkPackages || isUploadingBulkImages} className="admin-button admin-button-secondary">
+            <Upload className="h-4 w-4" /> Upload images
           </button>
-
-          <label className="hidden sm:flex items-center gap-2 text-xs text-[#94A3B8] cursor-pointer">
-            <input
-              type="checkbox"
-              checked={syncOnlyActive}
-              onChange={(e) => setSyncOnlyActive(e.target.checked)}
-              className="rounded border-[#243047] bg-[#151F31] text-[#22C55E] focus:ring-[#22C55E]"
-            />
-            <span>Active Games Only</span>
+          <label className="admin-sync-scope">
+            <input type="checkbox" checked={syncOnlyActive} onChange={event => setSyncOnlyActive(event.target.checked)} />
+            Active games only
           </label>
-
-          <button
-            type="button"
-            onClick={handleSyncPackages}
-            disabled={isSyncing}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] px-4 py-2 text-xs sm:text-sm font-bold text-[#080D18] transition-colors disabled:opacity-50 cursor-pointer shadow-md"
-          >
+          <button type="button" onClick={handleSyncPackages} disabled={isSyncing} className="admin-button admin-button-primary">
             <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
-            <span>{isSyncing ? "Syncing Packages..." : `Sync ${supplierFilter === "webbuilder" ? "WebBuilder" : supplierFilter === "vngzz2" ? "VNGZZ2" : "Packages"}`}</span>
+            {isSyncing ? "Syncing packages…" : "Sync packages"}
           </button>
         </div>
       </div>
 
-      {/* Primary Supplier Switcher Segmented Control */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-xl bg-[#111A2B] border border-[#243047]">
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* WebBuilder Packages Tab */}
-          <button
-            type="button"
-            onClick={() => handleSwitchSupplier("webbuilder")}
-            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-              supplierFilter === "webbuilder"
-                ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-400"
-                : "text-slate-300 hover:text-white hover:bg-[#151F31] border border-[#243047]"
-            }`}
-          >
-            <span className="text-base">🌐</span>
-            <span>WebBuilder Packages</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-black ${
-                supplierFilter === "webbuilder"
-                  ? "bg-slate-950 text-emerald-300"
-                  : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-              }`}
-            >
-              {kpi.webbuilderPkgs ?? 0}
-            </span>
-          </button>
-
-          {/* VNGZZ2 Packages Tab */}
-          <button
-            type="button"
-            onClick={() => handleSwitchSupplier("vngzz2")}
-            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
-              supplierFilter === "vngzz2"
-                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 ring-2 ring-indigo-400"
-                : "text-slate-300 hover:text-white hover:bg-[#151F31] border border-[#243047]"
-            }`}
-          >
-            <span className="text-base">⚡</span>
-            <span>VNGZZ2 Packages</span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-black ${
-                supplierFilter === "vngzz2"
-                  ? "bg-slate-950 text-indigo-300"
-                  : "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-              }`}
-            >
-              {kpi.vngzz2Pkgs ?? 0}
-            </span>
-          </button>
-
-          {/* All Packages Tab */}
-          <button
-            type="button"
-            onClick={() => handleSwitchSupplier("all")}
-            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              supplierFilter === "all"
-                ? "bg-[#243047] text-white shadow ring-1 ring-white/20"
-                : "text-slate-400 hover:text-white hover:bg-[#151F31]"
-            }`}
-          >
-            <Layers className="h-3.5 w-3.5" />
-            <span>All Packages</span>
-            <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/10 text-slate-300">
-              {kpi.totalPkgs}
-            </span>
-          </button>
-        </div>
-
-        {/* Current Mode Badge */}
-        <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400">
-          <span className="font-semibold text-slate-300">Active mode:</span>
-          {supplierFilter === "webbuilder" ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-extrabold text-[11px]">
-              🌐 WebBuilder Direct Wholesale ({filteredGames.length} Games)
-            </span>
-          ) : supplierFilter === "vngzz2" ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 font-extrabold text-[11px]">
-              ⚡ VNGZZ2 Catalog API ({filteredGames.length} Games)
-            </span>
-          ) : (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px]">
-              📦 Unified Multi-Supplier ({availableGames.length} Total Games)
-            </span>
-          )}
-        </div>
+      <div className="admin-package-stats">
+        {[
+          { label: "WebBuilder", value: kpi.webbuilderPkgs, detail: `${(kpi.webbuilderConfiguredPkgs ?? 0).toLocaleString("en-US")} prices configured`, icon: Globe, tone: "sky", active: supplierFilter === "webbuilder", action: () => handleSwitchSupplier("webbuilder") },
+          { label: "VNGZZ2", value: kpi.vngzz2Pkgs ?? 0, detail: `${(kpi.vngzz2ConfiguredPkgs ?? 0).toLocaleString("en-US")} prices configured`, icon: Zap, tone: "violet", active: supplierFilter === "vngzz2", action: () => handleSwitchSupplier("vngzz2") },
+          { label: "Prices configured", value: kpi.configuredPkgs, detail: "Packages with a selling price", icon: CheckCircle2, tone: "green", active: statusFilter === "configured", action: () => { setStatusFilter(previous => previous === "configured" ? "all" : "configured"); setPage(1); } },
+          { label: "Needs a price", value: kpi.unconfiguredPkgs, detail: "Review before making available", icon: AlertCircle, tone: "amber", active: statusFilter === "unconfigured", action: () => { setStatusFilter(previous => previous === "unconfigured" ? "all" : "unconfigured"); setPage(1); } },
+        ].map(stat => {
+          const Icon = stat.icon;
+          return <button key={stat.label} type="button" onClick={stat.action} aria-pressed={stat.active} className="admin-package-stat" data-tone={stat.tone}>
+            <div className="admin-package-stat-top"><span>{stat.label}</span><span className="admin-package-stat-icon"><Icon className="h-4 w-4" /></span></div>
+            <strong>{stat.value.toLocaleString("en-US")}</strong>
+            <small>{stat.detail}</small>
+          </button>;
+        })}
       </div>
 
-      {/* Contextual Interactive KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        {/* WebBuilder KPI Card */}
-        <button
-          type="button"
-          onClick={() => handleSwitchSupplier("webbuilder")}
-          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
-            supplierFilter === "webbuilder"
-              ? "bg-emerald-950/40 border-2 border-emerald-500 shadow-lg shadow-emerald-500/15 ring-1 ring-emerald-500/50"
-              : "bg-[#111A2B] border border-[#243047] hover:border-emerald-500/40"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>🌐</span> WebBuilder
-            </span>
-            {supplierFilter === "webbuilder" && (
-              <span className="text-[9px] font-black uppercase bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded">
-                Active
-              </span>
-            )}
-          </div>
-          <div className="text-2xl font-black tracking-tight text-white mt-1">
-            {kpi.webbuilderPkgs ?? 0}
-          </div>
-          <div className="flex items-center gap-1 text-[10px] text-emerald-300/80 mt-1">
-            <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
-            <span>{kpi.webbuilderConfiguredPkgs ?? 0} ready for buyers</span>
-          </div>
-        </button>
-
-        {/* VNGZZ2 KPI Card */}
-        <button
-          type="button"
-          onClick={() => handleSwitchSupplier("vngzz2")}
-          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
-            supplierFilter === "vngzz2"
-              ? "bg-indigo-950/40 border-2 border-indigo-500 shadow-lg shadow-indigo-500/15 ring-1 ring-indigo-500/50"
-              : "bg-[#111A2B] border border-[#243047] hover:border-indigo-500/40"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
-              <span>⚡</span> VNGZZ2
-            </span>
-            {supplierFilter === "vngzz2" && (
-              <span className="text-[9px] font-black uppercase bg-indigo-500 text-white px-1.5 py-0.5 rounded">
-                Active
-              </span>
-            )}
-          </div>
-          <div className="text-2xl font-black tracking-tight text-white mt-1">
-            {kpi.vngzz2Pkgs ?? 0}
-          </div>
-          <div className="flex items-center gap-1 text-[10px] text-indigo-300/80 mt-1">
-            <CheckCircle2 className="h-3 w-3 text-indigo-400 shrink-0" />
-            <span>{kpi.vngzz2ConfiguredPkgs ?? 0} ready for buyers</span>
-          </div>
-        </button>
-
-        {/* Ready For Customers KPI Card */}
-        <button
-          type="button"
-          onClick={() => {
-            setStatusFilter((prev) => (prev === "configured" ? "all" : "configured"));
-            setPage(1);
-          }}
-          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
-            statusFilter === "configured"
-              ? "bg-emerald-950/40 border-2 border-[#22C55E] ring-1 ring-[#22C55E]/50"
-              : "bg-[#111A2B] border border-[#243047] hover:border-[#22C55E]/40"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-[#22C55E] uppercase tracking-wider flex items-center gap-1">
-              <CheckCircle2 className="h-3 w-3" /> Ready For Customers
-            </span>
-            {statusFilter === "configured" && (
-              <span className="text-[9px] font-black uppercase bg-[#22C55E] text-[#080D18] px-1.5 py-0.5 rounded">
-                Filtered
-              </span>
-            )}
-          </div>
-          <div className="text-2xl font-bold tracking-tight text-[#22C55E] mt-1">
-            {kpi.configuredPkgs}
-          </div>
-          <span className="text-[10px] text-[#64748B] block mt-1">Customer selling price set</span>
-        </button>
-
-        {/* Needs Customer Price KPI Card */}
-        <button
-          type="button"
-          onClick={() => {
-            setStatusFilter((prev) => (prev === "unconfigured" ? "all" : "unconfigured"));
-            setPage(1);
-          }}
-          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
-            statusFilter === "unconfigured"
-              ? "bg-amber-950/40 border-2 border-[#F59E0B] ring-1 ring-[#F59E0B]/50"
-              : "bg-[#111A2B] border border-[#243047] hover:border-[#F59E0B]/40"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-[#F59E0B] uppercase tracking-wider flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" /> Needs Customer Price
-            </span>
-            {statusFilter === "unconfigured" && (
-              <span className="text-[9px] font-black uppercase bg-[#F59E0B] text-[#080D18] px-1.5 py-0.5 rounded">
-                Filtered
-              </span>
-            )}
-          </div>
-          <div className="text-2xl font-bold tracking-tight text-[#F59E0B] mt-1">
-            {kpi.unconfiguredPkgs}
-          </div>
-          <span className="text-[10px] text-[#64748B] block mt-1">Click to show unpriced packages</span>
-        </button>
-      </div>
+      <section className="admin-catalogue-panel" aria-label="Package catalogue">
+        <div className="admin-catalogue-heading">
+          <div><h2>Package catalogue</h2><p>Browse suppliers and edit your product pricing.</p></div>
+          <span className="admin-catalogue-count"><Package className="h-3.5 w-3.5" /> {kpi.totalPkgs.toLocaleString("en-US")} packages</span>
+        </div>
+        <div className="admin-supplier-tabs" role="group" aria-label="Filter packages by supplier">
+          {[
+            { id: "all", label: "All suppliers", count: kpi.totalPkgs, icon: Layers },
+            { id: "webbuilder", label: "WebBuilder", count: kpi.webbuilderPkgs, icon: Globe },
+            { id: "vngzz2", label: "VNGZZ2", count: kpi.vngzz2Pkgs ?? 0, icon: Zap },
+            { id: "g2bulk", label: "G2Bulk", count: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs - (kpi.vngzz2Pkgs ?? 0)), icon: Package },
+          ].map(tab => {
+            const Icon = tab.icon;
+            return <button key={tab.id} type="button" onClick={() => handleSwitchSupplier(tab.id)} aria-pressed={supplierFilter === tab.id} className="admin-supplier-tab"><Icon className="h-4 w-4" /><span>{tab.label}</span><small>{tab.count.toLocaleString("en-US")}</small></button>;
+          })}
+        </div>
 
       {/* Floating / Sticky Unsaved Changes Bar */}
       {dirtyCount > 0 && (
@@ -1002,12 +807,13 @@ function PackagesManagerContent() {
       )}
 
       {/* Search and Filters Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-[#111A2B] border border-[#243047]">
-        <div className="relative flex-1 max-w-md">
+      <div className="admin-package-filters">
+        <div className="admin-package-search relative">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B] pointer-events-none" />
           <input
             type="text"
-            placeholder="Search package name, product code or ID..."
+            aria-label="Search packages"
+            placeholder="Search packages or product codes…"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -1017,9 +823,10 @@ function PackagesManagerContent() {
           />
         </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="admin-package-filter-controls">
           {/* Contextual Filter by Game (Only shows games belonging to current supplier) */}
           <select
+            aria-label="Filter by game"
             value={gameFilter}
             onChange={(e) => {
               setGameFilter(e.target.value);
@@ -1037,7 +844,7 @@ function PackagesManagerContent() {
 
             {supplierFilter === "all" ? (
               <>
-                <optgroup label="🌐 WebBuilder Wholesale Games">
+                <optgroup label="WebBuilder Wholesale Games">
                   {availableGames
                     .filter((g) => g.supplier === "webbuilder")
                     .map((g) => (
@@ -1046,7 +853,7 @@ function PackagesManagerContent() {
                       </option>
                     ))}
                 </optgroup>
-                <optgroup label="⚡ VNGZZ2 Catalog Games">
+                <optgroup label="VNGZZ2 Catalog Games">
                   {availableGames
                     .filter((g) => g.supplier === "vngzz2")
                     .map((g) => (
@@ -1078,13 +885,13 @@ function PackagesManagerContent() {
 
           {/* Supplier Availability Filter */}
           <select
+            aria-label="Filter by supplier availability"
             value={supplierAvailability}
             onChange={(e) => {
               setSupplierAvailability(e.target.value);
               setPage(1);
             }}
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
-            aria-label="Supplier availability"
           >
             <option value="available">Supplier available</option>
             <option value="unavailable">Supplier unavailable</option>
@@ -1093,6 +900,7 @@ function PackagesManagerContent() {
 
           {/* Price Configuration Filter */}
           <select
+            aria-label="Filter by package status"
             value={statusFilter}
             onChange={(e) => {
               setStatusFilter(e.target.value);
@@ -1109,6 +917,7 @@ function PackagesManagerContent() {
 
           {/* Page size limit */}
           <select
+            aria-label="Packages per page"
             value={pageSize}
             onChange={(e) => {
               setPageSize(e.target.value);
@@ -1141,21 +950,20 @@ function PackagesManagerContent() {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="admin-package-table-scroll overflow-auto" tabIndex={0} aria-label="Package pricing table">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-[#243047] bg-[#151F31] text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-2.5 px-3.5">Image</th>
                   <th className="py-2.5 px-3.5">Package Name</th>
                   <th className="py-2.5 px-3.5">Game / Supplier</th>
-                  <th className="py-2.5 px-3.5">Product Code</th>
                   <th className="py-2.5 px-3.5">
                     <span className="flex items-center gap-1 text-[#F8FAFC]">
-                      <Lock className="h-3 w-3 text-[#22C55E]" /> Wholesale Cost (Private)
+                      <Lock className="h-3 w-3 text-[#22C55E]" /> Cost (private)
                     </span>
                   </th>
-                  <th className="py-2.5 px-3.5">Customer Selling Price ($)</th>
-                  <th className="py-2.5 px-3.5">Profit Margin</th>
+                  <th className="py-2.5 px-3.5">Selling price</th>
+                  <th className="py-2.5 px-3.5">Margin</th>
                   <th className="py-2.5 px-3.5">Badge</th>
                   <th className="py-2.5 px-3.5">Available</th>
                   <th className="py-2.5 px-3.5 text-right">Save</th>
@@ -1200,6 +1008,7 @@ function PackagesManagerContent() {
                           type="button"
                           onClick={() => openImageModal(pkg)}
                           className="group relative flex items-center justify-center h-8 w-8 rounded-lg border border-[#243047] bg-[#151F31] hover:border-[#22C55E]/50 overflow-hidden cursor-pointer transition-all"
+                          aria-label={`Change image for ${pkg.name}`}
                           title={pkg.customImage ? "Click to change custom image" : "Click to upload custom image"}
                         >
                           {pkg.customImage ? (
@@ -1207,6 +1016,8 @@ function PackagesManagerContent() {
                             <img
                               src={pkg.customImage}
                               alt={pkg.name}
+                              loading="lazy"
+                              decoding="async"
                               className="h-full w-full object-cover"
                             />
                           ) : (
@@ -1220,6 +1031,7 @@ function PackagesManagerContent() {
                         <div className="max-w-[200px] truncate" title={pkg.name}>
                           {pkg.name}
                         </div>
+                        <div className="admin-product-code" title={pkg.supplierProductCode}>{pkg.supplierProductCode}</div>
                       </td>
 
                       {/* Game / Supplier */}
@@ -1238,7 +1050,7 @@ function PackagesManagerContent() {
                             </span>
                           ) : (
                             <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">
-                              🛡️ {pkg.supplier || "G2Bulk"}
+                              {pkg.supplier || "G2Bulk"}
                             </span>
                           )}
                           {!pkg.supplierAvailable && (
@@ -1247,11 +1059,6 @@ function PackagesManagerContent() {
                             </span>
                           )}
                         </div>
-                      </td>
-
-                      {/* Product Code */}
-                      <td className="py-2.5 px-3.5 font-mono text-[11px] text-[#64748B]">
-                        {pkg.supplierProductCode}
                       </td>
 
                       {/* Wholesale Cost (Private to Admin) */}
@@ -1275,6 +1082,7 @@ function PackagesManagerContent() {
                             type="number"
                             step="0.01"
                             min="0"
+                            aria-label={`Selling price for ${pkg.name}`}
                             placeholder="Set price"
                             value={row.sellingPrice}
                             onChange={(e) => handleFieldChange(pkg.id, "sellingPrice", e.target.value)}
@@ -1326,6 +1134,7 @@ function PackagesManagerContent() {
                       <td className="py-2.5 px-3.5">
                         <input
                           type="text"
+                          aria-label={`Badge for ${pkg.name}`}
                           placeholder="e.g. HOT DEAL"
                           value={row.badge}
                           onChange={(e) => handleFieldChange(pkg.id, "badge", e.target.value)}
@@ -1359,6 +1168,7 @@ function PackagesManagerContent() {
                               ? "bg-[#22C55E] hover:bg-[#16A34A] text-[#080D18] shadow-md ring-2 ring-emerald-400"
                               : "bg-[#151F31] text-[#64748B] hover:text-[#F8FAFC] disabled:opacity-30"
                           }`}
+                          aria-label={`Save ${pkg.name}`}
                           title={row.isDirty ? "Save price change (or press Enter)" : "Saved"}
                         >
                           {savingId === pkg.id ? (
@@ -1405,6 +1215,8 @@ function PackagesManagerContent() {
       </div>
 
       {/* Bulk PNG Upload Modal */}
+      </section>
+
       {isBulkImageModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div role="dialog" aria-modal="true" aria-label="Bulk package PNG upload" className="relative w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl bg-[#111A2B] border border-[#243047] shadow-2xl">

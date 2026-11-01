@@ -1,0 +1,23 @@
+purpose:
+  stands_in_for: This repository's checkout and payment-status HTTP endpoints, as consumed by GameTopUpClient and AbaPayWayV2Modal.
+  unblocks: Browser verification of KHQR layout, expiry, recovery, status handling and dialog lifecycle without creating payments or orders.
+assumptions:
+  - id: frontend-payment-envelope
+    status: confirmed
+    claim: The frontend consumes QR payloads on create and paymentStatus or isPaid on check.
+    reason: The fixture mirrors the local endpoint response fields; it models the frontend boundary only.
+    verification: 102 unit checks and production build passed. Nine browser checks passed on the local production preview through this simulation, including 320px/390px layouts, expiry/retry, serialized slow checks, HTTP 503, missing/image QR data, failed and paid states. All mutable browser API requests were intercepted; no live orders or payments were created.
+    source: src/app/api/payment/vngzz2/create/route.ts; src/app/api/payment/vngzz2/check/route.ts; scripts/verify-khqr.mjs
+    updated_at: 2026-11-01
+  - id: live-bank-acceptance
+    status: unknown
+    claim: A real banking app accepts the provider-generated QR and reports settlement correctly.
+    reason: No live payment was initiated; the fixture uses an invalid account and CRC on purpose.
+    verification: Not exercised by this simulation.
+    source: postman/mocks/khqr-checkout/default.js
+    updated_at: 2026-11-01
+fingerprints:
+  - id: khqr-ui-redesign
+    date: 2026-11-01
+    commit: null
+    cli: 1.73.0

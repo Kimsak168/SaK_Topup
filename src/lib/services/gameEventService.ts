@@ -4,6 +4,7 @@ import { GameEvent } from "@/models/GameEvent";
 import { GameEventView } from "@/lib/gameEventTypes";
 import { cachePublicQuery, GAME_EVENTS_TAG } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
+import { versionImageUrl } from "@/lib/blob-shared";
 
 const readPublicGameEvents = cache(cachePublicQuery("game-events", GAME_EVENTS_TAG, async (): Promise<GameEventView[]> =>
   withCatalogueTimeout(catalogueQuery("game-events", async () => {
@@ -23,9 +24,7 @@ const readPublicGameEvents = cache(cachePublicQuery("game-events", GAME_EVENTS_T
       startDate: new Date(event.startDate).toISOString(),
       endDate: new Date(event.endDate).toISOString(),
       status: event.status,
-      imageUrl: event.imageUrl.startsWith("/api/game-events/")
-        ? `${event.imageUrl.split("?")[0]}?v=${new Date(event.updatedAt).getTime()}`
-        : event.imageUrl,
+      imageUrl: versionImageUrl(event.imageUrl, event.updatedAt),
       targetUrl: event.targetUrl || "",
       isActive: event.isActive !== false,
       sortOrder: event.sortOrder || 0,

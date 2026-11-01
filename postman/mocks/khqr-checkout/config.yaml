@@ -1,0 +1,10 @@
+version: 1
+name: khqr-checkout
+slug: khqr-checkout
+protocol: http
+port: 4515
+interceptRequests: true
+scenarios:
+  - name: default
+    path: ./default.js
+    default: true

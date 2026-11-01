@@ -1,6 +1,7 @@
 import sharp from "sharp";
+import { isPersistentImageReference, MAX_SERVER_UPLOAD_BYTES } from "@/lib/blob-shared";
 
-const MAX_IMAGE_BYTES = 4.5 * 1024 * 1024;
+const MAX_IMAGE_BYTES = MAX_SERVER_UPLOAD_BYTES;
 const MAX_IMAGE_PIXELS = 40_000_000;
 
 export class BannerInputError extends Error {
@@ -14,7 +15,7 @@ export async function readBannerImage(file: File) {
     throw new BannerInputError("Choose a banner image.");
   }
   if (file.size > MAX_IMAGE_BYTES) {
-    throw new BannerInputError("Banner images must be 4.5 MB or smaller.", 413);
+    throw new BannerInputError("Images must be 4 MB or smaller. Use direct upload for larger images.", 413);
   }
 
   const imageData = Buffer.from(await file.arrayBuffer());
@@ -33,7 +34,16 @@ export async function readBannerImage(file: File) {
     imageContentType = "image/webp";
   }
 
-  if (!imageContentType || (file.type && file.type !== imageContentType)) {
+  const isJpeg =
+    imageContentType === "image/jpeg" &&
+    (file.type === "image/jpeg" || file.type === "image/jpg" || file.type === "image/pjpeg");
+  const matchesDeclaredType =
+    !file.type ||
+    file.type === imageContentType ||
+    isJpeg ||
+    file.type === "application/octet-stream";
+
+  if (!imageContentType || !matchesDeclaredType) {
     throw new BannerInputError("Upload a valid PNG, JPG, WebP, or GIF image.");
   }
 
@@ -60,7 +70,7 @@ export async function readBannerImage(file: File) {
 export async function readBannerRequest(req: Request) {
   // Allow a small amount of multipart overhead in addition to the image.
   if (Number(req.headers.get("content-length")) > MAX_IMAGE_BYTES + 64 * 1024) {
-    throw new BannerInputError("Banner images must be 4.5 MB or smaller.", 413);
+    throw new BannerInputError("Images must be 4 MB or smaller. Use direct upload for larger images.", 413);
   }
 
   try {
@@ -111,6 +121,10 @@ export function readBannerFields(body: Record<string, unknown>, creating = false
 
   if ((creating || body.title !== undefined) && !fields.title) {
     throw new BannerInputError("A banner headline is required.");
+  }
+
+  if (typeof fields.imageUrl === "string" && fields.imageUrl && !isPersistentImageReference(fields.imageUrl)) {
+    throw new BannerInputError("Use a permanent HTTP(S) image URL or upload the image file.");
   }
 
   if (typeof fields.targetUrl === "string" && fields.targetUrl) {

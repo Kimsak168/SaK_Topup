@@ -8,7 +8,8 @@ export const ALLOWED_IMAGE_TYPES = [
   "image/gif",
 ] as const;
 
-export const MAX_SERVER_UPLOAD_BYTES = 4.5 * 1024 * 1024; // 4.5 MB (Vercel Functions request body limit)
+// Leave room for multipart fields below the hosting platform's request limit.
+export const MAX_SERVER_UPLOAD_BYTES = 4 * 1024 * 1024;
 export const MAX_CLIENT_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB for direct client-to-blob uploads
 
 /** Accept stable same-site paths and HTTP(S) URLs, but never browser-local image references. */
@@ -26,6 +27,24 @@ export function isPersistentImageReference(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** A preview may add a cache revision to the same database-backed picture. */
+export function isSameImageReference(value: string, current?: string | null): boolean {
+  if (value === current) return true;
+  return /^\/api\/(?:banners|packages|game-events)\/[a-f\d]{24}\/image(?:\?|$)/i.test(value)
+    && value.split("?")[0] === current?.split("?")[0];
+}
+
+/** Keep the upload revision stable when unrelated prices or text are edited. */
+export function versionImageUrl(value: string, updatedAt?: Date | string | number): string {
+  if (!/^\/api\/(?:banners|packages|game-events)\//.test(value)) return value;
+  const url = new URL(value, "http://localhost");
+  if (url.searchParams.get("v")) return value;
+  const revision = updatedAt === undefined ? NaN : new Date(updatedAt).getTime();
+  if (!Number.isFinite(revision)) return value;
+  url.searchParams.set("v", String(revision));
+  return `${url.pathname}${url.search}`;
 }
 
 /**
@@ -53,7 +72,7 @@ export function validateImageFile(
   }
 
   const limit = isClientUpload ? MAX_CLIENT_UPLOAD_BYTES : MAX_SERVER_UPLOAD_BYTES;
-  const limitLabel = isClientUpload ? "25 MB" : "4.5 MB";
+  const limitLabel = isClientUpload ? "25 MB" : "4 MB";
 
   if (file.size && file.size > limit) {
     return {

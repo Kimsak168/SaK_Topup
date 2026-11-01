@@ -3,6 +3,7 @@ import { cache } from "react";
 import { Banner } from "@/models/Banner";
 import { cachePublicQuery, BANNERS_TAG } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
+import { versionImageUrl } from "@/lib/blob-shared";
 
 export interface PublicBanner {
   id: string;
@@ -25,8 +26,7 @@ const readBanners = cache(cachePublicQuery("banners", BANNERS_TAG, async (): Pro
       id: String(banner._id), title: banner.title || "", subtitle: banner.subtitle ?? "",
       badge: banner.badge ?? "", targetUrl: banner.targetUrl ?? "", ctaText: banner.ctaText ?? "",
       accentColor: banner.accentColor || "pink",
-      imageUrl: banner.imageUrl.startsWith("/api/banners/")
-        ? `${banner.imageUrl.split("?")[0]}?v=${new Date(banner.updatedAt).getTime()}` : banner.imageUrl,
+      imageUrl: versionImageUrl(banner.imageUrl, banner.updatedAt),
     }));
   }))
 ));

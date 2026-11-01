@@ -7,7 +7,6 @@ import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import {
   generateVngZz2Qr,
-  generateVngZz2SandboxQr,
   isVngZz2Configured,
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
@@ -43,6 +42,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: "Player ID and package selection are required" },
         { status: 400 }
+      );
+    }
+
+    if (!isVngZz2Configured()) {
+      return NextResponse.json(
+        { success: false, error: "KHQR payments are temporarily unavailable. Please try again later." },
+        { status: 503 }
       );
     }
 
@@ -189,29 +195,17 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Call VngZz2 Payment API: live if configured, otherwise sandbox simulation
-    const isLive = isVngZz2Configured();
-    const qrResult = isLive
-      ? await generateVngZz2Qr({
-          amount: targetOrder.amount,
-          currency: "USD",
-          orderNumber: targetOrder.orderNumber,
-          metadata: {
-            gameName: targetOrder.gameName,
-            packageName: targetOrder.packageName,
-            playerId: targetOrder.playerId,
-          },
-        })
-      : generateVngZz2SandboxQr({
-          amount: targetOrder.amount,
-          currency: "USD",
-          orderNumber: targetOrder.orderNumber,
-          metadata: {
-            gameName: targetOrder.gameName,
-            packageName: targetOrder.packageName,
-            playerId: targetOrder.playerId,
-          },
-        });
+    // Customer checkout must always use a provider-issued payment code.
+    const qrResult = await generateVngZz2Qr({
+      amount: targetOrder.amount,
+      currency: "USD",
+      orderNumber: targetOrder.orderNumber,
+      metadata: {
+        gameName: targetOrder.gameName,
+        packageName: targetOrder.packageName,
+        playerId: targetOrder.playerId,
+      },
+    });
 
     targetOrder.transactionId = qrResult.transactionId;
     targetOrder.paymentMethod = "aba_payway_v2";
@@ -225,7 +219,7 @@ export async function POST(req: NextRequest) {
     // Attach real QR code data and transactionId to the queued PAYMENT PENDING event
     if (Array.isArray(targetOrder.telegramNotifications)) {
       const pendingPaymentEvent = targetOrder.telegramNotifications.find(
-        (e: any) => e.kind === "PAYMENT" && e.status === "PENDING" && (e.state === "queued" || e.state === "sending")
+        (e) => e.kind === "PAYMENT" && e.status === "PENDING" && (e.state === "queued" || e.state === "sending")
       );
       if (pendingPaymentEvent && pendingPaymentEvent.payload) {
         pendingPaymentEvent.payload.qrString = qrResult.qrString;
@@ -267,7 +261,7 @@ export async function POST(req: NextRequest) {
       deepLink: qrResult.deepLink,
       expireInSec: qrResult.expireInSec,
       gateway: "aba_payway_v2",
-      isSandbox: !isLive,
+      isSandbox: false,
     });
   } catch (error: unknown) {
     if (error instanceof VngZz2ConfigError) {

@@ -42,7 +42,15 @@ export default function AdminSettingsPage() {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       if (!data.success || !data.settings) throw new Error(data.error || "Settings unavailable");
-      setForm(data.settings);
+      // Older settings records may contain only branding fields. Keep form
+      // defaults for missing fields and always provide an array to the toggles.
+      setForm(previous => ({
+        ...previous,
+        ...data.settings,
+        enabledGateways: Array.isArray(data.settings.enabledGateways)
+          ? data.settings.enabledGateways
+          : previous.enabledGateways,
+      }));
       setLoadError("");
     } catch (err) {
       console.error("Failed to load settings:", err);

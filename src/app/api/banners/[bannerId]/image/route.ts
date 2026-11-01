@@ -25,7 +25,7 @@ export async function GET(
   const cacheKey = `banner:${bannerId}`;
 
   // 1. Check in-memory server cache for instant < 1ms response
-  const cached = getCachedLegacyImage(cacheKey);
+  const cached = getCachedLegacyImage(cacheKey, version);
   if (cached) {
     return new Response(new Uint8Array(cached.bytes), {
       headers: {
@@ -34,7 +34,8 @@ export async function GET(
         "Cache-Control": legacyImageCacheControl(
           version,
           cached.updatedAt,
-          "public, max-age=86400, stale-while-revalidate=604800"
+          "public, max-age=60, s-maxage=60, must-revalidate",
+          cached.imageUrl
         ),
         "X-Content-Type-Options": "nosniff",
         "X-Image-Cache": "HIT",
@@ -44,10 +45,10 @@ export async function GET(
 
   try {
     // 2. Deduplicate concurrent requests so only 1 query hits MongoDB per bannerId
-    const data = await fetchWithDeduplication(cacheKey, async () => {
+    const data = await fetchWithDeduplication(`${cacheKey}:${version || ""}`, async () => {
       const banner = await catalogueQuery("banner-image", async () =>
         Banner.findById(bannerId)
-          .select({ imageData: 1, imageContentType: 1, updatedAt: 1, _id: 0 })
+          .select({ imageData: 1, imageContentType: 1, imageUrl: 1, updatedAt: 1, _id: 0 })
           .maxTimeMS(4000)
           .lean()
       );
@@ -57,14 +58,15 @@ export async function GET(
         bytes,
         contentType: banner.imageContentType,
         updatedAt: banner.updatedAt,
+        imageUrl: banner.imageUrl,
       };
     });
 
     if (!data) {
-      return new Response("Image not found", { status: 404 });
+      return new Response("Image not found", { status: 404, headers: { "Cache-Control": "no-store" } });
     }
 
-    setCachedLegacyImage(cacheKey, data);
+    setCachedLegacyImage(cacheKey, data, version);
 
     return new Response(new Uint8Array(data.bytes), {
       headers: {
@@ -73,7 +75,8 @@ export async function GET(
         "Cache-Control": legacyImageCacheControl(
           version,
           data.updatedAt,
-          "public, max-age=86400, stale-while-revalidate=604800"
+          "public, max-age=60, s-maxage=60, must-revalidate",
+          data.imageUrl
         ),
         "X-Content-Type-Options": "nosniff",
         "X-Image-Cache": "MISS",
@@ -81,6 +84,6 @@ export async function GET(
     });
   } catch (error) {
     console.error("Unable to load banner image:", error);
-    return new Response("Image temporarily unavailable", { status: 503 });
+    return new Response("Image temporarily unavailable", { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 }

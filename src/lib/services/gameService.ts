@@ -6,6 +6,7 @@ import { GamePackage } from "@/models/GamePackage";
 import type { ClientGame, ClientPackage } from "@/types/game";
 import { cachePublicQuery, CATALOGUE_TAG, invalidateCatalogueCache } from "./cacheService";
 import { catalogueQuery, withCatalogueTimeout } from "./catalogueTiming";
+import { versionImageUrl } from "@/lib/blob-shared";
 
 // These uploads share the same black-background artwork. Match the stored
 // upload revision so price edits retain the cutout and future uploads take over.
@@ -241,7 +242,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
     const levelUpImage = isFreeFire && /level\s*up/i.test(baseName)
       ? "/images/packages/freefire-level-up-transparent.png"
       : null;
-    const image = levelUpImage || membershipImage || customImage || (isDiamondPackage || isRoblox ? defaultDiamondImage : null);
+    const image = customImage || levelUpImage || membershipImage || (isDiamondPackage || isRoblox ? defaultDiamondImage : null);
     return {
       id: cfg.supplierProductCode, supplierProductCode: cfg.supplierProductCode,
       name, diamondsOrPoints,
@@ -250,8 +251,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
       currency: cfg.currency || "USD", badge: cfg.badge || undefined, bonus: cfg.bonus || undefined,
       isFeatured: Boolean(cfg.isFeatured), isAvailable: hasPrice && cfg.isActive !== false && cfg.supplierAvailable !== false,
       category: group, group,
-      // Mutable legacy DB image URLs need a new optimizer cache key after edits.
-      customImage: image?.startsWith("/api/packages/") ? `${image.split("?")[0]}?v=${new Date(cfg.updatedAt).getTime()}` : image,
+      customImage: image ? versionImageUrl(image, cfg.updatedAt) : image,
     };
   });
 })));

@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ["image/avif", "image/webp"],
+    // WebP avoids the extra AVIF encoding work on the first image request.
+    formats: ["image/webp"],
     qualities: [75, 80, 100],
     minimumCacheTTL: 2592000,
     deviceSizes: [640, 750, 828, 1080, 1200],

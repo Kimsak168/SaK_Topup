@@ -535,7 +535,7 @@ test('legacy slugs retain configured prices, isolate games, and never expose sup
   assert.equal(ff.length, 1);
   assert.equal(ff[0].sellingPrice, 2.73);
   assert.equal(ff[0].group, 'diamonds');
-  assert.equal(ff[0].customImage, '/api/packages/image/image?v=1000');
+  assert.equal(ff[0].customImage, '/api/packages/image/image?v=old');
   assert.equal('buyingPrice' in ff[0], false);
   const pubg = await service.getNormalizedPackages('g2bulk', 'pubgm');
   assert.equal(pubg.length, 1);
@@ -581,6 +581,42 @@ test('unavailable or unpriced packages cannot create or resume a payment', async
       assert.equal((await flow.call()).status, 400);
       assert.equal(flow.writes.length, 0);
     }
+  }
+});
+
+test('customer KHQR checkout is unavailable without credentials and creates no orders or demo codes', async () => {
+  for (const path of ['payment/vngzz2/create', 'smm/orders', 'digital-shop/orders']) {
+    let databaseCalls = 0;
+    let sandboxCalls = 0;
+    const route = loader({
+      'next/server': { NextResponse: Response },
+      '@/lib/mongodb': { connectDB: async () => { databaseCalls++; throw new Error('No database writes allowed'); } },
+      '@/models/Order': {}, '@/models/Payment': {}, '@/models/Game': {}, '@/models/GamePackage': {}, '@/models/SmmService': {},
+      '@/lib/suppliers/vngzz2SmmKhmer': {},
+      '@/lib/services/digitalShopService': { DIGITAL_SHOP_FULFILLMENT_AVAILABLE: true },
+      '@/lib/services/vngzzPayWayService': {
+        isVngZz2Configured: () => false,
+        generateVngZz2SandboxQr: () => { sandboxCalls++; throw new Error('No demo payment codes allowed'); },
+        VngZz2ConfigError: class extends Error {},
+      },
+    })(`src/app/api/${path}/route.ts`);
+    const response = await route.POST({ json: async () => ({
+      playerId: '12345', supplierProductCode: 'package', serviceId: 'service', quantity: 100,
+      link: 'https://example.com/post', productCode: 'product', contact: '@customer',
+    }) });
+    assert.equal(response.status, 503, path);
+    assert.equal((await response.json()).success, false);
+    assert.equal(databaseCalls, 0, path);
+    assert.equal(sandboxCalls, 0, path);
+  }
+});
+
+test('KHQR merchant label uses the root merchant name and rejects truncated or unrelated payloads', () => {
+  const { getKhqrMerchantName } = loader()('src/lib/khqr.ts');
+  assert.equal(getKhqrMerchantName('0002010102125921REGISTERED STORE NAME6010Phnom Penh'), 'REGISTERED STORE NAME');
+  assert.equal(getKhqrMerchantName('00020129135909BANK NAME5908My Store'), 'My Store');
+  for (const payload of [null, undefined, '', 'https://example.com', '00020159xxSTORE', '0002015925Too short', '0002015900']) {
+    assert.equal(getKhqrMerchantName(payload), null);
   }
 });
 
@@ -743,7 +779,7 @@ test('admin package image upload persists binary data, refreshes the public imag
       invalidateLegacyImage: key => imageCache.delete(key),
     },
   };
-  const { POST } = loader(mocks, { File })('src/app/api/admin/packages/upload/route.ts');
+  const { POST, DELETE } = loader(mocks, { File })('src/app/api/admin/packages/upload/route.ts');
   const { GET } = loader({
     'next/server': {},
     '@/models/GamePackage': { GamePackage },
@@ -824,6 +860,23 @@ test('admin package image upload persists binary data, refreshes the public imag
   assert.equal(stored.originalPrice, initial.originalPrice);
   assert.equal(stored.supplierAvailable, initial.supplierAvailable);
   assert.equal((await publicImage(secondBody.package.customImage)).status, 404);
+
+  const urlResponse = await POST(new Request('http://localhost/api/admin/packages/upload', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ packageId, imageUrl: 'https://example.com/item.png' }),
+  }));
+  assert.equal(urlResponse.status, 200);
+  assert.equal(stored.customImage, 'https://example.com/item.png');
+
+  const deleteResponse = await DELETE(new Request('http://localhost/api/admin/packages/upload', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ packageId }),
+  }));
+  assert.equal(deleteResponse.status, 200);
+  assert.equal(stored.customImage, null);
+  assert.equal(stored.imageData, null);
 });
 
 test('package image uploads reject invalid MIME bytes and files above the server size limit', async () => {
@@ -836,6 +889,12 @@ test('package image uploads reject invalid MIME bytes and files above the server
   const valid = await readBannerImage(new File([png], 'package.png', { type: 'image/png' }));
   assert.ok(valid.imageData.length > 0);
   assert.ok(['image/png', 'image/webp'].includes(valid.imageContentType));
+  const jpeg = await sharp({
+    create: { width: 1, height: 1, channels: 3, background: '#000000' },
+  }).jpeg().toBuffer();
+  const validJpeg = await readBannerImage(new File([jpeg], 'package.jpg', { type: 'image/jpg' }));
+  assert.ok(validJpeg.imageData.length > 0);
+  assert.ok(['image/jpeg', 'image/webp'].includes(validJpeg.imageContentType));
   await assert.rejects(
     readBannerImage(new File([png], 'package.jpg', { type: 'image/jpeg' })),
     error => error instanceof BannerInputError && error.status === 400

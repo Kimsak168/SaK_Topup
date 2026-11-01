@@ -6,7 +6,6 @@ import { Payment } from "@/models/Payment";
 import { SmmService } from "@/models/SmmService";
 import {
   generateVngZz2Qr,
-  generateVngZz2SandboxQr,
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
 import { calculateSmmCustomerRate, calculateSmmOrderAmount } from "@/lib/services/smmPricing";
@@ -27,7 +26,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Unsupported SMM catalog" }, { status: 400 });
     }
     const isKhmerCatalog = catalog === "khmer";
-    const paymentMethod = body.paymentMethod ?? "aba_payway_v2";
 
     const cleanServiceId = typeof serviceId === "string" || typeof serviceId === "number"
       ? String(serviceId).trim()
@@ -66,6 +64,13 @@ export async function POST(req: NextRequest) {
 
     if (cleanServiceId.length > 128) {
       return NextResponse.json({ success: false, error: "Selected service is invalid" }, { status: 400 });
+    }
+
+    if (!isVngZz2Configured()) {
+      return NextResponse.json(
+        { success: false, error: "KHQR payments are temporarily unavailable. Please try again later." },
+        { status: 503 }
+      );
     }
 
     await connectDB();
@@ -184,30 +189,17 @@ export async function POST(req: NextRequest) {
     });
 
     // 3. Generate Payment (ABA PayWay V2)
-    const isLive = isVngZz2Configured();
-    const qrResult = isLive
-      ? await generateVngZz2Qr({
-          amount: finalAmount,
-          currency: "USD",
-          orderNumber,
-          metadata: {
-            serviceName: service.name,
-            category: service.category,
-            quantity: qty,
-            targetLink: cleanLink,
-          },
-        })
-      : generateVngZz2SandboxQr({
-          amount: finalAmount,
-          currency: "USD",
-          orderNumber,
-          metadata: {
-            serviceName: service.name,
-            category: service.category,
-            quantity: qty,
-            targetLink: cleanLink,
-          },
-        });
+    const qrResult = await generateVngZz2Qr({
+      amount: finalAmount,
+      currency: "USD",
+      orderNumber,
+      metadata: {
+        serviceName: service.name,
+        category: service.category,
+        quantity: qty,
+        targetLink: cleanLink,
+      },
+    });
 
     newOrder.transactionId = qrResult.transactionId;
     newOrder.checkoutUrl = qrResult.payUrl;
@@ -235,7 +227,7 @@ export async function POST(req: NextRequest) {
       payUrl: qrResult.payUrl,
       deepLink: qrResult.deepLink,
       expireInSec: qrResult.expireInSec,
-      isSandbox: !isLive,
+      isSandbox: false,
     };
 
     return NextResponse.json({

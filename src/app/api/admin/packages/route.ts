@@ -5,7 +5,7 @@ import { GamePackage } from "@/models/GamePackage";
 import { Game } from "@/models/Game";
 import { requireAdminAuth } from "@/lib/auth";
 import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
-import { isPersistentImageReference } from "@/lib/blob-shared";
+import { isPersistentImageReference, isSameImageReference } from "@/lib/blob-shared";
 import { invalidateLegacyImage } from "@/lib/services/legacyImageService";
 
 export const dynamic = "force-dynamic";
@@ -195,10 +195,18 @@ export async function PATCH(req: NextRequest) {
 
     if (typeof isActive === "boolean") updateFields.isActive = isActive;
     if (typeof badge === "string") updateFields.badge = badge.trim();
+    let imageChanged = false;
     if (normalizedCustomImage !== undefined) {
-      updateFields.customImage = normalizedCustomImage;
-      updateFields.imageData = null;
-      updateFields.imageContentType = null;
+      const existing = await GamePackage.findById(packageId).select("customImage").lean();
+      if (!existing) {
+        return NextResponse.json({ success: false, error: "Package not found" }, { status: 404 });
+      }
+      imageChanged = !normalizedCustomImage || !isSameImageReference(normalizedCustomImage, existing.customImage);
+      if (imageChanged) {
+        updateFields.customImage = normalizedCustomImage;
+        updateFields.imageData = null;
+        updateFields.imageContentType = null;
+      }
     }
     if (typeof sortOrder === "number") updateFields.sortOrder = sortOrder;
 
@@ -208,7 +216,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Package not found" }, { status: 404 });
     }
 
-    if (normalizedCustomImage !== undefined) invalidateLegacyImage(`package:${packageId}`);
+    if (imageChanged) invalidateLegacyImage(`package:${packageId}`);
     invalidateCatalogueCache();
     return NextResponse.json({
       success: true,

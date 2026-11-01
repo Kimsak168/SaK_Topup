@@ -2,9 +2,11 @@ import { randomUUID } from "node:crypto";
 import { Types } from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 import { invalidateBannerCache } from "@/lib/services/cacheService";
+import { invalidateLegacyImage } from "@/lib/services/legacyImageService";
 import { connectDB } from "@/lib/mongodb";
 import { Banner } from "@/models/Banner";
 import { requireAdminAuth } from "@/lib/auth";
+import { isSameImageReference, versionImageUrl } from "@/lib/blob-shared";
 import { BannerInputError, readBannerFields, readBannerRequest } from "@/lib/bannerUpload";
 import {
   hasBlobToken,
@@ -47,7 +49,7 @@ export async function GET(req: NextRequest) {
         title: banner.title,
         subtitle: banner.subtitle ?? "",
         badge: banner.badge ?? "",
-        imageUrl: banner.imageUrl,
+        imageUrl: versionImageUrl(banner.imageUrl, banner.updatedAt),
         targetUrl: banner.targetUrl ?? "",
         ctaText: banner.ctaText ?? "",
         accentColor: banner.accentColor || "pink",
@@ -144,17 +146,21 @@ export async function PATCH(req: NextRequest) {
       } else {
         finalImageUrl = `/api/banners/${bannerId}/image?v=${randomUUID()}`;
       }
-    } else if (typeof fields.imageUrl === "string" && fields.imageUrl) {
+    } else if (typeof fields.imageUrl === "string" && fields.imageUrl && !isSameImageReference(fields.imageUrl, oldImageUrl)) {
       finalImageUrl = fields.imageUrl.trim();
     }
 
     const update: Record<string, unknown> = { ...fields };
+    delete update.imageUrl;
     if (finalImageUrl) {
       update.imageUrl = finalImageUrl;
     }
     if (image && !hasBlobToken()) {
       update.imageData = image.imageData;
       update.imageContentType = image.imageContentType;
+    } else if (finalImageUrl) {
+      update.imageData = null;
+      update.imageContentType = null;
     }
 
     const updatedBanner = await Banner.findByIdAndUpdate(
@@ -163,6 +169,11 @@ export async function PATCH(req: NextRequest) {
       { new: true, runValidators: true }
     );
 
+    if (!updatedBanner) {
+      return NextResponse.json({ success: false, error: "Banner not found." }, { status: 404 });
+    }
+
+    invalidateLegacyImage(`banner:${bannerId}`);
     invalidateBannerCache();
     // Only delete the old blob after the database update succeeds, and only if not used elsewhere
     if (finalImageUrl && oldImageUrl && oldImageUrl !== finalImageUrl) {
@@ -192,6 +203,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Banner not found." }, { status: 404 });
     }
 
+    invalidateLegacyImage(`banner:${bannerId}`);
     invalidateBannerCache();
     // Safely delete the blob from Vercel Blob if orphaned
     if (banner.imageUrl) {

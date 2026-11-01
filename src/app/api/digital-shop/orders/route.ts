@@ -10,7 +10,6 @@ import {
 } from "@/lib/services/digitalShopService";
 import {
   generateVngZz2Qr,
-  generateVngZz2SandboxQr,
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
 
@@ -31,7 +30,6 @@ export async function POST(req: NextRequest) {
     }
 
     const { productCode, contact } = body;
-    const paymentMethod = body.paymentMethod ?? "aba_payway_v2";
 
     const cleanProductCode = String(productCode || "").trim();
     const cleanContact = String(contact || "").trim();
@@ -51,6 +49,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: "Contact info must be under 256 characters" },
         { status: 400 }
+      );
+    }
+
+    if (!isVngZz2Configured()) {
+      return NextResponse.json(
+        { success: false, error: "KHQR payments are temporarily unavailable. Please try again later." },
+        { status: 503 }
       );
     }
 
@@ -95,26 +100,15 @@ export async function POST(req: NextRequest) {
     });
 
     try {
-      const isLive = isVngZz2Configured();
-      const qrResult = isLive
-        ? await generateVngZz2Qr({
-            amount: amountUsd,
-            currency: "USD",
-            orderNumber,
-            metadata: {
-              productName: product.name,
-              contact: cleanContact,
-            },
-          })
-        : generateVngZz2SandboxQr({
-            amount: amountUsd,
-            currency: "USD",
-            orderNumber,
-            metadata: {
-              productName: product.name,
-              contact: cleanContact,
-            },
-          });
+      const qrResult = await generateVngZz2Qr({
+        amount: amountUsd,
+        currency: "USD",
+        orderNumber,
+        metadata: {
+          productName: product.name,
+          contact: cleanContact,
+        },
+      });
 
       newOrder.transactionId = qrResult.transactionId;
       newOrder.checkoutUrl = qrResult.payUrl;
@@ -149,7 +143,7 @@ export async function POST(req: NextRequest) {
           deepLink: qrResult.deepLink,
           payUrl: qrResult.payUrl,
           expireInSec: qrResult.expireInSec,
-          isSandbox: !isLive,
+          isSandbox: false,
         },
       });
     } catch (err: unknown) {

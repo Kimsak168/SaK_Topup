@@ -25,6 +25,8 @@ import {
   Moon,
   LogOut,
   ExternalLink,
+  Search,
+  ArrowUpRight,
 } from "lucide-react";
 
 interface AdminDashboardShellProps {
@@ -199,8 +201,40 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [connectedSuppliers, setConnectedSuppliers] = useState(0);
+  const [commandOpen, setCommandOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState("");
+  const commandRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setCommandOpen(previous => !previous);
+        setCommandQuery("");
+      }
+    };
+    window.addEventListener("keydown", openSearch);
+    return () => window.removeEventListener("keydown", openSearch);
+  }, []);
+
+  useEffect(() => {
+    if (!commandOpen) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    commandRef.current?.querySelector("input")?.focus();
+    const keyboard = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setCommandOpen(false);
+      if (event.key !== "Tab") return;
+      const elements = commandRef.current?.querySelectorAll<HTMLElement>('input, a[href], button:not([disabled])');
+      const first = elements?.[0];
+      const last = elements?.[elements.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+    };
+    document.addEventListener("keydown", keyboard);
+    return () => { document.removeEventListener("keydown", keyboard); previousFocus?.focus(); };
+  }, [commandOpen]);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -243,6 +277,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileOpen(false);
+    setCommandOpen(false);
     contentRef.current?.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
@@ -321,13 +356,13 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
           : "admin-shell-light bg-slate-50 text-slate-800"
       }`}
     >
-      <div inert={mobileOpen} className="flex h-dvh overflow-hidden">
+      <div inert={mobileOpen || commandOpen} className="flex h-dvh overflow-hidden">
         {/* ========================================================= */}
         {/* DESKTOP SIDEBAR */}
         {/* ========================================================= */}
         <aside
           className={`admin-sidebar hidden md:flex min-h-0 shrink-0 flex-col border-r transition-[width] duration-150 z-30 select-none ${
-            collapsed ? "w-[68px] is-collapsed" : "w-[244px]"
+            collapsed ? "w-[76px] is-collapsed" : "w-[248px]"
           } ${
             isDarkMode
               ? "bg-[#0C1322] border-[#243047]"
@@ -346,13 +381,13 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 alt="Asura Store Admin Logo"
                 width={30}
                 height={30}
-                priority
+                preload
                 className="h-7 w-7 shrink-0 object-contain"
               />
               {!collapsed && (
                 <div className="min-w-0 leading-tight">
                   <strong className="block truncate text-sm font-bold tracking-tight text-[#F8FAFC]">Asura Store</strong>
-                  <p className="text-[11px] font-medium text-[#64748B]">Admin workspace</p>
+                  <p className="text-[11px] font-medium text-[#64748B]">Store management</p>
                 </div>
               )}
             </Link>
@@ -405,14 +440,8 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                           : "text-[#94A3B8] hover:bg-[#151F31] hover:text-[#F8FAFC]"
                       }`}
                     >
-                      {isActive && (
-                        <span
-                          className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full ${item.badge.indicator}`}
-                          aria-hidden="true"
-                        />
-                      )}
                       <span
-                        className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg shadow-2xs transition-transform duration-150 group-hover:scale-105 ${
+                        className={`admin-nav-icon flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg ${
                           isActive ? item.badge.active : item.badge.inactive
                         }`}
                       >
@@ -427,7 +456,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
           </nav>
 
           {/* Sidebar Footer */}
-          <div className={`shrink-0 border-t border-[#243047] ${collapsed ? "p-2 space-y-2" : "px-3 py-2.5 space-y-2"}`}>
+          <div className={`admin-sidebar-footer shrink-0 border-t border-[#243047] ${collapsed ? "p-2 space-y-2" : "px-3 py-2.5 space-y-2"}`}>
             {/* Compact Supplier APIs row */}
             <Link
               href="/admin/suppliers"
@@ -518,13 +547,16 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               </button>
 
               <div className="min-w-0 leading-tight">
-                <span className="hidden md:block text-[10px] font-semibold uppercase tracking-[0.08em] text-[#94A3B8]">Admin / Workspace</span>
+                <span className="admin-header-eyebrow hidden md:block text-[10px] font-semibold text-[#94A3B8]">Workspace / Administration</span>
                 <span className="block truncate text-sm font-semibold text-[#F8FAFC]">{currentNav.label}</span>
               </div>
             </div>
 
             {/* Right Header Status & Tools */}
             <div className="flex shrink-0 items-center gap-2">
+              <button type="button" onClick={() => { setCommandQuery(""); setCommandOpen(true); }} aria-label="Find an admin page" aria-haspopup="dialog" className="admin-command-trigger">
+                <Search className="h-4 w-4" /><span>Find a page…</span><kbd>Ctrl K</kbd>
+              </button>
               {/* Supplier Status Button */}
               <Link
                 href="/admin/suppliers"
@@ -532,14 +564,14 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               >
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
-                    connectedSuppliers === 2
+                    connectedSuppliers >= 1
                       ? "bg-[#22C55E]"
                       : connectedSuppliers === 1
                       ? "bg-[#F59E0B]"
                       : "bg-[#64748B]"
                   }`}
                 />
-                <span>Supplier Status</span>
+                <span>Supplier status</span>
               </Link>
 
               {/* View Public Storefront Button */}
@@ -550,7 +582,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 aria-label="Open storefront in a new tab"
                 className="inline-flex h-8 items-center gap-1.5 px-2.5 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
               >
-                <span className="hidden sm:inline">Storefront</span>
+                <span className="hidden sm:inline">View store</span>
                 <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
               </Link>
 
@@ -572,7 +604,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
 
           {/* Main Scrollable Content */}
           <main ref={contentRef} id="main-content" tabIndex={-1} className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 lg:p-6">
-            <div className="min-w-0 max-w-[1400px] mx-auto space-y-5">{children}</div>
+            <div className="admin-workspace min-w-0 max-w-[1600px] mx-auto">{children}</div>
           </main>
         </div>
       </div>
@@ -646,7 +678,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                           />
                         )}
                         <span
-                          className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg shadow-2xs transition-transform duration-150 group-hover:scale-105 ${
+                        className={`admin-nav-icon flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg ${
                             isActive ? item.badge.active : item.badge.inactive
                           }`}
                         >
@@ -703,6 +735,29 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {commandOpen && (
+        <div className="admin-command-overlay" onClick={() => setCommandOpen(false)}>
+          <div ref={commandRef} role="dialog" aria-modal="true" aria-label="Find an admin page" className="admin-command-dialog" onClick={event => event.stopPropagation()}>
+            <div className="admin-command-input">
+              <Search className="h-5 w-5" />
+              <input aria-label="Search admin pages" placeholder="Where would you like to go?" value={commandQuery} onChange={event => setCommandQuery(event.target.value)} onKeyDown={event => {
+                if (event.key === "ArrowDown") { event.preventDefault(); commandRef.current?.querySelector<HTMLAnchorElement>("a")?.focus(); }
+                if (event.key === "Enter") commandRef.current?.querySelector<HTMLAnchorElement>("a")?.click();
+              }} />
+              <button type="button" aria-label="Close page search" onClick={() => setCommandOpen(false)}><X className="h-4 w-4" /></button>
+            </div>
+            <div className="admin-command-results">
+              <p>Workspace pages</p>
+              {NAV_ITEMS.filter(item => item.label.toLowerCase().includes(commandQuery.toLowerCase())).map(item => {
+                const Icon = item.icon;
+                return <Link key={item.href} href={item.href} onClick={() => setCommandOpen(false)}><Icon className="h-4 w-4" /><span>{item.label}</span><ArrowUpRight className="h-3.5 w-3.5" /></Link>;
+              })}
+              {!NAV_ITEMS.some(item => item.label.toLowerCase().includes(commandQuery.toLowerCase())) && <div className="admin-command-empty">No matching pages. Try “orders” or “packages”.</div>}
+            </div>
+            <div className="admin-command-footer">Use Tab to move between pages <kbd>Esc to close</kbd></div>
           </div>
         </div>
       )}

@@ -20,7 +20,6 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file");
     const folder = String(formData.get("folder") || "banners").toLowerCase() as BlobFolder;
-    const replaceUrl = formData.get("replaceUrl") ? String(formData.get("replaceUrl")).trim() : undefined;
 
     if (!VALID_FOLDERS.includes(folder)) {
       return NextResponse.json(
@@ -59,13 +58,8 @@ export async function POST(req: NextRequest) {
       contentType: file.type || "image/png",
     });
 
-    // If an existing image URL was provided for replacement, safely clean it up
-    if (replaceUrl && replaceUrl !== result.url) {
-      await safeDeleteBlobIfOrphaned(replaceUrl).catch((err) => {
-        console.warn("[Admin Upload] Could not cleanup replaced blob:", err);
-      });
-    }
-
+    // A successful upload does not mean the owning resource has saved its URL.
+    // Replacement cleanup belongs to that resource's save endpoint.
     return NextResponse.json({
       success: true,
       url: result.url,

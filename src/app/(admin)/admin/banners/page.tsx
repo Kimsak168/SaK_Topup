@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { MAX_SERVER_UPLOAD_BYTES } from "@/lib/blob-shared";
 import { Image as ImageIcon, Plus, Edit2, Trash2, RefreshCw, Check, X, Upload } from "lucide-react";
 
 interface BannerItem {
@@ -101,7 +102,9 @@ export default function AdminBannersPage() {
   const selectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (!["image/png", "image/jpeg", "image/webp", "image/gif"].includes(file.type)) {
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/pjpeg", "image/webp", "image/gif"];
+    const hasValidExtension = /\.(png|jpe?g|webp|gif)$/i.test(file.name);
+    if (!allowedTypes.includes(file.type.toLowerCase()) && !hasValidExtension) {
       toast.error("Choose a PNG, JPG, WebP, or GIF image.");
       event.target.value = "";
       return;
@@ -126,11 +129,11 @@ export default function AdminBannersPage() {
     try {
       let finalImageUrl = form.imageUrl || editingBanner?.imageUrl || "";
 
-      // If a large image (> 4.5MB) is selected, upload directly to Vercel Blob to bypass function limits
-      if (imageFile && imageFile.size > 4.5 * 1024 * 1024) {
+      // Leave room for multipart fields when sending files through a function.
+      if (imageFile && imageFile.size > MAX_SERVER_UPLOAD_BYTES) {
         toast.info("Uploading large banner directly to Vercel Blob...");
         const { uploadAdminImage } = await import("@/lib/clientBlobUpload");
-        const blobResult = await uploadAdminImage(imageFile, "banners", editingBanner?.imageUrl);
+        const blobResult = await uploadAdminImage(imageFile, "banners");
         finalImageUrl = blobResult.url;
       }
 
@@ -140,8 +143,7 @@ export default function AdminBannersPage() {
       }
       if (finalImageUrl) payload.set("imageUrl", finalImageUrl);
       if (editingBanner) payload.set("bannerId", editingBanner.id);
-      // If smaller than 4.5MB and not directly uploaded, send to server
-      if (imageFile && imageFile.size <= 4.5 * 1024 * 1024) {
+      if (imageFile && imageFile.size <= MAX_SERVER_UPLOAD_BYTES) {
         payload.set("image", imageFile);
       }
 
@@ -151,7 +153,7 @@ export default function AdminBannersPage() {
       });
       const data = await response.json();
       if (!response.ok || !data.success) throw new Error(data.error || "Could not save banner.");
-      toast.success(editingBanner ? "Banner updated with Vercel Blob" : "Banner uploaded to Vercel Blob");
+      toast.success(editingBanner ? "Banner updated" : "Banner uploaded");
       setShowModal(false);
       setImageFile(null);
       setPreviewUrl("");

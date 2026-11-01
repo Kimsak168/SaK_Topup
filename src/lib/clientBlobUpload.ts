@@ -1,5 +1,5 @@
 import { upload } from "@vercel/blob/client";
-import { BlobFolder, buildBlobPathname, MAX_SERVER_UPLOAD_BYTES } from "@/lib/blob-shared";
+import { BlobFolder, buildBlobPathname, MAX_SERVER_UPLOAD_BYTES, validateImageFile } from "@/lib/blob-shared";
 
 export interface ClientUploadResult {
   url: string;
@@ -8,16 +8,16 @@ export interface ClientUploadResult {
 
 /**
  * Universal image upload helper for admin dashboard components:
- * - If file size > 4.5MB (Vercel Functions request payload limit): uses official client-to-blob upload
- * - If file size <= 4.5MB: uses direct server endpoint with authentication
- * - Handles optional replacement of previous blob URL safely
+ * Large files bypass function request limits using direct uploads.
+ * The resource's save endpoint cleans up the previous image after saving.
  */
 export async function uploadAdminImage(
   file: File,
-  folder: BlobFolder,
-  replaceUrl?: string | null
+  folder: BlobFolder
 ): Promise<ClientUploadResult> {
-  // If file is larger than 4.5MB, use official Vercel Blob client upload
+  const validation = validateImageFile(file, true);
+  if (!validation.valid) throw new Error(validation.error);
+
   if (file.size > MAX_SERVER_UPLOAD_BYTES) {
     const pathname = buildBlobPathname(folder, file.name);
     const newBlob = await upload(pathname, file, {
@@ -25,13 +25,6 @@ export async function uploadAdminImage(
       handleUploadUrl: "/api/admin/uploads/blob-client",
       clientPayload: JSON.stringify({ folder, originalName: file.name }),
     });
-
-    // If an old image is being replaced, clean it up safely via delete endpoint
-    if (replaceUrl && replaceUrl !== newBlob.url) {
-      await fetch(`/api/admin/uploads/blob?url=${encodeURIComponent(replaceUrl)}`, {
-        method: "DELETE",
-      }).catch((err) => console.warn("Failed to delete replaced blob:", err));
-    }
 
     return {
       url: newBlob.url,
@@ -43,9 +36,6 @@ export async function uploadAdminImage(
   const formData = new FormData();
   formData.append("file", file);
   formData.append("folder", folder);
-  if (replaceUrl) {
-    formData.append("replaceUrl", replaceUrl);
-  }
 
   const response = await fetch("/api/admin/uploads/blob", {
     method: "POST",

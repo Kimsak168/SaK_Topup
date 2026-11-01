@@ -1,0 +1,6 @@
+simulation: khqr-checkout
+routing: path
+mocks:
+  - name: khqr-checkout
+    routeKey: checkout
+    path: postman/mocks/khqr-checkout/config.yaml
