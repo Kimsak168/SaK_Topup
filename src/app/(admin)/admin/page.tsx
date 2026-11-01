@@ -505,7 +505,7 @@ export default function AdminOverviewPage() {
 
             {data.recentOrders.length ? (
               <div className="admin-table-scroll rounded-lg">
-                <table className="admin-table text-left">
+                <table className="hidden sm:table admin-table text-left">
                   <thead>
                     <tr>
                       <th className="py-2 px-3">Order</th>
@@ -538,6 +538,28 @@ export default function AdminOverviewPage() {
                     ))}
                   </tbody>
                 </table>
+
+                {/* Mobile View (< 640px) */}
+                <div className="block sm:hidden divide-y divide-[#243047]">
+                  {data.recentOrders.map((order) => (
+                    <div key={order.id} className="p-3 space-y-1.5 bg-[#0C1322]">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-xs font-bold text-white">{order.orderNumber}</span>
+                        <span className="text-[10px] text-[#64748B]">{new Date(order.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <strong className="block text-xs font-semibold text-[#F8FAFC] truncate">{order.gameName}</strong>
+                          <span className="text-[11px] text-[#94A3B8] truncate block">{order.packageName}</span>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <div className="text-xs font-bold text-white">{money(order.amount)}</div>
+                          <div className="mt-0.5">{getStatusBadge(order.paymentStatus)}</div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-center text-[#94A3B8]">

@@ -528,34 +528,40 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
         <div className="min-w-0 flex-1 flex flex-col h-dvh overflow-hidden bg-[#080D18]">
           {/* Top Header */}
           <header
-            className={`h-[58px] border-b px-4 sm:px-6 flex items-center justify-between gap-3 shrink-0 z-20 transition-colors ${
+            className={`h-[58px] border-b px-3 sm:px-6 flex items-center justify-between gap-2 sm:gap-3 shrink-0 z-20 transition-colors ${
               isDarkMode
                 ? "bg-[#0C1322] border-[#243047]"
                 : "bg-white border-slate-200"
             }`}
           >
             {/* Left Header Title / Mobile trigger */}
-            <div className="flex min-w-0 items-center gap-2.5">
+            <div className="flex min-w-0 items-center gap-2 sm:gap-2.5">
               <button
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open admin navigation"
                 aria-expanded={mobileOpen}
                 aria-controls="admin-mobile-navigation"
-                className={`md:hidden shrink-0 h-8 w-8 rounded-lg flex items-center justify-center text-[#94A3B8] hover:text-[#F8FAFC] border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] cursor-pointer`}
+                className={`md:hidden shrink-0 h-9 w-9 rounded-lg flex items-center justify-center text-[#94A3B8] hover:text-[#F8FAFC] border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] cursor-pointer active:scale-95 transition-transform`}
               >
                 <Menu className="h-4 w-4" />
               </button>
 
               <div className="min-w-0 leading-tight">
                 <span className="admin-header-eyebrow hidden md:block text-[10px] font-semibold text-[#94A3B8]">Workspace / Administration</span>
-                <span className="block truncate text-sm font-semibold text-[#F8FAFC]">{currentNav.label}</span>
+                <span className="block truncate text-xs sm:text-sm font-semibold text-[#F8FAFC]">{currentNav.label}</span>
               </div>
             </div>
 
             {/* Right Header Status & Tools */}
-            <div className="flex shrink-0 items-center gap-2">
-              <button type="button" onClick={() => { setCommandQuery(""); setCommandOpen(true); }} aria-label="Find an admin page" aria-haspopup="dialog" className="admin-command-trigger">
-                <Search className="h-4 w-4" /><span>Find a page…</span><kbd>Ctrl K</kbd>
+            <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+              <button
+                type="button"
+                onClick={() => { setCommandQuery(""); setCommandOpen(true); }}
+                aria-label="Find an admin page"
+                aria-haspopup="dialog"
+                className="admin-command-trigger h-8 px-2 sm:px-2.5 text-xs inline-flex items-center gap-1.5 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-[#94A3B8] hover:text-[#F8FAFC] cursor-pointer"
+              >
+                <Search className="h-3.5 w-3.5 shrink-0" /><span className="hidden md:inline">Find a page…</span><kbd className="hidden lg:inline">Ctrl K</kbd>
               </button>
               {/* Supplier Status Button */}
               <Link
@@ -580,7 +586,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Open storefront in a new tab"
-                className="inline-flex h-8 items-center gap-1.5 px-2.5 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
+                className="inline-flex h-8 items-center gap-1.5 px-2 sm:px-2.5 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-xs font-medium text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
               >
                 <span className="hidden sm:inline">View store</span>
                 <ExternalLink className="h-3.5 w-3.5 text-[#64748B]" />
@@ -603,7 +609,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
           </header>
 
           {/* Main Scrollable Content */}
-          <main ref={contentRef} id="main-content" tabIndex={-1} className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5 lg:p-6">
+          <main ref={contentRef} id="main-content" tabIndex={-1} className="admin-content min-w-0 flex-1 overflow-y-auto overscroll-contain p-2.5 sm:p-5 lg:p-6 pb-[max(2rem,env(safe-area-inset-bottom))]">
             <div className="admin-workspace min-w-0 max-w-[1600px] mx-auto">{children}</div>
           </main>
         </div>

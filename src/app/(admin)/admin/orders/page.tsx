@@ -427,7 +427,7 @@ export default function AdminOrdersPage() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+            <table className="hidden md:table w-full text-xs text-left">
               <thead className="bg-[#151F31] text-[#94A3B8] uppercase text-[10px] font-bold border-b border-[#243047]">
                 <tr>
                   <th className="py-2.5 px-3.5">Order #</th>
@@ -548,6 +548,104 @@ export default function AdminOrdersPage() {
                 })}
               </tbody>
             </table>
+
+            {/* Mobile Cards View (< 768px): Clean, touch-friendly order tracking & reconciliation */}
+            <div className="block md:hidden divide-y divide-[#243047]/60">
+              {orders.map((order) => {
+                const payUpper = String(order.paymentStatus).toUpperCase();
+                const fulUpper = String(order.fulfillmentStatus).toUpperCase();
+                const isReconciling = reconcilingId === order.id;
+
+                return (
+                  <div key={order.id} className="p-3.5 space-y-3 bg-[#111A2B]">
+                    {/* Top Header: Order # + Date */}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-black text-white">
+                        {order.orderNumber}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-mono">
+                        {new Date(order.createdAt).toLocaleDateString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </div>
+
+                    {/* Game & Package */}
+                    <div>
+                      <div className="font-bold text-white text-xs">{order.gameName}</div>
+                      <div className="text-slate-400 text-xs mt-0.5">{order.packageName}</div>
+                    </div>
+
+                    {/* Player Details & Amount */}
+                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#243047]/40 text-xs">
+                      <div className="font-mono text-slate-300">
+                        <div>UID: {order.playerId}</div>
+                        {order.playerName && (
+                          <div className="text-[10px] text-emerald-400 font-sans">IGN: {order.playerName}</div>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <div className="font-mono font-bold text-white">
+                          ${order.amount.toFixed(2)} {order.currency || "USD"}
+                        </div>
+                        <div className="text-[10px] text-emerald-400">
+                          +${order.profit.toFixed(2)} net
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status Badges Row */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#243047]/40">
+                      <span className="text-[10px] text-slate-400">Payment:</span>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          payUpper === "PAID"
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : payUpper === "FAILED" || payUpper === "CANCELLED" || payUpper === "EXPIRED"
+                            ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                            : "bg-amber-500/15 text-amber-400 border border-amber-500/30 animate-pulse"
+                        }`}
+                      >
+                        {order.paymentStatus}
+                      </span>
+
+                      <span className="text-[10px] text-slate-400 ml-1">Delivery:</span>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                          fulUpper === "COMPLETED" || fulUpper === "DELIVERED"
+                            ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+                            : fulUpper === "FAILED"
+                            ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
+                            : "bg-amber-500/15 text-amber-400 border border-amber-500/30"
+                        }`}
+                      >
+                        {order.fulfillmentStatus}
+                      </span>
+                    </div>
+
+                    {/* Action Buttons Row */}
+                    <div className="grid grid-cols-2 gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => handleReconcileOrder(order)}
+                        disabled={isReconciling}
+                        className="inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-xs font-semibold text-slate-200 transition-colors cursor-pointer disabled:opacity-50"
+                      >
+                        <ShieldCheck className={`h-3.5 w-3.5 ${isReconciling ? "animate-spin" : ""}`} />
+                        <span>{isReconciling ? "Reconciling..." : "Reconcile"}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleOpenDetail(order)}
+                        className="inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-[#243047] bg-[#151F31] hover:bg-[#1C283F] text-xs font-semibold text-slate-200 transition-colors cursor-pointer"
+                      >
+                        <Eye className="h-3.5 w-3.5" />
+                        <span>Details</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

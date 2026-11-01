@@ -408,7 +408,7 @@ export default function AdminGamesPage() {
           </div>
         ) : (
           <div className="admin-table-scroll">
-            <table className="w-full text-left text-xs">
+            <table className="hidden md:table w-full text-left text-xs">
               <thead className="border-b border-[#243047] bg-[#0C1322] text-[#94A3B8] font-semibold uppercase tracking-wider text-[11px]">
                 <tr>
                   <th className="py-2.5 px-3.5">Game</th>
@@ -515,6 +515,93 @@ export default function AdminGamesPage() {
                 ))}
               </tbody>
             </table>
+
+            {/* Mobile Cards View (< 768px): Clean, touch-friendly games list */}
+            <div className="block md:hidden divide-y divide-[#243047]/60">
+              {games.map((game) => (
+                <div key={game.id} className="p-3.5 space-y-3 bg-[#0C1322]">
+                  {/* Top: Image + Game Name + Badge */}
+                  <div className="flex items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="relative h-11 w-11 shrink-0 rounded-lg overflow-hidden border border-[#243047] bg-[#151F31]">
+                        <Image
+                          src={game.customImage || game.image || "/images/hero-banner.jpg"}
+                          alt={game.name}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = "/images/freefire.jpg";
+                          }}
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="font-bold text-[#F8FAFC] text-xs flex items-center gap-1.5 truncate">
+                          <span>{game.name}</span>
+                          {game.badge && (
+                            <span className="rounded border border-[#22C55E]/30 bg-[#22C55E]/10 px-1.5 py-0.2 text-[9px] font-bold text-[#22C55E] uppercase shrink-0">
+                              {game.badge}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-[#64748B] font-mono mt-0.5 truncate">
+                          /{game.supplier}/{game.supplierGameCode}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions Menu button */}
+                    <button
+                      type="button"
+                      onClick={(event) => toggleActionMenu(event, game)}
+                      aria-label={`Actions for ${game.name}`}
+                      aria-expanded={actionMenu?.game.id === game.id}
+                      title="More actions"
+                      className="h-8 w-8 rounded-lg border border-[#243047] bg-[#151F31] flex items-center justify-center text-slate-300 cursor-pointer"
+                    >
+                      <Ellipsis className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Badges & Visibility Row */}
+                  <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#243047]/40">
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                        game.supplier === "vngzz2"
+                          ? "bg-blue-500/10 border border-blue-500/20 text-blue-400"
+                          : game.supplier === "g2bulk"
+                          ? "bg-purple-500/10 border border-purple-500/20 text-purple-400"
+                          : "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+                      }`}
+                    >
+                      🛡️ {game.supplier}
+                    </span>
+
+                    {/* Toggle Active Switch */}
+                    <button
+                      type="button"
+                      onClick={() => handleToggleActive(game)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        game.isActive
+                          ? "bg-[#22C55E]/15 text-[#22C55E] border border-[#22C55E]/30 hover:bg-[#22C55E]/20"
+                          : "bg-[#151F31] text-[#64748B] border border-[#243047] hover:text-[#94A3B8]"
+                      }`}
+                    >
+                      {game.isActive ? (
+                        <>
+                          <Check className="h-3.5 w-3.5" />
+                          <span>Visible</span>
+                        </>
+                      ) : (
+                        <>
+                          <X className="h-3.5 w-3.5" />
+                          <span>Hidden</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

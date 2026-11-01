@@ -770,12 +770,12 @@ function PackagesManagerContent() {
 
       {/* Floating / Sticky Unsaved Changes Bar */}
       {dirtyCount > 0 && (
-        <div className="sticky top-4 z-40 flex items-center justify-between p-3.5 rounded-xl bg-emerald-950/95 border-2 border-emerald-500 shadow-2xl backdrop-blur-md animate-in slide-in-from-top-2">
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+        <div className="sticky top-2 sm:top-4 z-40 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 p-3 sm:p-3.5 rounded-xl bg-emerald-950/95 border-2 border-emerald-500 shadow-2xl backdrop-blur-md animate-in slide-in-from-top-2">
+          <div className="flex items-center gap-2">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping shrink-0" />
             <div>
               <span className="text-xs sm:text-sm font-black text-white">
-                You have <span className="text-emerald-300 font-mono font-black">{dirtyCount}</span> unsaved package pricing change{dirtyCount > 1 ? "s" : ""}
+                You have <span className="text-emerald-300 font-mono font-black">{dirtyCount}</span> unsaved price change{dirtyCount > 1 ? "s" : ""}
               </span>
               <span className="hidden sm:inline text-[11px] text-slate-300 ml-2">
                 Save them all at once or individually.
@@ -787,7 +787,7 @@ function PackagesManagerContent() {
               type="button"
               onClick={handleDiscardChanges}
               disabled={isSavingAll}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition-colors cursor-pointer disabled:opacity-50"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition-colors cursor-pointer disabled:opacity-50"
             >
               <Undo2 className="h-3.5 w-3.5" />
               <span>Discard</span>
@@ -796,10 +796,10 @@ function PackagesManagerContent() {
               type="button"
               onClick={handleSaveAllDirty}
               disabled={isSavingAll}
-              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 cursor-pointer"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 cursor-pointer"
             >
               <Save className={`h-3.5 w-3.5 ${isSavingAll ? "animate-spin" : ""}`} />
-              <span>{isSavingAll ? "Saving Packages..." : `Save All Changes (${dirtyCount})`}</span>
+              <span>{isSavingAll ? "Saving..." : `Save All (${dirtyCount})`}</span>
             </button>
           </div>
         </div>
@@ -941,7 +941,7 @@ function PackagesManagerContent() {
           </div>
         ) : (
           <div className="admin-package-table-scroll overflow-auto" tabIndex={0} aria-label="Package pricing table">
-            <table className="w-full text-left text-xs">
+            <table className="hidden md:table w-full text-left text-xs">
               <thead className="border-b border-[#243047] bg-[#151F31] text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-2.5 px-3.5">Image</th>
@@ -1173,6 +1173,188 @@ function PackagesManagerContent() {
                 })}
               </tbody>
             </table>
+
+            {/* Mobile Cards View (< 768px): Clean, touch-friendly, fast updating from phone */}
+            <div className="block md:hidden divide-y divide-[#243047]/60">
+              {packages.map((pkg) => {
+                const row = editMap[pkg.id] || {
+                  sellingPrice: pkg.sellingPrice !== null ? String(pkg.sellingPrice) : "",
+                  originalPrice: pkg.originalPrice !== null ? String(pkg.originalPrice) : "",
+                  badge: pkg.badge || "",
+                  isActive: pkg.isActive,
+                  customImage: pkg.customImage || null,
+                  isDirty: false,
+                };
+
+                const sellNum = parseFloat(row.sellingPrice);
+                const costNum = pkg.buyingPrice;
+                let marginPercent: number | null = null;
+                let profitAmount: number | null = null;
+
+                if (costNum && !isNaN(sellNum)) {
+                  profitAmount = Math.round((sellNum - costNum) * 100) / 100;
+                  marginPercent = Math.round(((sellNum - costNum) / costNum) * 1000) / 10;
+                }
+
+                const gameName =
+                  gameNameLookup.get(pkg.gameCode.toLowerCase()) ||
+                  gameNameLookup.get(pkg.gameSlug.toLowerCase()) ||
+                  pkg.gameSlug;
+
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`p-3 space-y-3 transition-colors ${
+                      row.isDirty ? "bg-emerald-500/[0.06] border-l-4 border-l-emerald-500" : "bg-[#111A2B]"
+                    }`}
+                  >
+                    {/* Header: Thumbnail + Name + Supplier Tag + Active Toggle */}
+                    <div className="flex items-start justify-between gap-2.5">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <button
+                          type="button"
+                          onClick={() => openImageModal(pkg)}
+                          className="relative h-11 w-11 shrink-0 rounded-lg border border-[#243047] bg-[#151F31] hover:border-[#22C55E]/50 overflow-hidden cursor-pointer"
+                          aria-label={`Change image for ${pkg.name}`}
+                          title="Tap to change image"
+                        >
+                          {pkg.customImage ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={pkg.customImage}
+                              alt={pkg.name}
+                              loading="lazy"
+                              decoding="async"
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <ImageIcon className="h-5 w-5 text-[#64748B] m-auto" />
+                          )}
+                        </button>
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-bold text-white text-xs leading-snug line-clamp-2" title={pkg.name}>
+                            {pkg.name}
+                          </h3>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <span className="text-[10px] font-bold text-slate-300 truncate max-w-[130px]">
+                              {gameName}
+                            </span>
+                            <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                              {pkg.supplier === "webbuilder" ? "WebBuilder" : pkg.supplier || "G2Bulk"}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Active toggle */}
+                      <button
+                        type="button"
+                        onClick={() => handleFieldChange(pkg.id, "isActive", !row.isActive)}
+                        className={`shrink-0 px-2.5 py-1 rounded-full text-[10px] font-extrabold cursor-pointer transition-all ${
+                          row.isActive
+                            ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/40"
+                            : "bg-[#151F31] text-[#64748B] border border-[#243047]"
+                        }`}
+                      >
+                        {row.isActive ? "Available" : "Disabled"}
+                      </button>
+                    </div>
+
+                    {/* Pricing Row: Wholesale Cost + Touch Selling Price Input */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-1 border-t border-[#243047]/50">
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-[#64748B] mb-1">
+                          Wholesale Cost
+                        </div>
+                        <div className="h-10 flex items-center px-2.5 rounded-lg bg-[#0C1322] border border-[#243047] font-mono text-xs font-semibold text-[#F8FAFC]">
+                          {pkg.buyingPrice !== null ? `$${pkg.buyingPrice.toFixed(2)}` : "Unlisted"}
+                        </div>
+                      </div>
+
+                      <div>
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1 flex items-center justify-between">
+                          <span>Selling Price</span>
+                          {row.isDirty && <span className="text-[9px] text-amber-400 font-normal">Unsaved</span>}
+                        </div>
+                        <div className="relative">
+                          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">
+                            $
+                          </span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            inputMode="decimal"
+                            aria-label={`Selling price for ${pkg.name}`}
+                            placeholder="0.00"
+                            value={row.sellingPrice}
+                            onChange={(e) => handleFieldChange(pkg.id, "sellingPrice", e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                void handleSavePackage(pkg);
+                              }
+                            }}
+                            className={`w-full h-10 rounded-lg border pl-7 pr-2 font-mono text-sm font-black text-white focus:outline-none transition-all ${
+                              row.isDirty
+                                ? "border-emerald-400 bg-emerald-500/15 ring-2 ring-emerald-500/40"
+                                : row.sellingPrice
+                                ? "border-[#243047] bg-[#151F31] focus:border-emerald-500"
+                                : "border-amber-500/60 bg-amber-500/10 text-amber-200"
+                            }`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Profit Margin & Badges / Actions Row */}
+                    <div className="flex items-center justify-between gap-2 pt-1">
+                      {/* Margin badge */}
+                      <div className="min-w-0">
+                        {marginPercent !== null && profitAmount !== null ? (
+                          <span
+                            className={`inline-flex items-center gap-1 text-[11px] font-bold ${
+                              profitAmount >= 0 ? "text-emerald-400" : "text-rose-400"
+                            }`}
+                          >
+                            <TrendingUp className="h-3 w-3" />
+                            <span>{profitAmount >= 0 ? `+${marginPercent}%` : `${marginPercent}%`}</span>
+                            <span className="font-mono text-[10px] text-slate-400">
+                              ({profitAmount >= 0 ? `+$${profitAmount.toFixed(2)}` : `-$${Math.abs(profitAmount).toFixed(2)}`})
+                            </span>
+                          </span>
+                        ) : !row.sellingPrice ? (
+                          <span className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" /> Set price
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-500 font-mono">Cost unknown</span>
+                        )}
+                      </div>
+
+                      {/* Quick Save button for this card */}
+                      <button
+                        type="button"
+                        disabled={savingId === pkg.id || !row.isDirty}
+                        onClick={() => handleSavePackage(pkg)}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                          row.isDirty
+                            ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md ring-2 ring-emerald-400"
+                            : "bg-[#151F31] text-slate-400 border border-[#243047] disabled:opacity-40"
+                        }`}
+                      >
+                        {savingId === pkg.id ? (
+                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Save className="h-3.5 w-3.5" />
+                        )}
+                        <span>{row.isDirty ? "Save" : "Saved"}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 
