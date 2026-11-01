@@ -30,13 +30,13 @@ import {
 } from "lucide-react";
 import type { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
 import { PlatformCard, PlatformItem } from "./PlatformCard";
+import { BoostTikTokKhmerBanner } from "./BoostTikTokKhmerBanner";
 
 const AbaPayWayV2Modal = dynamic(() => import("./AbaPayWayV2Modal"), {
   loading: () => <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white">Preparing secure payment…</div>,
 });
 
 const STANDARD_PLATFORMS: PlatformItem[] = [
-  { id: "tiktok-khmer", name: "Boost TikTok Khmer" },
   { id: "tiktok", name: "TikTok" },
   { id: "telegram", name: "Telegram" },
   { id: "facebook", name: "Facebook" },
@@ -579,6 +579,10 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
             {displayPlatforms.map((p) => (
               <PlatformCard key={p.id} platform={p} />
             ))}
+          </div>
+
+          <div className="mt-8 mb-4">
+            <BoostTikTokKhmerBanner />
           </div>
         </section>
 
