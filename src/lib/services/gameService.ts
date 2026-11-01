@@ -32,7 +32,7 @@ const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
 // Current App Store cover art for the standard game catalogue. Admin-uploaded
 // customImage values still take priority over these defaults.
 const CURRENT_GAME_COVER_ART: Record<string, string> = {
-  "free-fire-khsgmy": "/images/freefire.jpg",
+  "free-fire-khsgmy": "/images/freefire.jpg?v=naruto",
   hok: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/10/e4/fe/10e4fe00-2610-bd44-4cab-f68e49518979/AppIcon-1x_U007emarketing-0-6-0-85-220-0.png/512x512bb.jpg",
   mlbb: "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/81/36/47/81364792-25ad-a8fb-80ab-bbfa6523c6de/AppIcon-1x_U007emarketing-0-7-0-85-220-0.png/512x512bb.jpg",
   "pubg-mobile": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4f/8d/38/4f8d3800-68b5-1c53-b0f7-7d46bda6a394/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/512x512bb.jpg",

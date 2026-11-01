@@ -34,7 +34,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     filter: isFreeFireKhsgmyProduct,
     requiresServer: false,
     userIdLabel: "Player ID (UID)",
-    image: "/images/freefire.jpg",
+    image: "/images/freefire.jpg?v=naruto",
     badge: "HOT",
     isPopular: true,
     sortOrder: 1,
