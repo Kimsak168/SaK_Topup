@@ -989,14 +989,14 @@ test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned
     '@/lib/auth': {}, '@/lib/adminRedirect': {},
   }, { URL })('src/proxy.ts');
   const request = path => ({ nextUrl: new URL(path, 'http://localhost'), url: `http://localhost${path}` });
-  for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy']) {
+  for (const path of ['/game/freefire_sgmy', '/game/free-fire-sgmy', '/games/webbuilder/freefire_tw', '/games/webbuilder/freefire_vn']) {
     assert.equal((await proxy(request(path))).location, '/games/webbuilder/freefire_khsgmy');
   }
   for (const path of ['/games/g2bulk/freefire_sgmy', '/games/vngzz2/freefire_sgmy']) {
     assert.equal((await proxy(request(path))).next, true);
   }
   assert.equal((await proxy(request('/game/custom-game'))).next, true);
-  for (const path of ['/games/webbuilder/freefire_tw', '/games/webbuilder/freefire_vn', '/games/webbuilder/mlbb_global', '/games/webbuilder/mcgg_my', '/game/webbuilder-freefire-tw']) {
+  for (const path of ['/games/webbuilder/mlbb_global', '/games/webbuilder/mcgg_my', '/game/webbuilder-freefire-tw']) {
     assert.equal((await proxy(request(path))).next, true, path);
   }
 });
@@ -1128,20 +1128,20 @@ test('verification game metadata cannot borrow an identical regional code from a
   assert.equal((await getVerificationGame('vngzz2', 'mlbb_global')).requiresServer, false);
 });
 
-test('regional verification uses its own product and never falls back to a different Free Fire region', async () => {
+test('regional verification uses its own product and never falls back to an unrelated region', async () => {
   let checks = 0;
   const { POST } = loader({
     'next/server': { NextResponse: Response },
-    '@/lib/services/verificationGameService': { getVerificationGame: async () => ({ supplier: 'webbuilder', supplierGameCode: 'freefire_tw', requiresServer: false }) },
+    '@/lib/services/verificationGameService': { getVerificationGame: async () => ({ supplier: 'webbuilder', supplierGameCode: 'mlbb_global', requiresServer: false }) },
     '@/lib/suppliers/g2bulk': { checkG2BulkPlayer: () => assert.fail('A regional verification must not use the KH fallback') },
     '@/lib/suppliers/webbuilder': {
-      getWebBuilderProducts: async options => { assert.equal(options.gameCode, 'freefire_tw'); return [{ id: 'fixture-tw-product' }]; },
+      getWebBuilderProducts: async options => { assert.equal(options.gameCode, 'mlbb_global'); return [{ id: 'fixture-global-product' }]; },
       isWebBuilderProductAvailable: () => true,
-      checkWebBuilderPlayer: async productId => { checks++; assert.equal(productId, 'fixture-tw-product'); return { success: false, isUnavailable: true }; },
+      checkWebBuilderPlayer: async productId => { checks++; assert.equal(productId, 'fixture-global-product'); return { success: false, isUnavailable: true }; },
     },
   })('src/app/api/player/verify/route.ts');
   const request = productId => new Request('http://localhost/api/player/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ supplier: 'webbuilder', code: 'freefire_tw', userId: 'fixture-user', productId }) });
+    body: JSON.stringify({ supplier: 'webbuilder', code: 'mlbb_global', userId: 'fixture-user', productId }) });
   assert.equal((await (await POST(request())).json()).isUnavailable, true);
   assert.equal(checks, 1);
   assert.equal((await (await POST(request('wrong-region-product'))).json()).isUnavailable, true);

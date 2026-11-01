@@ -1,7 +1,5 @@
 // Pure catalogue identities, also used by request redirects.
 export const WEBBUILDER_REGIONAL_GAMES: [string, string, string, string][] = [
-  ["freefire_khsgmy", "freefire_tw", "Free Fire (Taiwan)", "Free Fire TW"],
-  ["freefire_khsgmy", "freefire_vn", "Free Fire (Vietnam)", "Free Fire VN"],
   ["mlbb", "mlbb_br", "Mobile Legends (Brazil)", "Mobile Legends Brazil"],
   ["mlbb", "mlbb_global", "Mobile Legends (Global)", "Mobile Legends Global"],
   ["mlbb", "mlbb_id", "Mobile Legends (Indonesia)", "Mobile Legends ID"],
