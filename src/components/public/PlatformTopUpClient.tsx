@@ -18,6 +18,7 @@ import {
   Loader2,
 } from "lucide-react";
 import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
+import { SpiderWebSvg } from "./HalloweenAccents";
 
 export interface SmmServiceItem {
   service: string;
@@ -310,8 +311,12 @@ export function PlatformTopUpClient({
         </div>
 
         {/* Platform Hero Banner Card (matching Game Detail Header) */}
-        <section className="service-page-hero">
-          <div className="service-page-hero__inner">
+        <section className="service-page-hero relative overflow-hidden">
+          {/* Halloween corner spiderwebs */}
+          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-orange-400/20 z-0" />
+          <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 text-pink-400/15 z-0 -scale-x-100" />
+
+          <div className="service-page-hero__inner relative z-10">
             <div className="service-page-hero__icon">
               <Image
                 src={coverImage}
@@ -323,9 +328,15 @@ export function PlatformTopUpClient({
               />
             </div>
             <div className="service-page-hero__copy">
-              <h1 className="service-page-hero__title">
-                {platformName} Top-Up &amp; Growth Services
-              </h1>
+              <div className="flex items-center flex-wrap gap-2">
+                <h1 className="service-page-hero__title">
+                  {platformName} Top-Up &amp; Growth Services
+                </h1>
+                <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-orange-200">
+                  <span className="text-xs">🎃</span>
+                  <span>Halloween Deals</span>
+                </span>
+              </div>
               <p className="service-page-hero__description">
                 Choose a {platformName} service, enter your target link, and complete checkout securely with KHQR.
               </p>

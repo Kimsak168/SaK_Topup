@@ -31,6 +31,7 @@ import {
 import type { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
 import { PlatformCard, PlatformItem } from "./PlatformCard";
 import { BoostTikTokKhmerBanner } from "./BoostTikTokKhmerBanner";
+import { SpiderWebSvg } from "./HalloweenAccents";
 
 const AbaPayWayV2Modal = dynamic(() => import("./AbaPayWayV2Modal"), {
   loading: () => <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white">Preparing secure payment…</div>,
@@ -516,11 +517,19 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
     <div className={homeLayout ? "w-full text-slate-100" : `${styles.page} text-slate-100 min-h-screen pb-24 pt-6`}>
       <div className={homeLayout ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8"}>
         {/* Hero Section */}
-        {!homeLayout ? <section className={styles.hero} aria-labelledby="services-title">
+        {!homeLayout ? <section className={`${styles.hero} relative overflow-hidden`} aria-labelledby="services-title">
+          {/* Halloween corner spiderwebs */}
+          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-24 sm:size-32 text-orange-400/20 z-0" />
+          <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 sm:size-20 text-pink-400/15 z-0 -scale-x-100" />
+
           <div className={styles.heroCopy}>
             <div className={styles.eyebrow}>
               <Sparkles aria-hidden="true" />
               <span>SOCIAL MEDIA GROWTH &amp; DIGITAL SERVICES</span>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-orange-200 ml-1.5 shadow-sm">
+                <span className="text-xs">🎃</span>
+                <span>Halloween Event</span>
+              </span>
             </div>
             <h1 id="services-title" className={styles.heroTitle}>
               Grow Your <span>Social Presence</span>
@@ -909,9 +918,14 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                   </span>
                   <span>Order Details & Payment</span>
                 </h2>
-                <span className="text-[11px] text-violet-400 font-bold uppercase tracking-wider">
-                  Secure checkout
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-bold text-orange-200">
+                    <span>🎃</span> Deals Active
+                  </span>
+                  <span className="hidden sm:inline text-[11px] text-violet-400 font-bold uppercase tracking-wider">
+                    Secure checkout
+                  </span>
+                </div>
               </div>
 
               {/* Selected Service Card Box */}

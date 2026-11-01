@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { SOCIAL_URLS } from "@/lib/socialLinks";
+import { SpiderWebSvg } from "./HalloweenAccents";
 
 const socialLinks = [
   {
@@ -33,19 +34,47 @@ const socialLinks = [
 
 export function CustomerFooter() {
   return (
-    <footer className="storefront-footer relative z-10">
-      <div className="storefront-container">
+    <footer className="storefront-footer relative z-10 overflow-hidden">
+      {/* Decorative corner spiderwebs for Halloween celebration */}
+      <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-orange-400/20 z-0" />
+      <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 sm:size-20 text-pink-400/15 z-0 -scale-x-100" />
+
+      <div className="storefront-container relative z-10">
         <div className="storefront-footer-grid">
           <div className="storefront-footer-brand">
             <Link href="/" className="inline-flex items-center gap-2.5 rounded-lg">
-              <Image src="/images/asura-store-logo.png" alt="Asura Store" width={44} height={44} quality={100} unoptimized className="size-11 object-contain" />
+              <span className="relative inline-flex shrink-0">
+                <Image
+                  src="/images/asura-store-logo.png"
+                  alt="Asura Store"
+                  width={44}
+                  height={44}
+                  quality={100}
+                  unoptimized
+                  className="size-11 object-contain"
+                />
+                {/* Cute Halloween Pumpkin perched on the logo */}
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-1 text-sm select-none pointer-events-none drop-shadow-md animate-bounce"
+                  style={{ animationDuration: "2.8s" }}
+                >
+                  🎃
+                </span>
+              </span>
               <div>
-                <span className="block text-lg font-bold tracking-tight text-[#172033]">Asura Store</span>
-                <span className="block text-[11px] text-[#64748B]">Your game top-up store</span>
+                <div className="flex items-center flex-wrap gap-1.5">
+                  <span className="block text-lg font-bold tracking-tight text-[#172033]">Asura Store</span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-gradient-to-r from-orange-500/15 via-purple-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-orange-600 dark:text-orange-300 shadow-sm align-middle">
+                    <span className="text-xs leading-none">🦇</span>
+                    <span>Halloween</span>
+                  </span>
+                </div>
+                <span className="block text-[11px] text-[#64748B]">Your game top-up &amp; digital store</span>
               </div>
             </Link>
             <p className="storefront-footer-copy mt-3 max-w-sm">
-              Less time waiting, more time playing. Top up diamonds, passes and UC with secure checkout and direct delivery.
+              Less time waiting, more time playing. Top up diamonds, passes, game credits and boost your social media presence with instant delivery and secure KHQR payments.
             </p>
           </div>
 
@@ -54,13 +83,15 @@ export function CustomerFooter() {
             <ul className="space-y-0.5">
               <li><Link href="/" className="storefront-footer-link">Home</Link></li>
               <li><Link href="/games" className="storefront-footer-link">Browse games</Link></li>
+              <li><Link href="/services" className="storefront-footer-link inline-flex items-center gap-1"><span>👻</span> SMM Services</Link></li>
+              <li><Link href="/services/tiktok-khmer" className="storefront-footer-link inline-flex items-center gap-1"><span>🎃</span> TikTok Khmer Deals</Link></li>
               <li><Link href="/orders" className="storefront-footer-link">Track your order</Link></li>
             </ul>
           </div>
 
           <div>
             <h2 className="storefront-footer-title storefront-footer-explore-title">Need a hand?</h2>
-            <p className="storefront-footer-copy">Our support team is here for your top-up questions.</p>
+            <p className="storefront-footer-copy">Our support team is here 24/7 for your questions.</p>
             <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
               {socialLinks.map(({ label, href, color, path }) => (
                 <li key={label}>
@@ -82,8 +113,13 @@ export function CustomerFooter() {
           </div>
         </div>
 
-        <div className="storefront-footer-bottom">
-          <p>&copy; 2026 Asura Store. All rights reserved.</p>
+        <div className="storefront-footer-bottom flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p>&copy; 2026 Asura Store. All rights reserved.</p>
+            <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-[10px] font-bold text-orange-600 dark:text-orange-300">
+              <span>🎃</span> Spooky Season Event
+            </span>
+          </div>
           <span className="inline-flex items-center gap-2">
             <ShieldCheck aria-hidden="true" size={14} className="text-[#22C55E]" />
             Secure payments

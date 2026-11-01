@@ -4,6 +4,7 @@ import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, Heart, Sparkles, Users } from "lucide-react";
+import { SpiderWebSvg, getHalloweenSticker } from "./HalloweenAccents";
 
 export interface PlatformItem {
   id: string;
@@ -29,6 +30,7 @@ export const PlatformCard = memo(function PlatformCard({
   const isKhmerCurated = normId === "khmer" || normId === "tiktok-khmer" || normId === "boost-tiktok-khmer";
   const imgSrc = PLATFORM_IMAGES[normId] || platform.image || "/images/logo.png";
   const href = isKhmerCurated ? "/services/tiktok-khmer" : `/services/${normId}`;
+  const sticker = getHalloweenSticker(platform.id || platform.name);
 
   return (
     <Link
@@ -40,6 +42,20 @@ export const PlatformCard = memo(function PlatformCard({
     >
       {isKhmerCurated ? (
         <div className="relative flex aspect-square w-full shrink-0 flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#250c27] via-[#6b174f] to-[#201344] p-4 text-white">
+          {/* Halloween corner spiderweb */}
+          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/50 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-amber-200/80" />
+
+          {/* Halloween festive badge sticker */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/65 px-1.5 py-0.5 border border-orange-500/40 shadow-md shadow-orange-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-orange-400 group-hover:bg-black/80"
+          >
+            <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
+            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-orange-200">
+              {sticker.label}
+            </span>
+          </span>
+
           <div aria-hidden="true" className="absolute -left-8 -top-10 size-36 rounded-full bg-pink-400/25 blur-3xl" />
           <div aria-hidden="true" className="absolute -bottom-12 -right-8 size-40 rounded-full bg-violet-400/25 blur-3xl" />
           <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-pink-100/25 bg-black/20 px-2.5 py-1 text-[9px] font-extrabold tracking-[0.16em] text-pink-50 sm:left-4 sm:top-4 sm:text-[10px]">
@@ -66,6 +82,20 @@ export const PlatformCard = memo(function PlatformCard({
         </div>
       ) : (
         <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#0D0916]">
+          {/* Halloween corner spiderweb */}
+          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/50 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-amber-200/80" />
+
+          {/* Halloween festive badge sticker */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/65 px-1.5 py-0.5 border border-orange-500/40 shadow-md shadow-orange-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-orange-400 group-hover:bg-black/80"
+          >
+            <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
+            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-orange-200">
+              {sticker.label}
+            </span>
+          </span>
+
           <Image
             src={imgSrc}
             alt={platform.name}

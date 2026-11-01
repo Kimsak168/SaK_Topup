@@ -1185,3 +1185,16 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   border-color: var(--storefront-border);
   background: color-mix(in srgb, var(--storefront-primary) 8%, var(--storefront-card));
 }
+
+
+/* Preserve vibrant Sakura and Halloween colors on Boost TikTok spotlight banner */
+.public-theme main :is([data-banner="tiktok-boost"], .boost-tiktok-banner) :is(
+  [class*="text-white"],
+  [class~="text-white"]
+) {
+  color: #FFFFFF !important;
+}
+
+.public-theme main :is([data-banner="tiktok-boost"], .boost-tiktok-banner) [class*="text-[#FFC4ED]"] {
+  color: #FCE7F3 !important;
+}

@@ -8,6 +8,7 @@ import { AlertCircle, ArrowLeft, ArrowRight, Check, Loader2, RefreshCw, ShieldCh
 import { toast } from "sonner";
 import type { AbaPayWayV2ModalData } from "@/components/public/AbaPayWayV2Modal";
 import type { KhmerSmmProduct } from "@/lib/khmerSmmTypes";
+import { SpiderWebSvg, getHalloweenSticker } from "./HalloweenAccents";
 
 const AbaPayWayV2Modal = dynamic(() => import("@/components/public/AbaPayWayV2Modal"), {
   loading: () => <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white">Preparing secure payment…</div>,
@@ -146,16 +147,31 @@ export default function KhmerSmmStorefront() {
           <ArrowLeft aria-hidden="true" className="h-4 w-4" /> All social services
         </Link>
 
-        <section className="mb-8 rounded-3xl border border-violet-400/20 bg-gradient-to-br from-violet-950/60 via-slate-950/80 to-cyan-950/30 p-5 shadow-xl sm:p-8">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-200">
-            <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> Boost TikTok Khmer
-          </div>
-          <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">Boost TikTok Khmer</h1>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-            Choose a curated package to boost your TikTok presence with real engagement. Enter your public TikTok link, and your order starts processing immediately after payment verification.
-          </p>
-          <div className="mt-5 inline-flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200">
-            <ShieldCheck aria-hidden="true" className="h-4 w-4" /> Instant automated fulfillment
+        <section className="relative overflow-hidden mb-8 rounded-3xl border border-violet-400/20 bg-gradient-to-br from-violet-950/60 via-slate-950/80 to-cyan-950/30 p-5 shadow-xl sm:p-8">
+          {/* Halloween corner spiderwebs */}
+          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-orange-400/20 z-0" />
+          <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 text-pink-400/15 z-0 -scale-x-100" />
+
+          <div className="relative z-10">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full border border-violet-300/20 bg-violet-400/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-violet-200">
+                <Sparkles aria-hidden="true" className="h-3.5 w-3.5" /> Boost TikTok Khmer
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-orange-500/40 bg-orange-500/20 px-2.5 py-1 text-[11px] font-extrabold text-orange-200 shadow-sm">
+                <span>🎃</span>
+                <span>HALLOWEEN SPECIAL</span>
+              </span>
+            </div>
+            <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl flex items-center gap-2">
+              <span>Boost TikTok Khmer</span>
+              <span className="text-2xl select-none animate-bounce" style={{ animationDuration: "3s" }}>🎃</span>
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
+              Choose a curated package to boost your TikTok presence with real engagement. Enter your public TikTok link, and your order starts processing immediately after payment verification.
+            </p>
+            <div className="mt-5 inline-flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 px-3 py-2 text-xs font-semibold text-emerald-200">
+              <ShieldCheck aria-hidden="true" className="h-4 w-4" /> Instant automated fulfillment
+            </div>
           </div>
         </section>
 
@@ -188,17 +204,24 @@ export default function KhmerSmmStorefront() {
               <div className="grid gap-3 sm:grid-cols-2">
                 {products.map((product) => {
                   const isSelected = product.id === selectedId;
+                  const sticker = getHalloweenSticker(product.id || product.name);
                   return (
                     <button
                       key={product.id}
                       type="button"
                       aria-pressed={isSelected}
                       onClick={() => setSelectedId(product.id)}
-                      className={`rounded-2xl border p-4 text-left transition-colors ${isSelected ? "border-violet-400 bg-violet-950/40 ring-1 ring-violet-400/40" : "border-white/10 bg-slate-950/70 hover:border-white/25"}`}
+                      className={`relative overflow-hidden rounded-2xl border p-4 text-left transition-colors ${isSelected ? "border-violet-400 bg-violet-950/40 ring-1 ring-violet-400/40" : "border-white/10 bg-slate-950/70 hover:border-white/25"}`}
                     >
-                      <div className="flex items-start justify-between gap-3">
-                        <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-cyan-200">{product.kind}</span>
-                        <span className={`grid h-5 w-5 place-items-center rounded-full border ${isSelected ? "border-violet-300 bg-violet-400 text-slate-950" : "border-slate-600 text-transparent"}`}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="rounded-full bg-cyan-400/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-cyan-200">{product.kind}</span>
+                          <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/35 bg-black/40 px-2 py-0.5 text-[9px] font-bold text-orange-200">
+                            <span>{sticker.icon}</span>
+                            <span>{sticker.label}</span>
+                          </span>
+                        </div>
+                        <span className={`grid h-5 w-5 place-items-center rounded-full border shrink-0 ${isSelected ? "border-violet-300 bg-violet-400 text-slate-950" : "border-slate-600 text-transparent"}`}>
                           {isSelected && <Check aria-hidden="true" className="h-3.5 w-3.5" />}
                         </span>
                       </div>
@@ -218,8 +241,15 @@ export default function KhmerSmmStorefront() {
 
             <form onSubmit={handleSubmit} className="h-fit space-y-5 rounded-3xl border border-slate-800 bg-slate-950/90 p-5 shadow-2xl sm:p-6 lg:sticky lg:top-24">
               <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <h2 className="text-lg font-bold text-white">Order and payment</h2>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-300">Secure checkout</span>
+                <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span>Order and payment</span>
+                </h2>
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-orange-200">
+                    <span>🎃</span> Deals Active
+                  </span>
+                  <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider text-violet-300">Secure</span>
+                </div>
               </div>
 
               {selectedProduct ? (

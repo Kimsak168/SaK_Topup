@@ -537,3 +537,16 @@
 .page .skeletonLine {
   background: linear-gradient(90deg, color-mix(in srgb, var(--storefront-primary, #E9439C) 7%, var(--storefront-card, #FFFFFF)), color-mix(in srgb, var(--storefront-primary, #E9439C) 20%, var(--storefront-card, #FFFFFF)), color-mix(in srgb, var(--storefront-primary, #E9439C) 7%, var(--storefront-card, #FFFFFF)));
 }
+
+
+/* Preserve Boost TikTok spotlight banner colors within SMM storefront */
+.page :is([data-banner="tiktok-boost"], .boost-tiktok-banner) :is(
+  [class*="text-white"],
+  [class~="text-white"]
+) {
+  color: #FFFFFF !important;
+}
+
+.page :is([data-banner="tiktok-boost"], .boost-tiktok-banner) [class*="text-[#FFC4ED]"] {
+  color: #FCE7F3 !important;
+}
