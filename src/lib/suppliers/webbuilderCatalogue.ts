@@ -34,7 +34,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     filter: isFreeFireKhsgmyProduct,
     requiresServer: false,
     userIdLabel: "Player ID (UID)",
-    image: "https://api.g2bulk.com/images/freefire_global.png",
+    image: "/images/freefire.jpg",
     badge: "HOT",
     isPopular: true,
     sortOrder: 1,

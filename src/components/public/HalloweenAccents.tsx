@@ -30,3 +30,4 @@ export function getHalloweenSticker(key: string) {
   }
   return HALLOWEEN_STICKERS[Math.abs(hash) % HALLOWEEN_STICKERS.length];
 }
+
