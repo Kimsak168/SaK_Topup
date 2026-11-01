@@ -51,7 +51,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     requiresServer: true,
     serverLabel: "Zone ID (4-5 digits)",
     userIdLabel: "User ID",
-    image: "https://api.g2bulk.com/images/mlbb_global.png",
+    image: "/images/mlbb/mlbb_global.jpg",
     badge: "POPULAR",
     isPopular: true,
     sortOrder: 2,
