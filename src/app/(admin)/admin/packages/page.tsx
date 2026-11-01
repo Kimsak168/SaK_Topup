@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
@@ -9,6 +10,7 @@ import {
   Package,
   Lock,
   TrendingUp,
+  AlertTriangle,
   CheckCircle2,
   AlertCircle,
   Save,
@@ -16,6 +18,10 @@ import {
   Upload,
   X,
   Trash2,
+  Layers,
+  Sparkles,
+  Check,
+  Undo2,
 } from "lucide-react";
 
 interface AdminPackage {
@@ -42,6 +48,9 @@ interface KPIStats {
   configuredPkgs: number;
   unconfiguredPkgs: number;
   webbuilderPkgs: number;
+  webbuilderConfiguredPkgs?: number;
+  vngzz2Pkgs?: number;
+  vngzz2ConfiguredPkgs?: number;
 }
 
 interface AvailableGame {
@@ -62,7 +71,11 @@ function normalizeImageMatch(value: string): string {
   return value.toLowerCase().replace(/\.png$/i, "").replace(/[^a-z0-9]/g, "");
 }
 
-export default function AdminPackagesPage() {
+function PackagesManagerContent() {
+  const searchParams = useSearchParams();
+  const urlSupplier = searchParams.get("supplier");
+  const urlGame = searchParams.get("game");
+
   const [packages, setPackages] = useState<AdminPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [kpi, setKpi] = useState<KPIStats>({
@@ -70,14 +83,17 @@ export default function AdminPackagesPage() {
     configuredPkgs: 0,
     unconfiguredPkgs: 0,
     webbuilderPkgs: 0,
+    webbuilderConfiguredPkgs: 0,
+    vngzz2Pkgs: 0,
+    vngzz2ConfiguredPkgs: 0,
   });
   const [availableGames, setAvailableGames] = useState<AvailableGame[]>([]);
 
   // Filter state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
-  const [gameFilter, setGameFilter] = useState("all");
-  const [supplierFilter, setSupplierFilter] = useState("all");
+  const [supplierFilter, setSupplierFilter] = useState<string>(urlSupplier || "all");
+  const [gameFilter, setGameFilter] = useState<string>(urlGame || "all");
   const [supplierAvailability, setSupplierAvailability] = useState("available");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
@@ -88,7 +104,7 @@ export default function AdminPackagesPage() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncOnlyActive, setSyncOnlyActive] = useState(true);
 
-  // Editable row values map: packageId -> { sellingPrice, badge, isActive }
+  // Editable row values map: packageId -> { sellingPrice, originalPrice, badge, isActive, customImage, isDirty }
   const [editMap, setEditMap] = useState<
     Record<
       string,
@@ -104,6 +120,7 @@ export default function AdminPackagesPage() {
   >({});
 
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [isSavingAll, setIsSavingAll] = useState(false);
 
   // Custom Image Upload Modal State
   const [imageModalPkg, setImageModalPkg] = useState<AdminPackage | null>(null);
@@ -119,6 +136,35 @@ export default function AdminPackagesPage() {
   const [isUploadingBulkImages, setIsUploadingBulkImages] = useState(false);
   const [bulkUploadProgress, setBulkUploadProgress] = useState(0);
   const bulkFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Filter games based on current supplier
+  const filteredGames = useMemo(() => {
+    if (supplierFilter === "all") return availableGames;
+    return availableGames.filter((g) => g.supplier === supplierFilter);
+  }, [availableGames, supplierFilter]);
+
+  // Map game lookup for rapid title resolution
+  const gameNameLookup = useMemo(() => {
+    const map = new Map<string, string>();
+    availableGames.forEach((g) => {
+      if (g.code) map.set(g.code.toLowerCase(), g.name);
+      if (g.slug) map.set(g.slug.toLowerCase(), g.name);
+    });
+    return map;
+  }, [availableGames]);
+
+  // Dirty count
+  const dirtyPackageIds = useMemo(() => {
+    return Object.keys(editMap).filter((id) => editMap[id]?.isDirty);
+  }, [editMap]);
+  const dirtyCount = dirtyPackageIds.length;
+
+  // Switch supplier handler (resets game filter and page for effortless switching)
+  const handleSwitchSupplier = (newSupplier: string) => {
+    setSupplierFilter(newSupplier);
+    setGameFilter("all");
+    setPage(1);
+  };
 
   // Fetch packages
   const fetchPackages = useCallback(async () => {
@@ -187,10 +233,14 @@ export default function AdminPackagesPage() {
   const handleSyncPackages = async () => {
     try {
       setIsSyncing(true);
-      toast.loading(
-        "Syncing packages from configured suppliers...",
-        { id: "sync-packages" }
-      );
+      const targetLabel =
+        supplierFilter === "webbuilder"
+          ? "WebBuilder"
+          : supplierFilter === "vngzz2"
+          ? "VNGZZ2"
+          : "all configured suppliers";
+
+      toast.loading(`Syncing packages from ${targetLabel}...`, { id: "sync-packages" });
 
       const res = await fetch("/api/admin/sync/packages", {
         method: "POST",
@@ -207,7 +257,7 @@ export default function AdminPackagesPage() {
         const imported = data.stats?.totalImported || 0;
         const updated = data.stats?.totalUpdated || 0;
         toast.success(
-          `Packages synced successfully! (${imported} new imported, ${updated} wholesale costs updated)`,
+          `Packages synced successfully! (${imported} imported, ${updated} wholesale costs updated)`,
           { id: "sync-packages" }
         );
         await fetchPackages();
@@ -287,6 +337,87 @@ export default function AdminPackagesPage() {
     }
   };
 
+  // Save all modified packages at once
+  const handleSaveAllDirty = async () => {
+    if (dirtyPackageIds.length === 0) return;
+
+    try {
+      setIsSavingAll(true);
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const id of dirtyPackageIds) {
+        const row = editMap[id];
+        if (!row) continue;
+
+        try {
+          const res = await fetch("/api/admin/packages", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              packageId: id,
+              sellingPrice: row.sellingPrice ? parseFloat(row.sellingPrice) : null,
+              originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : null,
+              badge: row.badge,
+              isActive: row.isActive,
+            }),
+          });
+
+          if (res.ok) {
+            successCount++;
+            setEditMap((prev) => ({
+              ...prev,
+              [id]: { ...prev[id], isDirty: false },
+            }));
+            setPackages((prev) =>
+              prev.map((p) =>
+                p.id === id
+                  ? {
+                      ...p,
+                      sellingPrice: row.sellingPrice ? parseFloat(row.sellingPrice) : null,
+                      originalPrice: row.originalPrice ? parseFloat(row.originalPrice) : null,
+                      badge: row.badge,
+                      isActive: row.isActive,
+                      adminConfigured: !!row.sellingPrice,
+                    }
+                  : p
+              )
+            );
+          } else {
+            failCount++;
+          }
+        } catch {
+          failCount++;
+        }
+      }
+
+      if (failCount === 0) {
+        toast.success(`Successfully saved all ${successCount} package changes!`);
+      } else {
+        toast.warning(`Saved ${successCount} packages; ${failCount} failed.`);
+      }
+    } finally {
+      setIsSavingAll(false);
+    }
+  };
+
+  // Discard all unsaved modifications
+  const handleDiscardChanges = () => {
+    const resetMap: typeof editMap = {};
+    packages.forEach((p) => {
+      resetMap[p.id] = {
+        sellingPrice: p.sellingPrice !== null ? String(p.sellingPrice) : "",
+        originalPrice: p.originalPrice !== null ? String(p.originalPrice) : "",
+        badge: p.badge || "",
+        isActive: p.isActive,
+        customImage: p.customImage || null,
+        isDirty: false,
+      };
+    });
+    setEditMap(resetMap);
+    toast.info("Unsaved package price edits discarded");
+  };
+
   // Open Image Modal
   const openImageModal = (pkg: AdminPackage) => {
     setImageModalPkg(pkg);
@@ -318,52 +449,74 @@ export default function AdminPackagesPage() {
     }
   };
 
-  // Submit Image Upload / Update
+  // Save Custom Image
   const handleSaveImage = async () => {
     if (!imageModalPkg) return;
 
     try {
       setIsUploadingImage(true);
-      const formData = new FormData();
-      formData.append("packageId", imageModalPkg.id);
 
       if (selectedFile) {
+        const formData = new FormData();
+        formData.append("packageId", imageModalPkg.id);
         formData.append("image", selectedFile);
+
+        const res = await fetch("/api/admin/packages/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setPackages((prev) =>
+            prev.map((p) =>
+              p.id === imageModalPkg.id ? { ...p, customImage: data.package.customImage } : p
+            )
+          );
+          setEditMap((prev) => ({
+            ...prev,
+            [imageModalPkg.id]: {
+              ...prev[imageModalPkg.id],
+              customImage: data.package.customImage,
+            },
+          }));
+          toast.success(`Updated custom image for ${imageModalPkg.name}`);
+          closeImageModal();
+        } else {
+          toast.error(data.error || "Failed to upload image");
+        }
       } else if (urlInput.trim()) {
-        formData.append("customImage", urlInput.trim());
-      } else if (!previewUrl) {
-        // Clearing image
-        formData.append("customImage", "");
-      } else {
-        closeImageModal();
-        return;
-      }
+        const res = await fetch("/api/admin/packages/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            packageId: imageModalPkg.id,
+            imageUrl: urlInput.trim(),
+          }),
+        });
 
-      const res = await fetch("/api/admin/packages/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await res.json();
-      if (res.ok && data.success) {
-        const newImg = data.package?.customImage || null;
-        setPackages((prev) =>
-          prev.map((p) => (p.id === imageModalPkg.id ? { ...p, customImage: newImg } : p))
-        );
-        setEditMap((prev) => ({
-          ...prev,
-          [imageModalPkg.id]: {
-            ...prev[imageModalPkg.id],
-            customImage: newImg,
-          },
-        }));
-        toast.success(`Updated custom image for ${imageModalPkg.name}`);
-        closeImageModal();
-      } else {
-        toast.error(data.error || "Failed to update package image");
+        const data = await res.json();
+        if (res.ok && data.success) {
+          setPackages((prev) =>
+            prev.map((p) =>
+              p.id === imageModalPkg.id ? { ...p, customImage: data.package.customImage } : p
+            )
+          );
+          setEditMap((prev) => ({
+            ...prev,
+            [imageModalPkg.id]: {
+              ...prev[imageModalPkg.id],
+              customImage: data.package.customImage,
+            },
+          }));
+          toast.success(`Set custom image URL for ${imageModalPkg.name}`);
+          closeImageModal();
+        } else {
+          toast.error(data.error || "Failed to set image URL");
+        }
       }
     } catch {
-      toast.error("Network error uploading image");
+      toast.error("Network error saving image");
     } finally {
       setIsUploadingImage(false);
     }
@@ -372,15 +525,13 @@ export default function AdminPackagesPage() {
   // Remove Custom Image
   const handleRemoveImage = async () => {
     if (!imageModalPkg) return;
+
     try {
       setIsUploadingImage(true);
       const res = await fetch("/api/admin/packages/upload", {
-        method: "POST",
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          packageId: imageModalPkg.id,
-          customImage: "",
-        }),
+        body: JSON.stringify({ packageId: imageModalPkg.id }),
       });
 
       const data = await res.json();
@@ -390,10 +541,7 @@ export default function AdminPackagesPage() {
         );
         setEditMap((prev) => ({
           ...prev,
-          [imageModalPkg.id]: {
-            ...prev[imageModalPkg.id],
-            customImage: null,
-          },
+          [imageModalPkg.id]: { ...prev[imageModalPkg.id], customImage: null },
         }));
         toast.success(`Removed custom image for ${imageModalPkg.name}`);
         closeImageModal();
@@ -502,9 +650,11 @@ export default function AdminPackagesPage() {
     for (let index = 0; index < rowsToUpload.length; index++) {
       const row = rowsToUpload[index];
       setBulkUploadProgress(index + 1);
-      setBulkImageRows((previous) => previous.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, status: "uploading", error: undefined } : item
-      ));
+      setBulkImageRows((previous) =>
+        previous.map((item, itemIndex) =>
+          itemIndex === index ? { ...item, status: "uploading", error: undefined } : item
+        )
+      );
 
       try {
         const formData = new FormData();
@@ -517,22 +667,26 @@ export default function AdminPackagesPage() {
         }
 
         const customImage = data.package.customImage as string;
-        setPackages((previous) => previous.map((pkg) =>
-          pkg.id === row.packageId ? { ...pkg, customImage } : pkg
-        ));
+        setPackages((previous) =>
+          previous.map((pkg) => (pkg.id === row.packageId ? { ...pkg, customImage } : pkg))
+        );
         setEditMap((previous) => ({
           ...previous,
           [row.packageId]: { ...previous[row.packageId], customImage },
         }));
-        setBulkImageRows((previous) => previous.map((item, itemIndex) =>
-          itemIndex === index ? { ...item, status: "done", error: undefined } : item
-        ));
+        setBulkImageRows((previous) =>
+          previous.map((item, itemIndex) =>
+            itemIndex === index ? { ...item, status: "done", error: undefined } : item
+          )
+        );
         uploadedCount++;
       } catch (error) {
         const message = error instanceof Error ? error.message : `Upload failed for ${row.file.name}.`;
-        setBulkImageRows((previous) => previous.map((item, itemIndex) =>
-          itemIndex === index ? { ...item, status: "error", error: message } : item
-        ));
+        setBulkImageRows((previous) =>
+          previous.map((item, itemIndex) =>
+            itemIndex === index ? { ...item, status: "error", error: message } : item
+          )
+        );
       }
     }
 
@@ -555,7 +709,7 @@ export default function AdminPackagesPage() {
   const canUploadBulkImages = bulkImageRows.length > 0 && bulkImageRows.every((row) => row.packageId) && !hasDuplicateBulkTargets;
 
   return (
-    <div className="admin-page">
+    <div className="admin-page space-y-5">
       {/* Top Header & Sync Action */}
       <div className="admin-page-heading">
         <div>
@@ -564,20 +718,20 @@ export default function AdminPackagesPage() {
             <span>Pricing &amp; Margins HQ</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Package Pricing &amp; Stock Availability
+            Package Pricing &amp; Supplier Controls
           </h1>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            View supplier buying costs privately, set customer selling prices in USD, upload custom images, and toggle stock availability.
+            Separate WebBuilder wholesale top-up packages from VNGZZ2 catalog packages for easy pricing and stock control.
           </p>
         </div>
 
-        {/* Sync Packages Button */}
-        <div className="flex items-center gap-3">
+        {/* Sync & Bulk Action Buttons */}
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             type="button"
             onClick={openBulkImageModal}
             disabled={isLoadingBulkPackages || isUploadingBulkImages}
-            className="inline-flex items-center gap-2 rounded-lg border border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 px-4 py-2 text-xs sm:text-sm font-bold text-violet-200 transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg border border-violet-500/40 bg-violet-500/10 hover:bg-violet-500/20 px-3.5 py-2 text-xs font-bold text-violet-200 transition-colors disabled:opacity-50 cursor-pointer"
           >
             <Upload className="h-4 w-4" />
             <span>Bulk PNG Upload</span>
@@ -597,58 +751,263 @@ export default function AdminPackagesPage() {
             type="button"
             onClick={handleSyncPackages}
             disabled={isSyncing}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] px-4 py-2 text-xs sm:text-sm font-bold text-[#080D18] transition-colors disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#22C55E] hover:bg-[#16A34A] px-4 py-2 text-xs sm:text-sm font-bold text-[#080D18] transition-colors disabled:opacity-50 cursor-pointer shadow-md"
           >
             <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
-            <span>{isSyncing ? "Syncing Packages..." : "Sync Packages from APIs"}</span>
+            <span>{isSyncing ? "Syncing Packages..." : `Sync ${supplierFilter === "webbuilder" ? "WebBuilder" : supplierFilter === "vngzz2" ? "VNGZZ2" : "Packages"}`}</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Cards Bar */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
-          <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-            Supplier-Available Packages
-          </span>
-          <div className="text-2xl font-bold tracking-tight text-[#F8FAFC]">{kpi.totalPkgs}</div>
-          <span className="text-[10px] text-[#64748B]">Unavailable supplier items excluded</span>
+      {/* Primary Supplier Switcher Segmented Control */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 rounded-xl bg-[#111A2B] border border-[#243047]">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* WebBuilder Packages Tab */}
+          <button
+            type="button"
+            onClick={() => handleSwitchSupplier("webbuilder")}
+            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              supplierFilter === "webbuilder"
+                ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25 ring-2 ring-emerald-400"
+                : "text-slate-300 hover:text-white hover:bg-[#151F31] border border-[#243047]"
+            }`}
+          >
+            <span className="text-base">🌐</span>
+            <span>WebBuilder Packages</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-black ${
+                supplierFilter === "webbuilder"
+                  ? "bg-slate-950 text-emerald-300"
+                  : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              }`}
+            >
+              {kpi.webbuilderPkgs ?? 0}
+            </span>
+          </button>
+
+          {/* VNGZZ2 Packages Tab */}
+          <button
+            type="button"
+            onClick={() => handleSwitchSupplier("vngzz2")}
+            className={`flex items-center gap-2.5 px-4 py-2.5 rounded-lg text-xs sm:text-sm font-extrabold transition-all cursor-pointer ${
+              supplierFilter === "vngzz2"
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/25 ring-2 ring-indigo-400"
+                : "text-slate-300 hover:text-white hover:bg-[#151F31] border border-[#243047]"
+            }`}
+          >
+            <span className="text-base">⚡</span>
+            <span>VNGZZ2 Packages</span>
+            <span
+              className={`px-2 py-0.5 rounded-full text-[11px] font-mono font-black ${
+                supplierFilter === "vngzz2"
+                  ? "bg-slate-950 text-indigo-300"
+                  : "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+              }`}
+            >
+              {kpi.vngzz2Pkgs ?? 0}
+            </span>
+          </button>
+
+          {/* All Packages Tab */}
+          <button
+            type="button"
+            onClick={() => handleSwitchSupplier("all")}
+            className={`flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+              supplierFilter === "all"
+                ? "bg-[#243047] text-white shadow ring-1 ring-white/20"
+                : "text-slate-400 hover:text-white hover:bg-[#151F31]"
+            }`}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            <span>All Packages</span>
+            <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-white/10 text-slate-300">
+              {kpi.totalPkgs}
+            </span>
+          </button>
         </div>
 
-        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
-          <span className="text-[11px] font-semibold text-[#22C55E] uppercase tracking-wider flex items-center gap-1">
-            <CheckCircle2 className="h-3 w-3" /> Ready For Customers
-          </span>
-          <div className="text-2xl font-bold tracking-tight text-[#22C55E]">{kpi.configuredPkgs}</div>
-          <span className="text-[10px] text-[#64748B]">Customer selling price set</span>
-        </div>
-
-        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
-          <span className="text-[11px] font-semibold text-[#F59E0B] uppercase tracking-wider flex items-center gap-1">
-            <AlertCircle className="h-3 w-3" /> Needs Customer Price
-          </span>
-          <div className="text-2xl font-bold tracking-tight text-[#F59E0B]">{kpi.unconfiguredPkgs}</div>
-          <span className="text-[10px] text-[#64748B]">Hidden from buyers until price is set</span>
-        </div>
-
-        <div className="rounded-xl p-4 bg-[#111A2B] border border-[#243047] space-y-1">
-          <span className="text-[11px] font-semibold text-[#94A3B8] uppercase tracking-wider">
-            WebBuilder Packages
-          </span>
-          <div className="text-lg font-bold text-emerald-400">
-            {kpi.webbuilderPkgs} available from WebBuilder
-          </div>
-          <span className="text-[10px] text-[#64748B]">Automated wholesale pricing</span>
+        {/* Current Mode Badge */}
+        <div className="hidden lg:flex items-center gap-2 text-xs text-slate-400">
+          <span className="font-semibold text-slate-300">Active mode:</span>
+          {supplierFilter === "webbuilder" ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-extrabold text-[11px]">
+              🌐 WebBuilder Direct Wholesale ({filteredGames.length} Games)
+            </span>
+          ) : supplierFilter === "vngzz2" ? (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 font-extrabold text-[11px]">
+              ⚡ VNGZZ2 Catalog API ({filteredGames.length} Games)
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px]">
+              📦 Unified Multi-Supplier ({availableGames.length} Total Games)
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Filter and Search Bar */}
+      {/* Contextual Interactive KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {/* WebBuilder KPI Card */}
+        <button
+          type="button"
+          onClick={() => handleSwitchSupplier("webbuilder")}
+          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
+            supplierFilter === "webbuilder"
+              ? "bg-emerald-950/40 border-2 border-emerald-500 shadow-lg shadow-emerald-500/15 ring-1 ring-emerald-500/50"
+              : "bg-[#111A2B] border border-[#243047] hover:border-emerald-500/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🌐</span> WebBuilder
+            </span>
+            {supplierFilter === "webbuilder" && (
+              <span className="text-[9px] font-black uppercase bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded">
+                Active
+              </span>
+            )}
+          </div>
+          <div className="text-2xl font-black tracking-tight text-white mt-1">
+            {kpi.webbuilderPkgs ?? 0}
+          </div>
+          <div className="flex items-center gap-1 text-[10px] text-emerald-300/80 mt-1">
+            <CheckCircle2 className="h-3 w-3 text-emerald-400 shrink-0" />
+            <span>{kpi.webbuilderConfiguredPkgs ?? 0} ready for buyers</span>
+          </div>
+        </button>
+
+        {/* VNGZZ2 KPI Card */}
+        <button
+          type="button"
+          onClick={() => handleSwitchSupplier("vngzz2")}
+          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
+            supplierFilter === "vngzz2"
+              ? "bg-indigo-950/40 border-2 border-indigo-500 shadow-lg shadow-indigo-500/15 ring-1 ring-indigo-500/50"
+              : "bg-[#111A2B] border border-[#243047] hover:border-indigo-500/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>⚡</span> VNGZZ2
+            </span>
+            {supplierFilter === "vngzz2" && (
+              <span className="text-[9px] font-black uppercase bg-indigo-500 text-white px-1.5 py-0.5 rounded">
+                Active
+              </span>
+            )}
+          </div>
+          <div className="text-2xl font-black tracking-tight text-white mt-1">
+            {kpi.vngzz2Pkgs ?? 0}
+          </div>
+          <div className="flex items-center gap-1 text-[10px] text-indigo-300/80 mt-1">
+            <CheckCircle2 className="h-3 w-3 text-indigo-400 shrink-0" />
+            <span>{kpi.vngzz2ConfiguredPkgs ?? 0} ready for buyers</span>
+          </div>
+        </button>
+
+        {/* Ready For Customers KPI Card */}
+        <button
+          type="button"
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "configured" ? "all" : "configured"));
+            setPage(1);
+          }}
+          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
+            statusFilter === "configured"
+              ? "bg-emerald-950/40 border-2 border-[#22C55E] ring-1 ring-[#22C55E]/50"
+              : "bg-[#111A2B] border border-[#243047] hover:border-[#22C55E]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#22C55E] uppercase tracking-wider flex items-center gap-1">
+              <CheckCircle2 className="h-3 w-3" /> Ready For Customers
+            </span>
+            {statusFilter === "configured" && (
+              <span className="text-[9px] font-black uppercase bg-[#22C55E] text-[#080D18] px-1.5 py-0.5 rounded">
+                Filtered
+              </span>
+            )}
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-[#22C55E] mt-1">
+            {kpi.configuredPkgs}
+          </div>
+          <span className="text-[10px] text-[#64748B] block mt-1">Customer selling price set</span>
+        </button>
+
+        {/* Needs Customer Price KPI Card */}
+        <button
+          type="button"
+          onClick={() => {
+            setStatusFilter((prev) => (prev === "unconfigured" ? "all" : "unconfigured"));
+            setPage(1);
+          }}
+          className={`text-left rounded-xl p-4 transition-all cursor-pointer ${
+            statusFilter === "unconfigured"
+              ? "bg-amber-950/40 border-2 border-[#F59E0B] ring-1 ring-[#F59E0B]/50"
+              : "bg-[#111A2B] border border-[#243047] hover:border-[#F59E0B]/40"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-[#F59E0B] uppercase tracking-wider flex items-center gap-1">
+              <AlertCircle className="h-3 w-3" /> Needs Customer Price
+            </span>
+            {statusFilter === "unconfigured" && (
+              <span className="text-[9px] font-black uppercase bg-[#F59E0B] text-[#080D18] px-1.5 py-0.5 rounded">
+                Filtered
+              </span>
+            )}
+          </div>
+          <div className="text-2xl font-bold tracking-tight text-[#F59E0B] mt-1">
+            {kpi.unconfiguredPkgs}
+          </div>
+          <span className="text-[10px] text-[#64748B] block mt-1">Click to show unpriced packages</span>
+        </button>
+      </div>
+
+      {/* Floating / Sticky Unsaved Changes Bar */}
+      {dirtyCount > 0 && (
+        <div className="sticky top-4 z-40 flex items-center justify-between p-3.5 rounded-xl bg-emerald-950/95 border-2 border-emerald-500 shadow-2xl backdrop-blur-md animate-in slide-in-from-top-2">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-3 w-3 rounded-full bg-emerald-400 animate-ping" />
+            <div>
+              <span className="text-xs sm:text-sm font-black text-white">
+                You have <span className="text-emerald-300 font-mono font-black">{dirtyCount}</span> unsaved package pricing change{dirtyCount > 1 ? "s" : ""}
+              </span>
+              <span className="hidden sm:inline text-[11px] text-slate-300 ml-2">
+                Save them all at once or individually.
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDiscardChanges}
+              disabled={isSavingAll}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/20 bg-white/10 hover:bg-white/20 text-xs font-semibold text-slate-200 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Undo2 className="h-3.5 w-3.5" />
+              <span>Discard</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveAllDirty}
+              disabled={isSavingAll}
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition-all shadow-lg shadow-emerald-500/30 disabled:opacity-50 cursor-pointer"
+            >
+              <Save className={`h-3.5 w-3.5 ${isSavingAll ? "animate-spin" : ""}`} />
+              <span>{isSavingAll ? "Saving Packages..." : `Save All Changes (${dirtyCount})`}</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Search and Filters Toolbar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-[#111A2B] border border-[#243047]">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748B] pointer-events-none" />
           <input
             type="text"
-            placeholder="Search package name, code or ID..."
+            placeholder="Search package name, product code or ID..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -659,39 +1018,65 @@ export default function AdminPackagesPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Filter by Game */}
+          {/* Contextual Filter by Game (Only shows games belonging to current supplier) */}
           <select
             value={gameFilter}
             onChange={(e) => {
               setGameFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none max-w-[180px]"
+            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none min-w-[180px] max-w-[240px]"
           >
-            <option value="all">All Games</option>
-            {availableGames.map((g) => (
-              <option key={`${g.supplier}:${g.code || g.slug}`} value={g.code || g.slug}>
-                {g.name} ({g.supplier.toUpperCase()})
-              </option>
-            ))}
+            <option value="all">
+              {supplierFilter === "webbuilder"
+                ? `All WebBuilder Games (${filteredGames.length})`
+                : supplierFilter === "vngzz2"
+                ? `All VNGZZ2 Games (${filteredGames.length})`
+                : `All Games (${availableGames.length})`}
+            </option>
+
+            {supplierFilter === "all" ? (
+              <>
+                <optgroup label="🌐 WebBuilder Wholesale Games">
+                  {availableGames
+                    .filter((g) => g.supplier === "webbuilder")
+                    .map((g) => (
+                      <option key={`wb:${g.code || g.slug}`} value={g.slug}>
+                        {g.name}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="⚡ VNGZZ2 Catalog Games">
+                  {availableGames
+                    .filter((g) => g.supplier === "vngzz2")
+                    .map((g) => (
+                      <option key={`vng:${g.code || g.slug}`} value={g.slug}>
+                        {g.name}
+                      </option>
+                    ))}
+                </optgroup>
+                {availableGames.filter((g) => g.supplier !== "webbuilder" && g.supplier !== "vngzz2").length > 0 && (
+                  <optgroup label="🛡️ Other Suppliers">
+                    {availableGames
+                      .filter((g) => g.supplier !== "webbuilder" && g.supplier !== "vngzz2")
+                      .map((g) => (
+                        <option key={`oth:${g.code || g.slug}`} value={g.slug}>
+                          {g.name} ({g.supplier.toUpperCase()})
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+              </>
+            ) : (
+              filteredGames.map((g) => (
+                <option key={`${g.supplier}:${g.code || g.slug}`} value={g.code || g.slug}>
+                  {g.name}
+                </option>
+              ))
+            )}
           </select>
 
-          {/* Supplier Filter */}
-          <select
-            value={supplierFilter}
-            onChange={(e) => {
-              setSupplierFilter(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
-          >
-            <option value="all">All suppliers</option>
-            <option value="webbuilder">WebBuilder</option>
-            <option value="vngzz2">VNGZZ2</option>
-            <option value="g2bulk">G2Bulk</option>
-          </select>
-
-          {/* Hide supplier-disabled regional products by default. */}
+          {/* Supplier Availability Filter */}
           <select
             value={supplierAvailability}
             onChange={(e) => {
@@ -703,7 +1088,7 @@ export default function AdminPackagesPage() {
           >
             <option value="available">Supplier available</option>
             <option value="unavailable">Supplier unavailable</option>
-            <option value="all">All supplier statuses</option>
+            <option value="all">All statuses</option>
           </select>
 
           {/* Price Configuration Filter */}
@@ -715,7 +1100,7 @@ export default function AdminPackagesPage() {
             }}
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
-            <option value="all">All Packages</option>
+            <option value="all">All Package Statuses</option>
             <option value="unconfigured">Needs Price Setup</option>
             <option value="configured">Price Configured</option>
             <option value="active">Active Only</option>
@@ -752,7 +1137,7 @@ export default function AdminPackagesPage() {
             <AlertCircle className="h-8 w-8 text-amber-400 mx-auto" />
             <p className="text-sm font-semibold text-white">No packages found matching your filters</p>
             <p className="text-xs text-slate-500">
-              Click &quot;Sync Packages from APIs&quot; above to import live products.
+              Try switching supplier tabs or click &quot;Sync Packages&quot; above to import live products.
             </p>
           </div>
         ) : (
@@ -761,7 +1146,7 @@ export default function AdminPackagesPage() {
               <thead className="border-b border-[#243047] bg-[#151F31] text-[#94A3B8] font-bold uppercase tracking-wider text-[10px]">
                 <tr>
                   <th className="py-2.5 px-3.5">Image</th>
-                  <th className="py-2.5 px-3.5">Package</th>
+                  <th className="py-2.5 px-3.5">Package Name</th>
                   <th className="py-2.5 px-3.5">Game / Supplier</th>
                   <th className="py-2.5 px-3.5">Product Code</th>
                   <th className="py-2.5 px-3.5">
@@ -792,13 +1177,23 @@ export default function AdminPackagesPage() {
                   let marginPercent: number | null = null;
                   let profitAmount: number | null = null;
 
-                  if (costNum && !isNaN(sellNum) && sellNum > costNum) {
+                  if (costNum && !isNaN(sellNum)) {
                     profitAmount = Math.round((sellNum - costNum) * 100) / 100;
                     marginPercent = Math.round(((sellNum - costNum) / costNum) * 1000) / 10;
                   }
 
+                  const gameName =
+                    gameNameLookup.get(pkg.gameCode.toLowerCase()) ||
+                    gameNameLookup.get(pkg.gameSlug.toLowerCase()) ||
+                    pkg.gameSlug;
+
                   return (
-                    <tr key={pkg.id} className="hover:bg-[#151F31]/50 transition-colors">
+                    <tr
+                      key={pkg.id}
+                      className={`hover:bg-[#151F31]/60 transition-colors ${
+                        row.isDirty ? "bg-emerald-500/[0.04]" : ""
+                      }`}
+                    >
                       {/* Image Thumbnail & Upload Button */}
                       <td className="py-2.5 px-3.5">
                         <button
@@ -822,30 +1217,36 @@ export default function AdminPackagesPage() {
 
                       {/* Package Name */}
                       <td className="py-2.5 px-3.5 font-semibold text-[#F8FAFC]">
-                        <div className="max-w-[180px] truncate">{pkg.name}</div>
+                        <div className="max-w-[200px] truncate" title={pkg.name}>
+                          {pkg.name}
+                        </div>
                       </td>
 
                       {/* Game / Supplier */}
                       <td className="py-2.5 px-3.5">
-                        <div className="font-semibold text-[#94A3B8]">
-                          {pkg.gameSlug.toUpperCase()}
+                        <div className="font-bold text-white text-xs truncate max-w-[170px]" title={gameName}>
+                          {gameName}
                         </div>
-                        <span
-                          className={`inline-block rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
-                            pkg.supplier === "vngzz2"
-                              ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
-                              : pkg.supplier === "g2bulk"
-                              ? "bg-purple-500/10 text-purple-400 border border-purple-500/30"
-                              : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
-                          }`}
-                        >
-                          {pkg.supplier || "WebBuilder"}
-                        </span>
-                        {!pkg.supplierAvailable && (
-                          <span className="ml-1 inline-block rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.2 text-[9px] font-bold text-amber-300">
-                            Supplier unavailable
-                          </span>
-                        )}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          {pkg.supplier === "webbuilder" ? (
+                            <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-emerald-500/15 text-emerald-300 border border-emerald-500/40">
+                              🌐 WebBuilder
+                            </span>
+                          ) : pkg.supplier === "vngzz2" ? (
+                            <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-indigo-500/15 text-indigo-300 border border-indigo-500/40">
+                              ⚡ VNGZZ2
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase bg-cyan-500/15 text-cyan-300 border border-cyan-500/40">
+                              🛡️ {pkg.supplier || "G2Bulk"}
+                            </span>
+                          )}
+                          {!pkg.supplierAvailable && (
+                            <span className="inline-block rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.2 text-[9px] font-bold text-amber-300">
+                              Unavailable
+                            </span>
+                          )}
+                        </div>
                       </td>
 
                       {/* Product Code */}
@@ -877,12 +1278,18 @@ export default function AdminPackagesPage() {
                             placeholder="Set price"
                             value={row.sellingPrice}
                             onChange={(e) => handleFieldChange(pkg.id, "sellingPrice", e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                void handleSavePackage(pkg);
+                              }
+                            }}
                             className={`w-full rounded-lg border pl-6 pr-2 py-1.5 font-mono text-xs font-bold text-[#F8FAFC] focus:outline-none transition-all ${
                               row.isDirty
-                                ? "border-[#22C55E] bg-[rgba(34,197,94,0.10)]"
+                                ? "border-[#22C55E] bg-[rgba(34,197,94,0.12)] ring-1 ring-[#22C55E]"
                                 : row.sellingPrice
-                                ? "border-[#243047] bg-[#151F31]"
-                                : "border-amber-500/40 bg-amber-500/5 text-amber-200 placeholder-amber-400/60"
+                                ? "border-[#243047] bg-[#151F31] focus:border-[#22C55E]"
+                                : "border-amber-500/50 bg-amber-500/10 text-amber-200 placeholder-amber-400/60"
                             }`}
                           />
                         </div>
@@ -891,17 +1298,27 @@ export default function AdminPackagesPage() {
                       {/* Profit Margin Preview */}
                       <td className="py-2.5 px-3.5">
                         {marginPercent !== null && profitAmount !== null ? (
-                          <div className="text-[11px] font-semibold text-[#22C55E] flex items-center gap-1">
-                            <TrendingUp className="h-3 w-3" />
-                            <span>+{marginPercent}%</span>
-                            <span className="text-[9px] text-[#64748B] font-mono">
-                              (+${profitAmount.toFixed(2)})
+                          <div
+                            className={`text-[11px] font-semibold flex items-center gap-1 ${
+                              profitAmount >= 0 ? "text-[#22C55E]" : "text-rose-400"
+                            }`}
+                          >
+                            {profitAmount >= 0 ? (
+                              <TrendingUp className="h-3 w-3" />
+                            ) : (
+                              <AlertTriangle className="h-3 w-3 text-rose-400" />
+                            )}
+                            <span>{profitAmount >= 0 ? `+${marginPercent}%` : `${marginPercent}%`}</span>
+                            <span className="text-[9px] text-[#94A3B8] font-mono">
+                              ({profitAmount >= 0 ? `+$${profitAmount.toFixed(2)}` : `-$${Math.abs(profitAmount).toFixed(2)}`})
                             </span>
                           </div>
                         ) : !row.sellingPrice ? (
-                          <span className="text-[10px] text-[#F59E0B] font-semibold">Price Unset</span>
+                          <span className="text-[10px] text-amber-400 font-semibold flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" /> Needs price
+                          </span>
                         ) : (
-                          <span className="text-[10px] text-[#64748B] font-mono">No Margin</span>
+                          <span className="text-[10px] text-[#64748B] font-mono">Cost unknown</span>
                         )}
                       </td>
 
@@ -909,7 +1326,7 @@ export default function AdminPackagesPage() {
                       <td className="py-2.5 px-3.5">
                         <input
                           type="text"
-                          placeholder="e.g. POPULAR"
+                          placeholder="e.g. HOT DEAL"
                           value={row.badge}
                           onChange={(e) => handleFieldChange(pkg.id, "badge", e.target.value)}
                           className="w-24 rounded-lg border border-[#243047] bg-[#151F31] px-2 py-1 text-[10px] uppercase font-bold text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
@@ -939,12 +1356,16 @@ export default function AdminPackagesPage() {
                           onClick={() => handleSavePackage(pkg)}
                           className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                             row.isDirty
-                              ? "bg-[#22C55E] hover:bg-[#16A34A] text-[#080D18] shadow-md"
+                              ? "bg-[#22C55E] hover:bg-[#16A34A] text-[#080D18] shadow-md ring-2 ring-emerald-400"
                               : "bg-[#151F31] text-[#64748B] hover:text-[#F8FAFC] disabled:opacity-30"
                           }`}
-                          title="Save price change"
+                          title={row.isDirty ? "Save price change (or press Enter)" : "Saved"}
                         >
-                          <Save className="h-3.5 w-3.5" />
+                          {savingId === pkg.id ? (
+                            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Save className="h-3.5 w-3.5" />
+                          )}
                         </button>
                       </td>
                     </tr>
@@ -983,6 +1404,7 @@ export default function AdminPackagesPage() {
         </div>
       </div>
 
+      {/* Bulk PNG Upload Modal */}
       {isBulkImageModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div role="dialog" aria-modal="true" aria-label="Bulk package PNG upload" className="relative w-full max-w-3xl max-h-[90vh] flex flex-col rounded-xl bg-[#111A2B] border border-[#243047] shadow-2xl">
@@ -1224,5 +1646,20 @@ export default function AdminPackagesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminPackagesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="admin-page p-12 text-center text-slate-400">
+          <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-[#22C55E]" />
+          <p className="text-xs text-[#94A3B8]">Loading package manager...</p>
+        </div>
+      }
+    >
+      <PackagesManagerContent />
+    </Suspense>
   );
 }

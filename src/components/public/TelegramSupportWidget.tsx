@@ -22,7 +22,11 @@ export function TelegramSupportWidget() {
 
   if (!href) return null;
 
-  const aboveMobileCheckoutBar = pathname.startsWith("/services/");
+  const aboveMobileCheckoutBar =
+    pathname.startsWith("/game") ||
+    pathname.startsWith("/services") ||
+    pathname.startsWith("/digital-shop") ||
+    pathname.startsWith("/checkout");
 
   return (
     <div

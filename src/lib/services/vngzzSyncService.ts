@@ -63,8 +63,8 @@ export async function syncVngzzCatalogue(options: {
           return { updateOne: {
             filter: { supplier: "vngzz2", gameCode: code, supplierProductCode: product.product_code },
             update: {
-              $set: { buyingPrice: product.price, priceCents: Math.round(product.price * 100), supplierAvailable: product.available && product.currency === "USD", syncedAt: new Date() },
-              $setOnInsert: { gameSlug: savedGame.slug, gameCode: code, supplier: "vngzz2", supplierProductCode: product.product_code, name: product.name, diamondsOrPoints: product.name, sellingPrice, originalPrice: null, currency: product.currency, isActive: false, isFeatured: false, adminConfigured: false, sortOrder: i + 1 },
+              $set: { gameSlug: savedGame.slug, currency: product.currency, buyingPrice: product.price, priceCents: Math.round(product.price * 100), supplierAvailable: product.available && product.currency === "USD", syncedAt: new Date() },
+              $setOnInsert: { gameCode: code, supplier: "vngzz2", supplierProductCode: product.product_code, name: product.name, diamondsOrPoints: product.name, sellingPrice, originalPrice: null, isActive: false, isFeatured: false, adminConfigured: false, sortOrder: i + 1 },
             },
             upsert: true,
           } };
@@ -82,5 +82,16 @@ export async function syncVngzzCatalogue(options: {
       }
     }
   }));
+  // A category can itself disappear or be renamed. Per-game cleanup cannot
+  // visit it, so reconcile retired game codes against the complete category list.
+  if (!options.gameCode) {
+    const retired = { supplier: "vngzz2" as const, supplierGameCode: { $nin: categories.map(game => game.game_code) } };
+    await Game.updateMany(retired, { $set: { checkoutSupported: false } });
+    if (options.packages) {
+      const cleanup = await GamePackage.updateMany({ supplier: "vngzz2", gameCode: { $nin: categories.map(game => game.game_code) }, supplierAvailable: { $ne: false } },
+        { $set: { supplierAvailable: false, syncedAt: new Date() } });
+      packages.skipped += cleanup.modifiedCount;
+    }
+  }
   return { games, packages };
 }

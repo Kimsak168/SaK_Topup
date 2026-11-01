@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Activity, AlertTriangle, CheckCircle2, Database, RefreshCw, Server, Wallet } from "lucide-react";
+import SmmDepositModal from "@/components/admin/SmmDepositModal";
 
 type BalanceSnapshot = { walletId: string; amount: string; currency: string; source: "live" | "manual"; freshness: "live" | "cached" | "manual"; checkedAt: string };
 type SupplierAccount = {
@@ -50,6 +51,7 @@ export default function AdminSuppliersPage() {
   const [historyRows, setHistoryRows] = useState<BalanceSnapshot[]>([]);
   const [syncingGames, setSyncingGames] = useState(false);
   const [syncingPackages, setSyncingPackages] = useState(false);
+  const [depositOpen, setDepositOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -185,6 +187,16 @@ export default function AdminSuppliersPage() {
               <button type="button" onClick={() => void runAction(account.id, "sync-balance")} disabled={Boolean(busy) || !account.configured} className="admin-button admin-button-primary flex-1 cursor-pointer disabled:opacity-40">{busy === `${account.id}:sync-balance` ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />} Refresh balance</button>
             </div>
 
+            {account.id === "vngzz2" && account.configured && (
+              <button
+                type="button"
+                onClick={() => setDepositOpen(true)}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-3 py-2 text-xs font-bold text-white shadow-md hover:from-emerald-500 hover:to-teal-500 transition-all cursor-pointer"
+              >
+                <Wallet className="h-3.5 w-3.5" /> Top Up SMM Wallet (KHQR)
+              </button>
+            )}
+
             <button type="button" onClick={() => { setManualSupplier(manualSupplier === account.id ? "" : account.id); setManualWallet(account.balanceScopes[0] || ""); }} className="self-start text-xs font-semibold text-slate-400 underline decoration-slate-600 underline-offset-4 hover:text-white">Record manual balance</button>
             {manualSupplier === account.id && <div className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
               <p className="text-xs text-amber-100/80">Manual values are labeled separately and never replace provider-reported balances.</p>
@@ -211,6 +223,11 @@ export default function AdminSuppliersPage() {
         </div>
         <div className="flex flex-wrap gap-4 text-xs"><Link href="/admin/games" className="text-emerald-300 hover:text-white">Manage games</Link><Link href="/admin/packages" className="text-emerald-300 hover:text-white">Manage packages</Link><Link href="/admin/smm-services" className="text-emerald-300 hover:text-white">SMM catalog</Link></div>
       </section>
+      <SmmDepositModal
+        isOpen={depositOpen}
+        onClose={() => setDepositOpen(false)}
+        onSuccess={() => void load()}
+      />
     </main>
   );
 }

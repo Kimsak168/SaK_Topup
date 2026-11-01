@@ -13,7 +13,9 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  Wallet,
 } from "lucide-react";
+import SmmDepositModal from "@/components/admin/SmmDepositModal";
 
 type ServiceRow = {
   id: string;
@@ -88,6 +90,7 @@ export default function AdminSmmServicesPage() {
   const [syncPlan, setSyncPlan] = useState<SyncPlan | null>(null);
   const [cleanupPlan, setCleanupPlan] = useState<CleanupPlan | null>(null);
   const [confirmation, setConfirmation] = useState("");
+  const [depositOpen, setDepositOpen] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -193,6 +196,13 @@ export default function AdminSmmServicesPage() {
           <p className="admin-page-description">Review the real supplier catalog, preview changes, and manage which validated services appear publicly.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            className="admin-button bg-emerald-600 hover:bg-emerald-500 text-white font-bold cursor-pointer"
+            onClick={() => setDepositOpen(true)}
+          >
+            <Wallet className="h-4 w-4" /> Top Up SMM Wallet
+          </button>
           <button className="admin-button admin-button-secondary" onClick={() => void previewCleanup()} disabled={working}>
             <ShieldCheck className="h-4 w-4" /> Preview cleanup
           </button>
@@ -283,6 +293,11 @@ export default function AdminSmmServicesPage() {
         <div className="mb-3 flex items-center justify-between"><div><h2 className="font-bold text-white">Catalog audit history</h2><p className="mt-1 text-xs text-[#94A3B8]">Recent sync and cleanup actions by administrator.</p></div><button className="admin-button admin-button-secondary" onClick={() => void load()} disabled={loading}><RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} /> Refresh</button></div>
         {!data?.audit.length ? <p className="py-5 text-xs text-[#64748B]">No catalog changes have been applied.</p> : <div className="space-y-2">{data.audit.map((entry, index) => <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#263246] bg-[#0C1422] px-3 py-2 text-xs" key={`${entry.createdAt}-${index}`}><span className="font-semibold capitalize text-white">{entry.action.replaceAll("_", " ")}</span><span className="text-[#94A3B8]">{entry.actor} · {new Date(entry.createdAt).toLocaleString()}</span><span className="text-[#94A3B8]">{Object.entries(entry.summary).map(([key, value]) => `${key}: ${String(value)}`).join(" · ")}</span></div>)}</div>}
       </section>
+      <SmmDepositModal
+        isOpen={depositOpen}
+        onClose={() => setDepositOpen(false)}
+        onSuccess={() => void load()}
+      />
     </main>
   );
 }

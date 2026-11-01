@@ -554,7 +554,7 @@ export default function AdminGamesPage() {
           <button type="button" onClick={() => { void handleSyncGamePackages(actionMenu.game); setActionMenu(null); }}>
             <RefreshCw /> Sync packages
           </button>
-          <Link href={`/admin/packages?game=${encodeURIComponent(actionMenu.game.supplierGameCode)}`} onClick={() => setActionMenu(null)}>
+          <Link href={`/admin/packages?game=${encodeURIComponent(actionMenu.game.supplierGameCode)}&supplier=${encodeURIComponent(actionMenu.game.supplier)}`} onClick={() => setActionMenu(null)}>
             <Package /> View packages & pricing
           </Link>
           <button type="button" onClick={() => { openEditModal(actionMenu.game); setActionMenu(null); }}>

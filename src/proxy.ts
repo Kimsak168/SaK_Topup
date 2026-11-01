@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ADMIN_COOKIE_NAME, verifyAdminToken } from "@/lib/auth";
 import { getAdminRedirect } from "@/lib/adminRedirect";
+import { WEBBUILDER_REGIONAL_GAMES } from "@/lib/suppliers/webbuilderRegions";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -72,6 +73,9 @@ export async function proxy(request: NextRequest) {
       if (["vngzz2", "g2bulk"].includes(supplier)) {
         return NextResponse.next();
       }
+      if (supplier === "webbuilder" && WEBBUILDER_REGIONAL_GAMES.some(([, code]) => code === rawCode)) {
+        return NextResponse.next();
+      }
 
       // Canonical code mappings
       let canonicalCode = rawCode;
@@ -105,7 +109,7 @@ export async function proxy(request: NextRequest) {
     if (parts.length >= 2) {
       const slug = parts[1].toLowerCase();
 
-      if (slug.startsWith("vngzz2-")) return NextResponse.next();
+      if (slug.startsWith("vngzz2-") || slug.startsWith("webbuilder-")) return NextResponse.next();
 
       let canonicalCode: string | null = null;
       if (slug.includes("freefire") || slug.startsWith("free-fire") || slug === "ff" || slug.includes("khsgmy") || slug.includes("sgmy")) {

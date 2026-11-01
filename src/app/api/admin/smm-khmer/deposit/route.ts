@@ -15,10 +15,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const record = body as Record<string, unknown>;
-    if (typeof record.amount !== "string" || (record.currency !== "USD" && record.currency !== "KHR")) {
-      return NextResponse.json({ success: false, error: "Provide an amount and USD or KHR currency." }, { status: 400 });
+    const rawAmount = typeof record.amount === "number" ? record.amount.toFixed(2) : String(record.amount || "").trim();
+    const currency = record.currency === "KHR" ? "KHR" : "USD";
+    if (!rawAmount || isNaN(parseFloat(rawAmount)) || parseFloat(rawAmount) <= 0) {
+      return NextResponse.json({ success: false, error: "Provide a valid positive deposit amount." }, { status: 400 });
     }
-    const data = await createKhmerSmmDeposit({ amount: record.amount, currency: record.currency });
+    const data = await createKhmerSmmDeposit({ amount: rawAmount, currency });
     return NextResponse.json(data, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const status = error instanceof VngzzKhmerSmmError ? error.status : 502;

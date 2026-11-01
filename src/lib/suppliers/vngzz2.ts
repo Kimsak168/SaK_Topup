@@ -110,6 +110,7 @@ export function normalizeVngzzProducts(payload: unknown): VngzzProduct[] {
   const data = object(payload);
   if (!Array.isArray(data.products)) throw new VngzzGameError("VNGZZ2 products are missing.", 502, "INVALID_RESPONSE");
   const codes = new Set<string>();
+  if (typeof data.total === "number" && data.total !== data.products.length) throw new VngzzGameError("VNGZZ2 returned incomplete products.", 502, "INCOMPLETE_CATALOGUE");
   return data.products.map(value => {
     const product = object(value);
     const code = product.product_code;
@@ -172,6 +173,32 @@ export async function getVngzzAccountProfile(): Promise<JsonObject> {
   if (!response.ok || data.success === false || data.status === "error") {
     throw new VngzzGameError(`VNGZZ2 account profile request failed (HTTP ${response.status}).`, response.status);
   }
+
+  // Enrich with verified SMM and game balances from /v1/smm/profile
+  try {
+    const smmRes = await fetch(`${baseUrl}/v1/smm/profile`, {
+      headers: { Accept: "application/json", "X-API-Key": apiKey },
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(Math.min(5000, timeoutMs)),
+    });
+    if (smmRes.ok) {
+      const smmJson = (await smmRes.json().catch(() => null)) as Record<string, unknown> | null;
+      const user = smmJson?.user as Record<string, unknown> | undefined;
+      if (user && typeof user === "object") {
+        const rootData = (data.data && typeof data.data === "object" ? data.data : {}) as Record<string, unknown>;
+        data.data = {
+          ...rootData,
+          smm_balance: user.smm_balance ?? user.balance ?? 0,
+          game_balance: user.game_balance ?? user.balance ?? 0,
+          balance: user.balance ?? 0,
+        };
+      }
+    }
+  } catch {
+    // Non-fatal fallback
+  }
+
   return data;
 }
 

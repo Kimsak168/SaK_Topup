@@ -42,6 +42,41 @@ export interface WebBuilderProduct {
   metadata?: Record<string, unknown>;
 }
 
+/** Reject incomplete or malformed snapshots before any availability cleanup. */
+export function normalizeWebBuilderProducts(payload: unknown): WebBuilderProduct[] {
+  const envelope = payload && typeof payload === "object" && !Array.isArray(payload)
+    ? payload as Record<string, unknown> : null;
+  if (envelope?.success === false || envelope?.status === "error") {
+    throw new WebBuilderProtocolError("WebBuilder returned an unsuccessful catalogue response.");
+  }
+  const list = Array.isArray(payload) ? payload : envelope?.products ?? envelope?.data;
+  if (!Array.isArray(list)) throw new WebBuilderProtocolError("WebBuilder products are missing.");
+  if (envelope?.has_more === true || (typeof envelope?.total === "number" && envelope.total !== list.length)) {
+    throw new WebBuilderProtocolError("WebBuilder returned an incomplete catalogue.");
+  }
+  const ids = new Set<string>();
+  return list.map(value => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) throw new WebBuilderProtocolError("WebBuilder returned an invalid product.");
+    const product = value as WebBuilderProduct;
+    if (typeof product.id !== "string" || !product.id.trim() || ids.has(product.id.trim()) ||
+      typeof product.name !== "string" || !product.name.trim() ||
+      !Number.isSafeInteger(product.price_cents) || product.price_cents < 0 ||
+      typeof product.currency !== "string" || !/^[A-Z]{3}$/.test(product.currency) ||
+      typeof product.orderable !== "boolean" ||
+      (product.game !== undefined && typeof product.game !== "string") ||
+      (product.regions !== undefined && (!Array.isArray(product.regions) || product.regions.some(region => typeof region !== "string")))) {
+      throw new WebBuilderProtocolError("WebBuilder returned an invalid product, price or duplicate ID.");
+    }
+    ids.add(product.id.trim());
+    return { ...product, id: product.id.trim(), name: product.name.trim() };
+  });
+}
+
+export function isWebBuilderProductAvailable(product: WebBuilderProduct): boolean {
+  return product.orderable === true && product.currency === "USD" && product.price_cents > 0 &&
+    !["inactive", "disabled", "unavailable", "paused", "deleted"].includes(String(product.status || "").toLowerCase());
+}
+
 export interface WebBuilderPlayerCheckRequest {
   product_id: string;
   player_id: string;
@@ -562,13 +597,7 @@ export async function getWebBuilderProducts(options?: {
       path: "/products",
     });
 
-    if (Array.isArray(res.data)) {
-      rawList = res.data;
-    } else if (res.data && Array.isArray((res.data as { products?: WebBuilderProduct[] }).products)) {
-      rawList = (res.data as { products: WebBuilderProduct[] }).products;
-    } else if (res.data && Array.isArray((res.data as { data?: WebBuilderProduct[] }).data)) {
-      rawList = (res.data as { data: WebBuilderProduct[] }).data!;
-    }
+    rawList = normalizeWebBuilderProducts(res.data);
 
     // Update in-memory hourly cache (3600s TTL)
     productCache = {
@@ -579,38 +608,19 @@ export async function getWebBuilderProducts(options?: {
     logRedacted("log", `Fetched ${rawList.length} total products from WebBuilder /products (cached for 1h).`);
   }
 
-  // Filter based on gameCode or honorOfKingsOnly flag
+  // Use the same regional mapping as sync; verification must not select a
+  // cheaper package belonging to a different region.
   const targetCode = options?.gameCode?.toLowerCase().trim();
   if (targetCode) {
-    if (
-      targetCode.includes("freefire") ||
-      targetCode.includes("free-fire") ||
-      targetCode === "ff" ||
-      targetCode.includes("khsgmy")
-    ) {
-      return rawList.filter(isFreeFireKhsgmyProduct);
-    }
-    if (targetCode.includes("mlbb") || targetCode.includes("mobile-legends")) {
-      return rawList.filter(isMobileLegendsProduct);
-    }
-    if (targetCode.includes("hok") || targetCode.includes("honor")) {
-      return rawList.filter(isHonorOfKingsProduct);
-    }
-    if (targetCode.includes("pubg")) {
-      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("pubg")));
-    }
-    if (targetCode.includes("blood")) {
-      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("blood strike")));
-    }
-    if (targetCode.includes("magic") || targetCode.includes("chess")) {
-      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("magic chess")));
-    }
-    if (targetCode.includes("8ball") || targetCode.includes("pool")) {
-      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("8 ball")));
-    }
-    if (targetCode.includes("telegram") || targetCode === "tg") {
-      return rawList.filter((p) => Boolean(p.game && p.game.toLowerCase().includes("telegram")));
-    }
+    const { WEBBUILDER_GAMES } = await import("./webbuilderCatalogue");
+    const aliases: Record<string, string> = {
+      "free-fire": "freefire_khsgmy", freefire: "freefire_khsgmy", ff: "freefire_khsgmy", khsgmy: "freefire_khsgmy",
+      "mobile-legends": "mlbb", "honor-of-kings": "hok", "pubg-mobile": "pubgm", pubg: "pubgm",
+      "blood-strike": "bloodstrike", "magic-chess-gogo": "magic_chess", "8-ball-pool": "8ballpool", tg: "telegram",
+    };
+    const code = aliases[targetCode] || targetCode;
+    const game = WEBBUILDER_GAMES.find(game => game.code === code || game.slug === code);
+    return game ? rawList.filter(game.filter) : [];
   }
 
   if (options?.honorOfKingsOnly === false) {

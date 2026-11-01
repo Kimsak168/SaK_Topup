@@ -1,0 +1,6 @@
+simulation: supplier-catalogues
+routing: path
+mocks:
+  - name: supplier-catalogues
+    routeKey: suppliers
+    path: postman/mocks/supplier-catalogues/config.yaml

@@ -13,15 +13,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Check,
-  Search,
-  X,
   ChevronDown,
-  Sparkles,
-  Users,
-  Heart,
-  Eye,
-  MessageCircle,
-  Share2,
   Zap,
   Loader2,
 } from "lucide-react";
@@ -103,15 +95,6 @@ const PLATFORM_GUIDES: Record<
   },
 };
 
-const SERVICE_TYPE_FILTERS = [
-  { id: "all", label: "All Types", icon: Sparkles },
-  { id: "followers", label: "Followers / Members", icon: Users },
-  { id: "likes", label: "Likes & Reactions", icon: Heart },
-  { id: "views", label: "Views", icon: Eye },
-  { id: "comments", label: "Comments", icon: MessageCircle },
-  { id: "shares", label: "Shares & Saves", icon: Share2 },
-];
-
 function getCustomerTotal(ratePerThousand: number, quantity: number) {
   if (!Number.isFinite(ratePerThousand) || ratePerThousand <= 0 || !Number.isInteger(quantity) || quantity <= 0) {
     return 0;
@@ -153,10 +136,7 @@ export function PlatformTopUpClient({
   const [showGuide, setShowGuide] = useState(false);
 
   // Filters state
-  const [selectedType, setSelectedType] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isServicePickerOpen, setIsServicePickerOpen] = useState(false);
 
   // Service & Package selection
   const [selectedService, setSelectedService] = useState<SmmServiceItem | null>(() => initialServices[0] || null);
@@ -173,18 +153,10 @@ export function PlatformTopUpClient({
   // Filtered services
   const filteredServices = useMemo(() => {
     return initialServices.filter((s) => {
-      if (selectedType !== "all" && s.serviceType !== selectedType) return false;
       if (selectedCategory !== "All" && s.category !== selectedCategory) return false;
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase().trim();
-        const matchesName = s.name.toLowerCase().includes(query);
-        const matchesCat = s.category.toLowerCase().includes(query);
-        const matchesDesc = (s.description || "").toLowerCase().includes(query);
-        if (!matchesName && !matchesCat && !matchesDesc) return false;
-      }
       return true;
     });
-  }, [initialServices, selectedType, selectedCategory, searchQuery]);
+  }, [initialServices, selectedCategory]);
 
   // Keep selected service in sync or select first matching
   useEffect(() => {
@@ -201,7 +173,6 @@ export function PlatformTopUpClient({
 
   const handleSelectService = (item: SmmServiceItem) => {
     setSelectedService(item);
-    setIsServicePickerOpen(false);
     if (!Number.isInteger(quantity) || quantity < item.min) {
       setQuantity(item.min);
     } else if (quantity > item.max) {
@@ -235,9 +206,9 @@ export function PlatformTopUpClient({
   const isLinkValid = isValidTargetUrl(targetLink);
   const isQuantityValid = Boolean(
     selectedService &&
-      Number.isInteger(quantity) &&
-      quantity >= selectedService.min &&
-      quantity <= selectedService.max
+    Number.isInteger(quantity) &&
+    quantity >= selectedService.min &&
+    quantity <= selectedService.max
   );
 
   const estimatedTotal = useMemo(() => {
@@ -411,13 +382,12 @@ export function PlatformTopUpClient({
                     value={targetLink}
                     onChange={(e) => setTargetLink(e.target.value)}
                     placeholder={guide.placeholder}
-                    className={`h-11 w-full rounded-xl border bg-slate-950/80 px-3.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none transition-all ${
-                      targetLink && isLinkValid
-                        ? "border-emerald-500/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40"
-                        : targetLink && !isLinkValid
+                    className={`h-11 w-full rounded-xl border bg-slate-950/80 px-3.5 text-xs sm:text-sm text-white placeholder:text-slate-500 focus:outline-none transition-all ${targetLink && isLinkValid
+                      ? "border-emerald-500/80 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/40"
+                      : targetLink && !isLinkValid
                         ? "border-rose-500/80 focus:border-rose-400 focus:ring-1 focus:ring-rose-400/40"
                         : "border-slate-800 focus:border-violet-500"
-                    }`}
+                      }`}
                   />
                   {targetLink && isLinkValid && (
                     <CheckCircle2 className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-emerald-400" />
@@ -453,81 +423,7 @@ export function PlatformTopUpClient({
                 </span>
               </div>
 
-              {/* Sub-Filters: Service Types */}
-              <div className="flex flex-wrap items-center gap-2 pb-1">
-                {SERVICE_TYPE_FILTERS.map((f) => {
-                  const Icon = f.icon;
-                  const isActive = selectedType === f.id;
-                  return (
-                    <button
-                      key={f.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedType(f.id);
-                        setIsServicePickerOpen(true);
-                      }}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border ${
-                        isActive
-                          ? "bg-violet-600 text-white border-violet-400 shadow-md shadow-violet-500/25 font-bold"
-                          : "bg-slate-900/80 border-slate-800 text-slate-400 hover:text-slate-200 hover:border-slate-700"
-                      }`}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                      <span>{f.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Search & Category Filter */}
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                <div className="sm:col-span-7 relative">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
-                  <input
-                    type="text"
-                    aria-label="Search services"
-                    value={searchQuery}
-                    onFocus={() => setIsServicePickerOpen(true)}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setIsServicePickerOpen(true);
-                    }}
-                    placeholder="Search package (followers, likes, views)..."
-                    className="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-9 pr-8 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-violet-500 transition-colors"
-                  />
-                  {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-0.5"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="sm:col-span-5 relative">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => {
-                      setSelectedCategory(e.target.value);
-                      setIsServicePickerOpen(true);
-                    }}
-                    aria-label="Filter by category"
-                    className="w-full bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 appearance-none truncate cursor-pointer pr-8"
-                  >
-                    <option value="All">All Categories</option>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-500 pointer-events-none" />
-                </div>
-              </div>
-
-              {/* Service selector keeps the chosen package readable and opens a searchable list when needed. */}
+              {/* Category & Service Dropdown Selection */}
               {catalogError ? (
                 <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-5 text-center space-y-3">
                   <AlertCircle className="mx-auto h-8 w-8 text-amber-300" />
@@ -543,93 +439,97 @@ export function PlatformTopUpClient({
                     Try again
                   </button>
                 </div>
-              ) : filteredServices.length === 0 ? (
-                <div className="py-12 text-center text-slate-400 space-y-2 border border-dashed border-slate-800 rounded-2xl">
-                  <AlertCircle className="w-8 h-8 mx-auto text-slate-600" />
-                  <p className="text-sm font-semibold text-slate-300">No services match your filters</p>
-                  <p className="text-xs text-slate-500">Try changing the category or search query.</p>
-                </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-bold text-slate-700">Selected package</p>
-                      <p className="mt-0.5 text-[11px] text-slate-500">
-                        {filteredServices.length.toLocaleString()} matching {filteredServices.length === 1 ? "service" : "services"}
-                      </p>
+                  {/* Category Filter Dropdown */}
+                  <div>
+                    <label htmlFor="category-select" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                      Category / ប្រភេទសេវាកម្ម
+                    </label>
+                    <div className="relative">
+                      <select
+                        id="category-select"
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        aria-label="Filter by category"
+                        className="w-full h-11 bg-slate-950/80 border border-slate-800 rounded-xl px-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-violet-500 appearance-none truncate cursor-pointer pr-10 font-medium transition-all"
+                      >
+                        <option value="All">All Categories ({initialServices.length})</option>
+                        {categories.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                     </div>
-                    <button
-                      type="button"
-                      aria-expanded={isServicePickerOpen}
-                      aria-controls="smm-service-options"
-                      onClick={() => setIsServicePickerOpen((open) => !open)}
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-[#F0C6DA] bg-white px-3 text-xs font-bold text-[#8E4C70] transition-colors hover:bg-[#FDF2F8] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B54779]"
-                    >
-                      {isServicePickerOpen ? "Close list" : "Change service"}
-                      <ChevronDown className={`h-3.5 w-3.5 transition-transform ${isServicePickerOpen ? "rotate-180" : ""}`} />
-                    </button>
                   </div>
 
+                  {/* Main Service Dropdown (Styled like Image 1) */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label htmlFor="service-select" className="block text-xs font-semibold text-slate-300">
+                        Select Service / ជ្រើសរើសកញ្ចប់សេវា <span className="text-rose-400">*</span>
+                      </label>
+                      <span className="text-[11px] text-slate-400 font-mono">
+                        {filteredServices.length} {filteredServices.length === 1 ? "service" : "services"}
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <select
+                        id="service-select"
+                        value={selectedService?.service || ""}
+                        onChange={(e) => {
+                          const found = filteredServices.find((s) => s.service === e.target.value);
+                          if (found) handleSelectService(found);
+                        }}
+                        aria-label="Select service package"
+                        className="w-full h-12 bg-slate-950/80 border-2 border-violet-500/80 rounded-xl px-3.5 text-xs sm:text-sm text-white focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400/40 appearance-none truncate cursor-pointer pr-10 font-bold transition-all shadow-sm"
+                      >
+                        {filteredServices.map((service) => (
+                          <option key={service.service} value={service.service} className="bg-slate-900 text-white py-1">
+                            {service.name} — ${service.rate.toFixed(2)}/1k
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-violet-400 pointer-events-none stroke-[2.5]" />
+                    </div>
+                  </div>
+
+                  {/* Selected Service Detail Summary Card */}
                   {selectedService && (
-                    <div className="rounded-2xl border border-[#F0C6DA] bg-[#FFF8FC] p-3.5 sm:p-4">
-                      <div className="flex min-w-0 items-start justify-between gap-3">
+                    <div className="rounded-xl border border-violet-500/30 bg-violet-950/30 p-3.5 text-xs space-y-2 animate-in fade-in">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0 flex-1">
-                          <span className="inline-flex max-w-full items-center rounded-full border border-[#F0C6DA] bg-white px-2.5 py-1 text-[10px] font-bold text-[#8E4C70]">
-                            <span className="truncate">{selectedService.category}</span>
+                          <span className="inline-flex items-center rounded-full border border-violet-400/30 bg-violet-500/20 px-2 py-0.5 text-[10px] font-bold text-violet-300">
+                            {selectedService.category}
                           </span>
-                          <p className="mt-2 text-sm font-bold leading-snug text-[#3B2D39] [overflow-wrap:anywhere]">
+                          <p className="mt-1.5 text-xs sm:text-sm font-bold text-white leading-snug">
                             {selectedService.name}
-                          </p>
-                          <p className="mt-1.5 text-[11px] text-[#766477]">
-                            Min {selectedService.min.toLocaleString()} <span aria-hidden="true">·</span> Max {selectedService.max.toLocaleString()}
                           </p>
                         </div>
                         <div className="shrink-0 text-right">
-                          <p className="text-base font-black tabular-nums text-[#A94776]">${selectedService.rate.toFixed(2)}</p>
-                          <p className="text-[10px] text-[#766477]">per 1,000</p>
+                          <span className="text-base font-black text-cyan-300 tabular-nums">
+                            ${selectedService.rate.toFixed(2)}
+                          </span>
+                          <span className="block text-[10px] text-slate-400">per 1,000 units</span>
                         </div>
                       </div>
-                    </div>
-                  )}
-
-                  {isServicePickerOpen && (
-                    <div
-                      id="smm-service-options"
-                      className="max-h-[25rem] space-y-2 overflow-y-auto overscroll-contain rounded-2xl border border-[#F6DDE9] bg-[#FFFCFE] p-2"
-                    >
-                      {filteredServices.map((service) => {
-                        const isSelected = selectedService?.service === service.service;
-                        return (
-                          <button
-                            key={service.service}
-                            type="button"
-                            aria-pressed={isSelected}
-                            onClick={() => handleSelectService(service)}
-                            className={`grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border p-3 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B54779] ${
-                              isSelected
-                                ? "border-[#D99AB8] bg-[#FDF2F8]"
-                                : "border-transparent bg-white hover:border-[#F0C6DA] hover:bg-[#FFF8FC]"
-                            }`}
-                          >
-                            <span className="min-w-0">
-                              <span className="block text-[10px] font-semibold text-[#8E4C70]">{service.category}</span>
-                              <span className="mt-0.5 block text-xs font-bold leading-snug text-[#3B2D39] [overflow-wrap:anywhere]">
-                                {service.name}
-                              </span>
-                              <span className="mt-1 block text-[10px] text-[#766477]">
-                                {service.min.toLocaleString()}–{service.max.toLocaleString()} units
-                              </span>
-                            </span>
-                            <span className="flex shrink-0 items-center gap-2 text-right">
-                              <span>
-                                <span className="block text-sm font-black tabular-nums text-[#A94776]">${service.rate.toFixed(2)}</span>
-                                <span className="block text-[9px] text-[#766477]">per 1,000</span>
-                              </span>
-                              {isSelected ? <Check className="h-4 w-4 text-[#A94776]" /> : null}
-                            </span>
-                          </button>
-                        );
-                      })}
+                      <div className="flex items-center gap-3 pt-1 border-t border-slate-800/60 text-[11px] text-slate-400">
+                        <span>
+                          Min: <strong className="text-slate-200">{selectedService.min.toLocaleString()}</strong>
+                        </span>
+                        <span>·</span>
+                        <span>
+                          Max: <strong className="text-slate-200">{selectedService.max.toLocaleString()}</strong>
+                        </span>
+                        {selectedService.refill && (
+                          <>
+                            <span>·</span>
+                            <span className="text-emerald-400 font-semibold">Refill Available</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -655,11 +555,10 @@ export function PlatformTopUpClient({
                         key={preset}
                         type="button"
                         onClick={() => setQuantity(preset)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer border ${
-                          quantity === preset
-                            ? "bg-cyan-400 text-slate-950 border-cyan-300 shadow-sm shadow-cyan-400/30"
-                            : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
-                        }`}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer border ${quantity === preset
+                          ? "bg-cyan-400 text-slate-950 border-cyan-300 shadow-sm shadow-cyan-400/30"
+                          : "bg-slate-900 border-slate-800 text-slate-300 hover:border-slate-700 hover:text-white"
+                          }`}
                       >
                         +{preset.toLocaleString()}
                       </button>

@@ -58,7 +58,8 @@ async function main() {
 
   try {
     await client.connect();
-    const db = client.db();
+    const dbName = process.env.MONGODB_DB_NAME || "Sak_Topup";
+    const db = client.db(dbName);
     const adminCollection = db.collection("admins");
 
     // 5. Do not overwrite an existing administrator.

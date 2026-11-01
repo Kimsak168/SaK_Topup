@@ -99,7 +99,8 @@ Usage:
 
   try {
     await client.connect();
-    const db = client.db();
+    const dbName = process.env.MONGODB_DB_NAME || "Sak_Topup";
+    const db = client.db(dbName);
     const adminCollection = db.collection("admins");
 
     // Check existing accounts

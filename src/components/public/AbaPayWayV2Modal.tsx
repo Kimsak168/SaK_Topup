@@ -234,14 +234,14 @@ export default function AbaPayWayV2Modal({
       aria-modal="true"
       aria-labelledby="khqr-modal-title"
     >
-      {/* Keep this payment surface light; the storefront remaps bg-white to its dark card color. */}
+      {/* Authentic KHQR Payment Card Surface */}
       <div
         style={{ backgroundColor: "#FFFFFF", colorScheme: "light" }}
-        className="relative w-full max-w-[360px] rounded-[28px] sm:rounded-[32px] p-5 sm:p-6 shadow-2xl border-0 text-slate-900 animate-in zoom-in-95 duration-200 select-none overflow-hidden"
+        className="relative w-full max-w-[360px] rounded-[28px] sm:rounded-[32px] shadow-2xl border border-slate-100 text-slate-900 animate-in zoom-in-95 duration-200 select-none overflow-hidden"
       >
         {isSuccess ? (
           /* Payment Success State */
-          <div className="py-10 px-4 space-y-4 text-center animate-in zoom-in-95">
+          <div className="py-12 px-6 space-y-4 text-center animate-in zoom-in-95">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
               <CheckCircle2 className="h-10 w-10 animate-in zoom-in" />
             </div>
@@ -259,79 +259,59 @@ export default function AbaPayWayV2Modal({
           </div>
         ) : (
           <>
-            {/* Modal Header: KHQR Title, Countdown Spinner Ring & Close X */}
-            <div className="flex items-center justify-between pb-2 px-0.5">
-              <span
-                id="khqr-modal-title"
-                className="text-[20px] font-bold text-teal-700 tracking-tight font-sans"
-              >
-                KHQR
-              </span>
-
-              <div className="flex items-center gap-3">
-                {/* Circular Countdown Ring & Time */}
-                {!isExpired && (
-                  <div className="flex items-center gap-1.5 font-medium text-slate-600">
-                    <svg
-                      className="w-[18px] h-[18px] animate-spin text-teal-700"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      aria-hidden="true"
-                    >
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="9"
-                        stroke="#e2e8f0"
-                        strokeWidth="2.5"
-                      />
-                      <path
-                        d="M12 3a9 9 0 0 1 9 9"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <span className="tabular-nums font-mono text-[13px] text-slate-600 font-semibold">
-                      {formattedTime}
-                    </span>
-                  </div>
-                )}
-
-                {/* Cyan Close Button */}
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-teal-700 hover:text-teal-900 p-1 rounded-full transition-colors cursor-pointer"
-                  aria-label="Close KHQR payment"
-                >
-                  <X className="h-5 w-5 stroke-[2.2]" />
-                </button>
+            {/* Top Red KHQR Header with Authentic Corner Chamfer */}
+            <div className="relative w-full h-[62px] bg-[#E11D27] flex items-center justify-center select-none overflow-hidden">
+              {/* KHQR Logo Typography */}
+              <div className="flex items-center tracking-[1.5px] text-white font-black text-[24px]">
+                <span className="font-sans font-black">KH</span>
+                <span className="inline-flex items-center justify-center border-2 border-white rounded-[4px] w-[20px] h-[20px] mx-[2px] text-[13px] font-black font-mono">Q</span>
+                <span className="font-sans font-black">R</span>
               </div>
+
+              {/* Iconic Bottom-Right Diagonal Chamfer Cut */}
+              <div
+                className="absolute bottom-0 right-0 w-0 h-0 pointer-events-none"
+                style={{
+                  borderStyle: "solid",
+                  borderWidth: "0 0 16px 22px",
+                  borderColor: "transparent transparent #FFFFFF transparent",
+                }}
+                aria-hidden="true"
+              />
+
+              {/* Close Button Top Right */}
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-3 right-3 text-white/80 hover:text-white p-1 rounded-full transition-colors cursor-pointer bg-black/15 hover:bg-black/30"
+                aria-label="Close KHQR payment"
+              >
+                <X className="h-4 w-4 stroke-[2.5]" />
+              </button>
             </div>
 
-            {/* Merchant Details & Amount Due */}
-            <div className="pt-2 pb-3 text-center">
-              <div className="text-[14px] font-medium text-slate-600">
+            {/* Merchant Details & Amount Due (Left-aligned matching real KHQR) */}
+            <div className="px-6 pt-4 pb-1 text-left">
+              <div className="text-[14px] sm:text-[15px] font-bold text-slate-800 tracking-wide uppercase">
                 {data.merchantName || "Asura Store"}
               </div>
-              <div className="flex items-baseline justify-center gap-2 mt-1.5">
-                <span className="text-[36px] sm:text-[38px] font-bold text-slate-950 tracking-tight leading-none tabular-nums font-sans">
-                  {data.amount.toFixed(2)}
-                </span>
-                <span className="text-[12px] font-semibold text-slate-600 uppercase tracking-wider">
+              <div className="text-[32px] sm:text-[36px] font-black text-slate-950 tracking-tight leading-none mt-1">
+                {data.amount.toFixed(2)}
+                <span className="text-[14px] font-bold text-slate-500 ml-1.5 uppercase">
                   {data.currency || "USD"}
                 </span>
               </div>
+              {/* Fine Dashed Divider Line */}
+              <div className="w-full border-b border-dashed border-slate-300 my-3" />
             </div>
 
             {/* QR Code Container */}
-            <div className="py-2 flex items-center justify-center">
+            <div className="px-6 py-1 flex items-center justify-center">
               <div
                 onClick={handleOpenAbaApp}
                 title={data.deepLink ? "Click to open ABA Mobile app" : undefined}
                 style={{ backgroundColor: "#FFFFFF" }}
-                className={`relative w-[210px] h-[210px] sm:w-[224px] sm:h-[224px] rounded-2xl p-2.5 flex items-center justify-center shadow-lg ${
+                className={`relative w-[230px] h-[230px] sm:w-[248px] sm:h-[248px] p-1 flex items-center justify-center ${
                   data.deepLink ? "cursor-pointer transition-transform hover:scale-[1.01]" : ""
                 }`}
               >
@@ -349,7 +329,7 @@ export default function AbaPayWayV2Modal({
                           e.stopPropagation();
                           onRetry();
                         }}
-                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#E11D48] hover:bg-[#BE123C] transition-colors shadow-xs cursor-pointer"
+                        className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#E11D27] hover:bg-[#be121c] transition-colors shadow-xs cursor-pointer"
                       >
                         Generate New QR
                       </button>
@@ -357,20 +337,27 @@ export default function AbaPayWayV2Modal({
                   </div>
                 ) : renderedQr ? (
                   <>
+                    {/* QR Image */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={renderedQr}
                       alt={`KHQR for ${data.orderNumber}`}
-                      className="w-full h-full object-contain rounded-lg"
+                      className="w-full h-full object-contain"
                     />
-                    {/* Center Badge: Black Disc with White Currency Symbol */}
+                    {/* Authentic Bakong 8-pointed Lotus Star Center Emblem */}
                     <div
-                      className="absolute inset-0 m-auto h-10 w-10 rounded-full bg-black border-2 border-white flex items-center justify-center shadow-xs pointer-events-none select-none"
+                      className="absolute inset-0 m-auto h-[46px] w-[46px] rounded-full bg-[#E11D27] border-[3px] border-white flex items-center justify-center shadow-md pointer-events-none select-none"
                       aria-hidden="true"
                     >
-                      <span className="text-white font-bold text-[17px] leading-none">
-                        {data.currency === "KHR" ? "៛" : "$"}
-                      </span>
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-[28px] h-[28px] text-white"
+                        fill="currentColor"
+                      >
+                        {/* 8-pointed lotus star emblem */}
+                        <path d="M12 2.5l1.6 3.2 3.5-.8-.7 3.5 3.5 1.1-2.4 2.5 2.4 2.5-3.5 1.1.7 3.5-3.5-.8L12 21.5l-1.6-3.2-3.5.8.7-3.5-3.5-1.1 2.4-2.5-2.4-2.5 3.5-1.1-.7-3.5 3.5.8L12 2.5z" />
+                        <circle cx="12" cy="12" r="3" fill="#E11D27" stroke="#FFFFFF" strokeWidth="1.2" />
+                      </svg>
                     </div>
                   </>
                 ) : (
@@ -382,15 +369,22 @@ export default function AbaPayWayV2Modal({
               </div>
             </div>
 
-            {/* Footer Text Note */}
-            <div className="pt-3 pb-1 text-center text-slate-600 font-medium text-xs sm:text-[13px] leading-relaxed">
-              <p>Scan with <span className="font-semibold text-slate-700">ABA Mobile</span>, or other</p>
-              <p>Mobile Banking App supporting</p>
-              <p className="font-semibold text-teal-700">KHQR</p>
-              <p className="mt-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[11px] font-bold text-slate-700" aria-live="polite">
-                <span className={`h-1.5 w-1.5 rounded-full ${paymentStatus === "PAID" ? "bg-emerald-500" : "bg-amber-500"}`} />
-                Payment status: {paymentStatus.replaceAll("_", " ")}
+            {/* Footer Text & Live Countdown */}
+            <div className="px-6 pt-2 pb-4 text-center">
+              <p className="text-[12px] font-medium text-slate-600 leading-snug">
+                Scan with <span className="font-bold text-slate-800">ABA Mobile</span>, or any banking app supporting <span className="font-bold text-[#E11D27]">KHQR</span>
               </p>
+              <div className="mt-2.5 flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px] font-medium text-slate-600">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className={`h-2 w-2 rounded-full ${paymentStatus === "PAID" ? "bg-emerald-500" : "bg-amber-500 animate-pulse"}`} />
+                  Payment: <strong className="text-slate-800 uppercase">{paymentStatus.replaceAll("_", " ")}</strong>
+                </span>
+                {!isExpired && (
+                  <span className="tabular-nums font-mono font-bold text-slate-700 flex items-center gap-1">
+                    <span className="text-slate-400">⏳</span> {formattedTime}
+                  </span>
+                )}
+              </div>
             </div>
           </>
         )}

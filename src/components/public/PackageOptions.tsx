@@ -2,7 +2,7 @@
 
 import { memo, useMemo, useState } from "react";
 import Image from "next/image";
-import { Ban, Check, Package as PackageIcon, Sparkles, Zap } from "lucide-react";
+import { Ban, Check, Coins, Package as PackageIcon, Sparkles, Zap } from "lucide-react";
 import type { ClientPackage } from "@/types/game";
 
 const DEFAULT_DIAMOND_IMAGE = "/images/diamond-crystals.png";
@@ -96,14 +96,25 @@ function removeWhiteBackground(image: HTMLImageElement): string | null {
 
 interface PackageCardProps {
   pkg: ClientPackage;
-  isDiamond: boolean;
+  isCurrency: boolean;
+  gameKind: "pubg" | "hok" | "mlbb" | "freefire" | "other";
+  currencyName?: string;
   isSelected: boolean;
   loadImageEagerly: boolean;
-  defaultDiamondImage?: string;
+  defaultCurrencyImage?: string;
   onSelect: (pkg: ClientPackage) => void;
 }
 
-const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, loadImageEagerly, defaultDiamondImage = DEFAULT_DIAMOND_IMAGE, onSelect }: PackageCardProps) {
+const PackageCard = memo(function PackageCard({
+  pkg,
+  isCurrency,
+  gameKind,
+  currencyName,
+  isSelected,
+  loadImageEagerly,
+  defaultCurrencyImage,
+  onSelect,
+}: PackageCardProps) {
   const isAvailable = pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
   const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
@@ -111,12 +122,13 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, load
   const [failedImage, setFailedImage] = useState<string | null>(null);
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const customImageSrc = pkg.customImage?.trim();
-  const diamondImage = defaultDiamondImage;
+  const currencyImage = defaultCurrencyImage;
   const imageSrc = customImageSrc && failedImage !== customImageSrc
     ? customImageSrc
-    : isDiamond && failedImage !== diamondImage
-    ? diamondImage
+    : isCurrency && currencyImage && failedImage !== currencyImage
+    ? currencyImage
     : null;
+
   return (
     <button
       key={pkg.id}
@@ -168,8 +180,16 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, load
               setFailedImage(imageSrc);
             }}
           />
-        ) : isDiamond ? (
-          <Zap className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC] stroke-[2] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+        ) : isCurrency ? (
+          gameKind === "pubg" ? (
+            <div className="flex h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 items-center justify-center rounded-full bg-gradient-to-br from-amber-300 via-amber-400 to-amber-600 text-[10px] font-black text-slate-950 shadow-[0_0_10px_rgba(251,191,36,0.45)] border border-amber-200 select-none">
+              UC
+            </div>
+          ) : gameKind === "hok" ? (
+            <Coins className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-amber-400 stroke-[2] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+          ) : (
+            <Zap className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC] stroke-[2] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+          )
         ) : (
           <PackageIcon className="h-7 w-7 min-[360px]:h-8 min-[360px]:w-8 text-[#C084FC]/85 group-hover:text-[#C084FC] transition-colors" />
         )}
@@ -180,9 +200,19 @@ const PackageCard = memo(function PackageCard({ pkg, isDiamond, isSelected, load
         <div className="flex min-w-0 items-center gap-1.5">
           <div className="package-option-title min-w-0 flex-1 line-clamp-1 font-bold leading-tight">
           {(() => {
-            const raw = (pkg.diamondsOrPoints || pkg.name).trim();
+            const raw = (pkg.name || pkg.diamondsOrPoints || "").trim();
             const levelUp = raw.replace(/Level\s*Up\s*(?:Package|Pass)?\s*[-–—:]*\s*(?:Level|Lv\.?)?\s*(\d+)/i, "Level Up $1");
-            return isDiamond && !/diamonds?/i.test(levelUp) ? `${levelUp} Diamonds` : levelUp;
+            if (!isCurrency) return levelUp;
+            if (gameKind === "pubg" || /uc/i.test(currencyName || "")) {
+              return !/\buc\b/i.test(levelUp) ? `${levelUp} UC` : levelUp;
+            }
+            if (gameKind === "hok" || /token/i.test(currencyName || "")) {
+              return !/tokens?/i.test(levelUp) ? `${levelUp} Tokens` : levelUp;
+            }
+            if (/diamonds?/i.test(currencyName || "")) {
+              return !/diamonds?/i.test(levelUp) ? `${levelUp} Diamonds` : levelUp;
+            }
+            return /^\d[\d,\s]*$/.test(levelUp) && currencyName ? `${levelUp} ${currencyName}` : levelUp;
           })()}
           </div>
           {pkg.badge && (
@@ -242,29 +272,102 @@ interface PackageOptionsProps {
   onSelect: (pkg: ClientPackage) => void;
 }
 
-export const PackageOptions = memo(function PackageOptions({ packages, selectedId, currencyName, gameSlug, title = "Select Package", stepNumber = 2, onSelect }: PackageOptionsProps) {
-  const isMlbbGame = gameSlug
-    ? gameSlug.includes("mlbb") || gameSlug.includes("mobile-legends")
-    : packages.some(p => p.customImage?.includes("mlbb-diamond") || p.id?.toLowerCase().includes("mlbb") || p.supplierProductCode?.toLowerCase().includes("mlbb"));
-  const defaultDiamondImage = isMlbbGame ? "/images/mlbb-diamond.png" : DEFAULT_DIAMOND_IMAGE;
+export const PackageOptions = memo(function PackageOptions({
+  packages,
+  selectedId,
+  currencyName,
+  gameSlug,
+  title = "Select Package",
+  stepNumber = 2,
+  onSelect,
+}: PackageOptionsProps) {
+  const isPubg = Boolean((gameSlug && /pubg/i.test(gameSlug)) || /uc/i.test(currencyName));
+  const isHok = Boolean((gameSlug && /hok|honor/i.test(gameSlug)) || /token/i.test(currencyName));
+  const isMlbbGame = Boolean(
+    gameSlug
+      ? gameSlug.includes("mlbb") || gameSlug.includes("mobile-legends")
+      : packages.some(p => p.customImage?.includes("mlbb-diamond") || p.id?.toLowerCase().includes("mlbb") || p.supplierProductCode?.toLowerCase().includes("mlbb"))
+  );
+  const isFreeFire = Boolean(gameSlug && /free-?fire/i.test(gameSlug));
 
-  const { validPackages, specialPackages, diamondPackages } = useMemo(() => {
+  const gameKind: "pubg" | "hok" | "mlbb" | "freefire" | "other" = isPubg
+    ? "pubg"
+    : isHok
+    ? "hok"
+    : isMlbbGame
+    ? "mlbb"
+    : isFreeFire
+    ? "freefire"
+    : "other";
+
+  const defaultCurrencyImage = isMlbbGame
+    ? "/images/mlbb-diamond.png"
+    : isPubg || isHok
+    ? undefined
+    : DEFAULT_DIAMOND_IMAGE;
+
+  const currencySectionTitle = isPubg
+    ? "UC"
+    : isHok
+    ? "Tokens"
+    : isFreeFire || isMlbbGame || /diamonds?/i.test(currencyName)
+    ? "Diamonds"
+    : currencyName || "Currency";
+
+  const { validPackages, specialPackages, currencyPackages } = useMemo(() => {
     const validPackages = packages.filter(p => p.isAvailable && p.sellingPrice !== null && p.sellingPrice > 0);
     const specialPackages: ClientPackage[] = [];
-    const diamondPackages: ClientPackage[] = [];
-    for (const pkg of validPackages) {
-      const visibleName = (pkg.diamondsOrPoints || pkg.name).trim();
-      const allNames = `${visibleName} ${pkg.name}`;
-      const packageName = /\b(pass|pack|weekly|monthly|twilight|starlight|member|subscription|bundle|membership|vip)\b/i.test(allNames);
+    const currencyPackages: ClientPackage[] = [];
+
+    const isSpecialPackage = (pkg: ClientPackage): boolean => {
+      if (pkg.group === "special" || pkg.category === "special") return true;
+
+      const visibleName = (pkg.name || pkg.diamondsOrPoints || "").trim();
+      const allNames = `${visibleName} ${pkg.name || ""}`;
+
+      const hasSpecialKeywords = /\b(pass|pack|weekly|monthly|twilight|starlight|member|subscription|bundle|membership|vip|prime|deal|emblem|materials?|first purchase|card|bag|rebate|coins?|box|lucky|shadow|zilong|skin|access|level\s*up|bonuses)\b/i.test(allNames);
+      if (hasSpecialKeywords) return true;
+
+      if (isPubg) {
+        // Pure UC packages match "60 UC", "325 UC", "1800 UC (discounted)", etc.
+        const isUc = /\b\d+.*uc\b/i.test(visibleName);
+        return !isUc;
+      }
+
+      if (isHok) {
+        // Pure Token packages match "16 Tokens", "80 Tokens", etc.
+        const isToken = /\b\d+.*tokens?\b/i.test(visibleName);
+        return !isToken;
+      }
+
       const diamondName = /\bdiamonds?\b/i.test(visibleName) || /^\d[\d,\s]*$/.test(visibleName);
-      const special = packageName || (!diamondName && (pkg.group === "special" || pkg.category === "special"));
-      (special ? specialPackages : diamondPackages).push(pkg);
+      return !diamondName;
+    };
+
+    for (const pkg of validPackages) {
+      if (isSpecialPackage(pkg)) {
+        specialPackages.push(pkg);
+      } else {
+        currencyPackages.push(pkg);
+      }
     }
-    return { validPackages, specialPackages, diamondPackages };
-  }, [packages]);
+
+    return { validPackages, specialPackages, currencyPackages };
+  }, [packages, isPubg, isHok]);
+
   const eagerSpecialCount = Math.min(specialPackages.length, 3);
-  const renderPackageCard = (pkg: ClientPackage, isDiamond: boolean, loadImageEagerly: boolean) => (
-    <PackageCard key={pkg.id} pkg={pkg} isDiamond={isDiamond} isSelected={selectedId === pkg.id} loadImageEagerly={loadImageEagerly} defaultDiamondImage={defaultDiamondImage} onSelect={onSelect} />
+  const renderPackageCard = (pkg: ClientPackage, isCurrency: boolean, loadImageEagerly: boolean) => (
+    <PackageCard
+      key={pkg.id}
+      pkg={pkg}
+      isCurrency={isCurrency}
+      gameKind={gameKind}
+      currencyName={currencyName}
+      isSelected={selectedId === pkg.id}
+      loadImageEagerly={loadImageEagerly}
+      defaultCurrencyImage={defaultCurrencyImage}
+      onSelect={onSelect}
+    />
   );
 
   return (
@@ -296,15 +399,19 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
             </div>
           )}
 
-          {/* Diamond Section */}
-          {diamondPackages.length > 0 && (
+          {/* Currency Section (Diamonds / UC / Tokens) */}
+          {currencyPackages.length > 0 && (
             <div className="space-y-2 sm:space-y-3">
               <div className={`flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#C084FC] ${specialPackages.length > 0 ? "border-t border-[#2E1F45] pt-3.5" : ""}`}>
-                <Zap className="h-4 w-4 text-[#C084FC] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
-                <span>Diamonds</span>
+                {isPubg || isHok ? (
+                  <Coins className="h-4 w-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                ) : (
+                  <Zap className="h-4 w-4 text-[#C084FC] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />
+                )}
+                <span>{currencySectionTitle}</span>
               </div>
               <div className="topup-package-grid">
-                {diamondPackages.map((pkg, index) => renderPackageCard(pkg, true, index < 3 - eagerSpecialCount))}
+                {currencyPackages.map((pkg, index) => renderPackageCard(pkg, true, index < 3 - eagerSpecialCount))}
               </div>
             </div>
           )}
@@ -316,5 +423,4 @@ export const PackageOptions = memo(function PackageOptions({ packages, selectedI
       )}
     </>
   );
-
 });

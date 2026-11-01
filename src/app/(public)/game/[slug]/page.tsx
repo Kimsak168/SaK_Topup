@@ -18,7 +18,7 @@ export default async function LegacyGameRedirectPage({ params }: LegacyGamePageP
 
   // 1. Direct Free Fire alias handling -> WebBuilder
   if (
-    !normalized.startsWith("vngzz2-") && (
+    !normalized.startsWith("vngzz2-") && !normalized.startsWith("webbuilder-") && (
       normalized.includes("freefire") ||
       normalized.startsWith("free-fire") ||
       normalized === "ff" ||

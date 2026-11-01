@@ -373,9 +373,7 @@ function CheckoutContent() {
                 </>
               ) : (
                 <>
-                  <span>
-                    {selectedMethod === "aba_payway_v2" ? "Pay with KHQR V2" : "Pay with KHQR"}
-                  </span>
+                  <span>Payment</span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}

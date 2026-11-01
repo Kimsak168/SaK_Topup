@@ -71,10 +71,20 @@ export async function GET(req: NextRequest) {
 
     // Stats
     const availablePackages = { supplierAvailable: { $ne: false } };
-    const [totalPkgs, configuredPkgs, webbuilderPkgs] = await Promise.all([
+    const [
+      totalPkgs,
+      configuredPkgs,
+      webbuilderPkgs,
+      webbuilderConfiguredPkgs,
+      vngzz2Pkgs,
+      vngzz2ConfiguredPkgs,
+    ] = await Promise.all([
       GamePackage.countDocuments(availablePackages).catch(() => 0),
       GamePackage.countDocuments({ ...availablePackages, sellingPrice: { $gt: 0 } }).catch(() => 0),
       GamePackage.countDocuments({ ...availablePackages, supplier: "webbuilder" }).catch(() => 0),
+      GamePackage.countDocuments({ ...availablePackages, supplier: "webbuilder", sellingPrice: { $gt: 0 } }).catch(() => 0),
+      GamePackage.countDocuments({ ...availablePackages, supplier: "vngzz2" }).catch(() => 0),
+      GamePackage.countDocuments({ ...availablePackages, supplier: "vngzz2", sellingPrice: { $gt: 0 } }).catch(() => 0),
     ]);
 
     // Distinct games for filter dropdown
@@ -114,6 +124,9 @@ export async function GET(req: NextRequest) {
         configuredPkgs,
         unconfiguredPkgs: totalPkgs - configuredPkgs,
         webbuilderPkgs,
+        webbuilderConfiguredPkgs,
+        vngzz2Pkgs,
+        vngzz2ConfiguredPkgs,
       },
       availableGames: distinctGames.map((g) => ({
         slug: g.slug,

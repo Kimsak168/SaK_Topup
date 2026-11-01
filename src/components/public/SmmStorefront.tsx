@@ -541,7 +541,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
             </div>
             <div className={styles.featureCard}>
               <span className={styles.featureIcon} data-tone="cyan"><ShieldCheck aria-hidden="true" /></span>
-              <span><strong>Secure Checkout</strong><small>Pay with KHQR or KHQRV2</small></span>
+              <span><strong>Secure Checkout</strong><small>Instant Payment with KHQR</small></span>
             </div>
             <div className={styles.featureCard}>
               <span className={styles.featureIcon} data-tone="teal"><TrendingUp aria-hidden="true" /></span>

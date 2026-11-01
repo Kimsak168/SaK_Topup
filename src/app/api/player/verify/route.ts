@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerificationGame } from "@/lib/services/verificationGameService";
 import { checkG2BulkPlayer } from "@/lib/suppliers/g2bulk";
-import { checkWebBuilderPlayer } from "@/lib/suppliers/webbuilder";
+import { checkWebBuilderPlayer, getWebBuilderProducts, isWebBuilderProductAvailable } from "@/lib/suppliers/webbuilder";
+import { WEBBUILDER_REGIONAL_GAMES } from "@/lib/suppliers/webbuilderRegions";
 import { checkVngzzPlayer } from "@/lib/suppliers/vngzz2";
 
 export const dynamic = "force-dynamic";
@@ -157,13 +158,22 @@ export async function POST(req: NextRequest) {
 
     // Determine normalized supplier game code
     const targetCode = game?.supplierGameCode || (isFreeFire ? "freefire_khsgmy" : isHonorOfKings ? "hok" : gameIdentifier);
+    const regionalCode = targetSupplier === "webbuilder"
+      ? WEBBUILDER_REGIONAL_GAMES.find(([, code]) => code === targetCode || code === gameIdentifier)?.[1]
+      : undefined;
 
     // ==========================================
     // 0. WEBBUILDER API VERIFICATION (HoK, MLBB, Free Fire)
     // ==========================================
     if (targetSupplier === "webbuilder" || isHonorOfKings || isFreeFire) {
       let productId = String(body.productId || body.product_id || body.packageId || "").trim();
-      if (
+      if (regionalCode || targetCode === "zepeto") {
+        const products = await timed("catalogue", () => getWebBuilderProducts({ gameCode: regionalCode || targetCode }));
+        const product = productId ? products.find(product => product.id === productId && isWebBuilderProductAvailable(product))
+          : products.find(isWebBuilderProductAvailable);
+        if (!product) return respond({ success: false, isUnavailable: true, message: "The selected package is unavailable for this game and region." });
+        productId = product.id;
+      } else if (
         !productId ||
         productId === "hok" ||
         productId === "mlbb" ||
@@ -211,7 +221,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      if (isFreeFire && wbRes.isUnavailable) {
+      if (isFreeFire && !regionalCode && wbRes.isUnavailable) {
         console.warn(
           `[PlayerVerify] WebBuilder Free Fire check was unavailable (${wbRes.message}). Attempting G2Bulk fallback...`
         );

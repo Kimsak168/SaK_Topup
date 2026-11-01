@@ -31,26 +31,148 @@ interface AdminDashboardShellProps {
   children: React.ReactNode;
 }
 
-const NAV_GROUPS = [
-  { title: "WORKSPACE", items: [
-    { href: "/admin", label: "Overview", icon: LayoutDashboard },
-  ] },
-  { title: "CATALOGUE & SALES", items: [
-    { href: "/admin/games", label: "Games Catalogue", icon: Gamepad2 },
-    { href: "/admin/packages", label: "Packages & Pricing", icon: Package },
-    { href: "/admin/smm-services", label: "Social Services", icon: Share2 },
-    { href: "/admin/orders", label: "Customer Orders", icon: ShoppingCart },
-  ] },
-  { title: "OPERATIONS", items: [
-    { href: "/admin/payments", label: "Payment Gateways", icon: CreditCard },
-    { href: "/admin/finance", label: "Finance & Reconciliation", icon: CircleDollarSign },
-    { href: "/admin/events", label: "Game Events", icon: CalendarDays },
-    { href: "/admin/banners", label: "Promo Banners", icon: ImageIcon },
-  ] },
-  { title: "PLATFORM", items: [
-    { href: "/admin/suppliers", label: "Suppliers", icon: Server },
-    { href: "/admin/settings", label: "Website Settings", icon: Settings },
-  ] },
+export interface NavItemConfig {
+  href: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  badge: {
+    inactive: string;
+    active: string;
+    indicator: string;
+  };
+}
+
+const NAV_GROUPS: { title: string; items: NavItemConfig[] }[] = [
+  {
+    title: "WORKSPACE",
+    items: [
+      {
+        href: "/admin",
+        label: "Overview",
+        icon: LayoutDashboard,
+        badge: {
+          inactive: "bg-indigo-50 dark:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-200/70 dark:border-indigo-500/25",
+          active: "bg-indigo-600 text-white shadow-xs shadow-indigo-600/30",
+          indicator: "bg-indigo-500",
+        },
+      },
+    ],
+  },
+  {
+    title: "CATALOGUE & SALES",
+    items: [
+      {
+        href: "/admin/games",
+        label: "Games Catalogue",
+        icon: Gamepad2,
+        badge: {
+          inactive: "bg-violet-50 dark:bg-violet-500/15 text-violet-600 dark:text-violet-400 border border-violet-200/70 dark:border-violet-500/25",
+          active: "bg-violet-600 text-white shadow-xs shadow-violet-600/30",
+          indicator: "bg-violet-500",
+        },
+      },
+      {
+        href: "/admin/packages",
+        label: "Packages & Pricing",
+        icon: Package,
+        badge: {
+          inactive: "bg-sky-50 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-200/70 dark:border-sky-500/25",
+          active: "bg-sky-600 text-white shadow-xs shadow-sky-600/30",
+          indicator: "bg-sky-500",
+        },
+      },
+      {
+        href: "/admin/smm-services",
+        label: "Social Services",
+        icon: Share2,
+        badge: {
+          inactive: "bg-pink-50 dark:bg-pink-500/15 text-pink-600 dark:text-pink-400 border border-pink-200/70 dark:border-pink-500/25",
+          active: "bg-gradient-to-tr from-pink-600 to-rose-500 text-white shadow-xs shadow-pink-600/30",
+          indicator: "bg-pink-500",
+        },
+      },
+      {
+        href: "/admin/orders",
+        label: "Customer Orders",
+        icon: ShoppingCart,
+        badge: {
+          inactive: "bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-200/70 dark:border-emerald-500/25",
+          active: "bg-emerald-600 text-white shadow-xs shadow-emerald-600/30",
+          indicator: "bg-emerald-500",
+        },
+      },
+    ],
+  },
+  {
+    title: "OPERATIONS",
+    items: [
+      {
+        href: "/admin/payments",
+        label: "Payment Gateways",
+        icon: CreditCard,
+        badge: {
+          inactive: "bg-blue-50 dark:bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-200/70 dark:border-blue-500/25",
+          active: "bg-blue-600 text-white shadow-xs shadow-blue-600/30",
+          indicator: "bg-blue-500",
+        },
+      },
+      {
+        href: "/admin/finance",
+        label: "Finance & Reconciliation",
+        icon: CircleDollarSign,
+        badge: {
+          inactive: "bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-200/70 dark:border-amber-500/25",
+          active: "bg-amber-600 text-white shadow-xs shadow-amber-600/30",
+          indicator: "bg-amber-500",
+        },
+      },
+      {
+        href: "/admin/events",
+        label: "Game Events",
+        icon: CalendarDays,
+        badge: {
+          inactive: "bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/70 dark:border-orange-500/25",
+          active: "bg-orange-600 text-white shadow-xs shadow-orange-600/30",
+          indicator: "bg-orange-500",
+        },
+      },
+      {
+        href: "/admin/banners",
+        label: "Promo Banners",
+        icon: ImageIcon,
+        badge: {
+          inactive: "bg-fuchsia-50 dark:bg-fuchsia-500/15 text-fuchsia-600 dark:text-fuchsia-400 border border-fuchsia-200/70 dark:border-fuchsia-500/25",
+          active: "bg-fuchsia-600 text-white shadow-xs shadow-fuchsia-600/30",
+          indicator: "bg-fuchsia-500",
+        },
+      },
+    ],
+  },
+  {
+    title: "PLATFORM",
+    items: [
+      {
+        href: "/admin/suppliers",
+        label: "Suppliers",
+        icon: Server,
+        badge: {
+          inactive: "bg-teal-50 dark:bg-teal-500/15 text-teal-600 dark:text-teal-400 border border-teal-200/70 dark:border-teal-500/25",
+          active: "bg-teal-600 text-white shadow-xs shadow-teal-600/30",
+          indicator: "bg-teal-500",
+        },
+      },
+      {
+        href: "/admin/settings",
+        label: "Website Settings",
+        icon: Settings,
+        badge: {
+          inactive: "bg-slate-100 dark:bg-slate-500/15 text-slate-600 dark:text-slate-400 border border-slate-200/70 dark:border-slate-500/25",
+          active: "bg-slate-600 text-white shadow-xs shadow-slate-600/30",
+          indicator: "bg-slate-500",
+        },
+      },
+    ],
+  },
 ];
 const NAV_ITEMS = NAV_GROUPS.flatMap((group) => group.items);
 const SUPPLIER_STATUS_EVENT = "saksuuu:supplier-status";
@@ -275,7 +397,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                       data-tooltip={collapsed ? item.label : undefined}
                       aria-label={collapsed ? item.label : undefined}
                       aria-current={isActive ? "page" : undefined}
-                      className={`admin-nav-link relative flex h-[38px] items-center gap-2.5 px-2.5 ${
+                      className={`admin-nav-link group relative flex h-[40px] items-center gap-2.5 rounded-xl px-2.5 transition-all duration-150 ${
                         collapsed ? "justify-center px-0" : ""
                       } ${
                         isActive
@@ -283,7 +405,19 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                           : "text-[#94A3B8] hover:bg-[#151F31] hover:text-[#F8FAFC]"
                       }`}
                     >
-                      <Icon className={`h-[17px] w-[17px] shrink-0 ${isActive ? "text-[#22C55E]" : "text-[#94A3B8]"}`} strokeWidth={1.9} />
+                      {isActive && (
+                        <span
+                          className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full ${item.badge.indicator}`}
+                          aria-hidden="true"
+                        />
+                      )}
+                      <span
+                        className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg shadow-2xs transition-transform duration-150 group-hover:scale-105 ${
+                          isActive ? item.badge.active : item.badge.inactive
+                        }`}
+                      >
+                        <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
+                      </span>
                       {!collapsed && <span className="min-w-0 truncate">{item.label}</span>}
                     </Link>
                   );
@@ -499,13 +633,25 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                         href={item.href}
                         aria-current={isActive ? "page" : undefined}
                         onClick={() => setMobileOpen(false)}
-                        className={`admin-nav-link relative flex h-[38px] items-center gap-2.5 px-2.5 ${
+                        className={`admin-nav-link group relative flex h-[40px] items-center gap-2.5 rounded-xl px-2.5 transition-all duration-150 ${
                           isActive
                             ? "bg-[rgba(34,197,94,0.08)] text-[#22C55E] font-semibold"
                             : "text-[#94A3B8] hover:bg-[#151F31] hover:text-[#F8FAFC]"
                         }`}
                       >
-                        <Icon className={`h-[17px] w-[17px] shrink-0 ${isActive ? "text-[#22C55E]" : "text-[#94A3B8]"}`} strokeWidth={1.9} />
+                        {isActive && (
+                          <span
+                            className={`absolute left-0 top-2 bottom-2 w-[3px] rounded-r-full ${item.badge.indicator}`}
+                            aria-hidden="true"
+                          />
+                        )}
+                        <span
+                          className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg shadow-2xs transition-transform duration-150 group-hover:scale-105 ${
+                            isActive ? item.badge.active : item.badge.inactive
+                          }`}
+                        >
+                          <Icon className="h-3.5 w-3.5" strokeWidth={2.2} />
+                        </span>
                         <span className="min-w-0 truncate">{item.label}</span>
                       </Link>
                     );

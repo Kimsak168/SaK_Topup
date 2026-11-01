@@ -721,9 +721,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
                 </>
               ) : (
                 <>
-                  <span>
-                    {selectedPaymentMethod === "aba_payway_v2" ? "Pay with KHQR V2" : "Pay with KHQR"}
-                  </span>
+                  <span>Payment</span>
                   <ArrowRight className="h-4 w-4" />
                 </>
               )}
@@ -750,7 +748,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
           {isCheckingOut ? (
             <><RefreshCw aria-hidden="true" className="topup-mobile-payment-spinner" /><span>Processing</span></>
           ) : (
-            <><span>Buy Now</span><ArrowRight aria-hidden="true" /></>
+            <><span>Payment</span><ArrowRight aria-hidden="true" /></>
           )}
         </button>
       </div>

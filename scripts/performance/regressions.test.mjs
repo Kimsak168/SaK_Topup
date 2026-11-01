@@ -937,6 +937,9 @@ test('proxy normalizes legacy WebBuilder game links and preserves supplier-owned
     assert.equal((await proxy(request(path))).next, true);
   }
   assert.equal((await proxy(request('/game/custom-game'))).next, true);
+  for (const path of ['/games/webbuilder/freefire_tw', '/games/webbuilder/freefire_vn', '/games/webbuilder/mlbb_global', '/games/webbuilder/mcgg_my', '/game/webbuilder-freefire-tw']) {
+    assert.equal((await proxy(request(path))).next, true, path);
+  }
 });
 
 test('admin payment reconciliation requires the provider amount to match the order', async () => {
@@ -1010,11 +1013,12 @@ test('VNGZZ2 sync preserves admin prices and toggles and isolates duplicate prod
     '@/lib/suppliers/vngzz2': { getVngzzImageUrl: () => '/image.png', isVngzzCheckoutSupported: () => true },
     '@/models/Game': { Game: {
       updateOne: async (filter, update) => { gameWrites.push({ filter, update }); return { upsertedCount: 0 }; },
+      updateMany: async () => ({ modifiedCount: 0 }),
       findOne: filter => ({ lean: async () => ({ slug: `vngzz2-${filter.supplierGameCode}`, isActive: true, defaultMarginPercent: 12 }) }),
     } },
     '@/models/GamePackage': { GamePackage: {
       find: () => ({ select() { return this; }, lean: async () => [{ supplierProductCode: 'shared-code', sellingPrice: 99, isActive: false, customImage: '/admin.png' }] }),
-      bulkWrite: async operations => writes.push(...operations), updateMany: async () => {},
+      bulkWrite: async operations => writes.push(...operations), updateMany: async () => ({ modifiedCount: 0 }),
     } },
   })('src/lib/services/vngzzSyncService.ts');
   const result = await syncVngzzCatalogue({ packages: true, source: { games: categories, products: async () => [{ product_code: 'shared-code', name: '55', price: 0.76, available: true, currency: 'USD' }] } });
@@ -1028,6 +1032,61 @@ test('VNGZZ2 sync preserves admin prices and toggles and isolates duplicate prod
     assert.equal(op.updateOne.update.$setOnInsert.sellingPrice, 0.86);
   }
   for (const op of gameWrites) assert.equal('isActive' in op.update.$set, false);
+});
+
+test('WebBuilder regional catalogue routes retain their game and supplier packages', async () => {
+  const games = [
+    { _id: 'kh', slug: 'free-fire-khsgmy', supplier: 'webbuilder', supplierGameCode: 'freefire_khsgmy', name: 'Free Fire KH', category: 'Games', publisher: 'Publisher' },
+    { _id: 'tw', slug: 'webbuilder-freefire-tw', supplier: 'webbuilder', supplierGameCode: 'freefire_tw', name: 'Free Fire TW', category: 'Games', publisher: 'Publisher' },
+    { _id: 'global', slug: 'webbuilder-mlbb-global', supplier: 'webbuilder', supplierGameCode: 'mlbb_global', name: 'Mobile Legends Global', category: 'Games', publisher: 'Publisher' },
+  ];
+  const packages = [
+    { gameCode: 'freefire_tw', gameSlug: 'webbuilder-freefire-tw', supplier: 'webbuilder', supplierProductCode: 'shared', name: '100', sellingPrice: 2, isActive: true },
+    { gameCode: 'freefire_khsgmy', gameSlug: 'free-fire-khsgmy', supplier: 'webbuilder', supplierProductCode: 'kh-only', name: '25', sellingPrice: 1, isActive: true },
+    { gameCode: 'freefire_tw', gameSlug: 'vngzz2-freefire-tw', supplier: 'vngzz2', supplierProductCode: 'shared', name: '100', sellingPrice: 99, isActive: true },
+  ];
+  const service = loader({ react: { cache: fn => fn }, 'next/cache': sharedDataCache(),
+    '@/lib/mongodb': { connectDB: async () => {} }, '@/models/Game': { Game: model(games.map(game => ({ ...game, isActive: true }))) }, '@/models/GamePackage': { GamePackage: model(packages) },
+  })('src/lib/services/gameService.ts');
+  const tw = await service.getGameBySupplierAndCode('webbuilder', 'freefire_tw');
+  assert.equal(tw.game.code, 'freefire_tw');
+  assert.equal((await service.getGameBySupplierAndCode('webbuilder', 'mlbb_global')).game.code, 'mlbb_global');
+  const result = await service.getNormalizedPackages('webbuilder', 'freefire_tw');
+  assert.equal(result.length, 1);
+  assert.equal(result[0].sellingPrice, 2);
+});
+
+test('verification game metadata cannot borrow an identical regional code from another supplier', async () => {
+  const games = [
+    { supplier: 'vngzz2', supplierGameCode: 'mlbb_global', requiresServer: false },
+    { supplier: 'webbuilder', supplierGameCode: 'mlbb_global', requiresServer: true },
+  ];
+  const { getVerificationGame } = loader({ 'next/cache': sharedDataCache(),
+    '@/models/Game': { Game: { findOne: filter => ({ select() { return this; }, maxTimeMS() { return this; }, lean: async () => games.find(game => matches(game, filter)) }) } },
+    '@/lib/mongodb': { connectDB: async () => {} },
+  })('src/lib/services/verificationGameService.ts');
+  assert.equal((await getVerificationGame('webbuilder', 'mlbb_global')).requiresServer, true);
+  assert.equal((await getVerificationGame('vngzz2', 'mlbb_global')).requiresServer, false);
+});
+
+test('regional verification uses its own product and never falls back to a different Free Fire region', async () => {
+  let checks = 0;
+  const { POST } = loader({
+    'next/server': { NextResponse: Response },
+    '@/lib/services/verificationGameService': { getVerificationGame: async () => ({ supplier: 'webbuilder', supplierGameCode: 'freefire_tw', requiresServer: false }) },
+    '@/lib/suppliers/g2bulk': { checkG2BulkPlayer: () => assert.fail('A regional verification must not use the KH fallback') },
+    '@/lib/suppliers/webbuilder': {
+      getWebBuilderProducts: async options => { assert.equal(options.gameCode, 'freefire_tw'); return [{ id: 'fixture-tw-product' }]; },
+      isWebBuilderProductAvailable: () => true,
+      checkWebBuilderPlayer: async productId => { checks++; assert.equal(productId, 'fixture-tw-product'); return { success: false, isUnavailable: true }; },
+    },
+  })('src/app/api/player/verify/route.ts');
+  const request = productId => new Request('http://localhost/api/player/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ supplier: 'webbuilder', code: 'freefire_tw', userId: 'fixture-user', productId }) });
+  assert.equal((await (await POST(request())).json()).isUnavailable, true);
+  assert.equal(checks, 1);
+  assert.equal((await (await POST(request('wrong-region-product'))).json()).isUnavailable, true);
+  assert.equal(checks, 1, 'A product from another region is rejected before verification');
 });
 
 test('VNGZZ2 fulfillment submits the stored product and reference and reconciles without resubmitting', async () => {

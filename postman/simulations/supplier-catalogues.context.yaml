@@ -1,0 +1,44 @@
+purpose:
+  stands_in_for: Read-only WebBuilder and VNGZZ2 game catalogue endpoints.
+  unblocks: Regional package reconciliation and failure handling against isolated MongoDB.
+assumptions:
+  - id: live-catalogue-shapes
+    status: supported
+    claim: The configured accounts return WebBuilder product IDs with integer USD cents and VNGZZ2 game-scoped product codes with reseller sell_price values.
+    reason: Authenticated read-only snapshots from these accounts provided both payload shapes and normalized successfully.
+    verification: On 2026-11-01, fetched 640 WebBuilder products in 23 game groups and 4913 VNGZZ2 products across 191 games. This establishes these account snapshots, not every future response.
+    source: scripts/audit-supplier-catalogues.mjs; docs/providers/vngzz2.openapi.json; docs/providers/catalogue-sync.md
+    updated_at: "2026-11-01"
+  - id: regional-isolation
+    status: supported
+    claim: In the exercised scenarios, the sync moves each WebBuilder product to its exact game and regional group while preserving stored admin settings.
+    reason: The application services ran against the HTTP simulation and isolated MongoDB, and assertions checked persisted state.
+    verification: On 2026-11-01, scripts/verify-supplier-catalogues.mjs passed against Postman CLI 1.73.0. The simulation request log contains WebBuilder and VNGZZ2 catalogue GET calls. Tests verified Free Fire TW, MLBB Global, Magic Chess MY and Blood Strike MENA isolation, preserved prices/artwork/toggles, zero margin, retired game cleanup and repeat sync.
+    source: scripts/verify-supplier-catalogues.mjs; postman/mocks/supplier-catalogues/default.js; src/lib/services/webbuilderSyncService.ts
+    updated_at: "2026-11-01"
+  - id: failed-catalogue-preserves-packages
+    status: supported
+    claim: The exercised malformed, duplicate, incomplete, empty and unavailable WebBuilder snapshots and incomplete VNGZZ2 responses leave existing package records intact.
+    reason: HTTP error fixtures exercised the real adapters before the test compared persisted package records.
+    verification: On 2026-11-01, simulation assertions passed for malformed envelopes, duplicate product IDs, inconsistent totals, empty WebBuilder catalogues and HTTP 503. VNGZZ2 incomplete totals also preserved package state. These cases establish caller behavior under the fixtures; upstream failure bodies were not observed live.
+    source: scripts/verify-supplier-catalogues.mjs; postman/mocks/supplier-catalogues/default.js
+    updated_at: "2026-11-01"
+  - id: provider-purchase-behavior
+    status: unknown
+    claim: A mapped regional product will be delivered by the supplier after a real purchase.
+    reason: This task only reads supplier catalogues; no paid orders were submitted. Purchase behavior is outside this simulation.
+    verification: The fixture rejects purchase methods and recorded only GET requests.
+    source: postman/mocks/supplier-catalogues/default.js; scripts/verify-supplier-catalogues.mjs
+    updated_at: "2026-11-01"
+  - id: applied-catalogue-reconciliation
+    status: supported
+    claim: The final repair matched every current product from the audited account snapshot in the configured application database while retaining protected admin fields.
+    reason: The maintenance command read back all games and packages after applying the repair and reported no mismatches or protected-field changes.
+    verification: On 2026-11-01, verified 5553 current provider packages after importing 234 missing records, moving 358 regional links, updating 4077 buying prices and retiring 344 unavailable products. A repeated repair imported no additional records. This covers the audited snapshot, not later provider changes.
+    source: scripts/repair-supplier-catalogues.mjs; docs/providers/catalogue-sync.md; .local-backups/supplier-repair-1793467241086/repair-result.json
+    updated_at: "2026-11-01"
+fingerprints:
+  - id: catalogue-repair-2026-11-01
+    date: "2026-11-01"
+    commit: null
+    cli: "1.73.0"

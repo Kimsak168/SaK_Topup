@@ -49,7 +49,8 @@ const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Pr
     const publicGames = games.map(g => {
       const supplier = g.supplier;
       const storedCode = g.supplierGameCode || g.slug;
-      const isWebBuilderFreeFire = supplier === "webbuilder" && /free[\s_-]*fire|khsgmy|sgmy/i.test(`${g.slug} ${g.name} ${storedCode}`);
+      const isWebBuilderFreeFire = supplier === "webbuilder" &&
+        ["freefire_khsgmy", "freefire_sgmy", "freefire_global", "freefire", "free-fire", "ff"].includes(storedCode);
       const slug = isWebBuilderFreeFire ? "free-fire-khsgmy" : g.slug;
       const code = isWebBuilderFreeFire ? "freefire_khsgmy" : storedCode;
       return {
@@ -103,6 +104,12 @@ export const getGameBySupplierAndCode = cache(async (
       const games = await getCatalogue();
       const game = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === identifier || g.slug === identifier));
       return game && game.code !== rawCode ? { game: null, shouldRedirect: game.path } : { game: game || null };
+    }
+    // Regional WebBuilder codes take precedence over legacy base-game aliases.
+    if (supplier === "webbuilder") {
+      const identifier = rawCode.trim().toLowerCase();
+      const game = (await getCatalogue()).find(g => g.supplier === supplier && (g.code.toLowerCase() === identifier || g.slug === identifier));
+      if (game) return game.code !== rawCode ? { game: null, shouldRedirect: game.path } : { game };
     }
     const aliases: Record<string, string> = {
       "free-fire": "freefire_khsgmy", freefire: "freefire_khsgmy", ff: "freefire_khsgmy",
