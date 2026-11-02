@@ -226,3 +226,4 @@ export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
     </div>
   );
 }
+
