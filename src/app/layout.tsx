@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Kantumruy_Pro } from "next/font/google";
 import "./globals.css";
 import "./storefront-theme.css";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,13 @@ const inter = Inter({
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+const kantumruyPro = Kantumruy_Pro({
+  subsets: ["khmer", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-kantumruy-pro",
   display: "swap",
 });
 
@@ -48,6 +55,7 @@ export default function RootLayout({
         "h-full antialiased scroll-smooth bg-black dark",
         inter.variable,
         jetbrainsMono.variable,
+        kantumruyPro.variable,
         "font-sans"
       )}
     >

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/mongodb";
 import { Game } from "@/models/Game";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 interface LegacyGamePageProps {
   params: Promise<{ slug: string }>;

@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function DigitalGroupPage({ params, searchParams }: PageProps) {
   const { group: groupParam } = await params;

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getPublicSmmCatalog } from "@/lib/services/smmPublicCatalogService";
 import { PlatformTopUpClient } from "@/components/public/PlatformTopUpClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const PLATFORM_NAMES: Record<string, string> = {
   tiktok: "TikTok",

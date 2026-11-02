@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { getGameBySupplierAndCode, getNormalizedPackages } from "@/lib/services/gameService";
 import { GameTopUpClient } from "@/components/public/GameTopUpClient";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 export const maxDuration = 60;
 
 interface GamePageProps {

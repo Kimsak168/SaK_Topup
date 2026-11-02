@@ -2,9 +2,8 @@ import { getClientGames } from "@/lib/services/gameService";
 import { GameSearch } from "@/components/public/GameSearch";
 import { Metadata } from "next";
 
-// Read the database-backed catalogue at request time. Its unstable_cache entry
-// still revalidates every five minutes and is invalidated after admin edits.
-export const dynamic = "force-dynamic";
+// Cache at Vercel Edge with ISR; revalidates every 60 seconds or on admin catalogue updates.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Games Catalogue — Asura Store",

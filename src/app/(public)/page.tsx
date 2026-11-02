@@ -9,9 +9,9 @@ import { HomeGameEvents } from "@/components/public/HomeGameEvents";
 import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 
-// Read the database-backed catalogue at request time. Its unstable_cache entries
-// remain reusable and revalidate every five minutes.
-export const dynamic = "force-dynamic";
+// Cache at Vercel Edge with ISR (Incremental Static Regeneration).
+// Fast sub-50ms response from CDN; regenerates in background every 60 seconds.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Asura Store — Game Top-Up & Social Media Services — 24/7",

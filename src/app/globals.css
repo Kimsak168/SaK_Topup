@@ -1,10 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 :root {
-  --font-khmer: 'Kantumruy Pro', sans-serif;
+  --font-khmer: var(--font-kantumruy-pro), 'Kantumruy Pro', sans-serif;
 }
 
 /* Admin portals mount under body, so include the server-rendered admin scope. */
