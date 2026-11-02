@@ -25,7 +25,7 @@ export function GameCardSkeleton() {
   );
 }
 
-export function GameGridSkeleton({ count = 10 }: { count?: number }) {
+export function GameGridSkeleton({ count = 12 }: { count?: number }) {
   return (
     <div role="status" aria-label="Loading games" className="storefront-grid">
       {Array.from({ length: count }).map((_, i) => (
@@ -51,7 +51,7 @@ export function CatalogueSkeleton() {
           <h2>ហ្គេមពេញនិយម</h2>
         </div>
       </div>
-      <GameGridSkeleton count={10} />
+      <GameGridSkeleton count={12} />
     </div>
   );
 }

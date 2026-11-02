@@ -87,7 +87,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           src={imgSrc}
           alt={game.name}
           fill
-          sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 20vw, 280px"
+          sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 17vw, 240px"
           loading="lazy"
           className="game-card-image relative z-10 object-cover object-center motion-reduce:transition-none"
           onLoad={() => setIsLoaded(true)}

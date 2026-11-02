@@ -8,6 +8,7 @@ const PLATFORMS = [
   { id: "facebook", name: "Facebook" },
   { id: "instagram", name: "Instagram" },
   { id: "youtube", name: "YouTube" },
+  { id: "other", name: "Other Platforms" },
 ];
 
 export async function HomePlatforms() {

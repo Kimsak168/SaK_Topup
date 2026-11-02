@@ -19,6 +19,7 @@ const PLATFORM_IMAGES: Record<string, string> = {
   facebook: "/images/platforms/facebook-icon.svg",
   instagram: "/images/platforms/instagram-icon.svg",
   youtube: "/images/platforms/youtube-icon.svg",
+  other: "/images/asura-store-logo.png",
 };
 
 export const PlatformCard = memo(function PlatformCard({
