@@ -77,21 +77,25 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
       return;
     }
 
+    const controller = new AbortController();
     let active = true;
-    void fetch("/api/settings/public-logo", { cache: "no-store" })
+
+    void fetch("/api/settings/public-logo", { signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Public logo request failed");
+        if (!response.ok) return;
         const result = (await response.json()) as { logoUrl?: unknown };
         if (active && typeof result.logoUrl === "string" && result.logoUrl.trim()) {
           setResolvedLogoUrl(result.logoUrl);
         }
       })
-      .catch(() => {
-        console.error("[CustomerNavbar] Unable to load the saved logo setting.");
+      .catch((error) => {
+        if (error instanceof Error && error.name === "AbortError") return;
+        // Fallback to default logo gracefully without error alerts
       });
 
     return () => {
       active = false;
+      controller.abort();
     };
   }, [logoUrl]);
 

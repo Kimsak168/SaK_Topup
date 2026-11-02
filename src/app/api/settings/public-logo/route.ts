@@ -7,17 +7,17 @@ export async function GET() {
   try {
     const logoUrl = await getPublicLogoUrl();
     return NextResponse.json(
-      { logoUrl },
-      { headers: { "Cache-Control": "no-store" } },
+      { logoUrl: logoUrl || "/images/asura-store-logo.png" },
+      { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
     );
   } catch (error) {
-    console.error(
-      "[Public Logo API] Failed to load the saved logo setting:",
-      error instanceof Error ? error.name : "UnknownError",
+    console.warn(
+      "[Public Logo API] Fallback to default logo:",
+      error instanceof Error ? error.message : "Database unavailable",
     );
     return NextResponse.json(
-      { success: false, error: "Public branding is temporarily unavailable." },
-      { status: 503, headers: { "Cache-Control": "no-store" } },
+      { logoUrl: "/images/asura-store-logo.png" },
+      { status: 200, headers: { "Cache-Control": "no-store" } },
     );
   }
 }
