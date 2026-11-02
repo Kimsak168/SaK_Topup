@@ -312,8 +312,8 @@ export function PlatformTopUpClient({
 
         {/* Platform Hero Banner Card (matching Game Detail Header) */}
         <section className="service-page-hero relative overflow-hidden">
-          {/* Halloween corner spiderwebs */}
-          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-orange-400/20 z-0" />
+          {/* Water Festival corner ripples */}
+          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-sky-400/25 z-0" />
           <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 text-pink-400/15 z-0 -scale-x-100" />
 
           <div className="service-page-hero__inner relative z-10">
@@ -332,9 +332,9 @@ export function PlatformTopUpClient({
                 <h1 className="service-page-hero__title">
                   {platformName} Top-Up &amp; Growth Services
                 </h1>
-                <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-orange-200">
-                  <span className="text-xs">🎃</span>
-                  <span>Halloween Deals</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-sky-200">
+                  <span className="text-xs">🚣‍♂️</span>
+                  <span>បុណ្យអុំទូក Deals</span>
                 </span>
               </div>
               <p className="service-page-hero__description">

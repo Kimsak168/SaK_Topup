@@ -18,7 +18,7 @@ export function BoostTikTokKhmerBanner() {
       data-banner="tiktok-boost"
       className={`boost-tiktok-banner ${styles.bannerWrapper}`}
     >
-      {/* Spiderwebs for Halloween celebration in both top corners */}
+      {/* Water Festival ripples in both top corners */}
       <SpiderWebSvg className={styles.spiderwebLeft} />
       <SpiderWebSvg className={styles.spiderwebRight} />
 
@@ -35,15 +35,15 @@ export function BoostTikTokKhmerBanner() {
         {/* LEFT SECTION (53% on desktop)                           */}
         {/* ======================================================== */}
         <div className="flex-1 lg:max-w-[53%] space-y-4">
-          {/* Header Badges with Sakura & Halloween tags */}
+          {/* Header Badges with Sakura & Water Festival tags */}
           <div className="flex flex-wrap items-center gap-2">
             <span className={styles.badgePink}>
               <Zap className="size-3.5 text-[#FF249C] fill-[#FF249C] animate-pulse" />
               ⚡ BOOST TIKTOK KHMER
             </span>
             <span className={styles.badgeHalloween}>
-              <span>🎃</span>
-              <span>HALLOWEEN SPECIAL</span>
+              <span>🚣‍♂️</span>
+              <span>បុណ្យអុំទូក WATER FESTIVAL</span>
             </span>
             <span className={styles.badgePayway}>
               <span>KHQR / ABA PayWay</span>
@@ -168,9 +168,9 @@ export function BoostTikTokKhmerBanner() {
 
           {/* 3D Tilted Smartphone Mockup */}
           <div className={styles.phoneMockup}>
-            {/* Cute Halloween Pumpkin perched on top corner of phone */}
+            {/* Cute Water Festival Lotus perched on top corner of phone */}
             <span aria-hidden="true" className={styles.phonePumpkin}>
-              🎃
+              🪷
             </span>
 
             {/* Phone shell */}
@@ -209,15 +209,15 @@ export function BoostTikTokKhmerBanner() {
               <span className={styles.microBadgeText}>+5K</span>
             </div>
 
-            {/* 2. Bat FAST badge (top-right) */}
+            {/* 2. Dragon Boat FAST badge (top-right) */}
             <div className={`${styles.microBadge} ${styles.badgeTopRight}`}>
-              <span className="text-[10px] leading-none select-none">🦇</span>
+              <span className="text-[10px] leading-none select-none">🚣‍♂️</span>
               <span className={styles.microBadgeText}>FAST</span>
             </div>
 
-            {/* 3. Growth chart (bottom-left) */}
+            {/* 3. Full Moon Growth chart (bottom-left) */}
             <div className={`${styles.microBadge} ${styles.badgeBottomLeft}`}>
-              <TrendingUp className="size-3 text-emerald-400" />
+              <span className="text-[10px] leading-none select-none">🌕</span>
               <span className={styles.microBadgeText}>+250%</span>
             </div>
 
@@ -240,7 +240,7 @@ export function BoostTikTokKhmerBanner() {
                 STARTING PRICE
               </span>
               <span className={styles.halloweenMiniTag}>
-                <span>🎃</span>
+                <span>🏮</span>
                 <span>DEAL</span>
               </span>
             </div>

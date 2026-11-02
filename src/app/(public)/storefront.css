@@ -1187,7 +1187,7 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
 }
 
 
-/* Preserve vibrant Sakura and Halloween colors on Boost TikTok spotlight banner */
+/* Preserve vibrant Sakura and Water Festival colors on Boost TikTok spotlight banner */
 .public-theme main :is([data-banner="tiktok-boost"], .boost-tiktok-banner) :is(
   [class*="text-white"],
   [class~="text-white"]

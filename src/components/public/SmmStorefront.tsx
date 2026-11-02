@@ -518,17 +518,17 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
       <div className={homeLayout ? "w-full" : "max-w-7xl mx-auto px-3 sm:px-6 lg:px-8"}>
         {/* Hero Section */}
         {!homeLayout ? <section className={`${styles.hero} relative overflow-hidden`} aria-labelledby="services-title">
-          {/* Halloween corner spiderwebs */}
-          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-24 sm:size-32 text-orange-400/20 z-0" />
+          {/* Water Festival corner ripples */}
+          <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-24 sm:size-32 text-sky-400/25 z-0" />
           <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 sm:size-20 text-pink-400/15 z-0 -scale-x-100" />
 
           <div className={styles.heroCopy}>
             <div className={styles.eyebrow}>
               <Sparkles aria-hidden="true" />
               <span>SOCIAL MEDIA GROWTH &amp; DIGITAL SERVICES</span>
-              <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-orange-200 ml-1.5 shadow-sm">
-                <span className="text-xs">🎃</span>
-                <span>Halloween Event</span>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-500/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-sky-200 ml-1.5 shadow-sm">
+                <span className="text-xs">🚣‍♂️</span>
+                <span>បុណ្យអុំទូក Event</span>
               </span>
             </div>
             <h1 id="services-title" className={styles.heroTitle}>
@@ -919,8 +919,8 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                   <span>Order Details & Payment</span>
                 </h2>
                 <div className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-2 py-0.5 text-[10px] font-bold text-orange-200">
-                    <span>🎃</span> Deals Active
+                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-500/15 px-2 py-0.5 text-[10px] font-bold text-sky-200">
+                    <span>🚣‍♂️</span> Deals Active
                   </span>
                   <span className="hidden sm:inline text-[11px] text-violet-400 font-bold uppercase tracking-wider">
                     Secure checkout

@@ -178,7 +178,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
     <header className={`${styles.header} public-navbar`}>
       <a href="#main-content" className="skip-link">Skip to content</a>
       <div className={styles.shell}>
-        <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-16 sm:size-24 text-orange-400/20 z-0" />
+        <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-16 sm:size-24 text-sky-400/25 z-0" />
         <Link href="/" aria-label="Asura Store Home" className={styles.brand}>
           <span className="relative inline-flex items-center">
             <Image
@@ -191,22 +191,22 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
               priority
               className={styles.logo}
             />
-            {/* Cute Halloween Pumpkin perched on the logo */}
+            {/* Cute Water Festival Lotus perched on the logo */}
             <span
               aria-hidden="true"
               className="absolute -top-1 -right-1.5 text-sm sm:text-base select-none pointer-events-none drop-shadow-md animate-bounce"
               style={{ animationDuration: "2.8s" }}
             >
-              🎃
+              🪷
             </span>
           </span>
           <span aria-hidden="true" className={styles.wordmark}>
             <span className={`${styles.wordmarkText} ${brandTyping ? styles.wordmarkTyping : ""}`}>
               Asura Store
             </span>
-            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-gradient-to-r from-orange-500/15 via-purple-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-orange-600 dark:text-orange-300 shadow-sm ml-2 align-middle">
-              <span className="text-xs leading-none">🦇</span>
-              <span>Halloween</span>
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-gradient-to-r from-sky-500/15 via-blue-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-sky-700 dark:text-sky-300 shadow-sm ml-2 align-middle">
+              <span className="text-xs leading-none">🚣‍♂️</span>
+              <span>បុណ្យអុំទូក</span>
             </span>
           </span>
         </Link>
@@ -282,16 +282,16 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
             className={styles.drawer}
           >
             <div className={`${styles.drawerHeader} relative overflow-hidden`}>
-              <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-16 text-orange-400/20 z-0" />
+              <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-16 text-sky-400/25 z-0" />
               <Link href="/" className={styles.drawerBrand} aria-label="Asura Store Home" onClick={closeDrawer}>
                 <span className="relative inline-flex items-center">
                   <Image src={resolvedLogoUrl || "/images/asura-store-logo.png"} alt="Asura Store" width={48} height={48} quality={100} unoptimized />
-                  <span aria-hidden="true" className="absolute -top-1 -right-1 text-xs select-none">🎃</span>
+                  <span aria-hidden="true" className="absolute -top-1 -right-1 text-xs select-none">🪷</span>
                 </span>
                 <span aria-hidden="true" className={styles.drawerWordmark}>
                   <span>Asura</span> <strong>Store</strong>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-orange-500/15 px-1.5 py-0.5 text-[9px] font-extrabold text-orange-300 ml-1.5 align-middle">
-                    🎃 Halloween
+                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-sky-500/15 px-1.5 py-0.5 text-[9px] font-extrabold text-sky-300 ml-1.5 align-middle">
+                    🚣‍♂️ បុណ្យអុំទូក
                   </span>
                 </span>
               </Link>

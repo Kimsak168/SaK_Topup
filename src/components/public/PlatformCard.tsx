@@ -42,16 +42,16 @@ export const PlatformCard = memo(function PlatformCard({
     >
       {isKhmerCurated ? (
         <div className="relative flex aspect-square w-full shrink-0 flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-[#250c27] via-[#6b174f] to-[#201344] p-4 text-white">
-          {/* Halloween corner spiderweb */}
-          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/50 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-amber-200/80" />
+          {/* Water Festival corner ripple */}
+          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/60 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-sky-200/90" />
 
-          {/* Halloween festive badge sticker */}
+          {/* Water Festival festive badge sticker */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/65 px-1.5 py-0.5 border border-orange-500/40 shadow-md shadow-orange-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-orange-400 group-hover:bg-black/80"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/70 px-1.5 py-0.5 border border-sky-400/40 shadow-md shadow-sky-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-sky-300 group-hover:bg-black/85"
           >
             <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
-            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-orange-200">
+            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-sky-200">
               {sticker.label}
             </span>
           </span>
@@ -82,16 +82,16 @@ export const PlatformCard = memo(function PlatformCard({
         </div>
       ) : (
         <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#0D0916]">
-          {/* Halloween corner spiderweb */}
-          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/50 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-amber-200/80" />
+          {/* Water Festival corner ripple */}
+          <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/60 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-sky-200/90" />
 
-          {/* Halloween festive badge sticker */}
+          {/* Water Festival festive badge sticker */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/65 px-1.5 py-0.5 border border-orange-500/40 shadow-md shadow-orange-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-orange-400 group-hover:bg-black/80"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/70 px-1.5 py-0.5 border border-sky-400/40 shadow-md shadow-sky-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-sky-300 group-hover:bg-black/85"
           >
             <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
-            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-orange-200">
+            <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-sky-200">
               {sticker.label}
             </span>
           </span>

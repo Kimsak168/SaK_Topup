@@ -35,8 +35,8 @@ const socialLinks = [
 export function CustomerFooter() {
   return (
     <footer className="storefront-footer relative z-10 overflow-hidden">
-      {/* Decorative corner spiderwebs for Halloween celebration */}
-      <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-orange-400/20 z-0" />
+      {/* Decorative corner water festival ripples */}
+      <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-20 sm:size-28 text-sky-400/25 z-0" />
       <SpiderWebSvg className="pointer-events-none absolute top-0 left-0 size-16 sm:size-20 text-pink-400/15 z-0 -scale-x-100" />
 
       <div className="storefront-container relative z-10">
@@ -53,21 +53,21 @@ export function CustomerFooter() {
                   unoptimized
                   className="size-11 object-contain"
                 />
-                {/* Cute Halloween Pumpkin perched on the logo */}
+                {/* Cute Water Festival Lotus perched on the logo */}
                 <span
                   aria-hidden="true"
                   className="absolute -top-1 -right-1 text-sm select-none pointer-events-none drop-shadow-md animate-bounce"
                   style={{ animationDuration: "2.8s" }}
                 >
-                  🎃
+                  🪷
                 </span>
               </span>
               <div>
                 <div className="flex items-center flex-wrap gap-1.5">
                   <span className="block text-lg font-bold tracking-tight text-[#172033]">Asura Store</span>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/40 bg-gradient-to-r from-orange-500/15 via-purple-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-orange-600 dark:text-orange-300 shadow-sm align-middle">
-                    <span className="text-xs leading-none">🦇</span>
-                    <span>Halloween</span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-gradient-to-r from-sky-500/15 via-blue-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-sky-700 dark:text-sky-300 shadow-sm align-middle">
+                    <span className="text-xs leading-none">🚣‍♂️</span>
+                    <span>បុណ្យអុំទូក</span>
                   </span>
                 </div>
                 <span className="block text-[11px] text-[#64748B]">Your game top-up &amp; digital store</span>
@@ -83,8 +83,8 @@ export function CustomerFooter() {
             <ul className="space-y-0.5">
               <li><Link href="/" className="storefront-footer-link">Home</Link></li>
               <li><Link href="/games" className="storefront-footer-link">Browse games</Link></li>
-              <li><Link href="/services" className="storefront-footer-link inline-flex items-center gap-1"><span>👻</span> SMM Services</Link></li>
-              <li><Link href="/services/tiktok-khmer" className="storefront-footer-link inline-flex items-center gap-1"><span>🎃</span> TikTok Khmer Deals</Link></li>
+              <li><Link href="/services" className="storefront-footer-link inline-flex items-center gap-1"><span>🌊</span> SMM Services</Link></li>
+              <li><Link href="/services/tiktok-khmer" className="storefront-footer-link inline-flex items-center gap-1"><span>🚣‍♂️</span> TikTok Khmer Deals</Link></li>
               <li><Link href="/orders" className="storefront-footer-link">Track your order</Link></li>
             </ul>
           </div>
@@ -116,8 +116,8 @@ export function CustomerFooter() {
         <div className="storefront-footer-bottom flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
             <p>&copy; 2026 Asura Store. All rights reserved.</p>
-            <span className="inline-flex items-center gap-1 rounded-full border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-[10px] font-bold text-orange-600 dark:text-orange-300">
-              <span>🎃</span> Spooky Season Event
+            <span className="inline-flex items-center gap-1 rounded-full border border-sky-500/30 bg-sky-500/10 px-2 py-0.5 text-[10px] font-bold text-sky-700 dark:text-sky-300">
+              <span>🚣‍♂️</span> ពិធីបុណ្យអុំទូក 2026 · Water Festival Event
             </span>
           </div>
           <span className="inline-flex items-center gap-2">

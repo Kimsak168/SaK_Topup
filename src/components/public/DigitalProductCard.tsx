@@ -22,7 +22,7 @@ export const DigitalProductCard = memo(function DigitalProductCard({
       className="game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-white outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:-translate-y-[2px] motion-reduce:transition-none sm:rounded-[16px]"
     >
       <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#0D0916]">
-        <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/40 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-amber-200/70" />
+        <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/50 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-sky-200/80" />
         <Image
           src={product.image}
           alt={product.name}
