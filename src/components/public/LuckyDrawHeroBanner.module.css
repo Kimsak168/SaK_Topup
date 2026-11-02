@@ -1,0 +1,303 @@
+/* Lucky Draw Hero Banner with Gold, Neon Cyan & Water Festival Aesthetic */
+
+.bannerWrapper {
+  position: relative;
+  overflow: hidden;
+  border-radius: 28px;
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  background:
+    radial-gradient(ellipse at 15% 15%, rgba(245, 158, 11, 0.22), transparent 45%),
+    radial-gradient(ellipse at 85% 20%, rgba(56, 189, 248, 0.22), transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(255, 36, 156, 0.18), transparent 50%),
+    linear-gradient(135deg, #160826 0%, #200f36 42%, #0d1830 72%, #070d1c 100%);
+  padding: clamp(22px, 3.5vw, 36px);
+  color: #FFFFFF !important;
+  box-shadow:
+    0 24px 60px -15px rgba(0, 0, 0, 0.75),
+    0 0 35px -5px rgba(245, 158, 11, 0.25),
+    0 0 30px -8px rgba(56, 189, 248, 0.22);
+}
+
+.bannerWrapper * {
+  box-sizing: border-box;
+}
+
+/* Water festival corner ripples */
+.spiderwebLeft {
+  pointer-events: none;
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 76px;
+  height: 76px;
+  color: rgba(245, 158, 11, 0.45);
+  filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.35));
+  z-index: 1;
+}
+
+.spiderwebRight {
+  pointer-events: none;
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 76px;
+  height: 76px;
+  color: rgba(56, 189, 248, 0.45);
+  transform: scaleX(-1);
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.35));
+  z-index: 1;
+}
+
+/* Ambient glow blobs */
+.glowGold {
+  pointer-events: none;
+  position: absolute;
+  left: -60px;
+  top: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  background: rgba(245, 158, 11, 0.2);
+  filter: blur(60px);
+  z-index: 0;
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+.glowCyan {
+  pointer-events: none;
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.18);
+  filter: blur(60px);
+  z-index: 0;
+  animation: pulseGlow 4s ease-in-out infinite alternate 1s;
+}
+
+.glowPink {
+  pointer-events: none;
+  position: absolute;
+  left: 35%;
+  bottom: -80px;
+  width: 320px;
+  height: 240px;
+  border-radius: 9999px;
+  background: rgba(255, 36, 156, 0.15);
+  filter: blur(70px);
+  z-index: 0;
+  animation: pulseGlow 5s ease-in-out infinite alternate 2s;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.08); opacity: 1; }
+}
+
+/* Subtle decorative grid */
+.gridPattern {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: radial-gradient(#FFFFFF 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/* Header badges */
+.badgeGold {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(245, 158, 11, 0.6);
+  background: rgba(245, 158, 11, 0.18);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  color: #FEF08A !important;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.badgeWaterFest {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 9999px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  background: linear-gradient(90deg, rgba(2, 132, 199, 0.28), rgba(245, 158, 11, 0.22));
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.05em;
+  color: #E0F2FE !important;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.35);
+  animation: waterFestPulse 3s ease-in-out infinite;
+}
+
+@keyframes waterFestPulse {
+  0%, 100% { box-shadow: 0 0 14px rgba(56, 189, 248, 0.3); }
+  50% { box-shadow: 0 0 22px rgba(245, 158, 11, 0.55); }
+}
+
+.badgeGuarantee {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 9999px;
+  border: 1px solid rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.16);
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #A7F3D0 !important;
+}
+
+/* Title & Description */
+.bannerTitle {
+  margin: 0;
+  font-size: clamp(24px, 4vw, 40px);
+  font-weight: 950;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  color: #FFFFFF !important;
+  background: linear-gradient(110deg, #FFFFFF 0%, #FEF08A 45%, #38BDF8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 14px rgba(245, 158, 11, 0.4));
+}
+
+.badgeDaily {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 36, 156, 0.45);
+  background: rgba(255, 36, 156, 0.18);
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #FFE4F3 !important;
+  box-shadow: 0 0 12px rgba(255, 36, 156, 0.25);
+}
+
+.bannerSubtitle {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+  color: #E2E8F0 !important;
+}
+
+/* 4 Feature cards */
+.rewardCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  background: rgba(11, 15, 25, 0.7);
+  backdrop-filter: blur(14px);
+  padding: 10px 12px;
+  transition: all 0.22s ease-out;
+  cursor: default;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.rewardCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+}
+
+.cardIconBox {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+.rewardCardTitle {
+  font-size: 12px;
+  font-weight: 850;
+  line-height: 1.25;
+  color: #FFFFFF;
+}
+
+.rewardCardMeta {
+  font-size: 10px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* Trust Indicators */
+.trustPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(13, 20, 38, 0.6);
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 750;
+  color: #E2E8F0 !important;
+  backdrop-filter: blur(10px);
+}
+
+/* Right Showcase Card */
+.showcaseCard {
+  position: relative;
+  border-radius: 24px;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.25), transparent 70%),
+    linear-gradient(135deg, rgba(26, 16, 44, 0.85) 0%, rgba(13, 20, 38, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  padding: clamp(16px, 2.5vw, 24px);
+  box-shadow:
+    0 16px 36px -10px rgba(0, 0, 0, 0.6),
+    0 0 28px -5px rgba(245, 158, 11, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.spinCtaButton {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #F59E0B 0%, #FF249C 50%, #0284C7 100%);
+  background-size: 200% auto;
+  padding: 12px 20px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #FFFFFF !important;
+  text-decoration: none;
+  box-shadow:
+    0 4px 22px rgba(245, 158, 11, 0.5),
+    0 0 18px rgba(2, 132, 199, 0.35);
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  cursor: pointer;
+}
+
+.spinCtaButton:hover {
+  background-position: right center;
+  transform: scale(1.03);
+  box-shadow:
+    0 6px 28px rgba(245, 158, 11, 0.7),
+    0 0 24px rgba(2, 132, 199, 0.5);
+}
+
+.spinCtaButton:active {
+  transform: scale(0.98);
+}

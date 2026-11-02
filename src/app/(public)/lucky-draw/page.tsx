@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Trophy, Gift, Sparkles, Search, CheckCircle2, Ticket, ArrowRight, ShieldCheck } from "lucide-react";
 import { LuckyDrawWheel } from "@/components/public/LuckyDrawWheel";
+import { LuckyDrawHeroBanner } from "@/components/public/LuckyDrawHeroBanner";
 import { LUCKY_PRIZES } from "@/types/luckyDraw";
 
 export default function LuckyDrawPage() {
@@ -19,24 +20,12 @@ export default function LuckyDrawPage() {
   };
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 max-w-4xl mx-auto space-y-10">
-      {/* Hero Header */}
-      <div className="text-center space-y-3 relative">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-400/30 text-amber-300 text-xs font-black tracking-wider uppercase shadow-md shadow-amber-950/40">
-          <Sparkles className="size-3.5 text-amber-400" />
-          <span>Asura Rewards · 100% Win Guarantee</span>
-        </div>
+    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6 max-w-5xl mx-auto space-y-10">
+      {/* 1. Hero Showcase Banner */}
+      <LuckyDrawHeroBanner />
 
-        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
-          Lucky Draw &amp; Points Wheel
-        </h1>
-        <p className="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
-          Every completed top-up order earns <strong className="text-amber-300">10 Points per \$1.00</strong> plus a <strong className="text-pink-400">Guaranteed Free Spin</strong> to win discount vouchers, TikTok views, and game diamonds!
-        </p>
-      </div>
-
-      {/* Interactive Wheel - Always Visible for Visitors & Customers */}
-      <div className="pt-2">
+      {/* 2. Interactive Wheel - Always Visible for Visitors & Customers */}
+      <div id="wheel-section" className="pt-2 scroll-mt-28">
         <LuckyDrawWheel
           orderNumber={activeOrder || undefined}
           isOpen={true}
