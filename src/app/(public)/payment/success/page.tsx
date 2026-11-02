@@ -14,6 +14,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
+import { LuckyDrawWheel } from "@/components/public/LuckyDrawWheel";
 
 interface OrderData {
   orderNumber: string;
@@ -347,6 +348,13 @@ function SuccessContent() {
             </span>
           </div>
         </div>
+
+        {/* Lucky Draw Wheel (When Paid) */}
+        {isPaid && (
+          <div className="pt-2">
+            <LuckyDrawWheel orderNumber={order.orderNumber} />
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="pt-2 flex flex-col sm:flex-row gap-3">

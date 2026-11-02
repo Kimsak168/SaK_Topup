@@ -80,6 +80,21 @@ export interface IOrder extends Document {
   paidAt?: Date;
   fulfilledAt?: Date;
   refundVersion?: number;
+  luckyDraw?: {
+    eligible: boolean;
+    spun: boolean;
+    spunAt?: Date;
+    prize?: {
+      id: string;
+      name: string;
+      label: string;
+      icon: string;
+      type: "points" | "discount" | "diamonds" | "views";
+      value: number;
+      code?: string;
+      description?: string;
+    };
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -314,6 +329,12 @@ const OrderSchema = new Schema<IOrder>(
       type: Date,
     },
     refundVersion: { type: Number, default: 0, select: false },
+    luckyDraw: {
+      eligible: { type: Boolean, default: false },
+      spun: { type: Boolean, default: false },
+      spunAt: { type: Date },
+      prize: { type: Schema.Types.Mixed },
+    },
   },
   {
     timestamps: true,

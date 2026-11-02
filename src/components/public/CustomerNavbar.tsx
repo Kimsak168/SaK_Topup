@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Gamepad2, Headphones, Home, Menu, Search, Sparkles, X } from "lucide-react";
+import { Gamepad2, Headphones, Home, Menu, Search, Sparkles, Trophy, X } from "lucide-react";
 import { SOCIAL_URLS } from "@/lib/socialLinks";
 import { SpiderWebSvg } from "./HalloweenAccents";
 import styles from "./CustomerNavbar.module.css";
@@ -13,6 +13,7 @@ const navLinks = [
   { href: "/", label: "Home", Icon: Home },
   { href: "/#games", label: "Games", Icon: Gamepad2 },
   { href: "/#services", label: "Services", Icon: Sparkles },
+  { href: "/lucky-draw", label: "🎁 Lucky Draw", Icon: Trophy },
 ];
 
 const telegramIconPath = "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 5.29 3.87c.97.54 1.67.26 1.91-.9L23.67 4c.35-1.44-.55-2.09-1.48-1.67L1.84 10.18c-1.39.56-1.38 1.33-.25 1.67l5.22 1.63L18.9 5.86c.57-.35 1.09-.16.66.23Z";
@@ -20,6 +21,7 @@ const telegramIconPath = "M9.78 15.43 9.4 20.8c.54 0 .78-.23 1.06-.51l2.55-2.44 
 type HomeSection = "home" | "games" | "services";
 
 function isCurrentPage(pathname: string, href: string, activeHomeSection: HomeSection): boolean {
+  if (href === "/lucky-draw") return pathname.startsWith("/lucky-draw");
   if (href === "/") return pathname === "/" && activeHomeSection === "home";
   if (href.endsWith("#services")) {
     return pathname.startsWith("/services") || (pathname === "/" && activeHomeSection === "services");
