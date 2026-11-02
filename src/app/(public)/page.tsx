@@ -6,6 +6,7 @@ import { HomeCatalogue } from "@/components/public/HomeCatalogue";
 import { HomeFeaturedPackages } from "@/components/public/HomeFeaturedPackages";
 import { HomePlatforms } from "@/components/public/HomePlatforms";
 import { HomeGameEvents } from "@/components/public/HomeGameEvents";
+import { HomeLuckyDraw } from "@/components/public/HomeLuckyDraw";
 import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 
@@ -61,7 +62,10 @@ export default function HomePage() {
         <HomeGames />
       </Suspense>
 
-      {/* 3. All Platforms (Social Media Growth) */}
+      {/* 3. Lucky Draw Showcase (Spin to Win) */}
+      <HomeLuckyDraw />
+
+      {/* 4. All Platforms (Social Media Growth) */}
       <Suspense fallback={<PlatformsSkeleton />}>
         <HomePlatforms />
       </Suspense>

@@ -35,11 +35,20 @@ export default function LuckyDrawPage() {
         </p>
       </div>
 
+      {/* Interactive Wheel - Always Visible for Visitors & Customers */}
+      <div className="pt-2">
+        <LuckyDrawWheel
+          orderNumber={activeOrder || undefined}
+          isOpen={true}
+          title={activeOrder ? `Order Spin: ${activeOrder}` : "Daily Free Lucky Spin"}
+        />
+      </div>
+
       {/* Order Number Claim Form */}
       <div className="max-w-md mx-auto rounded-3xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-xl p-5 sm:p-6 shadow-xl">
         <form onSubmit={handleSubmit} className="space-y-3">
           <label htmlFor="orderInput" className="block text-xs font-bold text-slate-300">
-            Enter your Paid Order Number to Spin:
+            Have a Paid Order? Enter Order Number for Bonus Spins:
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -61,17 +70,10 @@ export default function LuckyDrawPage() {
             </button>
           </div>
           <p className="text-[11px] text-slate-400">
-            Tip: You can find your Order Number on your payment receipt or live order tracking page.
+            Every paid top-up order unlocks 1 bonus spin with guaranteed rewards!
           </p>
         </form>
       </div>
-
-      {/* Interactive Wheel if order verified */}
-      {activeOrder && (
-        <div className="pt-2 animate-in fade-in zoom-in-95">
-          <LuckyDrawWheel orderNumber={activeOrder} isOpen={true} />
-        </div>
-      )}
 
       {/* Prize Showcase Grid */}
       <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-8 space-y-5">

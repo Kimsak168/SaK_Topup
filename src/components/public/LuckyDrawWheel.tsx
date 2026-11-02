@@ -6,11 +6,12 @@ import { toast } from "sonner";
 import { LUCKY_PRIZES, LuckyPrize } from "@/types/luckyDraw";
 
 interface LuckyDrawWheelProps {
-  orderNumber: string;
+  orderNumber?: string;
   onWin?: (prize: { label: string; code?: string; points?: number }) => void;
   isOpen?: boolean;
   onClose?: () => void;
   autoOpenIfEligible?: boolean;
+  title?: string;
 }
 
 // Synthesize a quick mechanical tick using Web Audio API
@@ -119,6 +120,7 @@ export function LuckyDrawWheel({
   onWin,
   isOpen = true,
   onClose,
+  title,
 }: LuckyDrawWheelProps) {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
@@ -138,32 +140,53 @@ export function LuckyDrawWheel({
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioTickIntervalRef = useRef<number | null>(null);
 
-  // Check order eligibility on mount
+  // Check order eligibility or daily free spin on mount
   useEffect(() => {
-    if (!orderNumber) return;
     let active = true;
 
-    fetch(`/api/lucky-draw/status?orderNumber=${encodeURIComponent(orderNumber)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (!active) return;
-        if (data.success) {
-          setEligible(data.eligible);
-          setAlreadySpun(data.hasSpun);
-          if (data.hasSpun && data.prize) {
-            setPrizeResult(data.prize);
+    if (orderNumber) {
+      fetch(`/api/lucky-draw/status?orderNumber=${encodeURIComponent(orderNumber)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!active) return;
+          if (data.success) {
+            setEligible(data.eligible);
+            setAlreadySpun(data.hasSpun);
+            if (data.hasSpun && data.prize) {
+              setPrizeResult(data.prize);
+            }
+          } else {
+            setEligible(false);
+          }
+          setStatusChecked(true);
+        })
+        .catch(() => {
+          if (active) {
+            setEligible(false);
+            setStatusChecked(true);
+          }
+        });
+    } else {
+      // Free Daily Spin mode for visitors
+      try {
+        const today = new Date().toDateString();
+        const lastSpun = localStorage.getItem("asura_last_free_spin");
+        if (lastSpun === today) {
+          setAlreadySpun(true);
+          setEligible(false);
+          const savedPrize = localStorage.getItem("asura_free_spin_prize");
+          if (savedPrize) {
+            setPrizeResult(JSON.parse(savedPrize));
           }
         } else {
-          setEligible(false);
+          setAlreadySpun(false);
+          setEligible(true);
         }
-        setStatusChecked(true);
-      })
-      .catch(() => {
-        if (active) {
-          setEligible(false);
-          setStatusChecked(true);
-        }
-      });
+      } catch {
+        setEligible(true);
+      }
+      setStatusChecked(true);
+    }
 
     return () => {
       active = false;
@@ -271,15 +294,20 @@ export function LuckyDrawWheel({
       }, 140);
       audioTickIntervalRef.current = tickTimer;
 
-      const res = await fetch("/api/lucky-draw/spin", {
+      const endpoint = orderNumber ? "/api/lucky-draw/spin" : "/api/lucky-draw/free-spin";
+      const payload = orderNumber
+        ? { orderNumber }
+        : { identifier: typeof window !== "undefined" ? localStorage.getItem("asura_client_id") || "guest" : "guest" };
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderNumber }),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
 
       if (!res.ok || !data.success) {
-        toast.error("Lucky Spin Error", { description: data.error || "Unable to spin this order." });
+        toast.error("Lucky Spin Error", { description: data.error || "Unable to spin right now." });
         setSpinning(false);
         if (audioTickIntervalRef.current) clearInterval(audioTickIntervalRef.current);
         return;
@@ -303,6 +331,16 @@ export function LuckyDrawWheel({
         setAlreadySpun(true);
         setPrizeResult(data.prize);
         playWinSound();
+
+        // Remember free spin in localStorage
+        if (!orderNumber) {
+          try {
+            localStorage.setItem("asura_last_free_spin", new Date().toDateString());
+            localStorage.setItem("asura_free_spin_prize", JSON.stringify(data.prize));
+          } catch {
+            // ignore
+          }
+        }
 
         if (confettiCanvasRef.current) {
           triggerConfetti(confettiCanvasRef.current);
@@ -357,13 +395,17 @@ export function LuckyDrawWheel({
           </span>
           <div className="text-left">
             <h3 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
-              <span>Lucky Draw Reward</span>
+              <span>{title || (orderNumber ? "Order Lucky Draw Reward" : "Daily Free Lucky Spin")}</span>
               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
                 100% WIN
               </span>
             </h3>
             <p className="text-[11px] text-slate-400">
-              Order: <span className="font-mono text-sky-300 font-bold">{orderNumber}</span>
+              {orderNumber ? (
+                <>Order: <span className="font-mono text-sky-300 font-bold">{orderNumber}</span></>
+              ) : (
+                <span>🎁 1 Free Spin Every Day · Win Discounts &amp; Points</span>
+              )}
             </p>
           </div>
         </div>
@@ -458,11 +500,15 @@ export function LuckyDrawWheel({
         </div>
       ) : alreadySpun ? (
         <div className="relative z-10 mt-3 text-xs text-slate-400">
-          This order has already redeemed its Lucky Spin.
+          {orderNumber
+            ? "This order has already redeemed its Lucky Spin."
+            : "You have used today's free spin! Come back tomorrow or top up to spin again."}
         </div>
       ) : statusChecked && eligible === false ? (
         <div className="relative z-10 mt-3 text-xs text-amber-400 font-semibold">
-          Complete payment first to unlock your free Lucky Spin!
+          {orderNumber
+            ? "Complete payment first to unlock your free Lucky Spin!"
+            : "Free spin unavailable right now."}
         </div>
       ) : (
         <div className="relative z-10 mt-3 text-xs text-slate-300 flex items-center justify-center gap-1.5">

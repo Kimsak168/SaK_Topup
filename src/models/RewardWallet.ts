@@ -71,3 +71,4 @@ const RewardWalletSchema = new Schema<IRewardWallet>(
 
 export const RewardWallet: Model<IRewardWallet> =
   mongoose.models.RewardWallet || mongoose.model<IRewardWallet>("RewardWallet", RewardWalletSchema);
+

@@ -100,3 +100,4 @@ export const LUCKY_PRIZES: LuckyPrize[] = [
     description: "Water Festival festive reward: +15 Points!",
   },
 ];
+
