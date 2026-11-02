@@ -2,6 +2,7 @@ import { CustomerNavbar } from "@/components/public/CustomerNavbar";
 import { CustomerFooter } from "@/components/public/CustomerFooter";
 import { FallingFlowersBackground } from "@/components/public/FallingFlowersBackground";
 import { TelegramSupportWidget } from "@/components/public/TelegramSupportWidget";
+import { LuckyDrawModal } from "@/components/public/LuckyDrawModal";
 import { getPublicLogoUrl } from "@/lib/services/publicSettingsService";
 import "./storefront.css";
 
@@ -25,6 +26,7 @@ export default async function PublicCustomerLayout({
         <main id="main-content" tabIndex={-1} className="relative z-20 flex-1 w-full min-w-0 pt-[calc(60px+env(safe-area-inset-top,0px))] md:pt-[calc(72px+env(safe-area-inset-top,0px))]">
           {children}
           <TelegramSupportWidget />
+          <LuckyDrawModal />
         </main>
 
         {/* Customer Footer */}

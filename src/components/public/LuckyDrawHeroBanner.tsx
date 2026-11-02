@@ -18,16 +18,12 @@ interface LuckyDrawHeroBannerProps {
 
 export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
   const handleScrollToWheel = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (onSpinClick) {
-      e.preventDefault();
       onSpinClick();
       return;
     }
-    const wheelElem = document.getElementById("wheel-section");
-    if (wheelElem) {
-      e.preventDefault();
-      wheelElem.scrollIntoView({ behavior: "smooth" });
-    }
+    window.dispatchEvent(new CustomEvent("open-lucky-draw"));
   };
 
   return (

@@ -14,7 +14,6 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { LuckyDrawWheel } from "@/components/public/LuckyDrawWheel";
 
 interface OrderData {
   orderNumber: string;
@@ -349,10 +348,29 @@ function SuccessContent() {
           </div>
         </div>
 
-        {/* Lucky Draw Wheel (When Paid) */}
+        {/* Lucky Draw Spin Reward (When Paid) */}
         {isPaid && (
-          <div className="pt-2">
-            <LuckyDrawWheel orderNumber={order.orderNumber} />
+          <div className="pt-1 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-950/30 via-pink-950/30 to-purple-950/30 p-4 text-center space-y-2">
+            <div className="flex items-center justify-center gap-1.5 text-xs font-black text-amber-300">
+              <span className="text-base animate-bounce">🎁</span>
+              <span>You Unlocked 1 Lucky Draw Bonus Spin!</span>
+            </div>
+            <p className="text-[11px] text-slate-300">
+              100% Win Guarantee — spin now to claim instant discount vouchers or points.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(
+                  new CustomEvent("open-lucky-draw", {
+                    detail: { orderNumber: order.orderNumber },
+                  })
+                );
+              }}
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 hover:from-amber-400 hover:to-purple-500 text-slate-950 font-black text-xs shadow-lg shadow-pink-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2"
+            >
+              <span>🎡 Click to Spin Lucky Wheel</span>
+            </button>
           </div>
         )}
 

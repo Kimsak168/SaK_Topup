@@ -220,10 +220,19 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
         <nav aria-label="Primary navigation" className={styles.primaryNav}>
           {navLinks.map(({ href, label }) => {
             const active = isCurrentPage(pathname, href, activeHomeSection);
+            const isLuckyDraw = href === "/lucky-draw";
             return (
               <Link
                 key={href}
                 href={href}
+                onClick={
+                  isLuckyDraw
+                    ? (e) => {
+                        e.preventDefault();
+                        window.dispatchEvent(new CustomEvent("open-lucky-draw"));
+                      }
+                    : undefined
+                }
                 aria-current={active ? "page" : undefined}
                 className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
               >
@@ -316,11 +325,18 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string } = {}) {
             <nav aria-label="Menu navigation" className={styles.drawerNav}>
               {navLinks.map(({ href, label, Icon }) => {
                 const active = isCurrentPage(pathname, href, activeHomeSection);
+                const isLuckyDraw = href === "/lucky-draw";
                 return (
                   <Link
                     key={href}
                     href={href}
-                    onClick={closeDrawer}
+                    onClick={(e) => {
+                      closeDrawer();
+                      if (isLuckyDraw) {
+                        e.preventDefault();
+                        window.dispatchEvent(new CustomEvent("open-lucky-draw"));
+                      }
+                    }}
                     aria-current={active ? "page" : undefined}
                     className={`${styles.drawerLink} ${active ? styles.drawerLinkActive : ""}`}
                   >

@@ -12,6 +12,8 @@ interface LuckyDrawWheelProps {
   onClose?: () => void;
   autoOpenIfEligible?: boolean;
   title?: string;
+  wheelSize?: number;
+  isCompact?: boolean;
 }
 
 // Synthesize a quick mechanical tick using Web Audio API
@@ -121,7 +123,12 @@ export function LuckyDrawWheel({
   isOpen = true,
   onClose,
   title,
+  wheelSize,
+  isCompact,
 }: LuckyDrawWheelProps) {
+  const isSmall = Boolean(isCompact || (wheelSize && wheelSize < 280));
+  const effectiveSize = wheelSize || (isCompact ? 240 : 320);
+
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [eligible, setEligible] = useState<boolean | null>(null);
@@ -201,13 +208,13 @@ export function LuckyDrawWheel({
     if (!ctx) return;
 
     const dpr = window.devicePixelRatio || 1;
-    const size = 320;
+    const size = effectiveSize;
     canvas.width = size * dpr;
     canvas.height = size * dpr;
     ctx.scale(dpr, dpr);
 
     const center = size / 2;
-    const radius = size / 2 - 12;
+    const radius = size / 2 - (isSmall ? 8 : 12);
     const numSlices = LUCKY_PRIZES.length;
     const sliceAngle = (2 * Math.PI) / numSlices;
 
@@ -232,7 +239,7 @@ export function LuckyDrawWheel({
 
       // Border between slices
       ctx.strokeStyle = "rgba(255, 255, 255, 0.22)";
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = isSmall ? 1 : 1.5;
       ctx.stroke();
 
       // 2. Draw Slice Icon & Text
@@ -243,15 +250,15 @@ export function LuckyDrawWheel({
       // Icon
       ctx.textAlign = "right";
       ctx.textBaseline = "middle";
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillText(slice.icon, radius - 16, 0);
+      ctx.font = isSmall ? "bold 13px sans-serif" : "bold 16px sans-serif";
+      ctx.fillText(slice.icon, radius - (isSmall ? 10 : 16), 0);
 
       // Label text
-      ctx.font = "bold 11px system-ui, -apple-system, sans-serif";
+      ctx.font = isSmall ? "bold 8.5px system-ui, -apple-system, sans-serif" : "bold 11px system-ui, -apple-system, sans-serif";
       ctx.fillStyle = "#FFFFFF";
       ctx.shadowColor = "rgba(0,0,0,0.8)";
       ctx.shadowBlur = 4;
-      ctx.fillText(slice.name, radius - 40, 0);
+      ctx.fillText(slice.name, radius - (isSmall ? 28 : 40), 0);
 
       ctx.restore();
     });
@@ -260,24 +267,24 @@ export function LuckyDrawWheel({
     ctx.beginPath();
     ctx.arc(center, center, radius, 0, 2 * Math.PI);
     ctx.strokeStyle = "#F59E0B";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = isSmall ? 3.5 : 5;
     ctx.stroke();
 
     // Small golden light bulbs around outer rim
     const numBulbs = 24;
     for (let b = 0; b < numBulbs; b++) {
       const bAngle = (b * (2 * Math.PI)) / numBulbs;
-      const bx = center + (radius + 4) * Math.cos(bAngle);
-      const by = center + (radius + 4) * Math.sin(bAngle);
+      const bx = center + (radius + (isSmall ? 2.5 : 4)) * Math.cos(bAngle);
+      const by = center + (radius + (isSmall ? 2.5 : 4)) * Math.sin(bAngle);
 
       ctx.beginPath();
-      ctx.arc(bx, by, 2.5, 0, 2 * Math.PI);
+      ctx.arc(bx, by, isSmall ? 1.6 : 2.5, 0, 2 * Math.PI);
       ctx.fillStyle = b % 2 === 0 ? "#FDE047" : "#38BDF8";
       ctx.shadowColor = b % 2 === 0 ? "#F59E0B" : "#0284C7";
-      ctx.shadowBlur = 6;
+      ctx.shadowBlur = isSmall ? 3 : 6;
       ctx.fill();
     }
-  }, []);
+  }, [effectiveSize, isSmall]);
 
   // Handle spin action
   const handleSpin = useCallback(async () => {
@@ -376,7 +383,11 @@ export function LuckyDrawWheel({
   if (!isOpen) return null;
 
   return (
-    <div className="relative w-full max-w-lg mx-auto rounded-3xl border border-sky-400/40 bg-[#0B0F19]/95 backdrop-blur-xl p-5 sm:p-7 text-center shadow-2xl shadow-sky-950/50 overflow-hidden">
+    <div
+      className={`relative w-full mx-auto rounded-3xl border border-sky-400/40 bg-[#0B0F19]/95 backdrop-blur-xl text-center shadow-2xl shadow-sky-950/50 overflow-hidden ${
+        isSmall ? "max-w-[340px] p-4" : "max-w-lg p-5 sm:p-7"
+      }`}
+    >
       {/* Background ambient neon glows */}
       <div className="pointer-events-none absolute -top-16 -left-16 size-48 rounded-full bg-pink-500/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-16 -right-16 size-48 rounded-full bg-sky-500/20 blur-3xl" />
@@ -388,23 +399,29 @@ export function LuckyDrawWheel({
       />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between pb-3 mb-2 border-b border-white/10">
+      <div className={`relative z-10 flex items-center justify-between border-b border-white/10 ${
+        isSmall ? "pb-2.5 mb-1" : "pb-3 mb-2"
+      }`}>
         <div className="flex items-center gap-2">
-          <span className="flex size-8 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-pink-500 text-white shadow-md shadow-pink-500/30">
-            <Trophy className="size-4" />
+          <span className={`flex items-center justify-center rounded-xl bg-gradient-to-tr from-amber-500 to-pink-500 text-white shadow-md shadow-pink-500/30 ${
+            isSmall ? "size-7" : "size-8"
+          }`}>
+            <Trophy className={isSmall ? "size-3.5" : "size-4"} />
           </span>
           <div className="text-left">
-            <h3 className="text-base sm:text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+            <h3 className={`font-black tracking-tight text-white flex items-center gap-1.5 ${
+              isSmall ? "text-sm" : "text-base sm:text-lg"
+            }`}>
               <span>{title || (orderNumber ? "Order Lucky Draw Reward" : "Daily Free Lucky Spin")}</span>
-              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
+              <span className="text-[10px] font-extrabold px-1.5 py-0.5 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
                 100% WIN
               </span>
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[10px] sm:text-[11px] text-slate-400">
               {orderNumber ? (
                 <>Order: <span className="font-mono text-sky-300 font-bold">{orderNumber}</span></>
               ) : (
-                <span>🎁 1 Free Spin Every Day · Win Discounts &amp; Points</span>
+                <span>🎁 1 Free Spin Daily · Win Points &amp; Coupons</span>
               )}
             </p>
           </div>
@@ -414,23 +431,33 @@ export function LuckyDrawWheel({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
             aria-label="Close lucky draw"
           >
-            <X className="size-5" />
+            <X className="size-4 sm:size-5" />
           </button>
         )}
       </div>
 
       {/* Wheel Area */}
-      <div className="relative my-4 flex flex-col items-center justify-center">
+      <div className={`relative flex flex-col items-center justify-center ${isSmall ? "my-2" : "my-4"}`}>
         {/* Top Pointer Indicator */}
-        <div className="relative z-20 -mb-4 flex flex-col items-center">
-          <div className="w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-amber-400 drop-shadow-[0_4px_10px_rgba(245,158,11,0.8)] filter" />
+        <div className={`relative z-20 flex flex-col items-center ${isSmall ? "-mb-3" : "-mb-4"}`}>
+          <div
+            className={`w-0 h-0 border-l-transparent border-r-transparent border-t-amber-400 drop-shadow-[0_4px_10px_rgba(245,158,11,0.8)] filter ${
+              isSmall
+                ? "border-l-[9px] border-r-[9px] border-t-[16px]"
+                : "border-l-[12px] border-r-[12px] border-t-[20px]"
+            }`}
+          />
         </div>
 
         {/* Rotating Wheel Wrapper */}
-        <div className="relative size-[300px] sm:size-[320px] rounded-full p-1.5 bg-gradient-to-tr from-amber-400 via-pink-500 to-sky-400 shadow-[0_0_35px_rgba(56,189,248,0.35)]">
+        <div
+          className={`relative rounded-full bg-gradient-to-tr from-amber-400 via-pink-500 to-sky-400 shadow-[0_0_35px_rgba(56,189,248,0.35)] ${
+            isSmall ? "size-[230px] p-1" : "size-[300px] sm:size-[320px] p-1.5"
+          }`}
+        >
           <div
             className="relative size-full rounded-full overflow-hidden"
             style={{
@@ -446,7 +473,9 @@ export function LuckyDrawWheel({
             type="button"
             onClick={handleSpin}
             disabled={spinning || alreadySpun || eligible === false}
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 size-16 sm:size-18 rounded-full border-2 border-amber-300 bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-amber-950/60 flex flex-col items-center justify-center transition-all ${
+            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 rounded-full border-2 border-amber-300 bg-gradient-to-b from-amber-400 via-amber-500 to-amber-600 text-slate-950 font-black uppercase tracking-wider shadow-lg shadow-amber-950/60 flex flex-col items-center justify-center transition-all ${
+              isSmall ? "size-14 text-[11px]" : "size-16 sm:size-18 text-xs sm:text-sm"
+            } ${
               spinning
                 ? "scale-95 opacity-80 cursor-not-allowed"
                 : alreadySpun
@@ -455,13 +484,13 @@ export function LuckyDrawWheel({
             }`}
           >
             {spinning ? (
-              <RotateCcw className="size-5 animate-spin" />
+              <RotateCcw className={`${isSmall ? "size-4" : "size-5"} animate-spin`} />
             ) : alreadySpun ? (
               <span className="text-[10px] leading-tight">DONE</span>
             ) : (
               <>
                 <span className="leading-none">SPIN</span>
-                <span className="text-[8px] font-extrabold text-amber-950/80">NOW</span>
+                <span className="text-[7.5px] font-extrabold text-amber-950/80">NOW</span>
               </>
             )}
           </button>
@@ -470,27 +499,29 @@ export function LuckyDrawWheel({
 
       {/* Prize Result Banner or Status Note */}
       {prizeResult ? (
-        <div className="relative z-10 mt-4 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-950/40 via-sky-950/40 to-emerald-950/40 p-4 text-center space-y-2 animate-in fade-in zoom-in-95">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+        <div className={`relative z-10 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-950/40 via-sky-950/40 to-emerald-950/40 text-center animate-in fade-in zoom-in-95 ${
+          isSmall ? "mt-2.5 p-3 space-y-1.5" : "mt-4 p-4 space-y-2"
+        }`}>
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
             <Sparkles className="size-3.5" />
             <span>You Won: {prizeResult.label}</span>
           </div>
 
           {prizeResult.description && (
-            <p className="text-xs text-slate-300 max-w-sm mx-auto">
+            <p className="text-[11px] text-slate-300 max-w-sm mx-auto">
               {prizeResult.description}
             </p>
           )}
 
           {prizeResult.code && (
             <div className="pt-1 flex items-center justify-center gap-2">
-              <span className="font-mono text-sm font-black px-3 py-1.5 rounded-xl bg-black/60 border border-amber-400/50 text-amber-300 tracking-wider">
+              <span className="font-mono text-xs font-black px-2.5 py-1 rounded-xl bg-black/60 border border-amber-400/50 text-amber-300 tracking-wider">
                 {prizeResult.code}
               </span>
               <button
                 type="button"
                 onClick={() => copyCode(prizeResult.code!)}
-                className="px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
               >
                 {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
                 <span>{copied ? "Copied" : "Copy"}</span>
@@ -499,19 +530,19 @@ export function LuckyDrawWheel({
           )}
         </div>
       ) : alreadySpun ? (
-        <div className="relative z-10 mt-3 text-xs text-slate-400">
+        <div className="relative z-10 mt-2 text-xs text-slate-400">
           {orderNumber
             ? "This order has already redeemed its Lucky Spin."
-            : "You have used today's free spin! Come back tomorrow or top up to spin again."}
+            : "You used today's free spin! Come back tomorrow or top up to spin again."}
         </div>
       ) : statusChecked && eligible === false ? (
-        <div className="relative z-10 mt-3 text-xs text-amber-400 font-semibold">
+        <div className="relative z-10 mt-2 text-xs text-amber-400 font-semibold">
           {orderNumber
             ? "Complete payment first to unlock your free Lucky Spin!"
             : "Free spin unavailable right now."}
         </div>
       ) : (
-        <div className="relative z-10 mt-3 text-xs text-slate-300 flex items-center justify-center gap-1.5">
+        <div className="relative z-10 mt-2 text-xs text-slate-300 flex items-center justify-center gap-1.5">
           <Gift className="size-3.5 text-pink-400" />
           <span>Click <strong>SPIN NOW</strong> to claim your guaranteed reward!</span>
         </div>
