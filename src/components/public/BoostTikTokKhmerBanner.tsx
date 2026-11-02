@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Headphones,
@@ -38,8 +39,14 @@ export function BoostTikTokKhmerBanner() {
           {/* Header Badges with Sakura & Water Festival tags */}
           <div className="flex flex-wrap items-center gap-2">
             <span className={styles.badgePink}>
-              <Zap className="size-3.5 text-[#FF249C] fill-[#FF249C] animate-pulse" />
-              ⚡ BOOST TIKTOK KHMER
+              <Image
+                src="/images/platforms/tiktok-icon.svg"
+                alt="TikTok"
+                width={14}
+                height={14}
+                className="size-3.5 rounded-sm object-contain"
+              />
+              <span>BOOST TIKTOK KHMER</span>
             </span>
             <span className={styles.badgeHalloween}>
               <span>🚣‍♂️</span>
@@ -52,10 +59,21 @@ export function BoostTikTokKhmerBanner() {
 
           {/* Headline & Description */}
           <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h2 className={styles.bannerTitle}>
-                Boost TikTok Khmer
-              </h2>
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <span className={styles.tiktokTitleIconWrapper} aria-hidden="true">
+                  <Image
+                    src="/images/platforms/tiktok-icon.svg"
+                    alt="TikTok Logo"
+                    width={36}
+                    height={36}
+                    className="size-8 sm:size-9 rounded-[10px] object-contain"
+                  />
+                </span>
+                <h2 className={styles.bannerTitle}>
+                  Boost TikTok Khmer
+                </h2>
+              </div>
               <span className={styles.badgeFixed}>
                 Fixed Packages
               </span>
@@ -183,13 +201,13 @@ export function BoostTikTokKhmerBanner() {
                 {/* TikTok Glowing Icon */}
                 <div className="relative mb-2">
                   <div className="absolute -inset-2 rounded-full bg-[#FF249C]/40 blur-md animate-pulse" />
-                  <svg
-                    className="relative size-10 text-white drop-shadow-[2px_0_0_#24f6f0] drop-shadow-[-2px_0_0_#fe2c55]"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.5 6.3 6.3 0 0 0 1.86-4.49V8.69a8.18 8.18 0 0 0 4.91 1.62v-3.62z" />
-                  </svg>
+                  <Image
+                    src="/images/platforms/tiktok-icon.svg"
+                    alt="TikTok"
+                    width={40}
+                    height={40}
+                    className="relative size-10 rounded-xl shadow-lg shadow-[#25F4EE]/30 object-contain"
+                  />
                 </div>
 
                 {/* Sub-label */}
@@ -263,6 +281,13 @@ export function BoostTikTokKhmerBanner() {
               href="/services/tiktok-khmer"
               className={styles.ctaButton}
             >
+              <Image
+                src="/images/platforms/tiktok-icon.svg"
+                alt="TikTok"
+                width={18}
+                height={18}
+                className="size-4.5 rounded object-contain shrink-0"
+              />
               <span>ជ្រើសរើសកញ្ចប់ / Order Packages</span>
               <ArrowRight className="size-4 shrink-0 transition-transform duration-200" />
             </Link>
