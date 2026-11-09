@@ -141,8 +141,8 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
             <div className="relative w-20 h-20 sm:w-28 sm:h-28 shrink-0 rounded-2xl overflow-hidden border-2 border-purple-400/30 shadow-xl bg-slate-950">
               <Image
-                src={group.image}
-                alt={group.name}
+                src={selectedProduct?.image || group.image}
+                alt={selectedProduct?.name || group.name}
                 fill
                 priority
                 sizes="112px"
@@ -245,16 +245,27 @@ export function DigitalTopUpClient({ group, initialProductCode }: DigitalTopUpCl
                         : "bg-slate-950/80 border-slate-800/90 hover:border-slate-700"
                         }`}
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-2">
-                            {p.name}
-                          </h3>
-                          {p.description && (
-                            <p className="mt-1 text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
-                              {p.description.split("\n")[0]}
-                            </p>
-                          )}
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                          <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-white/10 bg-black/40">
+                            <Image
+                              src={p.image}
+                              alt={p.name}
+                              fill
+                              sizes="32px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="text-xs sm:text-sm font-bold text-white line-clamp-2">
+                              {p.name}
+                            </h3>
+                            {p.description && (
+                              <p className="mt-1 text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                                {p.description.split("\n")[0]}
+                              </p>
+                            )}
+                          </div>
                         </div>
                         <div
                           className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 ${isSelected

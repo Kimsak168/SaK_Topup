@@ -65,7 +65,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "design",
     categoryLabel: "Graphic Design",
     description: "ប្រើប្រាស់រាប់លាន Premium Templates, Fonts, Background Remover គ្មានដែនកំណត់ (2 ឆ្នាំ Pro)",
-    image: "/images/digital/canva.jpg",
+    image: "/images/digital/logos/canva.svg",
     badge: "Trending 🔥",
   },
   capcut: {
@@ -74,7 +74,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "design",
     categoryLabel: "Video & Design",
     description: "ដោះសោគ្រប់ Effect, Template, 4K Export និងមុខងារ Pro ទាំងអស់ (1 ខែ Pro, Credits)",
-    image: "/images/digital/capcut.jpg",
+    image: "/images/digital/logos/capcut-pro-2.svg",
     badge: "Best Seller",
   },
   chatgpt: {
@@ -83,7 +83,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "ai",
     categoryLabel: "AI Tools",
     description: "ChatGPT Plus, Claude API Credits, Gemini Plus 12M, ElevenLabs Voice AI · ដំណើរការលឿន ឆ្លាតវៃ",
-    image: "/images/digital/chatgpt.jpg",
+    image: "/images/digital/logos/chatgpt.svg",
     badge: "Popular AI",
   },
   office: {
@@ -92,7 +92,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "office",
     categoryLabel: "Office & Cloud",
     description: "Word, Excel, PowerPoint, OneDrive 1TB, Notion Plus 12M, Zoom Pro, JetBrains Edu ពេញលេញ",
-    image: "/images/digital/office.jpg",
+    image: "/images/digital/logos/microsoft-office-365.svg",
     badge: "Productivity",
   },
   streaming: {
@@ -101,7 +101,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "streaming",
     categoryLabel: "Streaming & Music",
     description: "ស្តាប់តន្ត្រីគុណភាពខ្ពស់គ្មានពាណិជ្ជកម្ម និងទស្សនា Anime (Spotify 3M, Apple Music 5M, Crunchyroll)",
-    image: "/images/digital/youtube.jpg",
+    image: "/images/digital/logos/spotify-premium-3m.svg",
     badge: "Entertainment",
   },
   vpn: {
@@ -110,7 +110,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "utilities",
     categoryLabel: "VPN & Security",
     description: "VPN ល្បឿនលឿន សុវត្ថិភាពខ្ពស់ ផ្លាស់ប្តូរ IP ប្រទេសបានច្រើន (ExpressVPN, ProtonVPN, Surfshark, HMA)",
-    image: "/images/digital/office.jpg",
+    image: "/images/digital/logos/expressvpn-private-5-devices.svg",
     badge: "High Speed",
   },
   utilities: {
@@ -119,7 +119,7 @@ export const DIGITAL_GROUP_METADATA: Record<
     categoryKey: "utilities",
     categoryLabel: "Software",
     description: "Outlook, Gmail Aged, iLovePDF Premium, Duolingo Super, edX Premium",
-    image: "/images/digital/office.jpg",
+    image: "/images/digital/logos/notion-plus-business.svg",
     badge: "Utilities",
   },
 };
@@ -266,6 +266,11 @@ export const getCachedDigitalProducts = unstable_cache(
       const meta = DIGITAL_GROUP_METADATA[groupCode] || DIGITAL_GROUP_METADATA.utilities;
       const priceNum = Number(p.price || p.sell_price || 0);
 
+      // Resolve real official brand logo for each product slug, falling back to group image
+      const productLogo = p.productSlug
+        ? `/images/digital/logos/${p.productSlug}.svg`
+        : meta.image;
+
       return {
         ...p,
         product_code: code,
@@ -273,14 +278,14 @@ export const getCachedDigitalProducts = unstable_cache(
         groupCode,
         groupName: meta.name,
         categoryKey,
-        image: meta.image,
+        image: productLogo,
         price: priceNum,
         formattedPrice: `$${priceNum.toFixed(2)}`,
         available: p.available !== false && (p.qty_available === undefined || p.qty_available > 0),
       };
     });
   },
-  ["digitalshop-products-v5-live"],
+  ["digitalshop-products-v6-logos"],
   { revalidate: 180, tags: ["digitalshop"] }
 );
 

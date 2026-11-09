@@ -8,9 +8,28 @@ export async function HomeDigitalShop() {
   if (!allProducts || allProducts.length === 0) return null;
 
   // Select popular in-stock products across categories to showcase on the homepage
-  // Ensure diverse showcase: Canva, CapCut, ChatGPT, Spotify, Office, VPN, etc.
+  // Ensure diverse brand showcase: Canva, CapCut, ChatGPT, Spotify, Office, VPN, etc.
   const inStock = allProducts.filter((p) => p.available);
-  const featured = inStock.slice(0, 10);
+  const seenBrands = new Set<string>();
+  const featured: typeof inStock = [];
+
+  for (const p of inStock) {
+    if (!seenBrands.has(p.productSlug)) {
+      seenBrands.add(p.productSlug);
+      featured.push(p);
+      if (featured.length >= 10) break;
+    }
+  }
+
+  // Fill up if fewer than 10 distinct brands found
+  if (featured.length < 10) {
+    for (const p of inStock) {
+      if (!featured.some((f) => f.product_code === p.product_code)) {
+        featured.push(p);
+        if (featured.length >= 10) break;
+      }
+    }
+  }
 
   return (
     <section
@@ -49,3 +68,4 @@ export async function HomeDigitalShop() {
     </section>
   );
 }
+

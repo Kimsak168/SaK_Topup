@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="rw-glow" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#120D04" />
+  <circle cx="256" cy="256" r="230" fill="url(#rw-glow)" />
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="#F59E0B" stroke-opacity="0.3" stroke-width="2" />
+  <g transform="translate(146, 166)">
+    <!-- Open Book / Glasses -->
+    <path d="M110 30 C 70 0 10 10 0 20 L 0 170 C 10 160 70 150 110 180 C 150 150 210 160 220 170 L 220 20 C 210 10 150 0 110 30 Z" fill="#F59E0B" />
+    <line x1="110" y1="30" x2="110" y2="180" stroke="#120D04" stroke-width="8" />
+  </g>
+</svg>
