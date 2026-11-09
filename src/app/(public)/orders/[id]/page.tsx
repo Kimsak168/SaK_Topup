@@ -14,6 +14,7 @@ import {
   Zap,
   ArrowRight,
   AlertTriangle,
+  KeyRound,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -34,6 +35,7 @@ interface OrderDetail {
   paymentMethod: string;
   paymentStatus: "PENDING" | "PAID" | "FAILED" | "CANCELLED" | "EXPIRED";
   fulfillmentStatus: "NOT_STARTED" | "PROCESSING" | "COMPLETED" | "FAILED";
+  deliveryData?: string[];
   createdAt: string;
   paidAt?: string | null;
   fulfilledAt?: string | null;
@@ -254,6 +256,37 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
               : "Awaiting verified payment settlement before initiating automated fulfillment."}
           </p>
         </div>
+
+        {/* Delivered Items (For Digital Accounts, Codes, and Links) */}
+        {order.deliveryData && order.deliveryData.length > 0 && (
+          <div className="rounded-2xl border-2 border-emerald-500/40 bg-gradient-to-r from-emerald-950/20 via-sky-950/20 to-emerald-950/20 p-5 space-y-3">
+            <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm">
+              <KeyRound className="h-4 w-4" />
+              <span>ព័ត៌មានគណនី / Delivered Account Credentials</span>
+            </div>
+            <div className="space-y-2">
+              {order.deliveryData.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between gap-3 p-3 rounded-xl bg-slate-900 border border-emerald-400/30 font-mono text-xs text-white"
+                >
+                  <span className="select-all break-all">{item}</span>
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(item)}
+                    className="shrink-0 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-sans text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Copy</span>
+                  </button>
+                </div>
+              ))}
+            </div>
+            <p className="text-[11px] text-slate-500">
+              រក្សាទុកព័ត៌មាននេះដោយសុវត្ថិភាព។ ប្រសិនបើមានបញ្ហា សូមទាក់ទងមកកាន់ Support។
+            </p>
+          </div>
+        )}
 
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">

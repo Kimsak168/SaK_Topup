@@ -11,7 +11,7 @@ export interface IOrder extends Document {
   orderNumber: string;
   gameSlug: string;
   gameName: string;
-  supplier: "g2bulk" | "webbuilder" | "vngzz2";
+  supplier: "g2bulk" | "webbuilder" | "vngzz2" | "pe_supply";
   serviceType?: "game" | "smm" | "digital";
   targetLink?: string;
   quantity?: number;
@@ -64,6 +64,7 @@ export interface IOrder extends Document {
   customerContact?: string;
   customerName?: string;
   adminNotes?: string;
+  deliveryData?: string[];
   errorLog?: string;
   paymentErrorReason?: string;
   paymentVerification?: { gateway: string; transactionId: string; status: string; checkedAt: Date };
@@ -121,7 +122,7 @@ const OrderSchema = new Schema<IOrder>(
     },
     supplier: {
       type: String,
-      enum: ["g2bulk", "webbuilder", "vngzz2"],
+      enum: ["g2bulk", "webbuilder", "vngzz2", "pe_supply"],
       default: "webbuilder",
       required: true,
       index: true,
@@ -280,6 +281,10 @@ const OrderSchema = new Schema<IOrder>(
     },
     adminNotes: {
       type: String,
+    },
+    deliveryData: {
+      type: [String],
+      default: [],
     },
     errorLog: {
       type: String,

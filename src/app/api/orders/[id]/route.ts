@@ -75,6 +75,8 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       createdAt: order.createdAt,
       paidAt: order.paidAt || null,
       fulfilledAt: order.fulfilledAt || null,
+      serviceType: order.serviceType || "game",
+      deliveryData: order.deliveryData && order.deliveryData.length > 0 ? order.deliveryData : undefined,
     };
 
     return NextResponse.json({

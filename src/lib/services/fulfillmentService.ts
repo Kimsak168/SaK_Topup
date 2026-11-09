@@ -11,6 +11,7 @@ import {
 import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
 import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
 import { createKhmerSmmProductOrder, getKhmerSmmOrderStatus } from "@/lib/suppliers/vngzz2SmmKhmer";
+import { createPeSupplyOrder, getPeSupplyOrders } from "@/lib/suppliers/peSupply";
 import { DIGITAL_SHOP_UNAVAILABLE_MESSAGE } from "@/lib/services/digitalShopService";
 
 export interface FulfillmentResult {
@@ -142,25 +143,88 @@ export async function triggerAutomaticFulfillment(
       };
     }
 
-    if (order.serviceType === "digital") {
-      // Do not send paid orders to an undocumented VNGZZ2 Digital endpoint.
-      // Keep the order visible for admin/manual resolution until a supplier is configured.
-      await Order.findByIdAndUpdate(order._id, {
-        $set: {
-          fulfillmentStatus: "processing",
-          lastSupplierStatus: "SUPPLIER_UNAVAILABLE",
-          errorLog: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
-          updatedAt: new Date(),
-        },
-      });
+    if (order.serviceType === "digital" || order.supplier === "pe_supply") {
+      const [productSlug, variationId] = String(order.supplierProductCode || "").split("__");
 
-      return {
-        success: false,
-        orderNumber: order.orderNumber,
-        fulfillmentStatus: "processing",
-        supplierOrderId: order.supplierOrderId,
-        message: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
-      };
+      if (!productSlug || !variationId) {
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            fulfillmentStatus: "failed",
+            errorLog: `Invalid PE-Supply product code format: ${order.supplierProductCode}`,
+            updatedAt: new Date(),
+          },
+        });
+        return {
+          success: false,
+          orderNumber: order.orderNumber,
+          fulfillmentStatus: "failed",
+          message: `Invalid product code format: ${order.supplierProductCode}`,
+        };
+      }
+
+      const emailContact = (order.targetLink || order.customerContact || order.playerId || "").trim();
+
+      try {
+        const peRes = await createPeSupplyOrder({
+          product: productSlug,
+          variation: variationId,
+          quantity: order.quantity || 1,
+          emails: emailContact ? [emailContact] : undefined,
+          idempotencyKey: order.orderNumber,
+        });
+
+        const isCompleted = peRes.status === "completed";
+        const isActivation = peRes.status === "activation_awaiting";
+        const isFailed = peRes.status === "failed" || peRes.status === "cancelled";
+        const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
+
+        const deliveryItems = peRes.items && peRes.items.length > 0 ? peRes.items.join(" | ") : "";
+        const deliveryNote = deliveryItems
+          ? `Delivered: ${deliveryItems}`
+          : isActivation
+          ? `Activation in progress for ${emailContact}`
+          : peRes.status;
+
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            supplierOrderId: peRes.id || peRes.reference || order.orderNumber,
+            fulfillmentStatus: newStatus,
+            lastSupplierStatus: peRes.status,
+            adminNotes: `${order.adminNotes || ""} | ${deliveryNote}`.trim(),
+            deliveryData: peRes.items || [],
+            fulfilledAt: isCompleted ? new Date() : undefined,
+            supplierNextPollAt: isActivation ? new Date(Date.now() + 60_000) : undefined,
+            errorLog: isFailed ? `PE-Supply delivery failed: ${peRes.status}` : undefined,
+            updatedAt: new Date(),
+          },
+        });
+
+        return {
+          success: !isFailed,
+          orderNumber: order.orderNumber,
+          fulfillmentStatus: newStatus,
+          supplierOrderId: peRes.id || peRes.reference,
+          message: deliveryNote,
+        };
+      } catch (peErr) {
+        const errMsg = peErr instanceof Error ? peErr.message : "PE-Supply order submission failed";
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            fulfillmentStatus: "processing",
+            lastSupplierStatus: "SUBMISSION_RETRY",
+            supplierNextPollAt: new Date(Date.now() + 60_000),
+            errorLog: errMsg,
+            updatedAt: new Date(),
+          },
+        });
+
+        return {
+          success: false,
+          orderNumber: order.orderNumber,
+          fulfillmentStatus: "processing",
+          message: errMsg,
+        };
+      }
     }
 
     if (order.supplier === "vngzz2") {
@@ -359,7 +423,7 @@ export async function reconcileSupplierFulfillment(
     return { success: String(order.fulfillmentStatus).toLowerCase() !== "failed", orderNumber, fulfillmentStatus: order.fulfillmentStatus, supplierOrderId: order.supplierOrderId, message: "No in-flight paid delivery to reconcile." };
   }
 
-  if (order.serviceType === "digital") {
+  if (order.serviceType === "digital" || order.supplier === "pe_supply") {
     if (String(order.paymentStatus).toUpperCase() !== "PAID") {
       return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
     }
@@ -370,20 +434,69 @@ export async function reconcileSupplierFulfillment(
         orderNumber,
         fulfillmentStatus: order.fulfillmentStatus,
         supplierOrderId: order.supplierOrderId,
-        message: "Digital order is already marked completed; supplier status cannot be checked until a provider is configured.",
+        message: "Digital order is completed.",
       };
     }
 
-    order.lastSupplierStatus = "SUPPLIER_UNAVAILABLE";
-    order.errorLog = DIGITAL_SHOP_UNAVAILABLE_MESSAGE;
-    await order.save();
+    try {
+      const recent = await getPeSupplyOrders(1, 30);
+      const matched = (recent?.data || []).find(
+        (o) => o.reference === order.orderNumber || o.id === order.supplierOrderId
+      );
+
+      if (matched) {
+        if (matched.status === "completed") {
+          order.fulfillmentStatus = "completed";
+          order.fulfilledAt = new Date();
+          order.lastSupplierStatus = "completed";
+          if (matched.items && matched.items.length > 0) {
+            order.deliveryData = matched.items;
+            order.adminNotes = `${order.adminNotes || ""} | Delivered: ${matched.items.join(" | ")}`.trim();
+          }
+          await order.save();
+          return {
+            success: true,
+            orderNumber,
+            fulfillmentStatus: "completed",
+            supplierOrderId: matched.id,
+            message: "PE-Supply order completed and delivered.",
+          };
+        } else if (matched.status === "failed" || matched.status === "cancelled") {
+          order.fulfillmentStatus = "failed";
+          order.lastSupplierStatus = matched.status;
+          order.errorLog = `PE-Supply order status: ${matched.status}`;
+          await order.save();
+          return {
+            success: false,
+            orderNumber,
+            fulfillmentStatus: "failed",
+            supplierOrderId: matched.id,
+            message: `PE-Supply order failed: ${matched.status}`,
+          };
+        } else {
+          order.supplierNextPollAt = new Date(Date.now() + 60_000);
+          order.lastSupplierStatus = matched.status;
+          await order.save();
+          return {
+            success: true,
+            orderNumber,
+            fulfillmentStatus: "processing",
+            supplierOrderId: matched.id,
+            message: `PE-Supply order in progress (${matched.status})`,
+          };
+        }
+      }
+    } catch {
+      order.supplierNextPollAt = new Date(Date.now() + 60_000);
+      await order.save();
+    }
 
     return {
-      success: false,
+      success: true,
       orderNumber,
       fulfillmentStatus: order.fulfillmentStatus,
       supplierOrderId: order.supplierOrderId,
-      message: DIGITAL_SHOP_UNAVAILABLE_MESSAGE,
+      message: "Digital order awaiting supplier activation.",
     };
   }
 

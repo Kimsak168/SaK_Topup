@@ -11,12 +11,12 @@ interface DigitalShopStorefrontProps {
 
 const CATEGORY_TABS = [
   { id: "all", label: "ទាំងអស់ (All)" },
-  { id: "chatgpt", label: "ChatGPT" },
-  { id: "youtube", label: "YouTube" },
-  { id: "capcut", label: "CapCut" },
-  { id: "office", label: "Office 365" },
-  { id: "canva", label: "Canva" },
-  { id: "telegram", label: "Telegram" },
+  { id: "canva", label: "Canva Pro" },
+  { id: "capcut", label: "CapCut Pro" },
+  { id: "chatgpt", label: "ChatGPT & AI" },
+  { id: "office", label: "Office 365 & Notion" },
+  { id: "streaming", label: "Music & Video" },
+  { id: "vpn", label: "VPN & Security" },
   { id: "utilities", label: "Other / ផ្សេងៗ" },
 ];
 

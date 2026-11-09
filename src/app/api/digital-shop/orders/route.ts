@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       transactionId,
       gameSlug: `digital-${product.groupCode}`,
       gameName: product.groupName || "Digital Shop",
-      supplier: "vngzz2",
+      supplier: "pe_supply",
       serviceType: "digital",
       targetLink: cleanContact,
       quantity: 1,
