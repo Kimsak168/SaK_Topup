@@ -5,9 +5,11 @@ import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { HomeCatalogue } from "@/components/public/HomeCatalogue";
 import { HomeFeaturedPackages } from "@/components/public/HomeFeaturedPackages";
 import { HomePlatforms } from "@/components/public/HomePlatforms";
+import { HomeDigitalShop } from "@/components/public/HomeDigitalShop";
 import { HomeGameEvents } from "@/components/public/HomeGameEvents";
 import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
+import type { ClientGame } from "@/types/game";
 
 // Cache at Vercel Edge with ISR (Incremental Static Regeneration).
 // Fast sub-50ms response from CDN; regenerates in background every 60 seconds.
@@ -26,7 +28,22 @@ async function HomeBanners() {
 async function HomeGames() {
   const games = await getClientGames(undefined, undefined, { throwOnError: true }).catch(() => null);
   const catalogue = games || [];
-  const featuredGroups = await Promise.all(catalogue
+  return (
+    <>
+      <Suspense fallback={
+        <div className="home-package-marquee-skeleton" role="status" aria-label="Loading featured packages">
+          <div /><div /><div /><div />
+        </div>
+      }>
+        <HomeGamePackages games={catalogue} />
+      </Suspense>
+      <HomeCatalogue games={catalogue} initialError={games === null ? "The game catalog is temporarily unavailable." : null} />
+    </>
+  );
+}
+
+async function HomeGamePackages({ games }: { games: ClientGame[] }) {
+  const featuredGroups = await Promise.all(games
     .filter((game) => game.supplier === "webbuilder" && game.checkoutSupported !== false)
     .map(async (game) => ({
       game,
@@ -38,12 +55,7 @@ async function HomeGames() {
           : "other" as const,
     })));
 
-  return (
-    <>
-      <HomeFeaturedPackages groups={featuredGroups} />
-      <HomeCatalogue games={catalogue} initialError={games === null ? "The game catalog is temporarily unavailable." : null} />
-    </>
-  );
+  return <HomeFeaturedPackages groups={featuredGroups} />;
 }
 
 export default function HomePage() {
@@ -66,7 +78,12 @@ export default function HomePage() {
         <HomePlatforms />
       </Suspense>
 
-      {/* 4. Game events follow the services section */}
+      {/* 4. Digital Subscriptions & Accounts (PE-Supply KH) */}
+      <Suspense fallback={<div className="min-h-[220px] my-8 rounded-2xl bg-white/[0.03] animate-pulse" />}>
+        <HomeDigitalShop />
+      </Suspense>
+
+      {/* 5. Game events follow the services section */}
       <Suspense fallback={<GameEventsSkeleton />}>
         <HomeGameEvents />
       </Suspense>
