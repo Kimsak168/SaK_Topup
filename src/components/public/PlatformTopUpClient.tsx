@@ -667,10 +667,10 @@ export function PlatformTopUpClient({
   };
 
   return (
-    <div className="service-topup-page relative min-h-screen w-full overflow-x-clip py-4 sm:py-8 text-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 space-y-5 sm:space-y-6">
+    <div className="service-topup-page relative min-h-screen w-full overflow-x-clip pt-3 pb-24 sm:py-8 text-white">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 relative z-10 space-y-4 sm:space-y-6">
         {/* Top Bar: Back Pill + Quick Platform Switcher */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
           <Link
             href="/#all-platforms"
             className="service-back-pill inline-flex items-center gap-2 self-start rounded-full px-3.5 py-2 text-xs sm:text-sm font-semibold transition-all"
@@ -709,7 +709,7 @@ export function PlatformTopUpClient({
 
         {/* Clean Sakura Hero Banner */}
         <section className="service-page-hero relative overflow-hidden">
-          <div className="service-page-hero__inner relative z-10 items-start sm:items-center">
+          <div className="service-page-hero__inner relative z-10">
             <div className="service-page-hero__icon">
               <Image
                 src={coverImage}
@@ -721,35 +721,37 @@ export function PlatformTopUpClient({
                 className="object-contain p-1.5"
               />
             </div>
-            <div className="service-page-hero__copy">
-              <div className="flex items-center flex-wrap gap-2">
+            <div className="service-page-hero__heading">
+              <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
                 <h1 className="service-page-hero__title">
                   {platformName} Top-Up &amp; Growth Services
                 </h1>
-                <span className="service-badge-featured inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold">
+                <span className="service-badge-featured inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold">
                   <Sparkles className="w-3 h-3" />
                   <span>Instant KHQR</span>
                 </span>
               </div>
+            </div>
+            <div className="service-page-hero__details">
               <p className="service-page-hero__description">
                 Pick a {platformName} package below, paste your target link, and pay instantly via KHQR.
               </p>
 
               {/* Hero Quick Stats */}
-              <div className="flex flex-wrap items-center gap-2 mt-3">
-                <span className="service-hero-stat inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold">
-                  <Sparkles className="w-3 h-3 text-pink-500" />
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2.5 sm:mt-3">
+                <span className="service-hero-stat inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold">
+                  <Sparkles className="w-3 h-3 text-pink-500 shrink-0" />
                   <span>{catalogTotal.toLocaleString()} Packages</span>
                 </span>
                 {lowestRate !== null && (
-                  <span className="service-hero-stat inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold tabular-nums">
-                    <Zap className="w-3 h-3 text-pink-500" />
-                    <span>From {formatUsd(lowestRate)} / 1,000</span>
+                  <span className="service-hero-stat inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold tabular-nums">
+                    <Zap className="w-3 h-3 text-pink-500 shrink-0" />
+                    <span>From {formatUsd(lowestRate)} / 1k</span>
                   </span>
                 )}
                 {refillServiceCount > 0 && (
-                  <span className="service-badge-refill inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold">
-                    <Shield className="w-3 h-3" />
+                  <span className="service-badge-refill inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold">
+                    <Shield className="w-3 h-3 shrink-0" />
                     <span>{refillServiceCount} Refill Protected</span>
                   </span>
                 )}
@@ -759,20 +761,20 @@ export function PlatformTopUpClient({
         </section>
 
         {/* Main 2-Column Interactive Order Flow */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-6 items-start">
           {/* Left Column: Steps 1, 2, 3 */}
-          <div className="lg:col-span-8 space-y-5">
+          <div className="lg:col-span-8 space-y-4 sm:space-y-5">
             {/* STEP 1: Target Account Link */}
             <section
               data-topup-step="1"
-              className="topup-step rounded-[18px] bg-[#0E0918] border border-violet-500/20 p-4 sm:p-5 space-y-3.5 shadow-lg"
+              className="topup-step rounded-[18px] bg-[#0E0918] border border-violet-500/20 p-3.5 sm:p-5 space-y-3.5 shadow-lg"
             >
-              <div className="flex items-center justify-between gap-3">
-                <div className="topup-step-title flex items-center gap-2.5">
-                  <span className="service-step-badge flex items-center justify-center w-6 h-6 rounded-full text-xs font-extrabold">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="topup-step-title flex items-center gap-2 min-w-0">
+                  <span className="service-step-badge flex items-center justify-center w-6 h-6 shrink-0 rounded-full text-xs font-extrabold">
                     1
                   </span>
-                  <h2 className="text-sm sm:text-base font-bold text-white">
+                  <h2 className="text-sm sm:text-base font-bold text-white leading-snug">
                     Target Account Information / ព័ត៌មានតំណភ្ជាប់
                   </h2>
                 </div>

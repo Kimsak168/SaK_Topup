@@ -933,9 +933,17 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
     linear-gradient(135deg, var(--card, #0D0914) 0%, var(--secondary, #161022) 100%);
   box-shadow: 0 8px 24px rgb(0 0 0 / .24);
 }
-.service-page-hero__inner { display: flex; align-items: center; gap: 22px; }
+.service-page-hero__inner {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  column-gap: 22px;
+  align-items: center;
+}
 .service-page-hero__icon {
   position: relative;
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: center;
   width: 76px;
   height: 76px;
   flex: none;
@@ -945,7 +953,12 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   background: var(--storefront-raised);
   box-shadow: 0 4px 12px rgb(0 0 0 / .3);
 }
-.service-page-hero__copy { min-width: 0; }
+.service-page-hero__heading,
+.service-page-hero__details,
+.service-page-hero__copy {
+  grid-column: 2;
+  min-width: 0;
+}
 .service-page-hero__title {
   margin: 0;
   color: var(--foreground, #F8F5FF);
@@ -992,11 +1005,28 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   box-shadow: none;
 }
 @media (max-width: 639px) {
-  .service-page-hero { padding: 16px; border-radius: 18px; }
-  .service-page-hero__inner { gap: 13px; }
-  .service-page-hero__icon { width: 56px; height: 56px; border-radius: 14px; }
-  .service-page-hero__title { font-size: 21px; letter-spacing: -.025em; }
-  .service-page-hero__description { margin-top: 6px; font-size: 12px; line-height: 1.55; }
+  .service-page-hero { padding: 14px; border-radius: 18px; }
+  .service-page-hero__inner {
+    grid-template-columns: 52px minmax(0, 1fr);
+    column-gap: 12px;
+    row-gap: 8px;
+  }
+  .service-page-hero__icon {
+    grid-row: 1;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+  .service-page-hero__heading {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .service-page-hero__details {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .service-page-hero__title { font-size: 19px; letter-spacing: -.025em; }
+  .service-page-hero__description { margin-top: 2px; font-size: 12px; line-height: 1.5; }
 }
 
 /* A soft moving light keeps every storefront game card lively. */

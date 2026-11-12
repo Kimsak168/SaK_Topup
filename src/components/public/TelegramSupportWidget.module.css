@@ -203,7 +203,53 @@
 
 @media (max-width: 1023px) {
   .aboveMobileCheckoutBar {
-    bottom: calc(7.5rem + env(safe-area-inset-bottom, 0px));
+    bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (max-width: 639px) {
+  .widget {
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    gap: 6px;
+  }
+
+  .aboveMobileCheckoutBar {
+    bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .widgetGroup {
+    gap: 5px;
+  }
+
+  .speechBubble,
+  .luckySpeechBubble {
+    min-height: 22px;
+    padding: 2px 7px 3px;
+    font-size: 10px;
+  }
+
+  .speechBubble::after,
+  .luckySpeechBubble::after {
+    border-top-width: 5px;
+    border-right-width: 5px;
+    border-left-width: 5px;
+  }
+
+  .buttonFloat,
+  .buttonFloatLucky {
+    width: 44px;
+    height: 44px;
+  }
+
+  .telegramIcon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .luckyIconWrapper {
+    width: 28px;
+    height: 28px;
   }
 }
 

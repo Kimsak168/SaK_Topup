@@ -21,9 +21,9 @@ export function TelegramSupportWidget() {
   const href = getTelegramSupportUrl(SOCIAL_URLS.telegram);
 
   const aboveMobileCheckoutBar =
-    pathname.startsWith("/game") ||
-    pathname.startsWith("/services") ||
-    pathname.startsWith("/checkout");
+    pathname === "/game" ||
+    pathname.startsWith("/game/") ||
+    pathname.startsWith("/games/");
 
   const handleOpenLuckyDraw = () => {
     window.dispatchEvent(new CustomEvent("open-lucky-draw"));
