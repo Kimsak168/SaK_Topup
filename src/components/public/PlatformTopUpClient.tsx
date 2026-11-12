@@ -831,7 +831,7 @@ export function PlatformTopUpClient({
                     2
                   </span>
                   <h2 className="text-sm sm:text-base font-bold text-white">
-                    Choose Service &amp; Package / ជ្រើសរើសកញ្ចប់សេវាកម្ម
+                    Select Package
                   </h2>
                 </div>
                 <span className="text-xs font-medium text-slate-400 tabular-nums">
