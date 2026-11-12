@@ -28,7 +28,6 @@ import {
   Sparkles,
   Minus,
   Plus,
-  Shield,
   Clock,
   Gauge,
 } from "lucide-react";
@@ -346,7 +345,6 @@ export function PlatformTopUpClient({
   platform,
   platformName,
   initialServices,
-  catalogTotal = initialServices.length,
   categories,
   catalogError,
 }: PlatformTopUpClientProps) {
@@ -388,11 +386,6 @@ export function PlatformTopUpClient({
         return a.parsed.cleanTitle.localeCompare(b.parsed.cleanTitle);
       });
   }, [initialServices]);
-
-  const lowestRate = useMemo(() => {
-    if (enrichedServices.length === 0) return null;
-    return enrichedServices.reduce((min, cur) => (cur.item.rate < min ? cur.item.rate : min), enrichedServices[0].item.rate);
-  }, [enrichedServices]);
 
   const refillServiceCount = useMemo(
     () => enrichedServices.filter((s) => s.parsed.hasRefill).length,
@@ -722,40 +715,14 @@ export function PlatformTopUpClient({
               />
             </div>
             <div className="service-page-hero__heading">
-              <div className="flex items-center flex-wrap gap-1.5 sm:gap-2">
-                <h1 className="service-page-hero__title">
-                  {platformName} Top-Up &amp; Growth Services
-                </h1>
-                <span className="service-badge-featured inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] sm:text-[11px] font-bold">
-                  <Sparkles className="w-3 h-3" />
-                  <span>Instant KHQR</span>
-                </span>
-              </div>
+              <h1 className="service-page-hero__title">
+                {platformName} Service
+              </h1>
             </div>
             <div className="service-page-hero__details">
               <p className="service-page-hero__description">
                 Pick a {platformName} package below, paste your target link, and pay instantly via KHQR.
               </p>
-
-              {/* Hero Quick Stats */}
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-2.5 sm:mt-3">
-                <span className="service-hero-stat inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold">
-                  <Sparkles className="w-3 h-3 text-pink-500 shrink-0" />
-                  <span>{catalogTotal.toLocaleString()} Packages</span>
-                </span>
-                {lowestRate !== null && (
-                  <span className="service-hero-stat inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold tabular-nums">
-                    <Zap className="w-3 h-3 text-pink-500 shrink-0" />
-                    <span>From {formatUsd(lowestRate)} / 1k</span>
-                  </span>
-                )}
-                {refillServiceCount > 0 && (
-                  <span className="service-badge-refill inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] sm:text-[11px] font-semibold">
-                    <Shield className="w-3 h-3 shrink-0" />
-                    <span>{refillServiceCount} Refill Protected</span>
-                  </span>
-                )}
-              </div>
             </div>
           </div>
         </section>
