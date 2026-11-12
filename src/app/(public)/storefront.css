@@ -1227,68 +1227,34 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   color: #FCE7F3 !important;
 }
 
-/* Keep the Lucky Draw's dark surfaces readable under the light storefront rules. */
+/* Match Lucky Draw surface and controls to the Sakura storefront palette. */
 .public-theme main :is(.lucky-draw-panel, .lucky-draw-order-form) {
-  color-scheme: dark;
-  --storefront-card: #17111F;
-  --storefront-soft: #241A2E;
-  --storefront-raised: #332440;
-  --storefront-foreground: #FAF5FC;
-  --storefront-muted: #CBBED3;
-  --storefront-primary: #F9A8D4;
-  --storefront-primary-hover: #FBCFE8;
-  --storefront-accent: #F9A8D4;
-  --storefront-border: #725777;
-  --storefront-border-soft: #44334E;
-  --ring: #F9A8D4;
-  border-color: var(--storefront-border);
+  color-scheme: light;
+  --storefront-card: #FFFFFF;
+  --storefront-soft: #FCF0F5;
+  --storefront-raised: #F7DFEA;
+  --storefront-foreground: #332733;
+  --storefront-muted: #705B68;
+  --storefront-primary: #BE185D;
+  --storefront-primary-hover: #9D174D;
+  --storefront-accent: #DB2777;
+  --storefront-border: #E4C6D4;
+  --storefront-border-soft: #F0C6DA;
+  --ring: #BE185D;
+  border-color: var(--storefront-border-soft);
   background-color: var(--storefront-card);
   color: var(--storefront-foreground);
 }
 
 .public-theme main .lucky-draw-panel .lucky-draw-result {
-  border-color: #377A60;
-  background: linear-gradient(135deg, #122820, #112128);
-}
-.public-theme main .lucky-draw-panel .lucky-draw-result [class~="text-emerald-300"] {
-  border-color: rgb(110 231 183 / .4);
-  background-color: rgb(16 185 129 / .15);
-  color: #86EFAC;
-}
-.public-theme main :is(.lucky-draw-panel, .lucky-draw-order-form) :is(
-  [class~="text-amber-300"], [class~="text-amber-400"]
-) { color: #FDE68A; }
-
-.public-theme main :is(.lucky-draw-panel, .lucky-draw-order-form) button[class~="text-slate-950"] {
-  color: #281708;
-}
-.public-theme main .lucky-draw-panel button[class~="bg-slate-700"] {
-  border-color: #725777;
-  background: #332440;
-  color: #E9DDED;
-}
-.public-theme main .lucky-draw-panel button[aria-label="Close lucky draw"]:hover {
-  background-color: #332440;
-  color: #FFFFFF;
+  border-color: var(--storefront-border);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFF7FB 100%);
 }
 
 .public-theme main .lucky-draw-order-form input {
-  border-color: #725777;
-  background-color: #100C17;
-  color: #FAF5FC;
-}
-.public-theme main .lucky-draw-order-form button[class~="bg-white/10"] {
-  background-color: #332440;
-  color: #E9DDED;
-}
-.public-theme main .lucky-draw-order-form button[class~="bg-white/10"]:hover {
-  background-color: #493456;
-}
-.public-theme main .lucky-draw-modal button[class~="underline"] {
-  color: #E9DDED;
-}
-.public-theme main .lucky-draw-modal button[class~="underline"]:hover {
-  color: #F9A8D4;
+  border-color: var(--storefront-border);
+  background-color: #FFF9FC;
+  color: var(--storefront-foreground);
 }
 
 /* Redesigned SMM Platform Service Page components */

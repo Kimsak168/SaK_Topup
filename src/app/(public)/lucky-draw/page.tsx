@@ -34,31 +34,31 @@ export default function LuckyDrawPage() {
       </div>
 
       {/* Order Number Claim Form */}
-      <div className="lucky-draw-order-form max-w-md mx-auto rounded-3xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-xl p-5 sm:p-6 shadow-xl">
+      <div className="lucky-draw-order-form max-w-md mx-auto rounded-3xl border border-[#F0C6DA] bg-white p-5 sm:p-6 shadow-md">
         <form onSubmit={handleSubmit} className="space-y-3">
-          <label htmlFor="orderInput" className="block text-xs font-bold text-slate-300">
+          <label htmlFor="orderInput" className="block text-xs font-bold text-[#332733]">
             Have a Paid Order? Enter Order Number for Bonus Spins:
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-[#705B68]" />
               <input
                 id="orderInput"
                 type="text"
-                placeholder="e.g. ORD-1730594..."
+                placeholder="e.g. ASURA-..."
                 value={orderQuery}
                 onChange={(e) => setOrderQuery(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-white/15 bg-black/60 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-amber-400"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-[#E4C6D4] bg-[#FFF9FC] text-[#332733] placeholder-[#705B68]/70 text-xs font-mono focus:outline-none focus:border-[#BE185D]"
               />
             </div>
             <button
               type="submit"
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-400 hover:to-pink-400 text-slate-950 font-black text-xs transition-all shadow-md shadow-pink-500/25 cursor-pointer shrink-0"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#DB2777] to-[#BE185D] hover:from-[#BE185D] hover:to-[#9D174D] text-white font-bold text-xs transition-all shadow-md shadow-pink-500/20 cursor-pointer shrink-0"
             >
               Verify &amp; Spin
             </button>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-[#705B68]">
             Every paid top-up order unlocks 1 bonus spin with guaranteed rewards!
           </p>
         </form>

@@ -67,16 +67,16 @@ export function LuckyDrawModal() {
       role="dialog"
       aria-modal="true"
       aria-label="Lucky Draw Wheel Modal"
-      className="lucky-draw-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="lucky-draw-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#2D1A26]/65 backdrop-blur-md animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) setIsOpen(false);
       }}
     >
-      <div className="relative w-full max-w-[350px] animate-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-[360px] animate-in zoom-in-95 duration-200">
         {/* Embedded Compact Wheel */}
         <LuckyDrawWheel
           orderNumber={activeOrder}
-          wheelSize={230}
+          wheelSize={256}
           isCompact={true}
           onClose={() => setIsOpen(false)}
           title={activeOrder ? `Order: ${activeOrder}` : "Lucky Draw"}
@@ -87,25 +87,25 @@ export function LuckyDrawModal() {
           {showOrderInput ? (
             <form
               onSubmit={handleOrderSubmit}
-              className="lucky-draw-order-form rounded-2xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-md p-2 flex gap-1.5 shadow-lg animate-in fade-in"
+              className="lucky-draw-order-form rounded-2xl border border-[#F0C6DA] bg-white/95 backdrop-blur-md p-2 flex gap-1.5 shadow-lg animate-in fade-in"
             >
               <input
                 type="text"
-                placeholder="Order # (e.g. ORD-...)"
+                placeholder="Order # (e.g. ASURA-...)"
                 value={inputOrder}
                 onChange={(e) => setInputOrder(e.target.value)}
-                className="flex-1 px-2.5 py-1.5 rounded-xl border border-white/15 bg-black/60 text-white placeholder-slate-500 text-[11px] font-mono focus:outline-none focus:border-amber-400"
+                className="flex-1 px-2.5 py-1.5 rounded-xl border border-[#E4C6D4] bg-[#FFF9FC] text-[#332733] placeholder-[#705B68]/70 text-[11px] font-mono focus:outline-none focus:border-[#BE185D]"
               />
               <button
                 type="submit"
-                className="px-2.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-[11px] cursor-pointer"
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#DB2777] to-[#BE185D] hover:from-[#BE185D] hover:to-[#9D174D] text-white font-bold text-[11px] cursor-pointer"
               >
                 Check
               </button>
               <button
                 type="button"
                 onClick={() => setShowOrderInput(false)}
-                className="px-2 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 text-[11px] cursor-pointer"
+                className="px-2.5 py-1.5 rounded-xl bg-[#FCF0F5] hover:bg-[#F7DFEA] text-[#705B68] text-[11px] font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -114,7 +114,7 @@ export function LuckyDrawModal() {
             <button
               type="button"
               onClick={handleSwitchToFree}
-              className="text-[11px] text-sky-400 hover:text-sky-300 underline underline-offset-2 cursor-pointer font-medium"
+              className="inline-flex items-center rounded-full border border-[#F0C6DA] bg-white/95 px-3.5 py-1.5 text-[11px] font-semibold text-[#BE185D] hover:bg-[#FCF0F5] shadow-sm cursor-pointer transition-colors"
             >
               Switch to Daily Free Spin
             </button>
@@ -122,7 +122,7 @@ export function LuckyDrawModal() {
             <button
               type="button"
               onClick={() => setShowOrderInput(true)}
-              className="text-[11px] text-slate-400 hover:text-amber-300 underline underline-offset-2 cursor-pointer transition-colors"
+              className="inline-flex items-center rounded-full border border-[#F0C6DA] bg-white/95 px-3.5 py-1.5 text-[11px] font-semibold text-[#5C4754] hover:text-[#BE185D] hover:border-[#DB2777]/50 shadow-sm cursor-pointer transition-colors"
             >
               Have an order number? Click for bonus spin
             </button>
