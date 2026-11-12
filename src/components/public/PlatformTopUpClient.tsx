@@ -674,7 +674,7 @@ export function PlatformTopUpClient({
 
           <nav
             aria-label="Switch platform"
-            className="service-no-scrollbar flex items-center gap-1.5 overflow-x-auto pb-0.5 sm:pb-0"
+            className="service-no-scrollbar flex items-center gap-2 overflow-x-auto pb-0.5 sm:pb-0"
           >
             {PLATFORM_SWITCHER.map((item) => {
               const isActive = item.slug === normPlatform;
@@ -682,18 +682,20 @@ export function PlatformTopUpClient({
                 <Link
                   key={item.slug}
                   href={`/services/${item.slug}`}
-                  className={`service-platform-chip inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold whitespace-nowrap transition-all ${
+                  aria-label={item.name}
+                  title={item.name}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`service-platform-chip inline-flex h-10 w-10 items-center justify-center rounded-full transition-all shrink-0 ${
                     isActive ? "service-platform-chip--active" : ""
                   }`}
                 >
                   <Image
                     src={item.icon}
                     alt={item.name}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4 rounded-sm object-contain shrink-0"
+                    width={22}
+                    height={22}
+                    className="h-[22px] w-[22px] rounded-md object-contain"
                   />
-                  <span>{item.name}</span>
                 </Link>
               );
             })}
