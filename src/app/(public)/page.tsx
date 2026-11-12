@@ -8,6 +8,7 @@ import { HomePlatforms } from "@/components/public/HomePlatforms";
 import { HomeGameEvents } from "@/components/public/HomeGameEvents";
 import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
+import { getPackageVariant, selectFeaturedSlides } from "@/lib/featuredPackages";
 import type { ClientGame } from "@/types/game";
 
 // Cache at Vercel Edge with ISR (Incremental Static Regeneration).
@@ -44,15 +45,16 @@ async function HomeGames() {
 async function HomeGamePackages({ games }: { games: ClientGame[] }) {
   const featuredGroups = await Promise.all(games
     .filter((game) => game.supplier === "webbuilder" && game.checkoutSupported !== false)
-    .map(async (game) => ({
-      game,
-      packages: await getNormalizedPackages(game.supplier, game.code).catch(() => []),
-      variant: /free\s*fire|freefire/i.test(`${game.name} ${game.slug} ${game.code}`)
-        ? "free-fire" as const
-        : /mobile\s*legends|mlbb/i.test(`${game.name} ${game.slug} ${game.code}`)
-          ? "mobile-legends" as const
-          : "other" as const,
-    })));
+    .map(async (game) => {
+      const variant = getPackageVariant(game);
+      const packages = await getNormalizedPackages(game.supplier, game.code).catch(() => []);
+      const pickedPackages = selectFeaturedSlides(game, packages, variant).map((slide) => slide.pkg);
+      return {
+        game,
+        packages: pickedPackages,
+        variant,
+      };
+    }));
 
   return <HomeFeaturedPackages groups={featuredGroups} />;
 }

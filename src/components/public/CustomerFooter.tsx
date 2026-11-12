@@ -49,9 +49,9 @@ export function CustomerFooter() {
                   alt="Asura Store"
                   width={44}
                   height={44}
+                  sizes="44px"
                   quality={100}
                   loading="lazy"
-                  unoptimized
                   className="size-11 object-contain"
                 />
                 {/* Cute Water Festival Lotus perched on the logo */}
@@ -123,7 +123,7 @@ export function CustomerFooter() {
           <span className="inline-flex items-center gap-2">
             <ShieldCheck aria-hidden="true" size={14} className="text-[#22C55E]" />
             Secure payments
-            <Image src="/images/aba-logo.webp" alt="ABA Pay" width={24} height={24} quality={100} className="size-6 rounded-md" loading="lazy" />
+            <Image src="/images/aba-logo.webp" alt="ABA Pay" width={24} height={24} sizes="24px" quality={80} className="size-6 rounded-md" loading="lazy" />
             <span className="font-semibold text-[#172033]">KHQR</span>
           </span>
         </div>

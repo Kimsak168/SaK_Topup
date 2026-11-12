@@ -715,7 +715,7 @@ export function PlatformTopUpClient({
                 src={coverImage}
                 alt={platformName}
                 fill
-                quality={100}
+                quality={80}
                 preload
                 sizes="84px"
                 className="object-contain p-1.5"
@@ -1264,7 +1264,7 @@ export function PlatformTopUpClient({
               <div className="service-khqr-card flex min-h-[70px] items-center justify-between gap-3 rounded-2xl p-3.5 text-left">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-[#004B87] shrink-0">
-                    <Image src="/images/aba-logo.webp" alt="ABA" fill sizes="40px" quality={100} loading="lazy" className="object-contain" />
+                    <Image src="/images/aba-logo.webp" alt="ABA" fill sizes="40px" quality={80} loading="lazy" className="object-contain" />
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 flex-wrap">

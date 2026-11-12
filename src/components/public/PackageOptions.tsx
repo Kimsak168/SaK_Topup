@@ -70,7 +70,7 @@ const PackageCard = memo(function PackageCard({
             alt=""
             fill
             sizes="96px"
-            quality={100}
+            quality={80}
             loading={loadImageEagerly ? "eager" : "lazy"}
             className="package-option-image object-contain"
             onLoad={(event) => {

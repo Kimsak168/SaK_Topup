@@ -64,7 +64,7 @@ export async function GET(
       },
       {
         headers: {
-          "Cache-Control": "no-store",
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
           "Server-Timing": `catalogue;dur=${(performance.now() - start).toFixed(1)}`,
         },
       }

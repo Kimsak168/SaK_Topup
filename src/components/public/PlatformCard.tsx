@@ -58,7 +58,7 @@ export const PlatformCard = memo(function PlatformCard({
           alt={platform.name}
           fill
           sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 20vw, 280px"
-          quality={100}
+          quality={80}
           loading="lazy"
           className="game-card-image relative z-10 object-cover object-center transition-[scale,opacity] duration-300 ease-out motion-safe:pointer-fine:group-hover:scale-[1.03] motion-reduce:transition-none"
         />

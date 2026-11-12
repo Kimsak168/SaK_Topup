@@ -9,7 +9,7 @@ export async function GET() {
     return Response.json(
       { success: true, count: banners.length, banners },
       { headers: {
-        "Cache-Control": "no-store",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
         "Server-Timing": `banners;dur=${(performance.now() - start).toFixed(1)}`,
       } }
     );

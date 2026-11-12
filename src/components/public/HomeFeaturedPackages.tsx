@@ -1,10 +1,12 @@
 import Image from "next/image";
 import { StorefrontLink } from "./StorefrontLink";
 import { Package as PackageIcon } from "lucide-react";
+import {
+  selectFeaturedSlides,
+  type PackageKind,
+  type PackageVariant,
+} from "@/lib/featuredPackages";
 import type { ClientGame, ClientPackage } from "@/types/game";
-
-type PackageVariant = "free-fire" | "mobile-legends" | "other";
-type PackageKind = "monthly" | "weekly-double" | "weekly-lite" | "weekly" | "weekly-elite" | "weekly-five" | "twilight" | "featured";
 
 interface FeaturedPackageGroup {
   game: ClientGame;
@@ -21,23 +23,6 @@ interface FeaturedPackageSlide {
   pkg: ClientPackage;
   kind: PackageKind;
   variant: PackageVariant;
-}
-
-function getPackageKind(pkg: ClientPackage, variant: Exclude<PackageVariant, "other">): PackageKind | null {
-  const label = `${pkg.name} ${pkg.diamondsOrPoints || ""}`.toLowerCase();
-
-  if (variant === "free-fire") {
-    if (/\bmonthly\b/.test(label)) return "monthly";
-    if (/\bweekly\b/.test(label) && /[\u00d7x]\s*2\b/.test(label)) return "weekly-double";
-    if (/\bweekly\s*lite\b/.test(label)) return "weekly-lite";
-    return null;
-  }
-
-  if (/\btwilight\b/.test(label)) return "twilight";
-  if (/\bweekly\b/.test(label) && /[\u00d7x]\s*5\b/.test(label)) return "weekly-five";
-  if (/\bweekly\b.*\belite\b/.test(label)) return "weekly-elite";
-  if (/\bweekly\b/.test(label)) return "weekly";
-  return null;
 }
 
 function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: ClientPackage; kind: PackageKind; variant: PackageVariant }) {
@@ -76,7 +61,7 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
             alt=""
             fill
             sizes={useGameCover ? "64px" : "96px"}
-            quality={100}
+            quality={80}
             className={useGameCover ? "rounded-xl object-cover" : "object-contain"}
           />
         )}
@@ -95,27 +80,9 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
 }
 
 export function HomeFeaturedPackages({ groups }: HomeFeaturedPackagesProps) {
-  const slides = groups.flatMap<FeaturedPackageSlide>(({ game, packages, variant }) => {
-    const isEligible = (item: ClientPackage) => item.isAvailable && (item.sellingPrice ?? 0) > 0;
-    if (variant === "other") {
-      const pkg = packages
-        .filter(isEligible)
-        .sort((a, b) => Number(b.isFeatured) - Number(a.isFeatured) || (a.sellingPrice ?? Infinity) - (b.sellingPrice ?? Infinity))[0];
-      return pkg ? [{ game, pkg, kind: "featured" as const, variant }] : [];
-    }
-
-    const kinds = variant === "free-fire"
-      ? ["monthly", "weekly-double", "weekly-lite"] as const
-      : ["weekly-elite", "weekly-five", "twilight"] as const;
-
-    return kinds.flatMap((kind) => {
-      const pkg = packages.find((item) => getPackageKind(item, variant) === kind && isEligible(item))
-        ?? (kind === "weekly-elite"
-          ? packages.find((item) => getPackageKind(item, variant) === "weekly" && isEligible(item))
-          : undefined);
-      return pkg ? [{ game, pkg, kind, variant }] : [];
-    });
-  });
+  const slides = groups.flatMap<FeaturedPackageSlide>(({ game, packages, variant }) =>
+    selectFeaturedSlides(game, packages, variant)
+  );
 
   if (slides.length === 0) return null;
   const animationDuration = Math.max(48, slides.length * 8);

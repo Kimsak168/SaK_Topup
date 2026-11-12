@@ -256,7 +256,8 @@ function CheckoutContent() {
                       alt="ABA Bank"
                       width={50}
                       height={50}
-                      quality={100}
+                      sizes="50px"
+                      quality={80}
                       className="h-full w-full object-cover rounded-xl"
                       preload
                     />

@@ -38,7 +38,9 @@ export async function GET(req: NextRequest) {
 
   try {
     const result = await getPublicSmmCatalog(query);
-    return NextResponse.json(result, { headers: { "Cache-Control": "no-store" } });
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (error: unknown) {
     console.error("[SMM Services API Error]:", error);
     return NextResponse.json(
