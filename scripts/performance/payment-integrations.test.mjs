@@ -405,3 +405,73 @@ test("ABA PayWay V2: Provider module path re-export", async () => {
   assert.ok(typeof provider.checkVngZz2Transaction === "function");
   assert.ok(typeof provider.getVngZz2Config === "function");
 });
+
+function healthFixture() {
+  let now = 100_000;
+  let calls = 0;
+  let mode = "healthy";
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  const env = { VNGZZ2_PRIMARY_API_KEY: "health-test-only", VNGZZ2_PAYMENT_BASE_URL: "http://provider.test/api" };
+  const requests = [];
+  const api = createModuleLoader({}, {
+    process: { env },
+    Date: class extends Date { static now() { return now; } },
+    fetch: async (url, options) => {
+      calls++;
+      requests.push({ url, options });
+      await gate;
+      if (mode === "timeout") throw new Error("fixture timeout");
+      if (mode === "unavailable") return Response.json({}, { status: 503 });
+      return Response.json({ data: { state: "OPERATIONAL", service: "health-fixture", version: "1" } });
+    },
+  })("src/lib/services/vngzzPayWayService.ts");
+  return { api, env, requests, release, calls: () => calls, advance: ms => { now += ms; }, setMode: value => { mode = value; } };
+}
+
+test("payment health shares simultaneous probes and expires healthy snapshots after fifteen seconds", async () => {
+  const fixture = healthFixture();
+  const pending = Array.from({ length: 8 }, () => fixture.api.checkVngZz2Health());
+  assert.equal(fixture.calls(), 1);
+  fixture.release();
+  assert.ok((await Promise.all(pending)).every(result => result.available));
+  fixture.advance(14_999);
+  assert.equal((await fixture.api.checkVngZz2Health()).available, true);
+  assert.equal(fixture.calls(), 1);
+  fixture.advance(1);
+  await fixture.api.checkVngZz2Health();
+  assert.equal(fixture.calls(), 2);
+  assert.equal(fixture.requests[0].options.cache, "no-store");
+});
+
+test("unhealthy and timed-out health probes expire quickly and recover without retaining old success", async () => {
+  for (const mode of ["unavailable", "timeout"]) {
+    const fixture = healthFixture();
+    fixture.release();
+    await fixture.api.checkVngZz2Health();
+    fixture.advance(15_000);
+    fixture.setMode(mode);
+    assert.equal((await fixture.api.checkVngZz2Health()).available, false);
+    fixture.advance(2_999);
+    fixture.setMode("healthy");
+    assert.equal((await fixture.api.checkVngZz2Health()).available, false);
+    assert.equal(fixture.calls(), 2);
+    fixture.advance(1);
+    assert.equal((await fixture.api.checkVngZz2Health()).available, true);
+    assert.equal(fixture.calls(), 3);
+  }
+});
+
+test("health snapshots are isolated by provider and timeout and never bypass missing configuration", async () => {
+  const fixture = healthFixture();
+  fixture.release();
+  await fixture.api.checkVngZz2Health();
+  fixture.env.VNGZZ2_PAYMENT_BASE_URL = "http://another-provider.test/api/v1/";
+  await fixture.api.checkVngZz2Health();
+  assert.equal(fixture.requests[1].url, "http://another-provider.test/api/v1/status");
+  await fixture.api.checkVngZz2Health(100);
+  assert.equal(fixture.calls(), 3);
+  delete fixture.env.VNGZZ2_PRIMARY_API_KEY;
+  assert.equal((await fixture.api.checkVngZz2Health()).state, "SANDBOX_OPERATIONAL");
+  assert.equal(fixture.calls(), 3);
+});

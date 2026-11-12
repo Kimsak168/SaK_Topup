@@ -84,7 +84,6 @@ export function CustomerFooter() {
               <li><Link href="/" className="storefront-footer-link">Home</Link></li>
               <li><Link href="/games" className="storefront-footer-link">Browse games</Link></li>
               <li><Link href="/services" className="storefront-footer-link inline-flex items-center gap-1"><span>🌊</span> SMM Services</Link></li>
-              <li><Link href="/services/tiktok-khmer" className="storefront-footer-link inline-flex items-center gap-1"><span>🚣‍♂️</span> TikTok Khmer Deals</Link></li>
               <li><Link href="/orders" className="storefront-footer-link">Track your order</Link></li>
             </ul>
           </div>

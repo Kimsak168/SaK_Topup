@@ -1,6 +1,5 @@
 import { getPublicSmmCatalogSummary } from "@/lib/services/smmPublicCatalogService";
 import { PlatformCard } from "./PlatformCard";
-import { BoostTikTokKhmerBanner } from "./BoostTikTokKhmerBanner";
 
 const PLATFORMS = [
   { id: "tiktok", name: "TikTok" },
@@ -32,11 +31,6 @@ export async function HomePlatforms() {
         <div className="storefront-grid">
           {PLATFORMS.map((platform) => <PlatformCard key={platform.id} platform={{ ...platform, count: counts.get(platform.id) }} />)}
         </div>
-      </section>
-
-      {/* Boost TikTok Khmer Showcase - Placed directly under SMM Services */}
-      <section id="boost-tiktok-khmer" className="mb-14 sm:mb-24 scroll-mt-28" aria-label="Boost TikTok Khmer Special Packages">
-        <BoostTikTokKhmerBanner />
       </section>
       <div id="social-services" className="scroll-mt-28" />
     </div>

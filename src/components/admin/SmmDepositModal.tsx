@@ -29,7 +29,9 @@ interface DepositData {
   currency: "USD" | "KHR";
   qr_string: string;
   qr_image: string;
+  qr_png_url?: string;
   pay_url?: string;
+  deep_link?: string;
   abamobile_deeplink?: string;
   expire_in_sec: number;
   current_smm_balance?: number;
@@ -117,10 +119,10 @@ export default function SmmDepositModal({
           if (!isCancelled) setRenderedQr(url);
         })
         .catch(() => {
-          if (!isCancelled) setRenderedQr(depositData.qr_image || null);
+          if (!isCancelled) setRenderedQr(depositData.qr_image || depositData.qr_png_url || null);
         });
     } else {
-      setRenderedQr(depositData.qr_image || null);
+      setRenderedQr(depositData.qr_image || depositData.qr_png_url || null);
     }
 
     return () => {
@@ -213,9 +215,10 @@ export default function SmmDepositModal({
   // Open ABA Mobile app
   const handleOpenAbaApp = () => {
     if (!depositData) return;
-    if (depositData.abamobile_deeplink) {
+    const appDeepLink = depositData.abamobile_deeplink || depositData.deep_link;
+    if (appDeepLink) {
       try {
-        window.location.href = depositData.abamobile_deeplink;
+        window.location.href = appDeepLink;
       } catch {
         if (depositData.pay_url) window.open(depositData.pay_url, "_blank");
       }

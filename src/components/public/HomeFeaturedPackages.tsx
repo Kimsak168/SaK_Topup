@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+import { StorefrontLink } from "./StorefrontLink";
 import { Package as PackageIcon } from "lucide-react";
 import type { ClientGame, ClientPackage } from "@/types/game";
 
@@ -61,10 +61,9 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
       : "home-package-slide-art";
 
   return (
-    <Link
+    <StorefrontLink
       className="home-package-slide"
       href={`${game.path}?package=${encodeURIComponent(pkg.id)}`}
-      prefetch={false}
       title={`${game.name}: select ${pkg.diamondsOrPoints || pkg.name}`}
     >
       {badge && <span className="home-package-best-value">{badge}</span>}
@@ -90,7 +89,7 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
           {discount > 0 && <small>{discount}% off</small>}
         </span>
       </span>
-    </Link>
+    </StorefrontLink>
   );
 }
 

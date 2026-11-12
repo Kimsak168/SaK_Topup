@@ -11,7 +11,7 @@ export default async function PublicCustomerLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const logoUrl = await getPublicLogoUrl().catch(() => null);
+  const logoUrl = await getPublicLogoUrl().catch(() => undefined);
 
   return (
     <div className="public-theme relative min-h-screen flex flex-col bg-black text-[#F8F5FF] selection:bg-[#7C3AED] selection:text-white">
@@ -20,7 +20,7 @@ export default async function PublicCustomerLayout({
 
       <div className="relative z-10 flex flex-col flex-1 w-full min-w-0">
         {/* Customer Top Navigation */}
-        <CustomerNavbar logoUrl={logoUrl || undefined} />
+        <CustomerNavbar logoUrl={logoUrl} />
 
         {/* Main Public Content */}
         <main id="main-content" tabIndex={-1} className="relative z-20 flex-1 w-full min-w-0 pt-[calc(60px+env(safe-area-inset-top,0px))] md:pt-[calc(72px+env(safe-area-inset-top,0px))]">

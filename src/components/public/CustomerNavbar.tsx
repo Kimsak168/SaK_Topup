@@ -41,17 +41,17 @@ const drawerSocialLinks = [
   {
     label: "Telegram",
     href: validSocialUrl(SOCIAL_URLS.telegram),
-    path: telegramIconPath,
+    iconSrc: "/images/platforms/telegram-icon.svg",
   },
   {
     label: "Facebook",
     href: validSocialUrl(SOCIAL_URLS.facebook),
-    path: "M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.413c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.931-1.956 1.887v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z",
+    iconSrc: "/images/platforms/facebook-icon.svg",
   },
   {
     label: "TikTok",
     href: validSocialUrl(SOCIAL_URLS.tiktok),
-    path: "M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2H12.3v13.967a2.955 2.955 0 0 1-2.95 2.658 2.953 2.953 0 0 1-2.955-2.95 2.953 2.953 0 0 1 2.955-2.95c.305 0 .6.048.879.135V9.286a6.46 6.46 0 0 0-.879-.06 6.45 6.45 0 0 0-6.45 6.45 6.45 6.45 0 0 0 6.45 6.45 6.45 6.45 0 0 0 6.45-6.45V8.54a8.27 8.27 0 0 0 4.834 1.55V6.638c-.35 0-.7-.035-1.045-.104Z",
+    iconSrc: "/images/platforms/tiktok-icon.svg",
   },
 ].filter((link): link is typeof link & { href: string } => Boolean(link.href));
 
@@ -339,7 +339,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
             <section className={styles.drawerSocials} aria-labelledby={`${drawerId}-socials-title`}>
               <h2 id={`${drawerId}-socials-title`} className={styles.drawerSectionTitle}>Social &amp; support</h2>
               <div className={styles.drawerSocialList}>
-                {drawerSocialLinks.map(({ label, href, path }) => (
+                {drawerSocialLinks.map(({ label, href, iconSrc }) => (
                   <a
                     key={label}
                     href={href}
@@ -348,9 +348,16 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
                     onClick={closeDrawer}
                     className={styles.drawerSocialLink}
                     aria-label={`${label} (opens in a new tab)`}
+                    title={label}
                   >
                     <span className={styles.drawerSocialIcon}>
-                      <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d={path} /></svg>
+                      <Image
+                        src={iconSrc}
+                        alt=""
+                        width={28}
+                        height={28}
+                        className={styles.drawerSocialBrandImg}
+                      />
                     </span>
                     <span>{label}</span>
                   </a>
@@ -360,8 +367,11 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
                   onClick={closeDrawer}
                   className={styles.drawerSocialLink}
                   aria-label="Customer support and order help"
+                  title="Support"
                 >
-                  <span className={styles.drawerSocialIcon}><Headphones aria-hidden="true" /></span>
+                  <span className={`${styles.drawerSocialIcon} ${styles.drawerSupportIcon}`}>
+                    <Headphones aria-hidden="true" />
+                  </span>
                   <span>Support</span>
                 </Link>
               </div>

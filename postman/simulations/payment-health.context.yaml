@@ -1,0 +1,23 @@
+purpose:
+  stands_in_for: The VNGZZ2 read-only payment status endpoint with controlled latency and availability.
+  unblocks: Verify real payment health route caching, concurrent request sharing, timeout recovery and failure freshness without live provider calls.
+assumptions:
+  - id: status-contract
+    status: unknown
+    claim: The status endpoint returns the fields consumed by the health adapter.
+    reason: The fixture follows the saved OpenAPI status endpoint and existing adapter; this run does not establish current provider availability or payment settlement.
+    verification: The saved spec defines GET /v1/status; field parsing follows the existing adapter. Current live response fields were not fetched. Owner mock discovery was skipped because postman whoami reported no authenticated account and postman status is unsupported by this CLI.
+    source: docs/providers/vngzz2.openapi.json; src/lib/services/vngzzPayWayService.ts; postman/mocks/payment-health/default.js
+    updated_at: "2026-11-03"
+  - id: health-cache-behavior
+    status: supported
+    claim: Within one running server process, simultaneous health calls share a probe, healthy snapshots expire after 15 seconds, and unavailable snapshots expire after 3 seconds.
+    reason: The built Next.js route ran against the HTTP simulation and the test checked route responses, timing and the mock's independent upstream probe counter. The fingerprint commit had a dirty working tree containing these cache changes and the earlier storefront work.
+    verification: On 2026-11-03, scripts/verify-payment-health.mjs passed with a 550ms provider delay. Six concurrent requests caused one provider GET; three repeat requests took 18ms, 2ms and 13ms without additional probes. After 15 seconds an injected HTTP 503 replaced the successful snapshot; after 3 seconds a new GET recovered. The simulation request log showed exactly three /v1/status probes. Unit tests separately exercised timeout expiration and provider/timeout key isolation. This establishes local caller behavior, not latency or cache sharing across separate hosting instances.
+    source: scripts/verify-payment-health.mjs; scripts/performance/payment-integrations.test.mjs; src/lib/services/vngzzPayWayService.ts; .local-backups/navigation/payment-health.json
+    updated_at: "2026-11-03"
+fingerprints:
+  - id: payment-health-cache-2026-11-03
+    date: "2026-11-03"
+    commit: d18118426d77bccfb7e42787ec3a21575a6da561
+    cli: "1.73.0"

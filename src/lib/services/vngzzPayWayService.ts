@@ -101,6 +101,19 @@ export interface VngZz2HealthResult {
   capabilities?: string[];
 }
 
+interface HealthSnapshot {
+  key: string;
+  expiresAt: number;
+  result: VngZz2HealthResult | null;
+  pending: Promise<VngZz2HealthResult> | null;
+}
+
+// Health is advisory, never payment verification. Keep one bounded snapshot
+// per server process and share concurrent probes. Cold processes still probe.
+let healthSnapshot: HealthSnapshot | undefined;
+const HEALTH_CACHE_MS = 15_000;
+const UNAVAILABLE_HEALTH_CACHE_MS = 3_000;
+
 /**
  * Check if VngZz2 environment configuration is provided.
  */
@@ -427,11 +440,33 @@ export async function checkVngZz2Health(timeoutMs = 5000): Promise<VngZz2HealthR
   const rawBase = (process.env.VNGZZ2_PAYMENT_BASE_URL || "https://www.vngzz2game.site/api").trim();
   const baseUrl = rawBase.replace(/\/+$/, "").replace(/\/v1$/, "");
 
+  const key = JSON.stringify([baseUrl, timeoutMs]);
+  if (healthSnapshot?.key === key) {
+    if (healthSnapshot.pending) return healthSnapshot.pending;
+    if (healthSnapshot.result && healthSnapshot.expiresAt > Date.now()) {
+      return healthSnapshot.result;
+    }
+  }
+
+  const snapshot: HealthSnapshot = { key, expiresAt: 0, result: null, pending: null };
+  healthSnapshot = snapshot;
+  snapshot.pending = probeVngZz2Health(baseUrl, timeoutMs)
+    .then((result) => {
+      snapshot.result = result;
+      snapshot.expiresAt = Date.now() + (result.available ? HEALTH_CACHE_MS : UNAVAILABLE_HEALTH_CACHE_MS);
+      return result;
+    })
+    .finally(() => { snapshot.pending = null; });
+  return snapshot.pending;
+}
+
+async function probeVngZz2Health(baseUrl: string, timeoutMs: number): Promise<VngZz2HealthResult> {
   const startTime = Date.now();
   try {
     const res = await fetch(`${baseUrl}/v1/status`, {
       method: "GET",
       headers: { Accept: "application/json" },
+      cache: "no-store",
       signal: AbortSignal.timeout(timeoutMs),
     });
 

@@ -153,7 +153,12 @@ export function GameEventsCarousel({ events, unavailable = false }: GameEventsCa
                   aria-roledescription="slide"
                   aria-label={`${index + 1} of ${events.length}: ${event.title}`}
                 >
-                  <div className={styles.imageFrame}>
+                  <button
+                    type="button"
+                    className={styles.imageFrame}
+                    onClick={() => setSelectedEvent(event)}
+                    aria-label={`View event details: ${event.title}`}
+                  >
                     <Image
                       src={event.imageUrl}
                       alt={`${GAME_EVENT_GAME_LABELS[event.game]} event banner`}
@@ -161,20 +166,11 @@ export function GameEventsCarousel({ events, unavailable = false }: GameEventsCa
                       sizes="(max-width: 600px) calc(100vw - 32px), (max-width: 1200px) calc(100vw - 48px), 1100px"
                       className={styles.image}
                     />
-                    <div className={styles.imageShade} aria-hidden="true" />
                     <span className={styles.gameTag}>{GAME_EVENT_GAME_LABELS[event.game]}</span>
                     <span className={`${styles.status} ${STATUS_CLASS[event.status]}`}>
                       <span aria-hidden="true" />{GAME_EVENT_STATUS_LABELS[event.status]}
                     </span>
-                    <div className={styles.cardBody}>
-                      <p className={styles.date}><CalendarDays aria-hidden="true" />{formatDateRange(event.startDate, event.endDate)}</p>
-                      <h3>{event.title}</h3>
-                      <p className={styles.description}>{event.description}</p>
-                      <button type="button" className={styles.detailsButton} onClick={() => setSelectedEvent(event)}>
-                        View Details <ChevronRight aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
+                  </button>
                 </article>
               ))}
             </div>

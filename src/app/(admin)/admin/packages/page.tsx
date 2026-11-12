@@ -103,6 +103,7 @@ function PackagesManagerContent() {
   // Sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncOnlyActive, setSyncOnlyActive] = useState(true);
+  const [recalculateCustomPrices, setRecalculateCustomPrices] = useState(false);
 
   // Editable row values map: packageId -> { sellingPrice, originalPrice, badge, isActive, customImage, isDirty }
   const [editMap, setEditMap] = useState<
@@ -249,6 +250,7 @@ function PackagesManagerContent() {
           supplier: supplierFilter !== "all" ? supplierFilter : undefined,
           gameCode: gameFilter !== "all" ? gameFilter : undefined,
           onlyActiveGames: syncOnlyActive,
+          recalculateSellingPrices: recalculateCustomPrices,
         }),
       });
 
@@ -728,6 +730,10 @@ function PackagesManagerContent() {
           <label className="admin-sync-scope">
             <input type="checkbox" checked={syncOnlyActive} onChange={event => setSyncOnlyActive(event.target.checked)} />
             Active games only
+          </label>
+          <label className="admin-sync-scope">
+            <input type="checkbox" checked={recalculateCustomPrices} onChange={event => setRecalculateCustomPrices(event.target.checked)} />
+            Recalculate custom prices
           </label>
           <button type="button" onClick={handleSyncPackages} disabled={isSyncing} className="admin-button admin-button-primary">
             <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />

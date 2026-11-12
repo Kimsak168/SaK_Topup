@@ -20,10 +20,13 @@ export interface VngzzSmmDepositResult {
     state: "PENDING" | "COMPLETED" | "CANCELLED" | "EXPIRED" | string;
     qr_string: string;
     qr_image: string;
-    qr_image_url?: string;
+    qr_png_url?: string;
+    qr_image_url?: string | null;
     pay_url?: string;
+    deep_link?: string;
     abamobile_deeplink?: string;
     expire_in_sec: number;
+    expires_at?: string;
     current_smm_balance?: number;
   };
 }
@@ -36,7 +39,7 @@ export interface VngzzTransactionCheckResult {
     transaction_id: string;
     amount: string;
     currency: string;
-    state: "PENDING" | "COMPLETED" | "CANCELLED" | "EXPIRED" | string;
+    state: "PENDING" | "PAID" | "COMPLETED" | "FAILED" | "CANCELLED" | "EXPIRED" | string;
     is_paid: boolean;
     created_at?: string;
     expires_at?: string;
@@ -108,9 +111,19 @@ export async function createVngzzSmmDeposit(params: VngzzSmmDepositRequest): Pro
   }
 
   const payload = await response.json().catch(() => null);
-  if (!response.ok || !payload || payload.success === false) {
-    const message = typeof payload?.message === "string" ? payload.message.slice(0, 300) : "Failed to create SMM deposit KHQR.";
+  const statusStr = typeof payload?.status === "string" ? payload.status.trim().toLowerCase() : "";
+  if (!response.ok || !payload || payload.success === false || ["failed", "error"].includes(statusStr)) {
+    const rawMsg = typeof payload?.message === "string" ? payload.message : typeof payload?.error === "string" ? payload.error : "";
+    const message = rawMsg ? rawMsg.slice(0, 300) : "Failed to create SMM deposit KHQR.";
     throw new VngzzGameError(`VNGZZ2: ${message}`, response.status || 502, payload?.code || "DEPOSIT_FAILED");
+  }
+
+  const data = (payload.data && typeof payload.data === "object" ? payload.data : {}) as Record<string, unknown>;
+  if (!data.qr_image && typeof data.qr_png_url === "string") {
+    data.qr_image = data.qr_png_url;
+  }
+  if (!data.abamobile_deeplink && typeof data.deep_link === "string") {
+    data.abamobile_deeplink = data.deep_link;
   }
 
   return payload as VngzzSmmDepositResult;
@@ -147,8 +160,10 @@ export async function checkVngzzTransaction(transactionId: string): Promise<Vngz
   }
 
   const payload = await response.json().catch(() => null);
-  if (!response.ok || !payload) {
-    const message = typeof payload?.message === "string" ? payload.message.slice(0, 300) : "Failed to verify transaction.";
+  const statusStr = typeof payload?.status === "string" ? payload.status.trim().toLowerCase() : "";
+  if (!response.ok || !payload || payload.success === false || ["failed", "error"].includes(statusStr)) {
+    const rawMsg = typeof payload?.message === "string" ? payload.message : typeof payload?.error === "string" ? payload.error : "";
+    const message = rawMsg ? rawMsg.slice(0, 300) : "Failed to verify transaction.";
     throw new VngzzGameError(`VNGZZ2: ${message}`, response.status || 502, payload?.code || "CHECK_FAILED");
   }
 
@@ -178,9 +193,11 @@ export async function getVngzzSmmProfile(): Promise<VngzzSmmProfileResult> {
   }
 
   const payload = await response.json().catch(() => null);
-  if (!response.ok || !payload || payload.status !== "SUCCESS") {
-    const message = typeof payload?.message === "string" ? payload.message.slice(0, 300) : "Failed to retrieve SMM profile.";
-    throw new VngzzGameError(`VNGZZ2: ${message}`, response.status || 502, "PROFILE_FAILED");
+  const statusUpper = typeof payload?.status === "string" ? payload.status.trim().toUpperCase() : "";
+  if (!response.ok || !payload || payload.success === false || statusUpper !== "SUCCESS") {
+    const rawMsg = typeof payload?.message === "string" ? payload.message : typeof payload?.error === "string" ? payload.error : "";
+    const message = rawMsg ? rawMsg.slice(0, 300) : "Failed to retrieve SMM profile.";
+    throw new VngzzGameError(`VNGZZ2: ${message}`, response.status || 502, payload?.code || "PROFILE_FAILED");
   }
 
   return payload as VngzzSmmProfileResult;

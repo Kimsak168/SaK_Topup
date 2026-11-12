@@ -1,32 +1,35 @@
-/* Use a clean white and blush canvas with clear pink accents. */
+/* Keep the blush canvas subtle and use deeper rose for readable accents. */
 :root:has(.public-theme),
 :root[data-storefront-theme="dark"]:has(.public-theme) {
   color-scheme: light;
-  --background: #FFF7FB;
-  --foreground: #3B2433;
+  --background: #FFF9FC;
+  --foreground: #332733;
   --card: #FFFFFF;
-  --card-foreground: #3B2433;
+  --card-foreground: #332733;
   --popover: #FFFFFF;
-  --popover-foreground: #3B2433;
-  --secondary: #FDEAF3;
-  --secondary-foreground: #3B2433;
-  --muted: #FDEAF3;
-  --muted-foreground: #866878;
-  --accent: #F9D9E9;
-  --accent-foreground: #8F2457;
-  --border: #EAC0D4;
-  --border-soft: #F1D9E5;
-  --input: #EAC0D4;
-  --card-border: #EAC0D4;
-  --ring: #F472B6;
+  --popover-foreground: #332733;
+  --primary: #BE185D;
+  --primary-hover: #9D174D;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FCF0F5;
+  --secondary-foreground: #332733;
+  --muted: #FCF0F5;
+  --muted-foreground: #705B68;
+  --accent: #F7DFEA;
+  --accent-foreground: #9D174D;
+  --border: #E4C6D4;
+  --border-soft: #F0DEE7;
+  --input: #B88B9F;
+  --card-border: #E4C6D4;
+  --ring: #BE185D;
 }
 
 :root .public-theme,
 :root[data-storefront-theme="dark"] .public-theme {
   background:
-    radial-gradient(ellipse at 8% 0%, rgb(236 72 153 / .14), transparent 42%),
-    radial-gradient(ellipse at 100% 100%, rgb(249 168 212 / .16), transparent 44%),
-    linear-gradient(135deg, #FFF7FB 0%, #FCE7F3 55%, #FFF5FA 100%);
+    radial-gradient(ellipse at 8% 0%, rgb(190 24 93 / .04), transparent 42%),
+    radial-gradient(ellipse at 100% 100%, rgb(190 24 93 / .03), transparent 44%),
+    linear-gradient(135deg, #FFF9FC 0%, #FDF2F7 55%, #FFF9FC 100%);
   color: var(--foreground);
 }
 

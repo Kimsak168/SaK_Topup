@@ -31,6 +31,22 @@ payments, or database records. The build uses the configured environment and
 may read catalogue data and download Google fonts. Local backups and generated
 artifacts are excluded from linting and type checking.
 
+To verify navigation performance, run a production preview with
+`npm start -- --port 3118`, then run
+`node scripts/performance/navigation-http.mjs http://127.0.0.1:3118 local` and
+`node scripts/performance/navigation-browser.mjs http://127.0.0.1:3118 local 390 --verify`.
+The browser check requires Chrome (or `CHROME_PATH`), throttles the CPU fourfold,
+and blocks all non-GET requests. It checks link preloading, package selection,
+order totals, render counts, featured offer links, and the lazy-loaded lucky draw.
+Reports are saved under `.local-backups/navigation/`.
+
+Payment health probes share a result for 15 seconds within each server process;
+failures expire after 3 seconds. The first request after expiry or a cold start
+still waits for the provider. This cache applies only to health, and never to
+payment verification. To check the real production route without live provider
+calls, build the app, run `postman simulation run postman/simulations/payment-health.sim.yaml --port 4919 --no-history`,
+then run `node scripts/verify-payment-health.mjs` in a second terminal.
+
 To check the KHQR popup without creating real orders or payments, start a local
 production preview and the fixtures with Postman CLI 1.70 or later:
 

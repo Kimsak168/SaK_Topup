@@ -407,7 +407,7 @@ export async function getVngzzSmmServiceSnapshot(forceRefresh = false): Promise<
       const name = typeof obj.name === "string" ? obj.name.replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim() : "";
       const category = typeof obj.category === "string" ? obj.category.replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim() : "";
       const description = typeof obj.description === "string" ? obj.description.replace(/<[^>]*>/g, " ").replace(/&amp;/gi, "&").replace(/\s+/g, " ").trim() : "";
-      const rate = parseSmmNumber(obj.rate ?? obj.price);
+      const rate = parseSmmNumber(obj.rate ?? obj.rate_per_1k ?? obj.price);
       const min = parseSmmInteger(obj.min);
       const max = parseSmmInteger(obj.max);
       const platform = typeof obj.platform === "string" ? obj.platform.replace(/\s+/g, " ").trim() : undefined;
@@ -467,6 +467,30 @@ export async function getVngzzSmmServices(forceRefresh = false): Promise<VngzzSm
     }));
 }
 
+function normalizeVngzzSmmStatus(rawStatus: string): "completed" | "processing" | "failed" | "unknown" {
+  const status = rawStatus.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  if (["completed", "complete", "done", "delivered", "finished", "succeeded", "success"].includes(status)) {
+    return "completed";
+  }
+  if (["failed", "failure", "error", "cancelled", "canceled", "rejected", "refunded", "partial"].includes(status)) {
+    return "failed";
+  }
+  if (["pending", "processing", "in_progress", "running", "queued", "active", "accepted"].includes(status)) {
+    return "processing";
+  }
+  return "unknown";
+}
+
+function extractSmmRecord(payload: Record<string, unknown>) {
+  if (payload.data && typeof payload.data === "object" && !Array.isArray(payload.data)) {
+    return payload.data as Record<string, unknown>;
+  }
+  if (payload.order && typeof payload.order === "object" && !Array.isArray(payload.order)) {
+    return payload.order as Record<string, unknown>;
+  }
+  return payload;
+}
+
 export async function createVngzzSmmOrder(params: {
   serviceId: string | number;
   link: string;
@@ -474,14 +498,16 @@ export async function createVngzzSmmOrder(params: {
   reference?: string;
 }): Promise<VngzzSmmOrderResult> {
   const { baseUrl, apiKey, timeoutMs } = getVngzzGameConfig();
+  const cleanServiceId = String(params.serviceId).trim();
+  const parsedServiceId = /^\d+$/.test(cleanServiceId) ? Number(cleanServiceId) : cleanServiceId;
   const payload = {
-    service: String(params.serviceId).trim(),
+    service_id: parsedServiceId,
     link: String(params.link).trim(),
-    quantity: Number(params.quantity),
-    ...(params.reference ? { reference: params.reference } : {}),
+    quantity: Math.trunc(Number(params.quantity)),
+    ...(params.reference ? { reference: String(params.reference).trim() } : {}),
   };
 
-  const res = await fetch(`${baseUrl}/v1/smm/order`, {
+  const res = await fetch(`${baseUrl}/v1/smm/create_order`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -494,28 +520,131 @@ export async function createVngzzSmmOrder(params: {
   });
 
   const data = ((await res.json().catch(() => ({}))) || {}) as Record<string, unknown>;
-  if (!res.ok || data.status === "error" || data.success === false) {
-    const errorMsg = String(data.message || data.error || `SMM order failed with HTTP ${res.status}`);
+  const record = extractSmmRecord(data);
+  const topStatus = String(data.status || "").trim().toLowerCase();
+  const orderStatusRaw = String(record.order_status ?? record.fulfillment_status ?? record.state ?? record.status ?? "");
+  const isFailureFlag =
+    !res.ok ||
+    data.success === false ||
+    record.success === false ||
+    ["failed", "failure", "error"].includes(topStatus) ||
+    normalizeVngzzSmmStatus(orderStatusRaw) === "failed";
+
+  if (isFailureFlag) {
+    const errorMsg = String(
+      data.message || data.error || record.message || record.error || `SMM order failed with HTTP ${res.status}`
+    );
     return {
       orderId: "",
       status: "failed",
-      supplierStatus: "failed",
+      supplierStatus: orderStatusRaw || "failed",
       message: errorMsg,
     };
   }
 
-  const orderId = String(data.order ?? data.order_id ?? data.id ?? params.reference ?? "");
+  const normalized = normalizeVngzzSmmStatus(orderStatusRaw);
+  const status: VngzzSmmOrderResult["status"] =
+    normalized === "completed" ? "completed" : normalized === "failed" ? "failed" : "processing";
+  const orderId = String(
+    record.order_id ?? record.order ?? record.id ?? data.order_id ?? data.order ?? data.id ?? params.reference ?? ""
+  );
   return {
     orderId,
-    status: "processing",
-    supplierStatus: "processing",
-    message: String(data.message || "SMM order placed successfully"),
+    status,
+    supplierStatus: orderStatusRaw || status,
+    message: String(record.message || data.message || "SMM order placed successfully"),
   };
 }
 
-export async function checkVngzzSmmOrder(orderId: string | number) {
+export async function checkVngzzSmmOrder(orderId: string | number, reference?: string) {
   const { baseUrl, apiKey, timeoutMs } = getVngzzGameConfig();
-  const res = await fetch(`${baseUrl}/v1/smm/status?${new URLSearchParams({ order: String(orderId) })}`, {
+  const cleanOrderId = String(orderId ?? "").trim();
+  const cleanReference = String(reference ?? "").trim();
+
+  const lookups: Array<Record<string, string>> = [];
+  if (cleanReference) lookups.push({ reference: cleanReference });
+  if (cleanOrderId && cleanOrderId !== cleanReference) {
+    lookups.push(/^\d+$/.test(cleanOrderId) ? { order: cleanOrderId } : { reference: cleanOrderId });
+  }
+  if (!lookups.length) {
+    return {
+      status: "unknown" as const,
+      supplierStatus: "unknown",
+      orderId: "",
+      message: "SMM order identifier is required",
+    };
+  }
+
+  let lastStatus = 0;
+  let lastErrorMessage = "";
+
+  for (const query of lookups) {
+    let res: Response;
+    try {
+      res = await fetch(`${baseUrl}/v1/smm/check_order?${new URLSearchParams(query)}`, {
+        headers: {
+          Accept: "application/json",
+          "X-API-Key": apiKey,
+        },
+        cache: "no-store",
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch {
+      return {
+        status: "unknown" as const,
+        supplierStatus: "unknown",
+        orderId: cleanOrderId || cleanReference,
+        message: "SMM status inquiry temporarily unreachable",
+      };
+    }
+
+    lastStatus = res.status;
+    const data = ((await res.json().catch(() => ({}))) || {}) as Record<string, unknown>;
+    if (!res.ok) {
+      lastErrorMessage = String(data.message || data.error || `Status inquiry HTTP ${res.status}`);
+      if (res.status === 404) continue;
+      return {
+        ...data,
+        status: "unknown" as const,
+        supplierStatus: "unknown",
+        orderId: cleanOrderId || cleanReference,
+        message: lastErrorMessage,
+      };
+    }
+
+    const record = extractSmmRecord(data);
+    const rawOrderStatus = String(
+      record.order_status ?? record.fulfillment_status ?? record.state ?? record.status ?? ""
+    ).trim();
+    const topFailed =
+      data.success === false || ["failed", "failure", "error"].includes(String(data.status || "").toLowerCase());
+    const normalized = topFailed
+      ? "unknown"
+      : normalizeVngzzSmmStatus(rawOrderStatus || (String(data.status || "").toLowerCase() === "success" ? "processing" : ""));
+    const resolvedOrderId = String(
+      record.order_id ?? record.order ?? record.id ?? cleanOrderId ?? cleanReference ?? ""
+    );
+
+    return {
+      ...data,
+      orderId: resolvedOrderId,
+      supplierStatus: rawOrderStatus || String(data.status || "unknown"),
+      status: normalized,
+      message: String(record.message || data.message || data.error || `SMM order status: ${rawOrderStatus || normalized}`),
+    };
+  }
+
+  return {
+    status: "unknown" as const,
+    supplierStatus: "unknown",
+    orderId: cleanOrderId || cleanReference,
+    message: lastErrorMessage || `Status inquiry HTTP ${lastStatus || 404}`,
+  };
+}
+
+export async function getVngzzSmmOrders() {
+  const { baseUrl, apiKey, timeoutMs } = getVngzzGameConfig();
+  const res = await fetch(`${baseUrl}/v1/smm/orders`, {
     headers: {
       Accept: "application/json",
       "X-API-Key": apiKey,
@@ -523,12 +652,14 @@ export async function checkVngzzSmmOrder(orderId: string | number) {
     cache: "no-store",
     signal: AbortSignal.timeout(timeoutMs),
   });
-
-  if (!res.ok) {
-    return { status: "unknown", message: `Status inquiry HTTP ${res.status}` };
+  const data = ((await res.json().catch(() => null)) || {}) as Record<string, unknown>;
+  if (!res.ok || data.success === false || ["failed", "error"].includes(String(data.status || "").toLowerCase())) {
+    throw new VngzzGameError(
+      String(data.message || data.error || `VNGZZ2 SMM orders HTTP ${res.status}`),
+      res.status || 502
+    );
   }
-
-  return res.json().catch(() => ({}));
+  return data;
 }
 
 

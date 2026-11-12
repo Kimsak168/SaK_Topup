@@ -7,12 +7,14 @@ import { WEBBUILDER_GAMES, getWebBuilderGame } from "@/lib/suppliers/webbuilderC
 import type { SyncStats } from "./syncService";
 
 const emptyStats = (): SyncStats => ({ supplier: "webbuilder", imported: 0, updated: 0, skipped: 0, failed: 0, total: 0, errors: [] });
+const DEFAULT_WEBBUILDER_MARGIN_PERCENT = 20;
 
 /** Apply a complete provider snapshot while retaining admin pricing and artwork. */
 export async function syncWebBuilderCatalogue(options: {
   packages?: boolean;
   gameCode?: string;
   onlyActiveGames?: boolean;
+  recalculateSellingPrices?: boolean;
   source?: WebBuilderProduct[];
 } = {}) {
   const games = emptyStats();
@@ -54,7 +56,7 @@ export async function syncWebBuilderCatalogue(options: {
             gameFields: definition.requiresServer ? ["userid", "serverid"] : ["userid"],
             userIdLabel: definition.userIdLabel, serverLabel: definition.serverLabel || "Server ID",
             isActive: false, isPopular: definition.isPopular, isTrending: false, badge: definition.badge || "",
-            defaultMarginPercent: 12, sortOrder: definition.sortOrder,
+            defaultMarginPercent: DEFAULT_WEBBUILDER_MARGIN_PERCENT, sortOrder: definition.sortOrder,
           });
           game = created.toObject();
           games.imported++;
@@ -72,19 +74,33 @@ export async function syncWebBuilderCatalogue(options: {
         const existing = await GamePackage.find({ supplier: "webbuilder", supplierProductCode: { $in: gameProducts.map(product => product.id) } }).lean();
         const byCode = new Map(existing.map(pkg => [pkg.supplierProductCode, pkg]));
         if (byCode.size !== existing.length) throw new Error("Duplicate stored supplier product IDs need review before syncing this game.");
-        const margin = Number.isFinite(game.defaultMarginPercent) && game.defaultMarginPercent >= 0 ? game.defaultMarginPercent : 12;
+        const margin = Number.isFinite(game.defaultMarginPercent) && game.defaultMarginPercent >= 0 ? game.defaultMarginPercent : DEFAULT_WEBBUILDER_MARGIN_PERCENT;
         if (gameProducts.length) await GamePackage.bulkWrite(gameProducts.map((product, index) => {
           const saved = byCode.get(product.id);
           const available = isWebBuilderProductAvailable(product);
           const sellingPrice = available ? Math.ceil((product.price_cents * (1 + margin / 100) - 1e-9)) / 100 : null;
+          const priceUpdate =
+            saved &&
+            available &&
+            sellingPrice !== null &&
+            (options.recalculateSellingPrices || (!saved.adminConfigured && saved.sellingPrice !== null))
+              ? {
+                  sellingPrice,
+                  ...(options.recalculateSellingPrices ? { adminConfigured: false } : {}),
+                  ...(saved.originalPrice != null ? { originalPrice: Math.round(sellingPrice * 1.15 * 100) / 100 } : {}),
+                }
+              : {};
           return { updateOne: {
             filter: saved ? { _id: saved._id } : { supplier: "webbuilder", supplierProductCode: product.id },
             update: {
               $set: { gameSlug: game.slug, gameCode: definition.code, buyingPrice: product.price_cents / 100,
-                priceCents: product.price_cents, currency: product.currency, supplierAvailable: available, syncedAt: new Date() },
-              $setOnInsert: { supplier: "webbuilder", supplierProductCode: product.id, name: product.name,
-                diamondsOrPoints: product.name, sellingPrice, originalPrice: null, isActive: false,
-                adminConfigured: false, isFeatured: false, sortOrder: index + 1 },
+                priceCents: product.price_cents, currency: product.currency, supplierAvailable: available, syncedAt: new Date(),
+                ...priceUpdate },
+              ...(!saved ? {
+                $setOnInsert: { supplier: "webbuilder", supplierProductCode: product.id, name: product.name,
+                  diamondsOrPoints: product.name, sellingPrice, originalPrice: null, isActive: false,
+                  adminConfigured: false, isFeatured: false, sortOrder: index + 1 },
+              } : {}),
             }, upsert: true,
           } };
         }));

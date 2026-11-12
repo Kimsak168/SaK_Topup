@@ -34,7 +34,7 @@ export default function LuckyDrawPage() {
       </div>
 
       {/* Order Number Claim Form */}
-      <div className="max-w-md mx-auto rounded-3xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-xl p-5 sm:p-6 shadow-xl">
+      <div className="lucky-draw-order-form max-w-md mx-auto rounded-3xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-xl p-5 sm:p-6 shadow-xl">
         <form onSubmit={handleSubmit} className="space-y-3">
           <label htmlFor="orderInput" className="block text-xs font-bold text-slate-300">
             Have a Paid Order? Enter Order Number for Bonus Spins:

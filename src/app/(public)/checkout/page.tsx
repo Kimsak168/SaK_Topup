@@ -51,18 +51,7 @@ function CheckoutContent() {
   const [copied, setCopied] = useState(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
-  const [isVngConfigured, setIsVngConfigured] = useState<boolean | null>(null);
-
   useEffect(() => {
-    fetch("/api/payment/vngzz2/health")
-      .then((res) => res.json())
-      .then((data) => {
-        setIsVngConfigured(Boolean(data?.isConfigured));
-      })
-      .catch(() => {
-        setIsVngConfigured(false);
-      });
-
     return () => {
       toast.dismiss("checkout");
       if (pollingRef.current) {
@@ -274,13 +263,6 @@ function CheckoutContent() {
                   <div className="space-y-0.5 min-w-0">
                     <div className="text-base font-black text-[#172033] tracking-tight flex flex-wrap items-center gap-2">
                       <span className="payment-method-title">KHQR</span>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase shrink-0 border ${
-                        isVngConfigured === false
-                          ? "bg-amber-100 text-amber-800 border-amber-200"
-                          : "bg-emerald-100 text-emerald-800 border-emerald-200"
-                      }`}>
-                        {isVngConfigured === false ? "Sandbox Demo" : "Instant"}
-                      </span>
                     </div>
                     <p className="text-xs text-[#64748B] font-medium">
                       ABA Mobile &amp; All Cambodian Banks (KHQR)

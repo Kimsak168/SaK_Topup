@@ -112,7 +112,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     requiresServer: true,
     serverLabel: "Zone ID",
     userIdLabel: "User ID",
-    image: "/images/magic-chess.jpg",
+    image: "/images/magic-chess.jpg?v=2026",
     badge: "NEW",
     isPopular: false,
     sortOrder: 6,
@@ -158,7 +158,7 @@ for (const [baseCode, code, name, providerName] of WEBBUILDER_REGIONAL_GAMES) {
 }
 WEBBUILDER_GAMES.push({
   name: "Zepeto", slug: "webbuilder-zepeto", code: "zepeto", category: "Apps & Social", currencyName: "Zems / Coins",
-  publisher: "Naver Z", requiresServer: false, userIdLabel: "User ID", image: "/images/hero-banner.jpg",
+  publisher: "Naver Z", requiresServer: false, userIdLabel: "User ID", image: "/images/zepeto.png",
   isPopular: false, sortOrder: WEBBUILDER_GAMES.length + 1, filter: product => matchesGame(product, "Zepeto"),
 });
 

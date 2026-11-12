@@ -12,7 +12,7 @@ export async function GET() {
       isConfigured: false,
       mode: "sandbox",
       message: "ABA PayWay V2 is operating in Sandbox mode. Add VNGZZ2_PRIMARY_API_KEY to .env.local to activate Live gateway.",
-    });
+    }, { headers: { "Cache-Control": "no-store" } });
   }
 
   const health = await checkVngZz2Health(5000);
@@ -26,5 +26,5 @@ export async function GET() {
     service: health.service,
     version: health.version,
     message: health.message,
-  });
+  }, { headers: { "Cache-Control": "no-store" } });
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import Link from "next/link";
 import { ClientGame } from "@/types/game";
 
@@ -36,7 +37,7 @@ function GameList({ games, ariaHidden }: { games: ClientGame[]; ariaHidden?: boo
   );
 }
 
-export function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
+export const ActiveGamesTicker = memo(function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
   if (!games || games.length === 0) return null;
 
   // Filter only valid active games and deduplicate
@@ -77,4 +78,4 @@ export function ActiveGamesTicker({ games }: ActiveGamesTickerProps) {
       </div>
     </div>
   );
-}
+});

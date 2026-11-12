@@ -592,7 +592,6 @@ test('customer KHQR checkout is unavailable without credentials and creates no o
       'next/server': { NextResponse: Response },
       '@/lib/mongodb': { connectDB: async () => { databaseCalls++; throw new Error('No database writes allowed'); } },
       '@/models/Order': {}, '@/models/Payment': {}, '@/models/Game': {}, '@/models/GamePackage': {}, '@/models/SmmService': {},
-      '@/lib/suppliers/vngzz2SmmKhmer': {},
       '@/lib/services/digitalShopService': { DIGITAL_SHOP_FULFILLMENT_AVAILABLE: true },
       '@/lib/services/vngzzPayWayService': {
         isVngZz2Configured: () => false,

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   if (!auth.authorized) return auth.response;
 
   try {
-    let body: { gameCode?: string; supplier?: "webbuilder" | "vngzz2" | "g2bulk"; onlyActiveGames?: boolean } = {};
+    let body: { gameCode?: string; supplier?: "webbuilder" | "vngzz2" | "g2bulk"; onlyActiveGames?: boolean; recalculateSellingPrices?: boolean } = {};
     try {
       body = await req.json();
     } catch {
@@ -21,13 +21,15 @@ export async function POST(req: NextRequest) {
     if (!body || typeof body !== "object" || Array.isArray(body) ||
       (body.supplier !== undefined && !["webbuilder", "vngzz2", "g2bulk"].includes(body.supplier)) ||
       (body.gameCode !== undefined && (typeof body.gameCode !== "string" || body.gameCode.length > 200)) ||
-      (body.onlyActiveGames !== undefined && typeof body.onlyActiveGames !== "boolean")) {
+      (body.onlyActiveGames !== undefined && typeof body.onlyActiveGames !== "boolean") ||
+      (body.recalculateSellingPrices !== undefined && typeof body.recalculateSellingPrices !== "boolean")) {
       return NextResponse.json({ success: false, error: "Invalid sync options." }, { status: 400 });
     }
     const stats = await syncPackagesFromSuppliers({
       gameCode: body.gameCode,
       supplier: body.supplier,
       onlyActiveGames: body.onlyActiveGames ?? true,
+      recalculateSellingPrices: body.recalculateSellingPrices ?? false,
     });
 
     return NextResponse.json({

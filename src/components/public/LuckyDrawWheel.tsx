@@ -384,7 +384,7 @@ export function LuckyDrawWheel({
 
   return (
     <div
-      className={`relative w-full mx-auto rounded-3xl border border-sky-400/40 bg-[#0B0F19]/95 backdrop-blur-xl text-center shadow-2xl shadow-sky-950/50 overflow-hidden ${
+      className={`lucky-draw-panel relative w-full mx-auto rounded-3xl border border-sky-400/40 bg-[#0B0F19]/95 backdrop-blur-xl text-center shadow-2xl shadow-sky-950/50 overflow-hidden ${
         isSmall ? "max-w-[340px] p-4" : "max-w-lg p-5 sm:p-7"
       }`}
     >
@@ -499,7 +499,7 @@ export function LuckyDrawWheel({
 
       {/* Prize Result Banner or Status Note */}
       {prizeResult ? (
-        <div className={`relative z-10 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-950/40 via-sky-950/40 to-emerald-950/40 text-center animate-in fade-in zoom-in-95 ${
+        <div className={`lucky-draw-result relative z-10 rounded-2xl border border-emerald-400/40 bg-gradient-to-r from-emerald-950/40 via-sky-950/40 to-emerald-950/40 text-center animate-in fade-in zoom-in-95 ${
           isSmall ? "mt-2.5 p-3 space-y-1.5" : "mt-4 p-4 space-y-2"
         }`}>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">

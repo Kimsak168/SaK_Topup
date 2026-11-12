@@ -288,6 +288,7 @@ export async function syncPackagesFromSuppliers(options: {
   gameCode?: string;
   supplier?: "webbuilder" | "vngzz2" | "g2bulk";
   onlyActiveGames?: boolean;
+  recalculateSellingPrices?: boolean;
 } = {}): Promise<FullSyncResult["packages"]> {
   if (options.gameCode && !options.supplier) {
     await connectDB();

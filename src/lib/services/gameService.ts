@@ -46,7 +46,11 @@ const CURRENT_GAME_COVER_ART: Record<string, string> = {
   roblox: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/68/66/b0/6866b035-efb2-9a39-c8aa-21c60dec2a0a/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "8-ball-pool": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/64/0c/3d/640c3d70-3a45-da59-3aa1-5e13eccdf116/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "blood-strike": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b8/a4/e7/b8a4e7ad-660b-a456-77de-1b2f5c4a9b6a/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg",
-  "magic-chess-gogo": "https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/46/5b/ca/465bca79-fa16-8ad4-73fe-f8ee63e33c9d/Placeholder.mill/512x512bb.jpg",
+  "magic-chess-gogo": "/images/magic-chess.jpg?v=2026",
+  "webbuilder-mcgg-my": "/images/magic-chess.jpg?v=2026",
+  "webbuilder-mcgg-ph": "/images/magic-chess.jpg?v=2026",
+  "webbuilder-mcgg-ru": "/images/magic-chess.jpg?v=2026",
+  "webbuilder-mcgg-tr": "/images/magic-chess.jpg?v=2026",
 };
 
 const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Promise<ClientGame[]> =>
@@ -183,6 +187,117 @@ export async function updatePackageSellingPrice(
   return !!result;
 }
 
+function extractPackageNumber(baseName: string): number {
+  const match = baseName.replace(/,/g, "").match(/\d+(?:\s+\d+)*/);
+  if (!match) return 0;
+  return Number(match[0].replace(/\s+/g, "")) || 0;
+}
+
+function getBloodStrikePackageImage(baseName: string): string {
+  if (/voucher|cornucopia/i.test(baseName)) {
+    return "/images/packages/bloodstrike-voucher.png";
+  }
+  if (/upgrade\s*point|upgrade.*chest/i.test(baseName)) {
+    return "/images/packages/bloodstrike-upgrade-chest.png";
+  }
+  if (/lucky\s*bag/i.test(baseName)) {
+    return "/images/packages/bloodstrike-lucky-bag.png";
+  }
+  if (/eternal\s*valor|safe/i.test(baseName)) {
+    return "/images/packages/bloodstrike-safe.png";
+  }
+  if (/ultra\s*skin|lucky\s*chest|chest/i.test(baseName)) {
+    return "/images/packages/bloodstrike-skin-chest.png";
+  }
+  if (/strike\s*pass\s*premium/i.test(baseName)) {
+    return "/images/packages/bloodstrike-pass-premium.png";
+  }
+  if (/strike\s*pass(\s*elite)?/i.test(baseName)) {
+    return "/images/packages/bloodstrike-pass-elite.png";
+  }
+  if (/level[\s-]*up|season\s*pass|pass/i.test(baseName)) {
+    return "/images/packages/bloodstrike-level-up.png";
+  }
+  const amount = extractPackageNumber(baseName);
+  if (/deal/i.test(baseName)) {
+    if (amount >= 900) return "/images/packages/bloodstrike-gold-vault.png";
+    if (amount >= 700) return "/images/packages/bloodstrike-gold-chest.png";
+    if (amount >= 500) return "/images/packages/bloodstrike-gold-case.png";
+    if (amount >= 250) return "/images/packages/bloodstrike-gold-bag.png";
+    if (amount >= 90) return "/images/packages/bloodstrike-gold-md.png";
+    return "/images/packages/bloodstrike-gold-sm.png";
+  }
+  if (amount >= 5000) return "/images/packages/bloodstrike-gold-vault.png";
+  if (amount >= 2000) return "/images/packages/bloodstrike-gold-chest.png";
+  if (amount >= 1000) return "/images/packages/bloodstrike-gold-case.png";
+  if (amount >= 500) return "/images/packages/bloodstrike-gold-bag.png";
+  if (amount >= 200) return "/images/packages/bloodstrike-gold-md.png";
+  return "/images/packages/bloodstrike-gold-sm.png";
+}
+
+function getMcggPackageImage(baseName: string): string {
+  if (/bounty/i.test(baseName)) return "/images/packages/mcgg-battle-bounty.png";
+  if (/discount/i.test(baseName)) return "/images/packages/mcgg-battle-discounts.png";
+  if (/card|pass|weekly|monthly|bundle/i.test(baseName)) return "/images/packages/mcgg-weekly-pass.png";
+  const amount = extractPackageNumber(baseName);
+  if (amount >= 3000) return "/images/packages/mcgg-diamond-truck.png";
+  if (amount >= 1100) return "/images/packages/mcgg-diamond-case.png";
+  if (amount >= 400) return "/images/packages/mcgg-diamond-safe.png";
+  if (amount >= 100) return "/images/packages/mcgg-diamond-pile.png";
+  return "/images/packages/mcgg-diamond-sm.png";
+}
+
+function getEightBallPackageImage(baseName: string): string {
+  if (/bundle|coda/i.test(baseName)) return "/images/packages/8ball-bundle.png";
+  if (/spin/i.test(baseName)) return "/images/packages/8ball-goldenspin.png";
+  if (/shot/i.test(baseName)) return "/images/packages/8ball-goldenshot.png";
+  const amount = extractPackageNumber(baseName);
+  if (/scratch/i.test(baseName)) {
+    return amount >= 10 ? "/images/packages/8ball-scratcher-2.png" : "/images/packages/8ball-scratcher-1.png";
+  }
+  if (/cash/i.test(baseName)) {
+    return amount >= 100 ? "/images/packages/8ball-cash-2.png" : "/images/packages/8ball-cash-1.png";
+  }
+  if (amount >= 200000) return "/images/packages/8ball-coins-3.png";
+  if (amount >= 50000) return "/images/packages/8ball-coins-2.png";
+  return "/images/packages/8ball-coins-1.png";
+}
+
+function getDefaultGamePackageImage(
+  code: string,
+  slug: string,
+  baseName: string,
+  isDiamondPackage: boolean
+): string | null {
+  const key = `${code} ${slug}`.toLowerCase();
+  if (key.includes("mlbb") || key.includes("mobile-legends")) {
+    return isDiamondPackage ? "/images/mlbb-diamond.png" : null;
+  }
+  if (key.includes("freefire") || key.includes("ff-") || key.includes("free-fire")) {
+    return isDiamondPackage ? "/images/diamond-crystals.png" : null;
+  }
+  if (key.includes("roblox")) return /gift|\$/i.test(baseName) ? "/images/roblox.jpg" : "/images/robux-coin.jpg";
+  if (key.includes("magic_chess") || key.includes("mcgg")) return getMcggPackageImage(baseName);
+  if (key.includes("telegram")) {
+    return /premium/i.test(baseName) ? "/images/packages/telegram-premium.png" : "/images/packages/telegram-star.svg";
+  }
+  if (key.includes("bloodstrike") || key.includes("blood-strike")) return getBloodStrikePackageImage(baseName);
+  if (key.includes("8ball") || key.includes("8-ball")) return getEightBallPackageImage(baseName);
+  if (key.includes("zepeto")) {
+    if (/premium/i.test(baseName)) return "/images/packages/zepeto-premium.png";
+    const amount = extractPackageNumber(baseName);
+    if (/coins?/i.test(baseName)) {
+      if (amount >= 100000) return "/images/packages/zepeto-coins-3.png";
+      if (amount >= 20000) return "/images/packages/zepeto-coins-2.png";
+      return "/images/packages/zepeto-coins-1.png";
+    }
+    if (amount >= 500) return "/images/packages/zepeto-zems-3.png";
+    if (amount >= 50) return "/images/packages/zepeto-zems-2.png";
+    return "/images/packages/zepeto-zems-1.png";
+  }
+  return null;
+}
+
 // Supplier sync is an explicit admin action. Failed reads throw and are never
 // cached as a successful empty catalogue. Only customer fields leave the server.
 const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
@@ -228,13 +343,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
     const diamondsOrPoints = isDiamondsNumeric && isDiamondGame
       ? `${baseDiamonds} Diamonds`
       : baseDiamonds || (isDiamondGame && isNameNumeric ? `${baseName} Diamonds` : baseName);
-    const defaultDiamondImage = isMlbb
-      ? "/images/mlbb-diamond.png"
-      : isFreeFire
-      ? "/images/diamond-crystals.png"
-      : isRoblox
-      ? "/images/robux-coin.jpg"
-      : null;
+    const defaultGameImage = getDefaultGamePackageImage(code, slug, baseName, isDiamondPackage);
     const customImage = cfg.customImage && LEGACY_LEVEL_UP_ARTWORK.has(cfg.customImage)
       ? "/images/packages/freefire-level-up-transparent.png"
       : (cfg.customImage && LEGACY_MEMBERSHIP_ARTWORK[cfg.customImage]) || cfg.customImage;
@@ -249,7 +358,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
     const levelUpImage = isFreeFire && /level\s*up/i.test(baseName)
       ? "/images/packages/freefire-level-up-transparent.png"
       : null;
-    const image = customImage || levelUpImage || membershipImage || (isDiamondPackage || isRoblox ? defaultDiamondImage : null);
+    const image = customImage || levelUpImage || membershipImage || defaultGameImage;
     return {
       id: cfg.supplierProductCode, supplierProductCode: cfg.supplierProductCode,
       name, diamondsOrPoints,

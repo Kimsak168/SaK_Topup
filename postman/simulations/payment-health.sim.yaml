@@ -1,0 +1,6 @@
+simulation: payment-health
+routing: path
+mocks:
+  - name: payment-health
+    routeKey: gateway
+    path: postman/mocks/payment-health/config.yaml

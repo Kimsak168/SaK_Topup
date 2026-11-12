@@ -67,7 +67,7 @@
   white-space: nowrap;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(100deg, #B54779 0%, #8C72A5 52%, #D98EB3 100%);
+  background-image: linear-gradient(100deg, var(--storefront-primary, #BE185D) 0%, #8F3260 52%, var(--storefront-accent, #A21D58) 100%);
   background-size: 100% 100%;
   background-position: 0% 50%;
   background-clip: text;
@@ -365,7 +365,31 @@
   color: var(--drawer-gold);
 }
 
-.drawerSocialIcon svg { width: 20px; height: 20px; }
+.drawerSocialIcon svg { width: 18px; height: 18px; }
+.drawerSocialBrandImg {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: contain;
+  transition: transform 150ms ease;
+}
+.drawerSocialLink:hover .drawerSocialBrandImg {
+  transform: scale(1.08);
+}
+.drawerSupportIcon {
+  color: #FFFFFF;
+}
+.drawerSupportIcon::before {
+  display: none;
+}
+.drawerSupportIcon svg {
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #EC4899, #B54779);
+  color: #FFFFFF;
+}
 
 @keyframes drawer-slide-in {
   from { opacity: .75; transform: translateX(100%); }

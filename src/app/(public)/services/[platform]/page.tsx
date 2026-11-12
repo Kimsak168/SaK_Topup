@@ -4,6 +4,10 @@ import { PlatformTopUpClient } from "@/components/public/PlatformTopUpClient";
 
 export const revalidate = 60;
 
+export function generateStaticParams() {
+  return [];
+}
+
 const PLATFORM_NAMES: Record<string, string> = {
   tiktok: "TikTok",
   telegram: "Telegram",
@@ -35,7 +39,7 @@ export default async function PlatformServicePage({ params }: PlatformPageProps)
   try {
     catalogResult = await getPublicSmmCatalog({
       page: 1,
-      limit: 250,
+      limit: 1000,
       platform: normPlatform,
       type: "all",
       category: "All",

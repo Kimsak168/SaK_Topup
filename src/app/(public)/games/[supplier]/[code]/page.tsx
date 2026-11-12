@@ -6,9 +6,14 @@ import { GameTopUpClient } from "@/components/public/GameTopUpClient";
 export const revalidate = 60;
 export const maxDuration = 60;
 
+// Generate and cache each catalogue page on its first visit, then revalidate
+// it in the background. Admin catalogue edits still invalidate this cache.
+export function generateStaticParams() {
+  return [];
+}
+
 interface GamePageProps {
   params: Promise<{ supplier: string; code: string }>;
-  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: GamePageProps): Promise<Metadata> {
@@ -35,13 +40,8 @@ export async function generateMetadata({ params }: GamePageProps): Promise<Metad
   }
 }
 
-export default async function GameDetailPage({ params, searchParams }: GamePageProps) {
-  const queryParams: Promise<{ [key: string]: string | string[] | undefined }> =
-    searchParams ?? Promise.resolve({});
-  const [{ supplier, code }, query] = await Promise.all([
-    params,
-    queryParams,
-  ]);
+export default async function GameDetailPage({ params }: GamePageProps) {
+  const { supplier, code } = await params;
   const [result, initialPackages] = await Promise.all([
     getGameBySupplierAndCode(supplier, code),
     getNormalizedPackages(supplier, code),
@@ -65,7 +65,6 @@ export default async function GameDetailPage({ params, searchParams }: GamePageP
           key={game.id}
           game={game}
           initialPackages={initialPackages}
-          initialSelectedPackageId={typeof query.package === "string" ? query.package : undefined}
         />
       </div>
     </div>

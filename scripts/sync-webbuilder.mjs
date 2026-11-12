@@ -15,7 +15,11 @@ if (!process.argv.includes("--apply")) {
     const directory = `.local-backups/webbuilder-sync-${Date.now()}`;
     await mkdir(directory, { recursive: true });
     await writeFile(`${directory}/database-before.json`, JSON.stringify({ database: mongoose.connection.name, games, packages }, null, 2));
-    const stats = await syncWebBuilderCatalogue({ packages: true, gameCode: process.argv.includes("--hok") ? "hok" : undefined });
+    const stats = await syncWebBuilderCatalogue({
+      packages: true,
+      gameCode: process.argv.includes("--hok") ? "hok" : undefined,
+      recalculateSellingPrices: process.argv.includes("--recalculate-prices"),
+    });
     console.log(JSON.stringify({ backup: directory, stats }, null, 2));
     if (stats.games.failed || stats.packages.failed) process.exitCode = 1;
   } finally { await mongoose.disconnect(); }

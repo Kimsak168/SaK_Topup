@@ -9,8 +9,7 @@ import {
   computeOrderRequestHash,
 } from "@/lib/suppliers/webbuilder";
 import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
-import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
-import { createKhmerSmmProductOrder, getKhmerSmmOrderStatus } from "@/lib/suppliers/vngzz2SmmKhmer";
+import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder, checkVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
 
 export interface FulfillmentResult {
   success: boolean;
@@ -82,31 +81,19 @@ export async function triggerAutomaticFulfillment(
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
 
       if (order.packageId === "smm-khmer") {
-        const khmerResult = await createKhmerSmmProductOrder({
-          productId: order.supplierProductCode,
-          link: order.targetLink || order.playerId,
-          reference: order.orderNumber,
-        });
-        const status = khmerResult.status === "completed" ? "completed"
-          : khmerResult.status === "failed" ? "failed"
-            : "processing";
         await Order.findByIdAndUpdate(order._id, {
           $set: {
-            supplierOrderId: khmerResult.orderCode || order.orderNumber,
-            fulfillmentStatus: status,
-            lastSupplierStatus: khmerResult.supplierStatus,
-            fulfilledAt: status === "completed" ? new Date() : undefined,
-            errorLog: status === "failed" ? khmerResult.message : undefined,
+            fulfillmentStatus: "failed",
+            lastSupplierStatus: "DISCONTINUED",
+            errorLog: "TikTok Khmer catalog has been removed.",
             updatedAt: new Date(),
           },
         });
-
         return {
-          success: status !== "failed",
+          success: false,
           orderNumber: order.orderNumber,
-          fulfillmentStatus: status,
-          supplierOrderId: khmerResult.orderCode || order.orderNumber,
-          message: khmerResult.message,
+          fulfillmentStatus: "failed",
+          message: "TikTok Khmer catalog has been removed.",
         };
       }
 
@@ -365,29 +352,34 @@ export async function reconcileSupplierFulfillment(
   }
 
   if (order.serviceType === "smm" && order.packageId === "smm-khmer") {
-    if (String(order.paymentStatus).toUpperCase() !== "PAID") {
-      return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
-    }
-    const orderCode = order.supplierOrderId || order.orderNumber;
-    const result = await getKhmerSmmOrderStatus(orderCode);
-    const currentStatus = String(order.fulfillmentStatus).toLowerCase();
-    if (!(["completed", "delivered"].includes(currentStatus)) && result.status !== "unknown") {
-      order.fulfillmentStatus = result.status;
-      order.lastSupplierStatus = result.supplierStatus;
-      if (result.status === "completed") order.fulfilledAt = new Date();
-      if (result.status === "failed") order.errorLog = result.message;
-      await order.save();
-    }
     return {
-      success: !["failed"].includes(String(order.fulfillmentStatus).toLowerCase()),
+      success: false,
       orderNumber,
       fulfillmentStatus: order.fulfillmentStatus,
       supplierOrderId: order.supplierOrderId,
-      message: result.message,
+      message: "TikTok Khmer catalog has been removed.",
     };
   }
 
-  if (order.serviceType === "smm") return { success: true, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "No documented status contract for this SMM service; an administrator must verify delivery." };
+  if (order.serviceType === "smm") {
+    const smmResult = await checkVngzzSmmOrder(order.supplierOrderId || order.orderNumber, order.orderNumber);
+    const currentStatus = String(order.fulfillmentStatus).toLowerCase();
+    if (!["completed", "delivered"].includes(currentStatus) && smmResult.status !== "unknown") {
+      order.fulfillmentStatus = smmResult.status;
+      order.lastSupplierStatus = smmResult.supplierStatus;
+      if (smmResult.orderId) order.supplierOrderId = smmResult.orderId;
+      if (smmResult.status === "completed") order.fulfilledAt = new Date();
+      if (smmResult.status === "failed") order.errorLog = smmResult.message;
+      await order.save();
+    }
+    return {
+      success: String(order.fulfillmentStatus).toLowerCase() !== "failed",
+      orderNumber,
+      fulfillmentStatus: order.fulfillmentStatus,
+      supplierOrderId: order.supplierOrderId,
+      message: smmResult.message,
+    };
+  }
 
   if (order.supplier === "vngzz2") {
     if (String(order.paymentStatus).toUpperCase() !== "PAID") return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };

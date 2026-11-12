@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LuckyDrawWheel } from "./LuckyDrawWheel";
+import dynamic from "next/dynamic";
+
+const LuckyDrawWheel = dynamic(
+  () => import("./LuckyDrawWheel").then((module) => module.LuckyDrawWheel),
+  { loading: () => <p role="status" className="p-8 text-center text-sm text-white">Loading lucky draw...</p> },
+);
 
 interface OpenLuckyDrawDetail {
   orderNumber?: string;
@@ -62,7 +67,7 @@ export function LuckyDrawModal() {
       role="dialog"
       aria-modal="true"
       aria-label="Lucky Draw Wheel Modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
+      className="lucky-draw-modal fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200"
       onClick={(e) => {
         if (e.target === e.currentTarget) setIsOpen(false);
       }}
@@ -82,7 +87,7 @@ export function LuckyDrawModal() {
           {showOrderInput ? (
             <form
               onSubmit={handleOrderSubmit}
-              className="rounded-2xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-md p-2 flex gap-1.5 shadow-lg animate-in fade-in"
+              className="lucky-draw-order-form rounded-2xl border border-sky-400/30 bg-[#0B0F19]/90 backdrop-blur-md p-2 flex gap-1.5 shadow-lg animate-in fade-in"
             >
               <input
                 type="text"

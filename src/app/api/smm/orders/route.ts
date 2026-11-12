@@ -9,7 +9,6 @@ import {
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
 import { calculateSmmCustomerRate, calculateSmmOrderAmount } from "@/lib/services/smmPricing";
-import { getKhmerSmmCatalog, VngzzKhmerSmmError } from "@/lib/suppliers/vngzz2SmmKhmer";
 
 export const dynamic = "force-dynamic";
 
@@ -22,10 +21,9 @@ export async function POST(req: NextRequest) {
 
     const { serviceId, link, quantity } = body;
     const catalog = body.catalog === undefined ? "standard" : body.catalog;
-    if (catalog !== "standard" && catalog !== "khmer") {
+    if (catalog !== "standard") {
       return NextResponse.json({ success: false, error: "Unsupported SMM catalog" }, { status: 400 });
     }
-    const isKhmerCatalog = catalog === "khmer";
 
     const cleanServiceId = typeof serviceId === "string" || typeof serviceId === "number"
       ? String(serviceId).trim()
@@ -54,9 +52,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    if (isKhmerCatalog && targetUrl.hostname.toLowerCase() !== "tiktok.com" && !targetUrl.hostname.toLowerCase().endsWith(".tiktok.com")) {
-      return NextResponse.json({ success: false, error: "Please use a public TikTok link for TikTok Khmer packages." }, { status: 400 });
-    }
 
     if (!Number.isSafeInteger(qty) || qty <= 0) {
       return NextResponse.json({ success: false, error: "Please enter a whole number quantity" }, { status: 400 });
@@ -75,58 +70,37 @@ export async function POST(req: NextRequest) {
 
     await connectDB();
 
-    let service: { service: string; name: string; category: string; rate: number; min: number; max: number } | null = null;
-
-    if (isKhmerCatalog) {
-      const khmerCatalog = await getKhmerSmmCatalog();
-      const product = khmerCatalog.products.find((candidate) => candidate.id === cleanServiceId);
-      if (!product) {
-        return NextResponse.json({ success: false, error: "Selected TikTok Khmer package is unavailable" }, { status: 400 });
-      }
-      if (qty !== product.quantity) {
-        return NextResponse.json({ success: false, error: "Selected TikTok Khmer package quantity has changed. Refresh and try again." }, { status: 409 });
-      }
-      service = {
-        service: product.id,
-        name: product.name,
-        category: "TikTok Khmer",
-        rate: product.price,
-        min: product.quantity,
-        max: product.quantity,
-      };
-    } else {
-      // The active, reviewed MongoDB catalogue is authoritative for standard SMM.
-      // Supplier IDs remain separate from Mongo IDs.
-      const matchingServices = await SmmService.find({
-        supplier: "vngzz2",
-        supplierServiceId: cleanServiceId,
-        isActive: true,
-        supplierAvailable: true,
-        requiresReview: false,
-        reviewFlags: { $size: 0 },
-      }).select("+rate").limit(2).lean();
-      const supplierIdMatches = await SmmService.countDocuments({ supplier: "vngzz2", supplierServiceId: cleanServiceId });
-      const storedService = matchingServices.length === 1 && supplierIdMatches === 1 ? matchingServices[0] : null;
-      const duplicateNameCount = storedService
-        ? await SmmService.countDocuments({ supplier: "vngzz2", fingerprint: storedService.fingerprint })
-        : 0;
-      service = storedService && storedService.fingerprint && duplicateNameCount === 1 &&
-        ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"].includes(storedService.platform) &&
-        ["followers", "likes", "views", "comments", "shares", "other"].includes(storedService.serviceType) &&
-        storedService.category && storedService.category.trim() && storedService.name && storedService.name.trim() &&
-        typeof storedService.rate === "number" && storedService.rate > 0 && storedService.rate <= Number.MAX_SAFE_INTEGER &&
-        typeof storedService.min === "number" && Number.isSafeInteger(storedService.min) &&
-        typeof storedService.max === "number" && Number.isSafeInteger(storedService.max) && storedService.min > 0 && storedService.max >= storedService.min
-        ? {
-            service: storedService.supplierServiceId,
-            name: storedService.name,
-            category: storedService.category,
-            rate: storedService.rate,
-            min: storedService.min || 0,
-            max: storedService.max || 0,
-          }
-        : null;
-    }
+    // The active, reviewed MongoDB catalogue is authoritative for standard SMM.
+    // Supplier IDs remain separate from Mongo IDs.
+    const matchingServices = await SmmService.find({
+      supplier: "vngzz2",
+      supplierServiceId: cleanServiceId,
+      isActive: true,
+      supplierAvailable: true,
+      requiresReview: false,
+      reviewFlags: { $size: 0 },
+    }).select("+rate").limit(2).lean();
+    const supplierIdMatches = await SmmService.countDocuments({ supplier: "vngzz2", supplierServiceId: cleanServiceId });
+    const storedService = matchingServices.length === 1 && supplierIdMatches === 1 ? matchingServices[0] : null;
+    const duplicateNameCount = storedService
+      ? await SmmService.countDocuments({ supplier: "vngzz2", fingerprint: storedService.fingerprint })
+      : 0;
+    const service = storedService && storedService.fingerprint && duplicateNameCount === 1 &&
+      ["tiktok", "telegram", "facebook", "instagram", "youtube", "other"].includes(storedService.platform) &&
+      ["followers", "likes", "views", "comments", "shares", "other"].includes(storedService.serviceType) &&
+      storedService.category && storedService.category.trim() && storedService.name && storedService.name.trim() &&
+      typeof storedService.rate === "number" && storedService.rate > 0 && storedService.rate <= Number.MAX_SAFE_INTEGER &&
+      typeof storedService.min === "number" && Number.isSafeInteger(storedService.min) &&
+      typeof storedService.max === "number" && Number.isSafeInteger(storedService.max) && storedService.min > 0 && storedService.max >= storedService.min
+      ? {
+          service: storedService.supplierServiceId,
+          name: storedService.name,
+          category: storedService.category,
+          rate: storedService.rate,
+          min: storedService.min || 0,
+          max: storedService.max || 0,
+        }
+      : null;
 
     if (!service) {
       return NextResponse.json({ success: false, error: "Selected service is unavailable" }, { status: 400 });
@@ -147,14 +121,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Match the public catalog's customer rate and ignore any browser-supplied price.
-    const finalAmount = isKhmerCatalog
-      ? calculateSmmCustomerRate(service.rate)
-      : calculateSmmOrderAmount(calculateSmmCustomerRate(service.rate), qty);
-    const buyingCost = isKhmerCatalog
-      ? service.rate
-      : Math.round(((service.rate * qty) / 1000) * 100) / 100;
+    const finalAmount = calculateSmmOrderAmount(calculateSmmCustomerRate(service.rate), qty);
+    const buyingCost = Math.round(((service.rate * qty) / 1000) * 100) / 100;
 
-    const orderNumber = `ORD-SMM${isKhmerCatalog ? "-KHMER" : ""}-${Date.now().toString().slice(-6)}-${crypto
+    const orderNumber = `ORD-SMM-${Date.now().toString().slice(-6)}-${crypto
       .randomBytes(2)
       .toString("hex")
       .toUpperCase()}`;
@@ -172,8 +142,8 @@ export async function POST(req: NextRequest) {
       gameName: service.category || "Social Media Service",
       supplier: "vngzz2",
       serviceType: "smm",
-      packageId: isKhmerCatalog ? "smm-khmer" : cleanServiceId,
-      packageName: isKhmerCatalog ? service.name : `${service.name} (${qty.toLocaleString()} units)`,
+      packageId: cleanServiceId,
+      packageName: `${service.name} (${qty.toLocaleString()} units)`,
       supplierProductCode: cleanServiceId,
       playerId: cleanLink,
       targetLink: cleanLink,
@@ -240,7 +210,7 @@ export async function POST(req: NextRequest) {
       qrData,
       serviceName: service.name,
       quantity: qty,
-      catalog: isKhmerCatalog ? "khmer" : "standard",
+      catalog: "standard",
     });
   } catch (error: unknown) {
     console.error("[SMM Order Creation Error]:", error);
@@ -249,7 +219,7 @@ export async function POST(req: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : "Failed to create SMM order",
       },
-      { status: error instanceof VngzzKhmerSmmError ? error.status : 500 }
+      { status: 500 }
     );
   }
 }

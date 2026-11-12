@@ -191,17 +191,23 @@ test("partially successful admin changes invalidate public SMM data even when a 
   assert.equal(invalidations, 1);
 });
 
-test("homepage streams games and banners before a slow social catalog finishes", async () => {
+test("homepage streams games and banners before slow social and featured package queries finish", async () => {
   const React = require("react");
   const { renderToPipeableStream } = require("react-dom/server");
   let finishPlatforms;
   const platforms = new Promise(resolve => { finishPlatforms = resolve; });
+  let finishPackages;
+  const packages = new Promise(resolve => { finishPackages = resolve; });
   const textComponent = text => function FixtureText() { return React.createElement("div", null, text); };
   const HomePage = loader({
-    "@/lib/services/gameService": { getClientGames: async () => [] },
+    "@/lib/services/gameService": {
+      getClientGames: async () => [{ supplier: "webbuilder", code: "hok", name: "Honor of Kings", slug: "hok" }],
+      getNormalizedPackages: async () => { await packages; return []; },
+    },
     "@/lib/services/bannerService": { getPublicBanners: async () => [] },
     "@/components/public/PromotionalBanner": { PromotionalBanner: textComponent("PROMOTIONS_READY") },
     "@/components/public/HomeCatalogue": { HomeCatalogue: textComponent("GAMES_READY") },
+    "@/components/public/HomeFeaturedPackages": { HomeFeaturedPackages: textComponent("FEATURED_READY") },
     "@/components/public/HomePlatforms": { HomePlatforms: async () => { await platforms; return "PLATFORMS_READY"; } },
     "@/components/public/HomeGameEvents": { HomeGameEvents: textComponent("EVENTS_READY") },
     "@/components/public/HomeSkeletons": { BannerSkeleton: textComponent("BANNER_LOADING"), CatalogueSkeleton: textComponent("GAMES_LOADING"), PlatformsSkeleton: textComponent("PLATFORMS_LOADING"), GameEventsSkeleton: textComponent("EVENTS_LOADING") },
@@ -212,19 +218,23 @@ test("homepage streams games and banners before a slow social catalog finishes",
   const complete = new Promise(resolve => output.on("end", resolve));
   const stream = renderToPipeableStream(React.createElement(HomePage), {
     onShellReady() { stream.pipe(output); },
-    onError(error) { finishPlatforms(); output.destroy(error); },
+    onError(error) { finishPlatforms(); finishPackages(); output.destroy(error); },
   });
   try {
     await new Promise(resolve => setImmediate(resolve));
     assert.match(html, /PROMOTIONS_READY/);
     assert.match(html, /GAMES_READY/);
+    assert.match(html, /Loading featured packages/);
+    assert.doesNotMatch(html, /FEATURED_READY/);
     assert.match(html, /PLATFORMS_LOADING/);
     assert.match(html, /EVENTS_READY/);
     assert.ok(html.indexOf("PLATFORMS_LOADING") < html.indexOf("EVENTS_READY"));
     assert.doesNotMatch(html, /PLATFORMS_READY/);
   } finally {
     finishPlatforms();
+    finishPackages();
     await complete;
   }
   assert.match(html, /PLATFORMS_READY/);
+  assert.match(html, /FEATURED_READY/);
 });

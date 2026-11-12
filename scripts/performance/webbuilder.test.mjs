@@ -523,3 +523,119 @@ test("Fulfillment service handles all WebBuilder statuses correctly", async () =
     }
   }
 });
+
+// ========================================================
+// 12. Catalogue Sync Selling Price Calculation & Preservation
+// ========================================================
+test("syncWebBuilderCatalogue auto-updates unconfigured prices, preserves adminConfigured prices, and recalculates all on flag", async () => {
+  const bulkWrites = [];
+  const sampleProducts = [
+    {
+      id: "wb-hok-16",
+      name: "16 Tokens",
+      game: "Honor of Kings",
+      price_cents: 24,
+      currency: "USD",
+      orderable: true,
+    },
+    {
+      id: "wb-hok-80",
+      name: "80 Tokens",
+      game: "Honor of Kings",
+      price_cents: 72,
+      currency: "USD",
+      orderable: true,
+    },
+    {
+      id: "wb-hok-null",
+      name: "Unpriced Pack",
+      game: "Honor of Kings",
+      price_cents: 50,
+      currency: "USD",
+      orderable: true,
+    },
+  ];
+  const storedPackages = [
+    {
+      _id: "pkg-auto",
+      supplier: "webbuilder",
+      supplierProductCode: "wb-hok-16",
+      sellingPrice: 0.4,
+      originalPrice: 0.46,
+      adminConfigured: false,
+    },
+    {
+      _id: "pkg-admin",
+      supplier: "webbuilder",
+      supplierProductCode: "wb-hok-80",
+      sellingPrice: 1.9,
+      originalPrice: 2.18,
+      adminConfigured: true,
+    },
+    {
+      _id: "pkg-null",
+      supplier: "webbuilder",
+      supplierProductCode: "wb-hok-null",
+      sellingPrice: null,
+      originalPrice: null,
+      adminConfigured: false,
+    },
+  ];
+
+  const { syncWebBuilderCatalogue } = loader({
+    "@/lib/mongodb": { connectDB: async () => {} },
+    "@/models/Game": {
+      Game: {
+        findOne: () => ({
+          lean: async () => ({
+            _id: "game-hok",
+            slug: "hok",
+            supplier: "webbuilder",
+            supplierGameCode: "hok",
+            isActive: true,
+            defaultMarginPercent: 20,
+          }),
+        }),
+        updateOne: async () => ({ modifiedCount: 1 }),
+      },
+    },
+    "@/models/GamePackage": {
+      GamePackage: {
+        find: () => ({ lean: async () => storedPackages }),
+        bulkWrite: async (ops) => {
+          bulkWrites.push(ops);
+          return { modifiedCount: ops.length };
+        },
+        updateMany: async () => ({ modifiedCount: 0 }),
+      },
+    },
+  })("src/lib/services/webbuilderSyncService.ts");
+
+  await syncWebBuilderCatalogue({
+    packages: true,
+    gameCode: "hok",
+    source: sampleProducts,
+  });
+
+  const normalOps = bulkWrites[0];
+  assert.equal(normalOps[0].updateOne.update.$set.sellingPrice, 0.29);
+  assert.equal(normalOps[0].updateOne.update.$set.originalPrice, 0.33);
+  assert.equal(normalOps[0].updateOne.update.$setOnInsert, undefined);
+  assert.equal(normalOps[1].updateOne.update.$set.sellingPrice, undefined);
+  assert.equal(normalOps[2].updateOne.update.$set.sellingPrice, undefined);
+
+  await syncWebBuilderCatalogue({
+    packages: true,
+    gameCode: "hok",
+    recalculateSellingPrices: true,
+    source: sampleProducts,
+  });
+
+  const recalcOps = bulkWrites[1];
+  assert.equal(recalcOps[0].updateOne.update.$set.sellingPrice, 0.29);
+  assert.equal(recalcOps[1].updateOne.update.$set.sellingPrice, 0.87);
+  assert.equal(recalcOps[1].updateOne.update.$set.originalPrice, 1);
+  assert.equal(recalcOps[1].updateOne.update.$set.adminConfigured, false);
+  assert.equal(recalcOps[1].updateOne.update.$setOnInsert, undefined);
+  assert.equal(recalcOps[2].updateOne.update.$set.sellingPrice, 0.6);
+});

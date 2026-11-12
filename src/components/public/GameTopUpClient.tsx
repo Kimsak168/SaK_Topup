@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { Suspense, useState, useEffect, useRef, useCallback } from "react";
+import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -19,12 +21,32 @@ import {
 } from "lucide-react";
 import { ClientGame, ClientPackage } from "@/types/game";
 import { PackageOptions } from "./PackageOptions";
-import AbaPayWayV2Modal, { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
+import type { AbaPayWayV2ModalData } from "./AbaPayWayV2Modal";
+
+const AbaPayWayV2Modal = dynamic(() => import("./AbaPayWayV2Modal"), {
+  loading: () => <div role="status" className="fixed inset-0 z-50 grid place-items-center bg-black/70 text-white">Preparing secure payment...</div>,
+});
 
 interface GameTopUpClientProps {
   game: ClientGame;
   initialPackages: ClientPackage[];
-  initialSelectedPackageId?: string;
+}
+
+// Only this invisible helper needs the URL query. Keep the form and packages
+// server-rendered and cacheable, including when a featured offer is linked.
+function PackageSelectionFromUrl({ packages, onSelect }: {
+  packages: ClientPackage[];
+  onSelect: (pkg: ClientPackage | null) => void;
+}) {
+  const searchParams = useSearchParams();
+  const packageId = searchParams.get("package");
+
+  useEffect(() => {
+    if (!packageId) return;
+    onSelect(packages.find((pkg) => pkg.id === packageId && pkg.isAvailable) || null);
+  }, [packageId, packages, onSelect]);
+
+  return null;
 }
 
 interface ActiveOrderInfo {
@@ -39,7 +61,7 @@ interface ActiveOrderInfo {
   fulfillmentStatus: string;
 }
 
-export function GameTopUpClient({ game, initialPackages, initialSelectedPackageId }: GameTopUpClientProps) {
+export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps) {
   // Account Inputs
   const [userId, setUserId] = useState("");
   const [serverId, setServerId] = useState("");
@@ -53,35 +75,26 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
   const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.jpg");
 
   // Selected Package — no automatic pre-selection; customer must click to choose
-  const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(() =>
-    initialPackages.find((pkg) => pkg.id === initialSelectedPackageId && pkg.isAvailable) || null,
-  );
+  const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(null);
+  const selectedPackageRef = useRef<ClientPackage | null>(null);
+  const applyPackageSelection = useCallback((pkg: ClientPackage | null) => {
+    selectedPackageRef.current = pkg;
+    setSelectedPackage(pkg);
+  }, []);
   const handlePackageSelect = useCallback((pkg: ClientPackage) => {
-    const deselected = selectedPackage?.id === pkg.id;
-    setSelectedPackage(deselected ? null : pkg);
+    const deselected = selectedPackageRef.current?.id === pkg.id;
+    applyPackageSelection(deselected ? null : pkg);
     if (deselected) {
       toast("Package deselected", { id: "package-selection", description: pkg.name, duration: 3000 });
     } else {
       const price = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(pkg.sellingPrice ?? 0);
       toast.success("Package selected", { id: "package-selection", description: `${pkg.name} • ${price}`, duration: 3000 });
     }
-  }, [selectedPackage]);
+  }, [applyPackageSelection]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"aba_payway_v2">("aba_payway_v2");
   const [paywayV2ModalData, setPaywayV2ModalData] = useState<AbaPayWayV2ModalData | null>(null);
   const [isPaywayV2Open, setIsPaywayV2Open] = useState(false);
 
-  const [isVngConfigured, setIsVngConfigured] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    fetch("/api/payment/vngzz2/health")
-      .then((res) => res.json())
-      .then((data) => {
-        setIsVngConfigured(Boolean(data?.isConfigured));
-      })
-      .catch(() => {
-        setIsVngConfigured(false);
-      });
-  }, []);
   const isAccountReady = Boolean(userId.trim()) &&
     (!game.requiresServer || Boolean(serverId.trim())) &&
     !verifying &&
@@ -101,13 +114,14 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
   const [copiedOrderNo, setCopiedOrderNo] = useState(false);
   const checkoutPendingRef = useRef(false);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+  const isComingSoon = game.badge?.trim().toUpperCase().replace(/[\s-]+/g, "_") === "COMING_SOON";
   const hasValidPayableSelection = Boolean(
     selectedPackage?.isAvailable &&
     selectedTotal !== null &&
     Number.isFinite(selectedTotal) &&
     selectedTotal > 0,
   );
-  const canStartCheckout = !isCheckingOut && isAccountReady && hasValidPayableSelection && Boolean(selectedPaymentMethod);
+  const canStartCheckout = !isComingSoon && game.checkoutSupported !== false && !isCheckingOut && isAccountReady && hasValidPayableSelection && Boolean(selectedPaymentMethod);
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -385,6 +399,9 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
 
   return (
     <div className="topup-page-shell space-y-4 sm:space-y-5">
+      <Suspense fallback={null}>
+        <PackageSelectionFromUrl packages={initialPackages} onSelect={applyPackageSelection} />
+      </Suspense>
       {/* Simplified Game Header Card */}
       <div className="topup-game-card rounded-[14px] border border-[#DCFCE7] bg-white px-3 py-3 sm:px-5 sm:py-4">
         <div className="topup-game-header flex items-center justify-between gap-3">
@@ -403,9 +420,16 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
             </div>
 
             <div className="min-w-0">
-              <h1 className="text-lg sm:text-2xl font-bold text-[#172033] tracking-tight break-words">
-                {game.name}
-              </h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-lg sm:text-2xl font-bold text-[#172033] tracking-tight break-words">
+                  {game.name}
+                </h1>
+                {isComingSoon && (
+                  <span className="inline-flex items-center rounded-full bg-[#B54779] px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-white">
+                    Coming Soon
+                  </span>
+                )}
+              </div>
               <p className="mt-1 text-[11px] sm:text-xs text-[#64748B]">Direct top-up &middot; {game.currencyName}</p>
             </div>
           </div>
@@ -428,9 +452,11 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
         <div className="min-w-0 lg:col-span-8 space-y-4 sm:space-y-5">
           {/* STEP 1: Account Information */}
           <section data-topup-step="1" className="topup-step rounded-[14px] bg-white p-3 min-[360px]:p-3.5 sm:p-5 space-y-3 sm:space-y-4">
-            {game.checkoutSupported === false && (
+            {(isComingSoon || game.checkoutSupported === false) && (
               <p role="status" className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-sm text-amber-300">
-                This game requires additional account details. Please contact support to place an order.
+                {isComingSoon
+                  ? "Coming Soon — This game is not available for purchase yet."
+                  : "This game requires additional account details. Please contact support to place an order."}
               </p>
             )}
             <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
@@ -596,13 +622,6 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 flex-wrap">
                       <span className="payment-method-title text-sm font-bold text-foreground">KHQR</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                        isVngConfigured === false
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-emerald-100 text-emerald-800"
-                      }`}>
-                        {isVngConfigured === false ? "Sandbox Demo" : "Instant"}
-                      </span>
                     </span>
                     <span className="mt-0.5 block text-xs text-muted-foreground">
                       ABA Mobile &amp; All Cambodian Banks (KHQR)
@@ -700,7 +719,9 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
             </div>
 
             <p className="topup-summary-hint text-xs leading-relaxed" aria-live="polite">
-              {!isAccountReady
+              {isComingSoon
+                ? "Coming Soon — Not available for purchase yet."
+                : !isAccountReady
                 ? "Verify your account to continue."
                 : !selectedPackage
                 ? "Choose your package to continue."
@@ -855,7 +876,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
       )}
 
       {/* ABA PayWay V2 Interactive QR Modal */}
-      <AbaPayWayV2Modal
+      {isPaywayV2Open && <AbaPayWayV2Modal
         isOpen={isPaywayV2Open}
         data={paywayV2ModalData}
         onClose={() => setIsPaywayV2Open(false)}
@@ -877,7 +898,7 @@ export function GameTopUpClient({ game, initialPackages, initialSelectedPackageI
           setIsPaywayV2Open(false);
           handleConfirmCheckout();
         }}
-      />
+      />}
     </div>
   );
 }
