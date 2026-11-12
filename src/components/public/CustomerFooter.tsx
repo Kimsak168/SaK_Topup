@@ -45,11 +45,12 @@ export function CustomerFooter() {
             <Link href="/" className="inline-flex items-center gap-2.5 rounded-lg">
               <span className="relative inline-flex shrink-0">
                 <Image
-                  src="/images/asura-store-logo.png"
+                  src="/images/asura-store-logo.webp"
                   alt="Asura Store"
                   width={44}
                   height={44}
                   quality={100}
+                  loading="lazy"
                   unoptimized
                   className="size-11 object-contain"
                 />
@@ -122,7 +123,7 @@ export function CustomerFooter() {
           <span className="inline-flex items-center gap-2">
             <ShieldCheck aria-hidden="true" size={14} className="text-[#22C55E]" />
             Secure payments
-            <Image src="/images/aba-logo.png" alt="ABA Pay" width={24} height={24} className="size-6 rounded-md" loading="lazy" />
+            <Image src="/images/aba-logo.webp" alt="ABA Pay" width={24} height={24} quality={100} className="size-6 rounded-md" loading="lazy" />
             <span className="font-semibold text-[#172033]">KHQR</span>
           </span>
         </div>

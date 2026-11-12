@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const logoUrl = await getPublicLogoUrl();
     return NextResponse.json(
-      { logoUrl: logoUrl || "/images/asura-store-logo.png" },
+      { logoUrl: logoUrl || "/images/asura-store-logo.webp" },
       { headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" } },
     );
   } catch (error) {
@@ -16,7 +16,7 @@ export async function GET() {
       error instanceof Error ? error.message : "Database unavailable",
     );
     return NextResponse.json(
-      { logoUrl: "/images/asura-store-logo.png" },
+      { logoUrl: "/images/asura-store-logo.webp" },
       { status: 200, headers: { "Cache-Control": "no-store" } },
     );
   }

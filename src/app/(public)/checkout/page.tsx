@@ -252,12 +252,13 @@ function CheckoutContent() {
                 <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
                   <div className="relative h-[50px] w-[50px] shrink-0 overflow-hidden rounded-xl shadow-xs ring-1 ring-[#BBF7D0] bg-[#004B87]">
                     <Image
-                      src="/images/aba-logo.png"
+                      src="/images/aba-logo.webp"
                       alt="ABA Bank"
                       width={50}
                       height={50}
+                      quality={100}
                       className="h-full w-full object-cover rounded-xl"
-                      priority
+                      preload
                     />
                   </div>
                   <div className="space-y-0.5 min-w-0">

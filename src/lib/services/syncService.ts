@@ -75,8 +75,8 @@ export const G2BULK_ROBLOX_GAME = {
   publisher: "Roblox Corporation",
   requiresServer: false,
   userIdLabel: "Roblox Username",
-  image: "/images/roblox.jpg",
-  banner: "/images/roblox.jpg",
+  image: "/images/roblox.webp",
+  banner: "/images/roblox.webp",
   badge: "HOT",
   isPopular: true,
   sortOrder: 5,
@@ -176,7 +176,7 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
         const computedOriginalPrice = Math.round(computedSellingPrice * 1.15 * 100) / 100;
 
         const isCard = prod.title.toLowerCase().includes("us") || prod.title.toLowerCase().includes("$");
-        const fallbackImage = isCard ? "/images/roblox.jpg" : "/images/robux-coin.jpg";
+        const fallbackImage = isCard ? "/images/roblox.webp" : "/images/robux-coin.webp";
         const supplierImage = getPersistentSupplierImageUrl(prod.image_url);
         const badge = prod.title.includes("800") || prod.title.includes("20$") ? "HOT" : prod.title.includes("1000") || prod.title.includes("200 Robux") ? "POPULAR" : "";
 

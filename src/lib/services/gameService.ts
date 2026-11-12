@@ -20,8 +20,8 @@ const LEGACY_LEVEL_UP_ARTWORK = new Set([
 ]);
 
 const FREE_FIRE_MEMBERSHIP_ARTWORK = {
-  weekly: "/images/packages/freefire-weekly-transparent.png",
-  monthly: "/images/packages/freefire-monthly-transparent.png",
+  weekly: "/images/packages/freefire-weekly-transparent.webp",
+  monthly: "/images/packages/freefire-monthly-transparent.webp",
 };
 
 const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
@@ -32,25 +32,25 @@ const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
 // Current App Store cover art for the standard game catalogue. Admin-uploaded
 // customImage values still take priority over these defaults.
 const CURRENT_GAME_COVER_ART: Record<string, string> = {
-  "free-fire-khsgmy": "/images/freefire.jpg?v=naruto",
+  "free-fire-khsgmy": "/images/freefire.webp?v=naruto",
   hok: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/10/e4/fe/10e4fe00-2610-bd44-4cab-f68e49518979/AppIcon-1x_U007emarketing-0-6-0-85-220-0.png/512x512bb.jpg",
-  mlbb: "/images/mlbb/mlbb.jpg?v=kh",
-  "webbuilder-mlbb-global": "/images/mlbb/mlbb_global.jpg?v=2026",
-  "webbuilder-mlbb-id": "/images/mlbb/mlbb_id.jpg?v=2026",
-  "webbuilder-mlbb-ph": "/images/mlbb/mlbb_ph.jpg?v=2026",
-  "webbuilder-mlbb-ru": "/images/mlbb/mlbb_ru.jpg?v=2026",
-  "webbuilder-mlbb-tr": "/images/mlbb/mlbb_tr.jpg?v=2026",
-  "webbuilder-mlbb-br": "/images/mlbb/mlbb_br.jpg?v=2026",
-  "webbuilder-mlbb-special": "/images/mlbb/mlbb_special.jpg?v=2026",
+  mlbb: "/images/mlbb/mlbb.webp?v=kh",
+  "webbuilder-mlbb-global": "/images/mlbb/mlbb_global.webp?v=2026",
+  "webbuilder-mlbb-id": "/images/mlbb/mlbb_id.webp?v=2026",
+  "webbuilder-mlbb-ph": "/images/mlbb/mlbb_ph.webp?v=2026",
+  "webbuilder-mlbb-ru": "/images/mlbb/mlbb_ru.webp?v=2026",
+  "webbuilder-mlbb-tr": "/images/mlbb/mlbb_tr.webp?v=2026",
+  "webbuilder-mlbb-br": "/images/mlbb/mlbb_br.webp?v=2026",
+  "webbuilder-mlbb-special": "/images/mlbb/mlbb_special.webp?v=2026",
   "pubg-mobile": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4f/8d/38/4f8d3800-68b5-1c53-b0f7-7d46bda6a394/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/512x512bb.jpg",
   roblox: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/68/66/b0/6866b035-efb2-9a39-c8aa-21c60dec2a0a/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "8-ball-pool": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/64/0c/3d/640c3d70-3a45-da59-3aa1-5e13eccdf116/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "blood-strike": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b8/a4/e7/b8a4e7ad-660b-a456-77de-1b2f5c4a9b6a/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg",
-  "magic-chess-gogo": "/images/magic-chess.jpg?v=2026",
-  "webbuilder-mcgg-my": "/images/magic-chess.jpg?v=2026",
-  "webbuilder-mcgg-ph": "/images/magic-chess.jpg?v=2026",
-  "webbuilder-mcgg-ru": "/images/magic-chess.jpg?v=2026",
-  "webbuilder-mcgg-tr": "/images/magic-chess.jpg?v=2026",
+  "magic-chess-gogo": "/images/magic-chess.webp?v=2026",
+  "webbuilder-mcgg-my": "/images/magic-chess.webp?v=2026",
+  "webbuilder-mcgg-ph": "/images/magic-chess.webp?v=2026",
+  "webbuilder-mcgg-ru": "/images/magic-chess.webp?v=2026",
+  "webbuilder-mcgg-tr": "/images/magic-chess.webp?v=2026",
 };
 
 const getCatalogue = cache(cachePublicQuery("games", CATALOGUE_TAG, async (): Promise<ClientGame[]> =>
@@ -195,72 +195,72 @@ function extractPackageNumber(baseName: string): number {
 
 function getBloodStrikePackageImage(baseName: string): string {
   if (/voucher|cornucopia/i.test(baseName)) {
-    return "/images/packages/bloodstrike-voucher.png";
+    return "/images/packages/bloodstrike-voucher.webp";
   }
   if (/upgrade\s*point|upgrade.*chest/i.test(baseName)) {
-    return "/images/packages/bloodstrike-upgrade-chest.png";
+    return "/images/packages/bloodstrike-upgrade-chest.webp";
   }
   if (/lucky\s*bag/i.test(baseName)) {
-    return "/images/packages/bloodstrike-lucky-bag.png";
+    return "/images/packages/bloodstrike-lucky-bag.webp";
   }
   if (/eternal\s*valor|safe/i.test(baseName)) {
-    return "/images/packages/bloodstrike-safe.png";
+    return "/images/packages/bloodstrike-safe.webp";
   }
   if (/ultra\s*skin|lucky\s*chest|chest/i.test(baseName)) {
-    return "/images/packages/bloodstrike-skin-chest.png";
+    return "/images/packages/bloodstrike-skin-chest.webp";
   }
   if (/strike\s*pass\s*premium/i.test(baseName)) {
-    return "/images/packages/bloodstrike-pass-premium.png";
+    return "/images/packages/bloodstrike-pass-premium.webp";
   }
   if (/strike\s*pass(\s*elite)?/i.test(baseName)) {
-    return "/images/packages/bloodstrike-pass-elite.png";
+    return "/images/packages/bloodstrike-pass-elite.webp";
   }
   if (/level[\s-]*up|season\s*pass|pass/i.test(baseName)) {
-    return "/images/packages/bloodstrike-level-up.png";
+    return "/images/packages/bloodstrike-level-up.webp";
   }
   const amount = extractPackageNumber(baseName);
   if (/deal/i.test(baseName)) {
-    if (amount >= 900) return "/images/packages/bloodstrike-gold-vault.png";
-    if (amount >= 700) return "/images/packages/bloodstrike-gold-chest.png";
-    if (amount >= 500) return "/images/packages/bloodstrike-gold-case.png";
-    if (amount >= 250) return "/images/packages/bloodstrike-gold-bag.png";
-    if (amount >= 90) return "/images/packages/bloodstrike-gold-md.png";
-    return "/images/packages/bloodstrike-gold-sm.png";
+    if (amount >= 900) return "/images/packages/bloodstrike-gold-vault.webp";
+    if (amount >= 700) return "/images/packages/bloodstrike-gold-chest.webp";
+    if (amount >= 500) return "/images/packages/bloodstrike-gold-case.webp";
+    if (amount >= 250) return "/images/packages/bloodstrike-gold-bag.webp";
+    if (amount >= 90) return "/images/packages/bloodstrike-gold-md.webp";
+    return "/images/packages/bloodstrike-gold-sm.webp";
   }
-  if (amount >= 5000) return "/images/packages/bloodstrike-gold-vault.png";
-  if (amount >= 2000) return "/images/packages/bloodstrike-gold-chest.png";
-  if (amount >= 1000) return "/images/packages/bloodstrike-gold-case.png";
-  if (amount >= 500) return "/images/packages/bloodstrike-gold-bag.png";
-  if (amount >= 200) return "/images/packages/bloodstrike-gold-md.png";
-  return "/images/packages/bloodstrike-gold-sm.png";
+  if (amount >= 5000) return "/images/packages/bloodstrike-gold-vault.webp";
+  if (amount >= 2000) return "/images/packages/bloodstrike-gold-chest.webp";
+  if (amount >= 1000) return "/images/packages/bloodstrike-gold-case.webp";
+  if (amount >= 500) return "/images/packages/bloodstrike-gold-bag.webp";
+  if (amount >= 200) return "/images/packages/bloodstrike-gold-md.webp";
+  return "/images/packages/bloodstrike-gold-sm.webp";
 }
 
 function getMcggPackageImage(baseName: string): string {
-  if (/bounty/i.test(baseName)) return "/images/packages/mcgg-battle-bounty.png";
-  if (/discount/i.test(baseName)) return "/images/packages/mcgg-battle-discounts.png";
-  if (/card|pass|weekly|monthly|bundle/i.test(baseName)) return "/images/packages/mcgg-weekly-pass.png";
+  if (/bounty/i.test(baseName)) return "/images/packages/mcgg-battle-bounty.webp";
+  if (/discount/i.test(baseName)) return "/images/packages/mcgg-battle-discounts.webp";
+  if (/card|pass|weekly|monthly|bundle/i.test(baseName)) return "/images/packages/mcgg-weekly-pass.webp";
   const amount = extractPackageNumber(baseName);
-  if (amount >= 3000) return "/images/packages/mcgg-diamond-truck.png";
-  if (amount >= 1100) return "/images/packages/mcgg-diamond-case.png";
-  if (amount >= 400) return "/images/packages/mcgg-diamond-safe.png";
-  if (amount >= 100) return "/images/packages/mcgg-diamond-pile.png";
-  return "/images/packages/mcgg-diamond-sm.png";
+  if (amount >= 3000) return "/images/packages/mcgg-diamond-truck.webp";
+  if (amount >= 1100) return "/images/packages/mcgg-diamond-case.webp";
+  if (amount >= 400) return "/images/packages/mcgg-diamond-safe.webp";
+  if (amount >= 100) return "/images/packages/mcgg-diamond-pile.webp";
+  return "/images/packages/mcgg-diamond-sm.webp";
 }
 
 function getEightBallPackageImage(baseName: string): string {
-  if (/bundle|coda/i.test(baseName)) return "/images/packages/8ball-bundle.png";
-  if (/spin/i.test(baseName)) return "/images/packages/8ball-goldenspin.png";
-  if (/shot/i.test(baseName)) return "/images/packages/8ball-goldenshot.png";
+  if (/bundle|coda/i.test(baseName)) return "/images/packages/8ball-bundle.webp";
+  if (/spin/i.test(baseName)) return "/images/packages/8ball-goldenspin.webp";
+  if (/shot/i.test(baseName)) return "/images/packages/8ball-goldenshot.webp";
   const amount = extractPackageNumber(baseName);
   if (/scratch/i.test(baseName)) {
-    return amount >= 10 ? "/images/packages/8ball-scratcher-2.png" : "/images/packages/8ball-scratcher-1.png";
+    return amount >= 10 ? "/images/packages/8ball-scratcher-2.webp" : "/images/packages/8ball-scratcher-1.webp";
   }
   if (/cash/i.test(baseName)) {
-    return amount >= 100 ? "/images/packages/8ball-cash-2.png" : "/images/packages/8ball-cash-1.png";
+    return amount >= 100 ? "/images/packages/8ball-cash-2.webp" : "/images/packages/8ball-cash-1.webp";
   }
-  if (amount >= 200000) return "/images/packages/8ball-coins-3.png";
-  if (amount >= 50000) return "/images/packages/8ball-coins-2.png";
-  return "/images/packages/8ball-coins-1.png";
+  if (amount >= 200000) return "/images/packages/8ball-coins-3.webp";
+  if (amount >= 50000) return "/images/packages/8ball-coins-2.webp";
+  return "/images/packages/8ball-coins-1.webp";
 }
 
 function getDefaultGamePackageImage(
@@ -271,29 +271,29 @@ function getDefaultGamePackageImage(
 ): string | null {
   const key = `${code} ${slug}`.toLowerCase();
   if (key.includes("mlbb") || key.includes("mobile-legends")) {
-    return isDiamondPackage ? "/images/mlbb-diamond.png" : null;
+    return isDiamondPackage ? "/images/mlbb-diamond.webp" : null;
   }
   if (key.includes("freefire") || key.includes("ff-") || key.includes("free-fire")) {
-    return isDiamondPackage ? "/images/diamond-crystals.png" : null;
+    return isDiamondPackage ? "/images/diamond-crystals.webp" : null;
   }
-  if (key.includes("roblox")) return /gift|\$/i.test(baseName) ? "/images/roblox.jpg" : "/images/robux-coin.jpg";
+  if (key.includes("roblox")) return /gift|\$/i.test(baseName) ? "/images/roblox.webp" : "/images/robux-coin.webp";
   if (key.includes("magic_chess") || key.includes("mcgg")) return getMcggPackageImage(baseName);
   if (key.includes("telegram")) {
-    return /premium/i.test(baseName) ? "/images/packages/telegram-premium.png" : "/images/packages/telegram-star.svg";
+    return /premium/i.test(baseName) ? "/images/packages/telegram-premium.webp" : "/images/packages/telegram-star.svg";
   }
   if (key.includes("bloodstrike") || key.includes("blood-strike")) return getBloodStrikePackageImage(baseName);
   if (key.includes("8ball") || key.includes("8-ball")) return getEightBallPackageImage(baseName);
   if (key.includes("zepeto")) {
-    if (/premium/i.test(baseName)) return "/images/packages/zepeto-premium.png";
+    if (/premium/i.test(baseName)) return "/images/packages/zepeto-premium.webp";
     const amount = extractPackageNumber(baseName);
     if (/coins?/i.test(baseName)) {
-      if (amount >= 100000) return "/images/packages/zepeto-coins-3.png";
-      if (amount >= 20000) return "/images/packages/zepeto-coins-2.png";
-      return "/images/packages/zepeto-coins-1.png";
+      if (amount >= 100000) return "/images/packages/zepeto-coins-3.webp";
+      if (amount >= 20000) return "/images/packages/zepeto-coins-2.webp";
+      return "/images/packages/zepeto-coins-1.webp";
     }
-    if (amount >= 500) return "/images/packages/zepeto-zems-3.png";
-    if (amount >= 50) return "/images/packages/zepeto-zems-2.png";
-    return "/images/packages/zepeto-zems-1.png";
+    if (amount >= 500) return "/images/packages/zepeto-zems-3.webp";
+    if (amount >= 50) return "/images/packages/zepeto-zems-2.webp";
+    return "/images/packages/zepeto-zems-1.webp";
   }
   return null;
 }
@@ -345,7 +345,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
       : baseDiamonds || (isDiamondGame && isNameNumeric ? `${baseName} Diamonds` : baseName);
     const defaultGameImage = getDefaultGamePackageImage(code, slug, baseName, isDiamondPackage);
     const customImage = cfg.customImage && LEGACY_LEVEL_UP_ARTWORK.has(cfg.customImage)
-      ? "/images/packages/freefire-level-up-transparent.png"
+      ? "/images/packages/freefire-level-up-transparent.webp"
       : (cfg.customImage && LEGACY_MEMBERSHIP_ARTWORK[cfg.customImage]) || cfg.customImage;
     const membershipType = /^(weekly|monthly)(?:\s+membership)?(?:\s*[×x]\s*\d+)?$/i.exec(baseName.trim())?.[1].toLowerCase();
     const membershipPrefix = /^(weekly|monthly)(?=$|[\s×x]|lite|elite|card|pass)/i.exec(baseName.trim())?.[1].toLowerCase();
@@ -356,7 +356,7 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
         ? FREE_FIRE_MEMBERSHIP_ARTWORK.monthly
         : null;
     const levelUpImage = isFreeFire && /level\s*up/i.test(baseName)
-      ? "/images/packages/freefire-level-up-transparent.png"
+      ? "/images/packages/freefire-level-up-transparent.webp"
       : null;
     const image = customImage || levelUpImage || membershipImage || defaultGameImage;
     return {

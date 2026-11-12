@@ -1053,7 +1053,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                     }`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <Image src="/images/aba-logo.png" alt="ABA" width={24} height={24} className="h-6 w-6 rounded-md object-contain" />
+                      <Image src="/images/aba-logo.webp" alt="ABA" width={24} height={24} quality={100} loading="lazy" className="h-6 w-6 rounded-md object-contain" />
                       <span className="payment-method-title text-xs font-bold text-slate-900 dark:text-white">KHQR V2</span>
                     </div>
                   </button>
@@ -1069,7 +1069,7 @@ export default function SmmStorefront({ homeLayout = false, initialData }: SmmSt
                     }`}
                   >
                     <div className="flex items-center gap-1.5">
-                      <Image src="/images/aba-logo.png" alt="ABA" width={24} height={24} className="h-6 w-6 rounded-md object-contain" />
+                      <Image src="/images/aba-logo.webp" alt="ABA" width={24} height={24} quality={100} loading="lazy" className="h-6 w-6 rounded-md object-contain" />
                       <span className="payment-method-title text-xs font-bold text-slate-900 dark:text-white">KHQR</span>
                     </div>
                   </button>

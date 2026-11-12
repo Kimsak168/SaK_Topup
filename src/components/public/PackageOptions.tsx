@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Ban, Check, Coins, Package as PackageIcon, Sparkles, Zap } from "lucide-react";
 import type { ClientPackage } from "@/types/game";
 
-const DEFAULT_DIAMOND_IMAGE = "/images/diamond-crystals.png";
+const DEFAULT_DIAMOND_IMAGE = "/images/diamond-crystals.webp";
 
 interface PackageCardProps {
   pkg: ClientPackage;
@@ -70,7 +70,7 @@ const PackageCard = memo(function PackageCard({
             alt=""
             fill
             sizes="96px"
-            quality={80}
+            quality={100}
             loading={loadImageEagerly ? "eager" : "lazy"}
             className="package-option-image object-contain"
             onLoad={(event) => {
@@ -225,7 +225,7 @@ export const PackageOptions = memo(function PackageOptions({
     : "other";
 
   const defaultCurrencyImage = isMlbbGame
-    ? "/images/mlbb-diamond.png"
+    ? "/images/mlbb-diamond.webp"
     : isPubg || isHok
     ? undefined
     : DEFAULT_DIAMOND_IMAGE;

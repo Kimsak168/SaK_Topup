@@ -377,7 +377,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               aria-label="Admin Dashboard"
             >
               <Image
-                src="/images/asura-store-logo.png"
+                src="/images/asura-store-logo.webp"
                 alt="Asura Store Admin Logo"
                 width={30}
                 height={30}
@@ -638,7 +638,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
             <div className="h-[58px] shrink-0 px-4 flex items-center justify-between border-b border-[#243047]">
               <div className="flex items-center gap-2.5">
                 <Image
-                  src="/images/asura-store-logo.png"
+                  src="/images/asura-store-logo.webp"
                   alt="Asura Store Admin Logo"
                   width={28}
                   height={28}

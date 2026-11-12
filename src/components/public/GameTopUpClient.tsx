@@ -72,7 +72,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [verifyStatusType, setVerifyStatusType] = useState<"success" | "invalid" | "unsupported" | "unavailable" | null>(null);
   const verificationRequestRef = useRef(0);
   const [showIdGuide, setShowIdGuide] = useState(false);
-  const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.jpg");
+  const [headerImg, setHeaderImg] = useState<string>(() => game.image || "/images/freefire.webp");
 
   // Selected Package — no automatic pre-selection; customer must click to choose
   const [selectedPackage, setSelectedPackage] = useState<ClientPackage | null>(null);
@@ -413,9 +413,10 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 alt={game.name}
                 fill
                 sizes="(min-width: 640px) 64px, 56px"
+                quality={100}
                 preload
                 className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                onError={() => setHeaderImg("/images/freefire.jpg")}
+                onError={() => setHeaderImg("/images/freefire.webp")}
               />
             </div>
 
@@ -617,7 +618,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               >
                 <span className="flex min-w-0 items-center gap-3">
                   <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
-                    <Image src="/images/aba-logo.png" alt="ABA" fill sizes="44px" className="object-cover" />
+                    <Image src="/images/aba-logo.webp" alt="ABA" fill sizes="44px" quality={100} loading="lazy" className="object-cover" />
                   </span>
                   <span className="min-w-0">
                     <span className="flex items-center gap-1.5 flex-wrap">

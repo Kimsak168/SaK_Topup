@@ -440,6 +440,8 @@ export default function SmmDepositModal({
                     <img
                       src={renderedQr}
                       alt="Deposit ABA KHQR Code"
+                      width={230}
+                      height={230}
                       className="w-full h-full object-contain block select-none"
                     />
                     {/* Centered KHQR Emblem */}

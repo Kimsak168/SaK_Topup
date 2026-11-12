@@ -138,11 +138,11 @@ export async function getVngzzProducts(gameCode: string) {
 }
 
 export function getVngzzImageUrl(image?: string) {
-  if (!image) return "/images/hero-banner.jpg";
+  if (!image) return "/images/hero-banner.webp";
   try {
     const url = new URL(image, new URL(getVngzzGameConfig().baseUrl).origin);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "/images/hero-banner.jpg";
-  } catch { return "/images/hero-banner.jpg"; }
+    return url.protocol === "https:" || url.protocol === "http:" ? url.href : "/images/hero-banner.webp";
+  } catch { return "/images/hero-banner.webp"; }
 }
 
 export function isVngzzCheckoutSupported(game: VngzzGame) {

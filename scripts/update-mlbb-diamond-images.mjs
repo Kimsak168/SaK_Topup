@@ -25,7 +25,7 @@ for (const p of pkgs) {
       { _id: p._id },
       {
         $set: {
-          customImage: '/images/mlbb-diamond.png',
+          customImage: '/images/mlbb-diamond.webp',
           updatedAt: new Date()
         }
       }
@@ -34,6 +34,6 @@ for (const p of pkgs) {
   }
 }
 
-console.log(`Updated ${updatedCount} diamond packages for Mobile Legends with customImage: /images/mlbb-diamond.png`);
+console.log(`Updated ${updatedCount} diamond packages for Mobile Legends with customImage: /images/mlbb-diamond.webp`);
 
 await client.close();

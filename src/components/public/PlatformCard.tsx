@@ -18,7 +18,7 @@ const PLATFORM_IMAGES: Record<string, string> = {
   facebook: "/images/platforms/facebook-icon.svg",
   instagram: "/images/platforms/instagram-icon.svg",
   youtube: "/images/platforms/youtube-icon.svg",
-  other: "/images/asura-store-logo.png",
+  other: "/images/asura-store-logo.webp",
 };
 
 export const PlatformCard = memo(function PlatformCard({
@@ -27,7 +27,7 @@ export const PlatformCard = memo(function PlatformCard({
   platform: PlatformItem;
 }) {
   const normId = platform.id.toLowerCase();
-  const imgSrc = PLATFORM_IMAGES[normId] || platform.image || "/images/logo.png";
+  const imgSrc = PLATFORM_IMAGES[normId] || platform.image || "/images/logo.webp";
   const href = `/services/${normId}`;
   const sticker = getHalloweenSticker(platform.id || platform.name);
 
@@ -58,6 +58,7 @@ export const PlatformCard = memo(function PlatformCard({
           alt={platform.name}
           fill
           sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 20vw, 280px"
+          quality={100}
           loading="lazy"
           className="game-card-image relative z-10 object-cover object-center transition-[scale,opacity] duration-300 ease-out motion-safe:pointer-fine:group-hover:scale-[1.03] motion-reduce:transition-none"
         />

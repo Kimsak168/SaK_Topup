@@ -163,6 +163,8 @@ export function GameEventsCarousel({ events, unavailable = false }: GameEventsCa
                       src={event.imageUrl}
                       alt={`${GAME_EVENT_GAME_LABELS[event.game]} event banner`}
                       fill
+                      quality={100}
+                      loading="lazy"
                       sizes="(max-width: 600px) calc(100vw - 32px), (max-width: 1200px) calc(100vw - 48px), 1100px"
                       className={styles.image}
                     />
@@ -199,7 +201,7 @@ export function GameEventsCarousel({ events, unavailable = false }: GameEventsCa
               <X aria-hidden="true" />
             </button>
             <div className={styles.dialogImage}>
-              <Image src={selectedEvent.imageUrl} alt={`${GAME_EVENT_GAME_LABELS[selectedEvent.game]} event banner`} fill sizes="(max-width: 600px) 90vw, 560px" />
+              <Image src={selectedEvent.imageUrl} alt={`${GAME_EVENT_GAME_LABELS[selectedEvent.game]} event banner`} fill quality={100} loading="lazy" sizes="(max-width: 600px) 90vw, 560px" />
             </div>
             <span className={`${styles.status} ${STATUS_CLASS[selectedEvent.status]}`}>
               <span aria-hidden="true" />{GAME_EVENT_STATUS_LABELS[selectedEvent.status]}

@@ -48,9 +48,9 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
   const customImage = pkg.customImage?.trim() || null;
   const fallbackImage = variant === "free-fire"
     ? kind === "monthly"
-      ? "/images/packages/freefire-monthly-transparent.png"
-      : "/images/packages/freefire-weekly-transparent.png"
-    : game.image || "/images/diamond-crystals.png";
+      ? "/images/packages/freefire-monthly-transparent.webp"
+      : "/images/packages/freefire-weekly-transparent.webp"
+    : game.image || "/images/diamond-crystals.webp";
   const badge = kind === "monthly" ? "Best value" : pkg.badge;
   const useMobileLegendsIcon = variant === "mobile-legends" && !customImage;
   const useGameCover = variant === "other" && !customImage;
@@ -76,6 +76,7 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
             alt=""
             fill
             sizes={useGameCover ? "64px" : "96px"}
+            quality={100}
             className={useGameCover ? "rounded-xl object-cover" : "object-contain"}
           />
         )}

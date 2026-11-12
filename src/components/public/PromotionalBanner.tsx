@@ -120,20 +120,22 @@ export function PromotionalBanner({ banners }: PromotionalBannerProps) {
                           alt=""
                           fill
                           aria-hidden="true"
-                          quality={20}
+                          quality={100}
+                          loading="lazy"
                           sizes="120px"
                           className="object-cover scale-125 blur-2xl opacity-60"
                         />
                       </div>
                     )}
 
-                    {/* Foreground Image: Smooth fade-in, quality 80 for optimal speed and crispness */}
+                    {/* Foreground Image: Smooth fade-in at WebP quality 100 */}
                     <Image
                       src={banner.imageUrl}
                       alt={banner.title || "SakSuuu Banner"}
                       fill
-                      quality={80}
+                      quality={100}
                       preload={isFirstSlide}
+                      loading={isFirstSlide ? undefined : "lazy"}
                       sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 1147px) calc(100vw - 48px), 1100px"
                       className="relative z-10 object-contain object-center select-none"
                       onLoad={(event) => {

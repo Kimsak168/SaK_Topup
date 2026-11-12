@@ -71,11 +71,11 @@ function LoginForm() {
         <div className="text-center mb-7 flex flex-col items-center">
           <div className="mb-3 flex items-center justify-center">
             <Image
-              src="/images/asura-store-logo.png"
+              src="/images/asura-store-logo.webp"
               alt="Asura Store Logo"
               width={56}
               height={56}
-              priority
+              preload
               className="h-14 w-14 object-contain"
             />
           </div>

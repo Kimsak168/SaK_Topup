@@ -13,7 +13,7 @@ interface GameCardProps {
   isSelected?: boolean;
 }
 
-const FALLBACK_IMAGE = "/images/freefire.jpg";
+const FALLBACK_IMAGE = "/images/freefire.webp";
 const failedImageSources = new Set<string>();
 
 function getImageSource(image: string): string {
@@ -105,6 +105,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           alt={game.name}
           fill
           sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 17vw, 240px"
+          quality={100}
           loading="lazy"
           className="game-card-image relative z-10 object-cover object-center motion-reduce:transition-none"
           onLoad={() => setIsLoaded(true)}

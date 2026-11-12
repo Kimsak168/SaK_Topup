@@ -193,13 +193,13 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
         <Link href="/" aria-label="Asura Store Home" className={styles.brand}>
           <span className="relative inline-flex items-center">
             <Image
-              src={resolvedLogoUrl || "/images/asura-store-logo.png"}
+              src={resolvedLogoUrl || "/images/asura-store-logo.webp"}
               alt="Asura Store"
               width={64}
               height={64}
               quality={100}
               unoptimized
-              priority
+              preload
               className={styles.logo}
             />
             {/* Cute Water Festival Lotus perched on the logo */}
@@ -296,7 +296,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
               <SpiderWebSvg className="pointer-events-none absolute top-0 right-0 size-16 text-sky-400/25 z-0" />
               <Link href="/" className={styles.drawerBrand} aria-label="Asura Store Home" onClick={closeDrawer}>
                 <span className="relative inline-flex items-center">
-                  <Image src={resolvedLogoUrl || "/images/asura-store-logo.png"} alt="Asura Store" width={48} height={48} quality={100} unoptimized />
+                  <Image src={resolvedLogoUrl || "/images/asura-store-logo.webp"} alt="Asura Store" width={48} height={48} quality={100} unoptimized />
                   <span aria-hidden="true" className="absolute -top-1 -right-1 text-xs select-none">🪷</span>
                 </span>
                 <span aria-hidden="true" className={styles.drawerWordmark}>

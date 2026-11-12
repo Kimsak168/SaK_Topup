@@ -148,7 +148,7 @@ try {
     assert.equal(layout.packageColumns, width < 360 ? 2 : 3);
     assert.deepEqual(layout.steps, ["1", "2", "3"]);
     assert.equal(layout.paymentMethods, 1);
-    assert.ok(layout.abaSource.includes("aba-logo.png"));
+    assert.ok(layout.abaSource.includes("aba-logo.webp"));
     assert.equal(layout.abaFilter, "none");
     assert.ok(Math.max(...layout.heights) - Math.min(...layout.heights) <= 1);
     layouts.push(layout);

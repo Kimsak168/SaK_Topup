@@ -427,13 +427,15 @@ export default function AdminGamesPage() {
                       <div className="flex items-center gap-3">
                         <div className="relative h-9 w-9 shrink-0 rounded-lg overflow-hidden border border-[#243047] bg-[#0C1322]">
                           <Image
-                            src={game.customImage || game.image || "/images/hero-banner.jpg"}
+                            src={game.customImage || game.image || "/images/hero-banner.webp"}
                             alt={game.name}
                             fill
+                            sizes="36px"
+                            loading="lazy"
                             className="object-cover"
                             onError={(e) => {
                               // Fallback on image error
-                              (e.target as HTMLImageElement).src = "/images/freefire.jpg";
+                              (e.target as HTMLImageElement).src = "/images/freefire.webp";
                             }}
                           />
                         </div>
@@ -525,12 +527,14 @@ export default function AdminGamesPage() {
                     <div className="flex items-center gap-3 min-w-0 flex-1">
                       <div className="relative h-11 w-11 shrink-0 rounded-lg overflow-hidden border border-[#243047] bg-[#151F31]">
                         <Image
-                          src={game.customImage || game.image || "/images/hero-banner.jpg"}
+                          src={game.customImage || game.image || "/images/hero-banner.webp"}
                           alt={game.name}
                           fill
+                          sizes="44px"
+                          loading="lazy"
                           className="object-cover"
                           onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/images/freefire.jpg";
+                            (e.target as HTMLImageElement).src = "/images/freefire.webp";
                           }}
                         />
                       </div>

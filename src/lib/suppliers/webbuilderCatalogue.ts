@@ -34,7 +34,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     filter: isFreeFireKhsgmyProduct,
     requiresServer: false,
     userIdLabel: "Player ID (UID)",
-    image: "/images/freefire.jpg?v=naruto",
+    image: "/images/freefire.webp?v=naruto",
     badge: "HOT",
     isPopular: true,
     sortOrder: 1,
@@ -51,7 +51,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     requiresServer: true,
     serverLabel: "Zone ID (4-5 digits)",
     userIdLabel: "User ID",
-    image: "/images/mlbb/mlbb.jpg?v=kh",
+    image: "/images/mlbb/mlbb.webp?v=kh",
     badge: "POPULAR",
     isPopular: true,
     sortOrder: 2,
@@ -112,7 +112,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     requiresServer: true,
     serverLabel: "Zone ID",
     userIdLabel: "User ID",
-    image: "/images/magic-chess.jpg?v=2026",
+    image: "/images/magic-chess.webp?v=2026",
     badge: "NEW",
     isPopular: false,
     sortOrder: 6,
@@ -127,7 +127,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     filter: (p) => matchesGame(p, "8 Ball Pool"),
     requiresServer: false,
     userIdLabel: "Unique ID",
-    image: "/images/8ballpool.jpg",
+    image: "/images/8ballpool.webp",
     badge: "",
     isPopular: false,
     sortOrder: 7,
@@ -142,7 +142,7 @@ export const WEBBUILDER_GAMES: WebBuilderGameDefinition[] = [
     filter: (p) => matchesGame(p, "Telegram", "Telegram Stars"),
     requiresServer: false,
     userIdLabel: "Telegram Username",
-    image: "/images/telegram-stars.jpg",
+    image: "/images/telegram-stars.webp",
     badge: "HOT",
     isPopular: true,
     sortOrder: 8,
@@ -158,7 +158,7 @@ for (const [baseCode, code, name, providerName] of WEBBUILDER_REGIONAL_GAMES) {
 }
 WEBBUILDER_GAMES.push({
   name: "Zepeto", slug: "webbuilder-zepeto", code: "zepeto", category: "Apps & Social", currencyName: "Zems / Coins",
-  publisher: "Naver Z", requiresServer: false, userIdLabel: "User ID", image: "/images/zepeto.png",
+  publisher: "Naver Z", requiresServer: false, userIdLabel: "User ID", image: "/images/zepeto.webp",
   isPopular: false, sortOrder: WEBBUILDER_GAMES.length + 1, filter: product => matchesGame(product, "Zepeto"),
 });
 
