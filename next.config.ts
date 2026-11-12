@@ -30,6 +30,22 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path((?!api/|_next/).*)",
+        has: [{ type: "host", value: "saksuuu-topup.vercel.app" }],
+        destination: "https://www.asuratopup.store/:path",
+        permanent: true,
+      },
+      {
+        source: "/:path((?!api/|_next/).*)",
+        has: [{ type: "host", value: "asuratopup.vercel.app" }],
+        destination: "https://www.asuratopup.store/:path",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

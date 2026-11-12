@@ -26,6 +26,7 @@ const kantumruyPro = Kantumruy_Pro({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.asuratopup.store"),
   title: "Asura Store — Fast & Secure Automated Game Top-Up",
   description:
     "Instant automated game top-up for Free Fire, PUBG Mobile, Mobile Legends, and more. Direct official WebBuilder API integration with 24/7 delivery.",
