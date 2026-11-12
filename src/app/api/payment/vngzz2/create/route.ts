@@ -67,46 +67,47 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: false, error: "This order has already been paid" }, { status: 400 });
       }
 
-      if (targetOrder.serviceType === "digital") {
-        if (!targetOrder.amount || targetOrder.amount <= 0) {
-          return NextResponse.json({ success: false, error: "Invalid digital order amount." }, { status: 400 });
-        }
-      } else {
-        // Parallelize game validation and package price lookup
-        const [savedGame, pkg] = await Promise.all([
-          targetOrder.supplier === "vngzz2"
-            ? Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean()
-            : Promise.resolve(null),
-          GamePackage.findOne({
-            supplier: targetOrder.supplier || "webbuilder",
-            supplierProductCode: targetOrder.supplierProductCode,
-            $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
-          }).lean(),
-        ]);
+      if (targetOrder.serviceType === "digital" || targetOrder.supplier === "pe_supply") {
+        return NextResponse.json(
+          { success: false, error: "Digital products are no longer available." },
+          { status: 400 }
+        );
+      }
 
-        if (targetOrder.supplier === "vngzz2" && (!savedGame || savedGame.checkoutSupported === false)) {
-          return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
-        }
+      // Parallelize game validation and package price lookup
+      const [savedGame, pkg] = await Promise.all([
+        targetOrder.supplier === "vngzz2"
+          ? Game.findOne({ supplier: "vngzz2", isActive: true, $or: [{ slug: targetOrder.gameSlug }, { supplierGameCode: targetOrder.gameSlug }] }).lean()
+          : Promise.resolve(null),
+        GamePackage.findOne({
+          supplier: targetOrder.supplier || "webbuilder",
+          supplierProductCode: targetOrder.supplierProductCode,
+          $or: [{ gameSlug: targetOrder.gameSlug }, { gameCode: targetOrder.gameSlug }],
+        }).lean(),
+      ]);
 
-        if (
-          !pkg ||
-          pkg.isActive === false || pkg.supplierAvailable === false ||
-          typeof pkg.sellingPrice !== "number" ||
-          !Number.isFinite(pkg.sellingPrice) ||
-          pkg.sellingPrice <= 0
-        ) {
-          return NextResponse.json(
-            { success: false, error: "The selected package is unavailable or pending price configuration." },
-            { status: 400 }
-          );
-        }
+      if (targetOrder.supplier === "vngzz2" && (!savedGame || savedGame.checkoutSupported === false)) {
+        return NextResponse.json({ success: false, error: "This game is unavailable for checkout." }, { status: 400 });
+      }
 
-        if (targetOrder.amount !== pkg.sellingPrice) {
-          targetOrder.amount = pkg.sellingPrice;
-          targetOrder.buyingPrice = pkg.buyingPrice || 0;
-          targetOrder.profit = pkg.sellingPrice - (pkg.buyingPrice || 0);
-          await targetOrder.save();
-        }
+      if (
+        !pkg ||
+        pkg.isActive === false || pkg.supplierAvailable === false ||
+        typeof pkg.sellingPrice !== "number" ||
+        !Number.isFinite(pkg.sellingPrice) ||
+        pkg.sellingPrice <= 0
+      ) {
+        return NextResponse.json(
+          { success: false, error: "The selected package is unavailable or pending price configuration." },
+          { status: 400 }
+        );
+      }
+
+      if (targetOrder.amount !== pkg.sellingPrice) {
+        targetOrder.amount = pkg.sellingPrice;
+        targetOrder.buyingPrice = pkg.buyingPrice || 0;
+        targetOrder.profit = pkg.sellingPrice - (pkg.buyingPrice || 0);
+        await targetOrder.save();
       }
     } else {
       const cleanPlayerId = String(playerId || "").trim();

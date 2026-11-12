@@ -5,7 +5,6 @@ import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { HomeCatalogue } from "@/components/public/HomeCatalogue";
 import { HomeFeaturedPackages } from "@/components/public/HomeFeaturedPackages";
 import { HomePlatforms } from "@/components/public/HomePlatforms";
-import { HomeDigitalShop } from "@/components/public/HomeDigitalShop";
 import { HomeGameEvents } from "@/components/public/HomeGameEvents";
 import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
@@ -78,12 +77,7 @@ export default function HomePage() {
         <HomePlatforms />
       </Suspense>
 
-      {/* 4. Digital Subscriptions & Accounts (PE-Supply KH) */}
-      <Suspense fallback={<div className="min-h-[220px] my-8 rounded-2xl bg-white/[0.03] animate-pulse" />}>
-        <HomeDigitalShop />
-      </Suspense>
-
-      {/* 5. Game events follow the services section */}
+      {/* 4. Game events follow the services section */}
       <Suspense fallback={<GameEventsSkeleton />}>
         <HomeGameEvents />
       </Suspense>

@@ -23,7 +23,6 @@ export function TelegramSupportWidget() {
   const aboveMobileCheckoutBar =
     pathname.startsWith("/game") ||
     pathname.startsWith("/services") ||
-    pathname.startsWith("/digital-shop") ||
     pathname.startsWith("/checkout");
 
   const handleOpenLuckyDraw = () => {
