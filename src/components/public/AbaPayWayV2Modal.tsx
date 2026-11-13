@@ -351,7 +351,7 @@ function KhqrPaymentDialog({
                 className={styles.abaV2Download}
                 onClick={handleSaveQr}
               >
-                <Download size={20} aria-hidden="true" /> Download QR
+                <Download size={16} aria-hidden="true" /> Download QR
               </button>
               <p>
                 and upload to Mobile Banking app
