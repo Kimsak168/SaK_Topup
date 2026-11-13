@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, ExternalLink, LoaderCircle, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, Download, ExternalLink, LoaderCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import { getKhqrMerchantName } from "@/lib/khqr";
@@ -75,17 +75,78 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
     const fallback = data.qrImage || data.qrPngUrl || null;
     const render = async () => {
       try {
-        // Encode the provider's payload as-is. Four clear modules surround the
-        // matrix; no decorative badge covers the payment data.
-        const url = data.qrString ? await QRCode.toDataURL(data.qrString, {
-          errorCorrectionLevel: "M",
-          margin: 4,
+        if (!data.qrString) {
+          if (!cancelled) {
+            setRenderedQr(fallback);
+            setQrError(!fallback);
+          }
+          return;
+        }
+
+        // Render QR with high error correction (H: 30%) on canvas so the official ABA badge can sit cleanly in the center
+        const canvas = document.createElement("canvas");
+        canvas.width = 640;
+        canvas.height = 640;
+        await QRCode.toCanvas(canvas, data.qrString, {
+          errorCorrectionLevel: "H",
+          margin: 3,
           width: 640,
           color: { dark: "#000000", light: "#ffffff" },
-        }) : fallback;
+        });
+
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          const logo = new window.Image();
+          logo.crossOrigin = "anonymous";
+          logo.src = "/images/aba-logo.webp";
+
+          await new Promise<void>((resolve) => {
+            if (logo.complete && logo.naturalWidth > 0) {
+              resolve();
+            } else {
+              logo.onload = () => resolve();
+              logo.onerror = () => resolve();
+            }
+          });
+
+          if (logo.complete && logo.naturalWidth > 0) {
+            const logoSize = 100;
+            const padding = 8;
+            const badgeSize = logoSize + padding * 2;
+            const x = (canvas.width - badgeSize) / 2;
+            const y = (canvas.height - badgeSize) / 2;
+
+            // Draw white rounded background badge
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            if (typeof ctx.roundRect === "function") {
+              ctx.roundRect(x, y, badgeSize, badgeSize, 18);
+            } else {
+              ctx.rect(x, y, badgeSize, badgeSize);
+            }
+            ctx.fill();
+
+            // Draw subtle border around badge
+            ctx.strokeStyle = "#e2e8f0";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw rounded ABA logo inside badge
+            ctx.save();
+            ctx.beginPath();
+            if (typeof ctx.roundRect === "function") {
+              ctx.roundRect(x + padding, y + padding, logoSize, logoSize, 12);
+              ctx.clip();
+            }
+            ctx.drawImage(logo, x + padding, y + padding, logoSize, logoSize);
+            ctx.restore();
+          }
+        }
+
+        const url = canvas.toDataURL("image/png");
         if (!cancelled) {
           setRenderedQr(url);
-          setQrError(!url);
+          setQrError(false);
         }
       } catch {
         if (!cancelled) {
@@ -150,7 +211,19 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
   }).format(data.amount);
   const merchantName = getKhqrMerchantName(data.qrString) || data.merchantName || "Asura Store";
   const formattedTime = `${String(Math.floor(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`;
-  const bankUrl = data.deepLink || data.payUrl;
+  const abaDeepLink = data.deepLink || (data.qrString ? `abamobilebank://ababank.com?type=payway&qrcode=${encodeURIComponent(data.qrString)}` : null);
+  const bankUrl = data.payUrl || abaDeepLink;
+
+  const handleSaveQr = () => {
+    if (!renderedQr) return;
+    const link = document.createElement("a");
+    link.href = renderedQr;
+    link.download = `ABA-KHQR-${data.orderNumber}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("QR Code saved! Open ABA Mobile to scan from gallery.");
+  };
 
   return (
     <dialog
@@ -176,12 +249,20 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
           <>
             <div className={styles.receipt}>
               <div className={styles.brand}>
-                {/* Official NBC asset, stored locally to avoid external image requests. */}
+                {/* Official NBC KHQR logo */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/images/khqr-logo.svg" alt="KHQR" width={104} height={25} />
+                <img src="/images/khqr-logo.svg" alt="KHQR" width={100} height={24} />
+                <div className={styles.bankTag}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/aba-logo.webp" alt="ABA Bank" width={16} height={16} className={styles.bankTagLogo} />
+                  <span>ABA PAY</span>
+                </div>
               </div>
               <div className={styles.details}>
-                <p className={styles.merchant}>{merchantName}</p>
+                <div className={styles.merchantRow}>
+                  <p className={styles.merchant}>{merchantName}</p>
+                  <span className={styles.verifiedBadge}>ABA Verified</span>
+                </div>
                 <p className={styles.amount}>{amount}<span>{currency}</span></p>
               </div>
               <div className={styles.divider} aria-hidden="true" />
@@ -200,7 +281,7 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
                   <div className={styles.loading} role="status"><LoaderCircle size={28} /><span>Preparing payment code…</span></div>
                 )}
               </div>
-              <p className={styles.accepted}>Scan with any KHQR banking app</p>
+              <p className={styles.accepted}>Scan with ABA Mobile or any KHQR banking app</p>
             </div>
 
             <div className={styles.paymentInfo}>
@@ -209,7 +290,26 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
                 {!paymentEnded && <span className={timeLeft <= 30 ? styles.urgent : styles.countdown}><Clock3 size={14} aria-hidden="true" /><span aria-label={`Payment code expires in ${formattedTime}`}>{formattedTime}</span></span>}
               </div>
               <p id="khqr-instructions">{isExpired || isFailed ? "Generate a new code before making a payment." : "Open your banking app and scan the QR code above."}</p>
-              {bankUrl && !paymentEnded && !qrError && <a href={bankUrl} className={styles.openBank}>Open ABA Mobile<ExternalLink size={16} aria-hidden="true" /></a>}
+              
+              {!paymentEnded && !qrError && (
+                <div className={styles.actionButtons}>
+                  {bankUrl && (
+                    <a href={bankUrl} className={styles.openAbaBtn}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/images/aba-logo.webp" alt="ABA" width={20} height={20} />
+                      <span>Open in ABA Mobile</span>
+                      <ExternalLink size={15} aria-hidden="true" />
+                    </a>
+                  )}
+                  {renderedQr && (
+                    <button type="button" onClick={handleSaveQr} className={styles.saveQrBtn}>
+                      <Download size={16} aria-hidden="true" />
+                      <span>Save QR Code to Photos</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
               <p className={styles.reference}>Order <span>{data.orderNumber}</span></p>
             </div>
           </>
