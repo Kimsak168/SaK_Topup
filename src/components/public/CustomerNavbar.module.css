@@ -259,24 +259,30 @@
 
 .drawerClose {
   display: flex;
-  width: 48px;
+  width: 44px;
   max-width: 100%;
-  height: 48px;
+  height: 44px;
   flex: none;
   align-items: center;
   justify-content: center;
   border: 1px solid var(--drawer-accent-border);
-  border-radius: 14px;
+  border-radius: 9999px;
   background: var(--drawer-surface);
   color: var(--storefront-nav-foreground, #4D3748);
-  box-shadow: 0 2px 8px rgb(105 64 91 / 6%);
+  box-shadow: 0 2px 8px rgb(190 24 93 / 0.08);
   cursor: pointer;
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
 }
 
-.drawerClose svg { width: 20px; height: 20px; }
-.drawerClose:hover { border-color: var(--drawer-accent); background: var(--drawer-surface-hover); color: var(--drawer-accent); }
-.drawerClose:active { transform: scale(.96); }
+.drawerClose svg { width: 19px; height: 19px; }
+.drawerClose:hover {
+  border-color: var(--drawer-accent);
+  background: var(--drawer-surface-hover);
+  color: var(--drawer-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgb(190 24 93 / 0.16);
+}
+.drawerClose:active { transform: scale(.94); }
 .drawerClose:focus-visible,
 .drawerLink:focus-visible,
 .drawerSocialLink:focus-visible,
@@ -286,9 +292,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  margin-top: 10px;
-  padding-bottom: 10px;
+  gap: 10px;
+  margin-top: 12px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--drawer-accent-border);
 }
 
@@ -303,12 +309,14 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  border: 1px solid transparent;
-  border-radius: 13px;
+  border: 1px solid var(--drawer-accent-border);
+  border-radius: 9999px;
+  background: var(--drawer-surface);
   color: #705B68;
+  box-shadow: 0 2px 8px rgb(190 24 93 / 0.08);
   font-size: 0;
   text-decoration: none;
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
 .drawerLink > span,
@@ -321,19 +329,38 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.drawerLink svg { width: 20px; height: 20px; flex: none; }
-.drawerLink:hover { border-color: var(--drawer-accent-border); background: var(--drawer-surface); color: var(--drawer-accent); }
+.drawerLink svg { width: 20px; height: 20px; flex: none; stroke-width: 2.2; }
+.drawerLink:hover {
+  border-color: var(--drawer-accent);
+  background: var(--drawer-surface-hover);
+  color: var(--drawer-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgb(190 24 93 / 0.18);
+}
 .drawerLink:active,
-.drawerSocialLink:active { transform: scale(.99); }
-.drawerLinkActive { border-color: rgb(190 24 93 / 34%); background: rgb(190 24 93 / 10%); color: var(--drawer-accent); }
-.drawerLinkActive:hover { border-color: var(--drawer-accent); background: rgb(190 24 93 / 16%); color: #9D174D; }
+.drawerSocialLink:active { transform: scale(.94); }
+.drawerLinkActive {
+  border-color: transparent;
+  background: linear-gradient(135deg, #F43F5E 0%, #EC4899 45%, #BE185D 100%);
+  color: #FFFFFF !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--storefront-primary, #BE185D) 42%, transparent);
+  transform: scale(1.04);
+}
+.drawerLinkActive svg { color: #FFFFFF !important; stroke: #FFFFFF !important; }
+.drawerLinkActive:hover {
+  border-color: transparent;
+  background: linear-gradient(135deg, #F43F5E 0%, #DB2777 45%, #9D174D 100%);
+  color: #FFFFFF !important;
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--storefront-primary, #BE185D) 50%, transparent);
+  transform: scale(1.06);
+}
 
-.drawerSocials { margin-top: 10px; }
+.drawerSocials { margin-top: 12px; }
 .drawerSectionTitle {
   margin: 0;
 }
 
-.drawerSocialList { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.drawerSocialList { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
 .drawerSocialLink {
   display: flex;
@@ -346,16 +373,22 @@
   justify-content: center;
   padding: 0;
   border: 1px solid var(--drawer-accent-border);
-  border-radius: 13px;
+  border-radius: 9999px;
   background: var(--drawer-surface);
   color: var(--storefront-nav-foreground, #4D3748);
-  box-shadow: 0 2px 8px rgb(105 64 91 / 6%);
+  box-shadow: 0 2px 8px rgb(190 24 93 / 0.08);
   font-size: 0;
   text-decoration: none;
-  transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
 }
 
-.drawerSocialLink:hover { border-color: var(--drawer-accent); background: var(--drawer-surface-hover); color: var(--drawer-accent); }
+.drawerSocialLink:hover {
+  border-color: var(--drawer-accent);
+  background: var(--drawer-surface-hover);
+  color: var(--drawer-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgb(190 24 93 / 0.18);
+}
 .drawerSocialIcon {
   display: inline-flex;
   width: 42px;
@@ -364,20 +397,20 @@
   align-items: center;
   justify-content: center;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 9999px;
   color: var(--drawer-accent);
 }
 
-.drawerSocialIcon svg { width: 18px; height: 18px; }
+.drawerSocialIcon svg { width: 19px; height: 19px; }
 .drawerSocialBrandImg {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
   object-fit: contain;
   transition: transform 150ms ease;
 }
 .drawerSocialLink:hover .drawerSocialBrandImg {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 .drawerSupportIcon {
   color: #FFFFFF;
@@ -386,11 +419,11 @@
   display: none;
 }
 .drawerSupportIcon svg {
-  width: 28px;
-  height: 28px;
-  padding: 5px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #EC4899, #B54779);
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #F43F5E, #BE185D);
   color: #FFFFFF;
 }
 

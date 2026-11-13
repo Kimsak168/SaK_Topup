@@ -326,6 +326,8 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
                     key={href}
                     href={href}
                     onClick={closeDrawer}
+                    aria-label={label}
+                    title={label}
                     aria-current={active ? "page" : undefined}
                     className={`${styles.drawerLink} ${active ? styles.drawerLinkActive : ""}`}
                   >
