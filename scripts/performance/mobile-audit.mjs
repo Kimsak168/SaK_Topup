@@ -34,6 +34,9 @@ async function run() {
   const infiniteAnimations = (allCssText.match(/animation:[^;]+infinite/gi) || []).length;
   const willChangeCount = (allCssText.match(/will-change/gi) || []).length;
 
+  const hasContentVisibility = allCssText.includes('content-visibility:auto') || allCssText.includes('content-visibility: auto');
+  const hasDisabledCardShimmer = allCssText.includes('game-card') && allCssText.includes('animation:none!important');
+
   console.log({
     url,
     ttfbMs: +ttfb.toFixed(1),
@@ -43,6 +46,10 @@ async function run() {
     cssCount: cssMatches.length,
     totalCssKB: +(totalCssBytes / 1024).toFixed(1),
     imagesInHtmlCount: imgMatches.length,
+    mobileOptimizationsActive: {
+      hasContentVisibility,
+      hasDisabledCardShimmer
+    },
     cssPerformanceAnalysis: {
       backdropFilterCount,
       blurFilterCount,
