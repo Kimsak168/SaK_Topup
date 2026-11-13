@@ -24,9 +24,12 @@ export function paymentGatewayForOrder(order: Pick<IOrder, "paymentGateway" | "p
   return order.paymentGateway || "aba_payway_v2";
 }
 
-export async function reconcileOrderPayment(orderNumber: string, fulfill = true) {
-  let order = await Order.findOne({ orderNumber });
+export async function reconcileOrderPayment(orderOrOrderNumber: string | IOrder, fulfill = true) {
+  let order: IOrder | null = typeof orderOrOrderNumber === "string"
+    ? await Order.findOne({ orderNumber: orderOrOrderNumber })
+    : orderOrOrderNumber;
   if (!order) throw new Error("Order not found");
+  const orderNumber = order.orderNumber;
   const gateway = paymentGatewayForOrder(order);
   const previousStatus = String(order.paymentStatus).toUpperCase();
   if (!["PAID", "PENDING", "EXPIRED"].includes(previousStatus) || !order.transactionId) return order;

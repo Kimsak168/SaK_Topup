@@ -22,6 +22,7 @@ export interface AbaPayWayV2ModalData {
   deepLink?: string | null;
   payUrl?: string | null;
   expireInSec?: number;
+  isLoading?: boolean;
 }
 
 interface AbaPayWayV2ModalProps {
@@ -34,7 +35,7 @@ interface AbaPayWayV2ModalProps {
 
 export default function AbaPayWayV2Modal(props: AbaPayWayV2ModalProps) {
   if (!props.isOpen || !props.data) return null;
-  return <KhqrPaymentDialog key={props.data.transactionId} {...props} data={props.data} />;
+  return <KhqrPaymentDialog key={props.data.transactionId || props.data.orderNumber} {...props} data={props.data} />;
 }
 
 function KhqrPaymentDialog({
@@ -48,36 +49,8 @@ function KhqrPaymentDialog({
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [paymentStatus, setPaymentStatus] = useState(data.paymentStatus?.toUpperCase() || "PENDING");
   const [isSuccess, setIsSuccess] = useState(false);
-  const [renderedQr, setRenderedQr] = useState<string | null>(null);
+  const [renderedQr, setRenderedQr] = useState<string | null>(data.qrImage || data.qrPngUrl || null);
   const [qrError, setQrError] = useState(false);
-
-  // Drag-to-move handle interaction
-  const dragRef = useRef<{ pointerId: number; startY: number } | null>(null);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [dragging, setDragging] = useState(false);
-
-  const startDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (!event.isPrimary || event.button !== 0) return;
-    event.currentTarget.setPointerCapture(event.pointerId);
-    dragRef.current = { pointerId: event.pointerId, startY: event.clientY };
-    setDragging(true);
-  };
-
-  const moveDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (dragRef.current?.pointerId !== event.pointerId) return;
-    const limit = Math.min(window.innerHeight * 0.35, 240);
-    setDragOffset(Math.max(-limit, Math.min(limit, event.clientY - dragRef.current.startY)));
-  };
-
-  const endDrag = (event: React.PointerEvent<HTMLButtonElement>) => {
-    if (dragRef.current?.pointerId !== event.pointerId) return;
-    dragRef.current = null;
-    setDragging(false);
-    setDragOffset(0);
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  };
 
   const isExpired = timeLeft === 0 || paymentStatus === "EXPIRED";
   const isFailed = paymentStatus === "FAILED";
@@ -87,6 +60,10 @@ function KhqrPaymentDialog({
   );
 
   const requestClose = () => {
+    if (data.isLoading || data.transactionId === "generating") {
+      onClose();
+      return;
+    }
     if (paymentStatus === "PENDING" && !paymentEnded && !window.confirm("Do you want to cancel this order?")) {
       return;
     }
@@ -200,7 +177,7 @@ function KhqrPaymentDialog({
 
   // Payment status polling
   useEffect(() => {
-    if (paymentEnded) return;
+    if (paymentEnded || data.isLoading || data.transactionId === "generating" || !data.orderNumber) return;
     let cancelled = false;
     let nextCheck: ReturnType<typeof setTimeout>;
     const controller = new AbortController();
@@ -229,16 +206,16 @@ function KhqrPaymentDialog({
       } catch {
         // A temporary network failure must never be treated as a paid order.
       }
-      if (!cancelled) nextCheck = setTimeout(check, 2000);
+      if (!cancelled) nextCheck = setTimeout(check, 2500);
     };
 
-    nextCheck = setTimeout(check, 2000);
+    nextCheck = setTimeout(check, 2500);
     return () => {
       cancelled = true;
       clearTimeout(nextCheck);
       controller.abort();
     };
-  }, [data.orderNumber, data.transactionId, deadline, paymentEnded]);
+  }, [data.orderNumber, data.transactionId, data.isLoading, deadline, paymentEnded]);
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -276,23 +253,8 @@ function KhqrPaymentDialog({
         if (event.target === event.currentTarget) requestClose();
       }}
     >
-      <section
-        className={`${styles.abaV2Card}${dragging ? ` ${styles.isDragging}` : ""}`}
-        style={{ "--checkout-drag-y": `${dragOffset}px` } as React.CSSProperties}
-      >
+      <section className={styles.abaV2Card}>
         <header className={styles.abaV2Header}>
-          <button
-            type="button"
-            className={styles.abaV2Handle}
-            aria-label="Hold and drag checkout up or down; release to return"
-            onPointerDown={startDrag}
-            onPointerMove={moveDrag}
-            onPointerUp={endDrag}
-            onPointerCancel={endDrag}
-            onLostPointerCapture={endDrag}
-          >
-            <span />
-          </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/payments/khqr-wordmark-transparent.png" alt="KHQR" />
         </header>
@@ -303,7 +265,7 @@ function KhqrPaymentDialog({
             <h3>Payment received</h3>
             <p>Your {data.packageName} order is being processed.</p>
           </div>
-        ) : !paymentEnded && renderedQr && !qrError ? (
+        ) : !paymentEnded && (renderedQr || data.isLoading || data.transactionId === "generating" || (!qrError && timeLeft > 0)) ? (
           <div className={styles.abaV2Body}>
             <div className={styles.abaV2Payee}>
               <div>
@@ -327,18 +289,33 @@ function KhqrPaymentDialog({
             <div className={styles.abaV2Divider} />
 
             <div className={styles.abaV2Qr}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={renderedQr}
-                alt="Scan this dynamic KHQR to pay the displayed amount"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                className={styles.abaV2Mark}
-                src="/payments/bakong-mark.png"
-                alt=""
-                aria-hidden="true"
-              />
+              {renderedQr && !data.isLoading ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={renderedQr}
+                    alt="Scan this dynamic KHQR to pay the displayed amount"
+                  />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.abaV2Mark}
+                    src="/payments/bakong-mark.png"
+                    alt=""
+                    aria-hidden="true"
+                  />
+                </>
+              ) : (
+                <div className={styles.abaV2QrLoading}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className={styles.abaV2Loading}
+                    src="/payments/loading.svg"
+                    alt=""
+                    style={{ width: 34, height: 34 }}
+                  />
+                  <span>Generating KHQR...</span>
+                </div>
+              )}
             </div>
 
             <footer className={styles.abaV2Footer}>
@@ -350,6 +327,7 @@ function KhqrPaymentDialog({
                 type="button"
                 className={styles.abaV2Download}
                 onClick={handleSaveQr}
+                disabled={!renderedQr || Boolean(data.isLoading)}
               >
                 <Download size={16} aria-hidden="true" /> Download QR
               </button>

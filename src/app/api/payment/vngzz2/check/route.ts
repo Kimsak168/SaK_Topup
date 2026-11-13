@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const order = await Order.findOne({ ...(orderNumber ? { orderNumber } : {}), ...(transactionId ? { transactionId } : {}) });
     if (!order) return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 });
     if (paymentGatewayForOrder(order) !== "aba_payway_v2") return NextResponse.json({ success: false, error: "Payment gateway mismatch" }, { status: 400 });
-    const latest = await reconcileOrderPayment(order.orderNumber);
+    const latest = await reconcileOrderPayment(order);
     const currentOrderNumber = order.orderNumber;
     try {
       after(async () => {

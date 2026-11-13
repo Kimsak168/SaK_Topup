@@ -317,6 +317,8 @@ export async function generateVngZz2Qr(params: GenerateQrParams): Promise<Genera
   };
 }
 
+const inFlightChecks = new Map<string, Promise<CheckTransactionResult>>();
+
 /**
  * 2. Check payment status for a transaction
  * POST /v1/check_transaction
@@ -348,76 +350,89 @@ export async function checkVngZz2Transaction(
     };
   }
 
-  if (!isVngZz2Configured()) throw new VngZz2ConfigError("VngZz2 payment verification is not configured.");
+  // Deduplicate in-flight checks for the exact same transaction ID
+  const existing = inFlightChecks.get(cleanTxnId);
+  if (existing) return existing;
 
-  const config = getVngZz2Config();
+  const checkPromise = (async (): Promise<CheckTransactionResult> => {
+    if (!isVngZz2Configured()) throw new VngZz2ConfigError("VngZz2 payment verification is not configured.");
 
-  const endpoint = `${config.baseUrl}/v1/check_transaction`;
-  const timeoutMs = options?.timeoutMs || 8000;
+    const config = getVngZz2Config();
 
-  let response: Response;
-  try {
-    response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        "X-API-Key": config.apiKey,
-      },
-      body: JSON.stringify({ transaction_id: cleanTxnId }),
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-  } catch (err: unknown) {
-    const isTimeout = Boolean(
-      err && typeof err === "object" && "name" in err && (err.name === "TimeoutError" || err.name === "AbortError")
-    );
-    if (isTimeout) {
-      throw new VngZz2TimeoutError(`Transaction check timed out after ${timeoutMs}ms`);
+    const endpoint = `${config.baseUrl}/v1/check_transaction`;
+    const timeoutMs = options?.timeoutMs || 8000;
+
+    let response: Response;
+    try {
+      response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-API-Key": config.apiKey,
+        },
+        body: JSON.stringify({ transaction_id: cleanTxnId }),
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch (err: unknown) {
+      const isTimeout = Boolean(
+        err && typeof err === "object" && "name" in err && (err.name === "TimeoutError" || err.name === "AbortError")
+      );
+      if (isTimeout) {
+        throw new VngZz2TimeoutError(`Transaction check timed out after ${timeoutMs}ms`);
+      }
+      const message = err instanceof Error ? err.message : String(err);
+      throw new VngZz2ApiError(`Failed to connect to VngZz2 check API: ${message}`, 502);
     }
-    const message = err instanceof Error ? err.message : String(err);
-    throw new VngZz2ApiError(`Failed to connect to VngZz2 check API: ${message}`, 502);
-  }
 
-  let body: Record<string, unknown>;
+    let body: Record<string, unknown>;
+    try {
+      body = await response.json();
+    } catch {
+      throw new VngZz2ApiError(`Transaction check returned non-JSON HTTP ${response.status}`, response.status);
+    }
+
+    if (!response.ok || body.success === false) {
+      const errorMsg = (body.message as string) || "Failed to check transaction";
+      const code = (body.code as string) || "CHECK_ERROR";
+      // A failed status inquiry is not evidence that the payment failed.
+      throw new VngZz2ApiError(errorMsg, response.status, code);
+    }
+
+    const data = ((body.data && typeof body.data === "object" ? body.data : body) || {}) as Record<string, unknown>;
+    const rawState = String(data.state || "PENDING").toUpperCase();
+    const state: CheckTransactionResult["state"] =
+      rawState === "PAID" ? "PAID" : rawState === "FAILED" ? "FAILED" : rawState === "EXPIRED" ? "EXPIRED" : "PENDING";
+
+    // The documented transaction state is authoritative. Transport result codes,
+    // truthy strings and API acceptance never establish settlement.
+    const isPaid = rawState === "PAID" && (data.is_paid === undefined || data.is_paid === true);
+    if (["PAID", "FAILED", "EXPIRED"].includes(rawState) && (typeof data.transaction_id !== "string" || data.transaction_id !== cleanTxnId)) {
+      throw new VngZz2ApiError("Payment status response has a mismatched transaction reference.", 502, "INVALID_RESPONSE");
+    }
+
+    return {
+      success: true,
+      transactionId: String(data.transaction_id || cleanTxnId),
+      state: rawState === "PAID" && !isPaid ? "PENDING" : state,
+      isPaid,
+      amount: typeof data.amount === "number" ? data.amount : parseFloat(String(data.amount || 0)),
+      currency: String(data.currency || "").toUpperCase(),
+      action: data.action ? String(data.action) : undefined,
+      code: data.code ? String(data.code) : undefined,
+      paywayTransactionId: data.payway_transaction_id ? String(data.payway_transaction_id) : undefined,
+      receiptUrl: data.receipt_url ? String(data.receipt_url) : undefined,
+      checkedAt: data.checked_at ? String(data.checked_at) : new Date().toISOString(),
+      message: body.message ? String(body.message) : undefined,
+    };
+  })();
+
+  inFlightChecks.set(cleanTxnId, checkPromise);
   try {
-    body = await response.json();
-  } catch {
-    throw new VngZz2ApiError(`Transaction check returned non-JSON HTTP ${response.status}`, response.status);
+    return await checkPromise;
+  } finally {
+    inFlightChecks.delete(cleanTxnId);
   }
-
-  if (!response.ok || body.success === false) {
-    const errorMsg = (body.message as string) || "Failed to check transaction";
-    const code = (body.code as string) || "CHECK_ERROR";
-    // A failed status inquiry is not evidence that the payment failed.
-    throw new VngZz2ApiError(errorMsg, response.status, code);
-  }
-
-  const data = ((body.data && typeof body.data === "object" ? body.data : body) || {}) as Record<string, unknown>;
-  const rawState = String(data.state || "PENDING").toUpperCase();
-  const state: CheckTransactionResult["state"] =
-    rawState === "PAID" ? "PAID" : rawState === "FAILED" ? "FAILED" : rawState === "EXPIRED" ? "EXPIRED" : "PENDING";
-
-  // The documented transaction state is authoritative. Transport result codes,
-  // truthy strings and API acceptance never establish settlement.
-  const isPaid = rawState === "PAID" && (data.is_paid === undefined || data.is_paid === true);
-  if (["PAID", "FAILED", "EXPIRED"].includes(rawState) && (typeof data.transaction_id !== "string" || data.transaction_id !== cleanTxnId)) {
-    throw new VngZz2ApiError("Payment status response has a mismatched transaction reference.", 502, "INVALID_RESPONSE");
-  }
-
-  return {
-    success: true,
-    transactionId: String(data.transaction_id || cleanTxnId),
-    state: rawState === "PAID" && !isPaid ? "PENDING" : state,
-    isPaid,
-    amount: typeof data.amount === "number" ? data.amount : parseFloat(String(data.amount || 0)),
-    currency: String(data.currency || "").toUpperCase(),
-    action: data.action ? String(data.action) : undefined,
-    code: data.code ? String(data.code) : undefined,
-    paywayTransactionId: data.payway_transaction_id ? String(data.payway_transaction_id) : undefined,
-    receiptUrl: data.receipt_url ? String(data.receipt_url) : undefined,
-    checkedAt: data.checked_at ? String(data.checked_at) : new Date().toISOString(),
-    message: body.message ? String(body.message) : undefined,
-  };
 }
 
 /**

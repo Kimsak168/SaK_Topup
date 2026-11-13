@@ -319,8 +319,22 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     checkoutPendingRef.current = true;
     setIsCheckingOut(true);
 
+    // Instant modal display for zero perceived wait time
+    setPaywayV2ModalData({
+      orderNumber: "",
+      transactionId: "generating",
+      amount: packageToPurchase.sellingPrice || 0,
+      currency: "USD",
+      packageName: packageToPurchase.name,
+      gameName: game.name,
+      merchantName: "Asura Store",
+      isLoading: true,
+      qrString: null,
+      qrImage: null,
+    });
+    setIsPaywayV2Open(true);
+
     try {
-      toast.loading("Generating KHQR...", { id: "checkout" });
       const res = await fetch("/api/payment/vngzz2/create", {
         method: "POST",
         headers: {
@@ -340,6 +354,8 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       const data = await res.json();
 
       if (!res.ok || !data.success) {
+        setIsPaywayV2Open(false);
+        setPaywayV2ModalData(null);
         toast.error("Unable to start payment", {
           id: "checkout",
           description: data?.error || "Please try again or contact support if the problem continues.",

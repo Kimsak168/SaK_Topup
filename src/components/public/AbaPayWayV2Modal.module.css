@@ -12,30 +12,24 @@
 }
 
 .abaV2Card {
-  width: min(340px, 100%);
+  width: min(340px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 0;
-  border-radius: 12px 12px 0 0;
+  border-radius: 12px;
+  overflow: hidden;
   background: #ffffff;
   box-shadow: 0 20px 50px rgba(6, 20, 43, 0.28);
   color: #172638;
-  transform: translateY(var(--checkout-drag-y, 0px));
-  transition: transform 220ms ease-out;
-}
-
-.abaV2Card.isDragging {
-  transition: none;
 }
 
 .abaV2Header {
   position: relative;
-  height: 52px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 10px;
   box-sizing: border-box;
   background: #ed1c24;
 }
@@ -44,56 +38,20 @@
   content: "";
   position: absolute;
   right: 0;
-  bottom: -18px;
+  bottom: -16px;
   z-index: 1;
   border-style: solid;
-  border-width: 18px 0 0 18px;
+  border-width: 16px 0 0 16px;
   border-color: #ed1c24 transparent transparent transparent;
   pointer-events: none;
 }
 
 .abaV2Header > img {
   display: block;
-  width: 92px;
-  height: 24px;
+  width: 96px;
+  height: 25px;
   object-fit: contain;
   object-position: center;
-}
-
-.abaV2Handle {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  z-index: 2;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  width: 60px;
-  height: 36px;
-  padding: 10px 0 0;
-  transform: translateX(-50%);
-  border: 0;
-  background: transparent;
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-}
-
-.abaV2Handle span {
-  display: block;
-  width: 40px;
-  height: 4px;
-  border-radius: 999px;
-  background: #ffffff;
-}
-
-.abaV2Handle:active {
-  cursor: grabbing;
-}
-
-.abaV2Handle:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: -3px;
 }
 
 .abaV2Body {
@@ -181,6 +139,22 @@
   position: relative;
   width: min(100%, 210px);
   margin: 0 auto;
+}
+
+.abaV2QrLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: min(100%, 210px);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .abaV2Qr > img:first-of-type {
@@ -336,28 +310,27 @@
 
 @media (max-width: 600px) {
   .abaV2Overlay {
-    place-items: end center;
-    padding: 0;
+    place-items: center;
+    padding: 16px;
   }
 
   .abaV2Card {
-    width: 100%;
-    max-height: 100dvh;
-    border: 0;
-    border-radius: 12px 12px 0 0;
+    width: min(340px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    border-radius: 12px;
   }
 
   .abaV2Header {
-    height: 52px;
+    height: 46px;
   }
 
   .abaV2Header:after {
-    bottom: -16px;
-    border-width: 16px 0 0 16px;
+    bottom: -15px;
+    border-width: 15px 0 0 15px;
   }
 
   .abaV2Header > img {
-    width: 88px;
+    width: 90px;
     height: 23px;
   }
 

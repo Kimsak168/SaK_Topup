@@ -123,7 +123,21 @@ function CheckoutContent() {
   const handleCreateOrder = async () => {
     try {
       setIsProcessing(true);
-      toast.loading("Generating KHQR...", { id: "checkout" });
+      // Instant modal display for zero perceived wait time
+      setPaywayV2ModalData({
+        orderNumber: "",
+        transactionId: "generating",
+        amount: price,
+        currency: "USD",
+        packageName,
+        gameName: game,
+        merchantName: "Asura Store",
+        isLoading: true,
+        qrString: null,
+        qrImage: null,
+      });
+      setIsPaywayV2Open(true);
+
       const res = await fetch("/api/payment/vngzz2/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,6 +154,8 @@ function CheckoutContent() {
 
       const data = await res.json();
       if (!res.ok || !data.success) {
+        setIsPaywayV2Open(false);
+        setPaywayV2ModalData(null);
         toast.error("Unable to start payment", {
           id: "checkout",
           description: data?.error || "Please try again or contact support if the problem continues.",
@@ -189,6 +205,8 @@ function CheckoutContent() {
 
       startPaymentVerificationPolling(data.orderNumber, data.transactionId, completedOrderSnapshot);
     } catch {
+      setIsPaywayV2Open(false);
+      setPaywayV2ModalData(null);
       toast.error("Unable to start payment", { id: "checkout", description: "Check your connection and try again." });
     } finally {
       setIsProcessing(false);
