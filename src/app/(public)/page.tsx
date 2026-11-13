@@ -16,7 +16,9 @@ import type { ClientGame } from "@/types/game";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Asura Store",
+  title: {
+    absolute: "Asura Store",
+  },
   description: "Asura Store — Game top-up and social media services for Cambodia.",
 };
 
