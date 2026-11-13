@@ -108,7 +108,6 @@ export function GameEventsCarousel({ events, unavailable = false }: GameEventsCa
         <div>
           <p className={styles.eyebrow}>Seasonal highlights</p>
           <h2 id="game-events-title">Game Events</h2>
-          <p>Discover the latest gaming events and promotions.</p>
         </div>
         {events.length > 0 && (
           <div className={styles.controls} aria-label="Game event carousel controls">

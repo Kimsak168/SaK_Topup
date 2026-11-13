@@ -72,7 +72,6 @@ export function GameEventsSkeleton() {
         <div>
           <div aria-hidden="true" className="mb-2 h-2.5 w-28 rounded bg-pink-200/70 motion-safe:animate-pulse" />
           <div aria-hidden="true" className="h-7 w-40 rounded bg-pink-200/70 motion-safe:animate-pulse" />
-          <div aria-hidden="true" className="mt-2 h-3 w-72 max-w-full rounded bg-pink-100 motion-safe:animate-pulse" />
         </div>
       </div>
       <div aria-hidden="true" className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
