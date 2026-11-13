@@ -363,6 +363,7 @@
   }
 
   .heroTitle { font-size: clamp(36px, 10vw, 50px); }
+  .hero::after { animation: none; filter: blur(40px); }
   .heroDescription { font-size: 13px; }
   .heroFeatures { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .featureCard { min-height: 0; align-items: flex-start; flex-direction: column; gap: 9px; padding: 12px 10px; border-radius: 14px; }

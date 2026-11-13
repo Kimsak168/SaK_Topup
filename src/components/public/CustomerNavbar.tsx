@@ -205,7 +205,7 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
             {/* Cute Water Festival Lotus perched on the logo */}
             <span
               aria-hidden="true"
-              className="absolute -top-1 -right-1.5 text-sm sm:text-base select-none pointer-events-none drop-shadow-md animate-bounce"
+              className="absolute -top-1 -right-1.5 text-sm sm:text-base select-none pointer-events-none drop-shadow-md sm:animate-bounce"
               style={{ animationDuration: "2.8s" }}
             >
               🪷

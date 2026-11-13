@@ -120,7 +120,14 @@
 .storefront-category-filters button, .home-package-filters button { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; padding: 0 12px; border: 1px solid var(--storefront-border, #F0C6DA); border-radius: 999px; background: var(--storefront-card, #FFFFFF); color: var(--storefront-muted, #766477); font-size: 11px; font-weight: 650; cursor: pointer; transition: color 150ms ease, border-color 150ms ease, background 150ms ease; }
 .storefront-category-filters button:hover, .home-package-filters button:hover { border-color: var(--storefront-primary-hover); color: var(--storefront-primary-hover); }
 .storefront-category-filters button[aria-pressed="true"], .home-package-filters button[aria-pressed="true"] { border-color: var(--storefront-primary-hover); background: color-mix(in srgb, var(--storefront-primary) 14%, var(--storefront-card)); color: var(--storefront-primary-hover); }
-.home-section { width: 100%; min-width: 0; margin-top: clamp(32px, 5vw, 56px); scroll-margin-top: calc(92px + env(safe-area-inset-top, 0px)); }
+.home-section {
+  width: 100%;
+  min-width: 0;
+  margin-top: clamp(32px, 5vw, 56px);
+  scroll-margin-top: calc(92px + env(safe-area-inset-top, 0px));
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 500px;
+}
 .home-section-heading { margin-bottom: 16px; }
 .home-section-heading h2 { color: var(--storefront-foreground, #3B2D39); font-size: clamp(22px, 3vw, 30px); font-weight: 760; line-height: 1.2; letter-spacing: -.03em; }
 .home-section-heading > p:last-child:not(.storefront-eyebrow) { max-width: 64ch; margin-top: 7px; color: var(--storefront-muted, #A89CB8); font-size: 13px; line-height: 1.6; }
@@ -1063,10 +1070,15 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   74%, 100% { background-position: -35% 0; opacity: 0; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
   .public-theme .game-card:not([aria-hidden="true"])::after {
-    animation: none;
-    opacity: 0;
+    animation: none !important;
+    display: none !important;
+    opacity: 0 !important;
+  }
+  .storefront-search-submit {
+    animation: none !important;
+    background-position: 50% 50% !important;
   }
 }
 

@@ -240,6 +240,11 @@
   .buttonFloatLucky {
     width: 44px;
     height: 44px;
+    animation: none;
+  }
+
+  .luckyWheelSvg {
+    animation: none;
   }
 
   .telegramIcon {

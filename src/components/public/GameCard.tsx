@@ -88,7 +88,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           /* Water Festival festive badge sticker */
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/70 px-1.5 py-0.5 border border-sky-400/40 shadow-md shadow-sky-950/30 backdrop-blur-md transition-all duration-200 group-hover:scale-105 group-hover:border-sky-300 group-hover:bg-black/85"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-black/85 px-1.5 py-0.5 border border-sky-400/40 shadow-md shadow-sky-950/30 transition-all duration-200 group-hover:scale-105 group-hover:border-sky-300"
           >
             <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
             <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-sky-200">

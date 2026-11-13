@@ -459,6 +459,7 @@
   .navLink::after { bottom: 2px; }
   .navLinkActive::after { right: 4px; left: 4px; }
   .actions { gap: 6px; }
+  .wordmarkText { animation: none; background-position: 0% 50%; }
   .searchButton { display: none; }
   .telegramButton { display: inline-flex; }
   .searchButton,

@@ -42,7 +42,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /.local-backups/
-/artifacts/performance/package-audit-*
-/artifacts/unused-file-audit/admin-check/
-/artifacts/unused-file-audit/work-backup.json
-/artifacts/vngzz2-catalogue/
+/artifacts/
+
