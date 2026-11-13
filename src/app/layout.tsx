@@ -27,9 +27,12 @@ const kantumruyPro = Kantumruy_Pro({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.asuratopup.store"),
-  title: "Asura Store — Fast & Secure Automated Game Top-Up",
+  title: {
+    default: "Asura Store",
+    template: "%s | Asura Store",
+  },
   description:
-    "Instant automated game top-up for Free Fire, PUBG Mobile, Mobile Legends, and more. Direct official WebBuilder API integration with 24/7 delivery.",
+    "Instant automated game top-up and social media services in Cambodia. Fast 24/7 delivery via KHQR.",
   keywords: [
     "Asura Store",
     "Game Top Up",
@@ -38,9 +41,18 @@ export const metadata: Metadata = {
     "Mobile Legends Diamonds",
     "MLBB Weekly Pass",
     "Honor of Kings Tokens",
-    "WebBuilder API",
+    "Roblox Robux",
     "Instant Gaming Recharge",
   ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180" },
+    ],
+  },
 };
 
 export default function RootLayout({
