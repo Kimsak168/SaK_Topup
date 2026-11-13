@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
     const updated = await GamePackage.findByIdAndUpdate(
       packageId,
       { $set: updateFields },
-      { new: true }
+      { returnDocument: 'after' }
     ).lean();
 
     if (!updated) {
@@ -211,7 +211,7 @@ export async function DELETE(req: NextRequest) {
           updatedAt: new Date(),
         },
       },
-      { new: true }
+      { returnDocument: 'after' }
     ).lean();
 
     if (!updated) {

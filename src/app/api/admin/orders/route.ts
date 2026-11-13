@@ -195,7 +195,7 @@ export async function PATCH(req: NextRequest) {
     if (supplierOrderId !== undefined) updateFields.supplierOrderId = String(supplierOrderId).trim();
 
     const updated = await Order.findOneAndUpdate({ _id: orderId, paymentStatus: current.paymentStatus, fulfillmentStatus: current.fulfillmentStatus }, { $set: updateFields }, {
-      new: true, runValidators: true,
+      returnDocument: 'after', runValidators: true,
     }).lean();
 
     if (!updated) {

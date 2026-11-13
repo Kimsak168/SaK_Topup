@@ -60,7 +60,7 @@ export async function reconcileSupplierOrdersBatch(limit = 10, maxDurationMs = 2
           },
           $inc: { supplierPollAttempts: 1 },
         },
-        { new: true, sort: { supplierNextPollAt: 1, createdAt: 1 } }
+        { returnDocument: 'after', sort: { supplierNextPollAt: 1, createdAt: 1 } }
       );
 
       if (!order) break;

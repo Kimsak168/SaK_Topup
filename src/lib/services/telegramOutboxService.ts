@@ -28,7 +28,7 @@ export async function dispatchTelegramNotificationEvent(orderNumber: string, eve
       $set: { "telegramNotifications.$.state": "sending", "telegramNotifications.$.lockedAt": now, "telegramNotifications.$.lockToken": token },
       $inc: { "telegramNotifications.$.attemptCount": 1 },
       $push: { "telegramNotifications.$.attempts": { at: now, outcome: "sending" } },
-    }, { new: true },
+    }, { returnDocument: 'after' },
   ).select("orderNumber qrString qrImage qrPngUrl transactionId telegramNotifications").lean();
   if (!claimed) return "skipped";
   const event = (claimed.telegramNotifications as TelegramNotificationEvent[]).find(e => e.eventId === eventId)!;

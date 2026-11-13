@@ -83,7 +83,7 @@ export async function reconcileOrderPayment(orderNumber: string, fulfill = true)
           paymentErrorReason: reason || (status === "EXPIRED" ? "Provider confirmed payment expiry." : "Provider confirmed payment failure."),
         }),
         paymentVerification: { gateway, transactionId, status, checkedAt: new Date() },
-      } }, { new: true, runValidators: true },
+      } }, { returnDocument: 'after', runValidators: true },
     );
     order = updated || await Order.findOne({ orderNumber });
     if (!order) throw new Error("Order no longer exists");

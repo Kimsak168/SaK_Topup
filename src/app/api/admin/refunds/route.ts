@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       const order = await Order.findOneAndUpdate(
         { orderNumber, paymentStatus: { $in: ["paid", "PAID"] } },
         { $inc: { refundVersion: 1 } },
-        { new: true, session }
+        { returnDocument: 'after', session }
       );
       if (!order) throw new Error("A paid order with this number was not found.");
       if (currency !== String(order.currency || "USD").toUpperCase()) throw new Error("Refund currency must match the original order.");

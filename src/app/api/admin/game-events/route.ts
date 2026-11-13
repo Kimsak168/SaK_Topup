@@ -220,7 +220,7 @@ export async function PATCH(req: NextRequest) {
 
     const oldImageUrl = existing.imageUrl;
     const updated = await GameEvent.findByIdAndUpdate(eventId, updateOperation, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
     }).lean();
     if (!updated) return NextResponse.json({ success: false, error: "Game event not found." }, { status: 404 });

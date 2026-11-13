@@ -170,7 +170,7 @@ async function persistStatus(supplierId: SupplierId, status: "connected" | "fail
         ...(session ? { updatedBy: session.username } : {}),
       },
     },
-    { upsert: true, new: true, setDefaultsOnInsert: true }
+    { upsert: true, returnDocument: 'after', setDefaultsOnInsert: true }
   );
 }
 

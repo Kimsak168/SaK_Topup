@@ -166,7 +166,7 @@ export async function PATCH(req: NextRequest) {
     const updatedBanner = await Banner.findByIdAndUpdate(
       bannerId,
       { $set: update },
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedBanner) {

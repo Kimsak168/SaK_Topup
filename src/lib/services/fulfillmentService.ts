@@ -42,7 +42,7 @@ export async function triggerAutomaticFulfillment(
         updatedAt: new Date(),
       },
     },
-    { new: true }
+    { returnDocument: 'after' }
   )) as IOrder | null;
 
   if (!order) {

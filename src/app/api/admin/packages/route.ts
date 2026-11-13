@@ -210,7 +210,7 @@ export async function PATCH(req: NextRequest) {
     }
     if (typeof sortOrder === "number") updateFields.sortOrder = sortOrder;
 
-    const updated = await GamePackage.findByIdAndUpdate(packageId, updateFields, { new: true }).lean();
+    const updated = await GamePackage.findByIdAndUpdate(packageId, updateFields, { returnDocument: 'after' }).lean();
 
     if (!updated) {
       return NextResponse.json({ success: false, error: "Package not found" }, { status: 404 });

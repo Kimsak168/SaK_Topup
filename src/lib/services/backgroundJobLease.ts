@@ -8,7 +8,7 @@ export async function acquireJobLease(name: string, durationMs: number) {
     const lease = await BackgroundJobLease.findOneAndUpdate(
       { _id: name, until: { $lte: new Date() } },
       { $set: { token, until: new Date(Date.now() + durationMs) } },
-      { upsert: true, new: true },
+      { upsert: true, returnDocument: 'after' },
     ).lean();
     return lease ? token : null;
   } catch (error) {

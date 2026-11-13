@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     const updated = await Setting.findOneAndUpdate(
       { key: "general" },
       { $set: updateData },
-      { upsert: true, new: true }
+      { upsert: true, returnDocument: 'after' }
     ).lean();
 
     invalidatePublicSettingsCache();

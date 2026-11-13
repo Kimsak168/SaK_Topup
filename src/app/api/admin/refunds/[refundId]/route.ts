@@ -37,12 +37,12 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ refun
       if (!allowed[refund.status]?.includes(nextStatus)) throw new Error(`Cannot move refund from ${refund.status} to ${nextStatus}.`);
 
       // Serialize transitions with new refund requests for the same order.
-      const order = await Order.findOneAndUpdate({ orderNumber: refund.orderNumber }, { $inc: { refundVersion: 1 } }, { new: true, session });
+      const order = await Order.findOneAndUpdate({ orderNumber: refund.orderNumber }, { $inc: { refundVersion: 1 } }, { returnDocument: 'after', session });
       if (!order) throw new Error("Original order is unavailable.");
       const update: Record<string, unknown> = { status: nextStatus, updatedBy: auth.session.username };
       if (nextStatus === "completed") { update.externalReference = externalReference; update.completedAt = new Date(); }
       if (nextStatus === "failed") update.failureNote = failureNote;
-      const changed = await Refund.findOneAndUpdate({ _id: refund._id, status: refund.status }, { $set: update }, { new: true, session });
+      const changed = await Refund.findOneAndUpdate({ _id: refund._id, status: refund.status }, { $set: update }, { returnDocument: 'after', session });
       if (!changed) throw new Error("Refund status changed in another request. Reload and retry.");
 
       if (nextStatus === "completed") {

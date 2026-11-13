@@ -144,7 +144,7 @@ export async function PATCH(req: NextRequest) {
     if (typeof category === "string") updateFields.category = category.trim();
     if (typeof name === "string") updateFields.name = name.trim();
 
-    const updated = await Game.findByIdAndUpdate(gameId, updateFields, { new: true }).lean();
+    const updated = await Game.findByIdAndUpdate(gameId, updateFields, { returnDocument: 'after' }).lean();
 
     if (!updated) {
       return NextResponse.json({ success: false, error: "Game not found" }, { status: 404 });

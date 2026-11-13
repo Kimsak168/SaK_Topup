@@ -63,7 +63,7 @@ export async function reconcilePendingPaymentsBatch(limit = 10, maxDurationMs = 
           },
           $inc: { paymentPollAttempts: 1 },
         },
-        { new: true, sort: { paymentPollNextAt: 1, createdAt: 1 } }
+        { returnDocument: 'after', sort: { paymentPollNextAt: 1, createdAt: 1 } }
       );
 
       if (!order) break;
