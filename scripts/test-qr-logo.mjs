@@ -50,3 +50,4 @@ async function testQrWithLogo() {
 }
 
 testQrWithLogo().catch(console.error);
+

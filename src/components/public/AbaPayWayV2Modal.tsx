@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
-import { AlertCircle, CheckCircle2, Clock3, Download, ExternalLink, LoaderCircle, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, Download, LoaderCircle, X } from "lucide-react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
 import { getKhqrMerchantName } from "@/lib/khqr";
@@ -211,8 +211,6 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
   }).format(data.amount);
   const merchantName = getKhqrMerchantName(data.qrString) || data.merchantName || "Asura Store";
   const formattedTime = `${String(Math.floor(timeLeft / 60)).padStart(2, "0")}:${String(timeLeft % 60).padStart(2, "0")}`;
-  const abaDeepLink = data.deepLink || (data.qrString ? `abamobilebank://ababank.com?type=payway&qrcode=${encodeURIComponent(data.qrString)}` : null);
-  const bankUrl = data.payUrl || abaDeepLink;
 
   const handleSaveQr = () => {
     if (!renderedQr) return;
@@ -291,22 +289,12 @@ function KhqrPaymentDialog({ data, onClose, onSuccess, onRetry }: Omit<AbaPayWay
               </div>
               <p id="khqr-instructions">{isExpired || isFailed ? "Generate a new code before making a payment." : "Open your banking app and scan the QR code above."}</p>
               
-              {!paymentEnded && !qrError && (
+              {!paymentEnded && !qrError && renderedQr && (
                 <div className={styles.actionButtons}>
-                  {bankUrl && (
-                    <a href={bankUrl} className={styles.openAbaBtn}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src="/images/aba-logo.webp" alt="ABA" width={20} height={20} />
-                      <span>Open in ABA Mobile</span>
-                      <ExternalLink size={15} aria-hidden="true" />
-                    </a>
-                  )}
-                  {renderedQr && (
-                    <button type="button" onClick={handleSaveQr} className={styles.saveQrBtn}>
-                      <Download size={16} aria-hidden="true" />
-                      <span>Save QR Code to Photos</span>
-                    </button>
-                  )}
+                  <button type="button" onClick={handleSaveQr} className={styles.saveQrBtn}>
+                    <Download size={16} aria-hidden="true" />
+                    <span>Save QR Code to Photos</span>
+                  </button>
                 </div>
               )}
 
