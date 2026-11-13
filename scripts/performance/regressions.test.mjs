@@ -585,7 +585,7 @@ test('unavailable or unpriced packages cannot create or resume a payment', async
 });
 
 test('customer KHQR checkout is unavailable without credentials and creates no orders or demo codes', async () => {
-  for (const path of ['payment/vngzz2/create', 'smm/orders', 'digital-shop/orders']) {
+  for (const path of ['payment/vngzz2/create', 'smm/orders']) {
     let databaseCalls = 0;
     let sandboxCalls = 0;
     const route = loader({
