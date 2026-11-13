@@ -1,71 +1,433 @@
-.dialog {
+.abaV2Overlay {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100dvh;
-  max-width: none;
-  max-height: none;
-  margin: 0;
-  padding: 24px 16px;
-  overflow: auto;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(7, 16, 27, 0.67);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overscroll-behavior: contain;
+}
+
+.abaV2Card {
+  width: min(440px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
   overscroll-behavior: contain;
   border: 0;
+  border-radius: 10px 10px 0 0;
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(6, 20, 43, 0.25);
+  color: #172638;
+  transform: translateY(var(--checkout-drag-y, 0px));
+  transition: transform 220ms ease-out;
+}
+
+.abaV2Card.isDragging {
+  transition: none;
+}
+
+.abaV2Header {
+  position: relative;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 14px;
+  box-sizing: border-box;
+  background: #ed1c24;
+}
+
+.abaV2Header:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -22px;
+  z-index: 1;
+  border-style: solid;
+  border-width: 22px 0 0 22px;
+  border-color: #ed1c24 transparent transparent transparent;
+  pointer-events: none;
+}
+
+.abaV2Header > img {
+  display: block;
+  width: 108px;
+  height: 28px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.abaV2Handle {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 76px;
+  height: 44px;
+  padding: 14px 0 0;
+  transform: translateX(-50%);
+  border: 0;
   background: transparent;
-  color: #171717;
-  color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.abaV2Handle span {
+  display: block;
+  width: 48px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ffffff;
+}
+
+.abaV2Handle:active {
+  cursor: grabbing;
+}
+
+.abaV2Handle:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -3px;
+}
+
+.abaV2Body {
+  padding: 24px 28px 26px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.abaV2Payee {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+
+.abaV2Payee > div {
+  min-width: 0;
+}
+
+.abaV2Payee strong,
+.abaV2Payee span {
+  display: block;
+}
+
+.abaV2Payee strong {
+  overflow-wrap: anywhere;
+  color: #111111;
+  font-family: Arial, Helvetica, "Khmer UI", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
   line-height: 1.5;
 }
 
-.dialog[open] { display: grid; place-items: center; }
-.dialog::backdrop { background: rgb(12 16 23 / 72%); backdrop-filter: blur(5px); }
-.panel { width: 100%; max-width: 360px; min-width: 0; margin: auto; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; color: #fff; }
-.toolbar h2 { margin: 0; color: #fff; font-size: 15px; font-weight: 600; letter-spacing: .01em; }
-.close { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid rgb(255 255 255 / 25%); border-radius: 50%; background: rgb(255 255 255 / 10%); color: #fff; cursor: pointer; }
-.close:hover { background: rgb(255 255 255 / 20%); }
-.close:focus-visible, .retry:focus-visible, .openBank:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
-.receipt { overflow: hidden; border: 1px solid rgb(255 255 255 / 80%); border-radius: 20px; background: #fff; color: #171717; box-shadow: 0 16px 60px rgb(0 0 0 / 20%); }
-.brand { position: relative; display: flex; height: 68px; align-items: center; justify-content: space-between; padding: 0 22px; background: #e21a27; }
-.brand::after { position: absolute; top: 100%; right: 0; width: 0; height: 0; border-top: 24px solid #e21a27; border-left: 24px solid transparent; content: ""; }
-.brand img { display: block; width: 100px; height: 24px; object-fit: contain; }
-.bankTag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #ffffff; color: #004b6e; font-size: 11px; font-weight: 800; letter-spacing: 0.04em; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); }
-.bankTagLogo { width: 16px !important; height: 16px !important; border-radius: 4px; }
-.details { padding: 22px 24px 18px; text-align: left; }
-.merchantRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-.merchant { overflow-wrap: anywhere; margin: 0; color: #171717; font-size: 18px; font-weight: 600; line-height: 1.3; }
-.verifiedBadge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; background: #e0f2fe; color: #0369a1; font-size: 10px; font-weight: 700; white-space: nowrap; }
-.amount { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 9px; margin: 0; color: #111; font-size: 38px; font-weight: 700; line-height: 1.15; letter-spacing: -.025em; font-variant-numeric: tabular-nums; }
-.amount span { color: #111; font-size: 17px; font-weight: 500; letter-spacing: 0; }
-.divider { margin: 0 24px; border-top: 1px dashed #cecece; }
-.qr { display: flex; width: calc(100% - 36px); aspect-ratio: 1; align-items: center; justify-content: center; margin: 8px auto 0; background: #fff; }
-.qr > img { display: block; width: 100%; height: 100%; object-fit: contain; }
-.accepted { margin: 0; padding: 0 20px 18px; color: #555; font-size: 12px; text-align: center; }
-.paymentInfo { margin-top: 15px; color: #fff; text-align: center; }
-.status { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13px; font-weight: 500; }
-.status > span { display: inline-flex; align-items: center; gap: 7px; }
-.countdown, .urgent { font-variant-numeric: tabular-nums; }
-.urgent { color: #ffb6bc; }
-.paymentInfo > p { margin: 8px 0 0; color: #e0e2e6; font-size: 12px; }
-.actionButtons { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
-.saveQrBtn { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 12px; background: rgba(255, 255, 255, 0.14); color: #ffffff; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 150ms ease, transform 100ms ease; }
-.saveQrBtn:hover { background: rgba(255, 255, 255, 0.24); }
-.saveQrBtn:active { transform: scale(0.98); }
-.paymentInfo .reference { margin-top: 13px; color: #b7bdc6; font-size: 10px; overflow-wrap: anywhere; }
-.reference span { margin-left: 4px; }
-.unavailable, .loading { display: flex; max-width: 260px; flex-direction: column; align-items: center; gap: 12px; padding: 20px; color: #6b7280; text-align: center; }
-.unavailable > svg { color: #b4232e; }
-.unavailable h3 { margin: 0; color: #171717; font-size: 17px; font-weight: 600; }
-.unavailable p { margin: 0; color: #5f636b; font-size: 13px; }
-.retry { min-height: 44px; margin-top: 5px; padding: 10px 16px; border: 0; border-radius: 8px; background: #e21a27; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
-.retry:hover { background: #c81622; }
-.retry:focus-visible { outline-color: #171717; }
-.loading { font-size: 13px; }
-.loading svg, .spinner { animation: spin 1.2s linear infinite; }
-.success { display: flex; flex-direction: column; align-items: center; gap: 15px; padding: 48px 28px; border-radius: 20px; background: #fff; color: #171717; text-align: center; }
-.success > svg { color: #168454; }
-.success h3 { margin: 0; color: #171717; font-size: 24px; font-weight: 700; }
-.success p { margin: 0; color: #5f636b; font-size: 14px; }
-@keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width: 374px) { .dialog { padding: 16px 12px; } .details { padding-inline: 22px; } .amount { font-size: 34px; } }
-@media (prefers-reduced-motion: reduce) { .loading svg, .spinner { animation: none; } .dialog::backdrop { backdrop-filter: none; } }
+.abaV2Payee span {
+  margin-top: 4px;
+  color: #111111;
+  font-family: Arial, Helvetica, "Khmer UI", sans-serif;
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+.abaV2Payee small {
+  color: #111111;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.abaV2Payee time {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  color: #333333;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+}
+
+.abaV2Loading {
+  display: block;
+  width: 22px;
+  height: 24px;
+  object-fit: contain;
+  animation: abaV2LoadingSpin 1.2s linear infinite;
+}
+
+@keyframes abaV2LoadingSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.abaV2Divider {
+  margin: 18px -28px 20px;
+  border-top: 1px dashed #becbd8;
+}
+
+.abaV2Qr {
+  position: relative;
+  width: min(100%, 300px);
+  margin: 0 auto;
+}
+
+.abaV2Qr > img:first-of-type {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.abaV2Mark {
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 15.24% !important;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #ffffff;
+  padding: 2px;
+  pointer-events: none;
+}
+
+.abaV2Footer {
+  padding-bottom: 24px;
+  background: #ffffff;
+}
+
+.abaV2Scan {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  color: #172638;
+}
+
+.abaV2Scan b {
+  color: #172638;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.abaV2Scan span {
+  color: #172638;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.abaV2Download {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 8px;
+  padding: 6px 0;
+  background: transparent;
+  border: 0;
+  color: #00bcd4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.abaV2Download:hover,
+.abaV2Download:focus-visible {
+  color: #0097a7;
+  text-decoration: underline;
+  outline: none;
+}
+
+.abaV2Footer p {
+  max-width: 280px;
+  margin: 6px auto 0;
+  color: #888888;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.abaV2Unavailable {
+  display: grid;
+  min-height: 250px;
+  place-content: center;
+  justify-items: center;
+  gap: 13px;
+  padding: 24px;
+  text-align: center;
+}
+
+.abaV2Unavailable strong {
+  color: #172638;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.abaV2Unavailable span {
+  color: #68737b;
+  font-size: 13px;
+}
+
+.abaV2Unavailable button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #ed1c24;
+  color: #ffffff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.abaV2Unavailable button + button {
+  background: #233039;
+}
+
+.abaV2Success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 48px 28px;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #171717;
+  text-align: center;
+}
+
+.abaV2Success > svg {
+  color: #168454;
+}
+
+.abaV2Success h3 {
+  margin: 0;
+  color: #171717;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.abaV2Success p {
+  margin: 0;
+  color: #5f636b;
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .abaV2Overlay {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .abaV2Card {
+    width: 100%;
+    max-height: 100dvh;
+    border: 0;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .abaV2Header {
+    height: 64px;
+  }
+
+  .abaV2Header:after {
+    bottom: -18px;
+    border-width: 18px 0 0 18px;
+  }
+
+  .abaV2Header > img {
+    width: 108px;
+    height: 28px;
+  }
+
+  .abaV2Body {
+    padding: 22px 20px max(14px, env(safe-area-inset-bottom, 14px));
+  }
+
+  .abaV2Payee strong {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .abaV2Payee span {
+    margin-top: 2px;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .abaV2Payee time {
+    gap: 7px;
+    font-size: 12px;
+  }
+
+  .abaV2Divider {
+    margin: 12px -20px 14px;
+  }
+
+  .abaV2Qr {
+    width: min(62vw, 220px);
+  }
+
+  .abaV2Scan {
+    gap: 1px;
+    margin-top: 8px;
+  }
+
+  .abaV2Scan b {
+    font-size: 14px;
+  }
+
+  .abaV2Download {
+    margin-top: 3px;
+    padding: 6px 0;
+    font-size: 14px;
+  }
+
+  .abaV2Footer p {
+    margin-top: 3px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 600px) and (max-height: 650px) {
+  .abaV2Qr {
+    width: min(56vw, 190px);
+  }
+
+  .abaV2Body {
+    padding-top: 20px;
+  }
+
+  .abaV2Divider {
+    margin-top: 9px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .abaV2Card {
+    transition: none;
+  }
+
+  .abaV2Loading {
+    animation: none;
+  }
+}
