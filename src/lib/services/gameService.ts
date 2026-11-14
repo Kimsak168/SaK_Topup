@@ -147,10 +147,9 @@ export const getGameBySupplierAndCode = cache(async (
     const targetSupplier = matched?.supplier || (
       (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
       : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
-      : ["pubgm", "pubg-mobile"].includes(code) ? (matched?.supplier || "g2bulk")
+      : ["pubgm", "pubg-mobile"].includes(code) ? (matched?.supplier || "webbuilder")
       : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
-      : (code === "roblox" || code === "robux") ? "g2bulk"
-      : supplier
+      : "webbuilder"
     );
     if (!["g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
     if (targetSupplier !== supplier || raw !== code) {

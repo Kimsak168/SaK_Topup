@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ supplie
     return NextResponse.json({
       success: true,
       rows: rows.slice(start, start + limit),
-      mappingState: supplierId === "webbuilder" ? "game-only" : supplierId === "g2bulk" ? "game-catalog-present-smm-catalog-not-mapped" : games.length > 0 ? "game-and-smm" : "smm-only",
+      mappingState: supplierId === "webbuilder" ? "game-only" : games.length > 0 ? "game-and-smm" : "smm-only",
       pagination: { page, limit, total: rows.length, totalPages: Math.ceil(rows.length / limit) },
     });
   } catch {

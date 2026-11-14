@@ -8,7 +8,7 @@ import SmmDepositModal from "@/components/admin/SmmDepositModal";
 
 type BalanceSnapshot = { walletId: string; amount: string; currency: string; source: "live" | "manual"; freshness: "live" | "cached" | "manual"; checkedAt: string };
 type SupplierAccount = {
-  id: "vngzz2" | "g2bulk" | "webbuilder";
+  id: "vngzz2" | "webbuilder";
   displayName: string;
   enabled: boolean;
   baseUrl: string;
@@ -167,7 +167,6 @@ export default function AdminSuppliersPage() {
             </div>
 
             <div className="flex flex-wrap gap-1.5">{account.capabilities.map(capability => <span key={capability} className="rounded-full bg-slate-800 px-2 py-1 text-[10px] uppercase tracking-wide text-slate-300">{capability}</span>)}
-              {account.id === "g2bulk" && <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[10px] text-amber-200">SMM API documented; catalog mapping pending</span>}
               {account.id === "webbuilder" && <span className="rounded-full bg-slate-700 px-2 py-1 text-[10px] text-slate-300">Game-only</span>}
             </div>
 

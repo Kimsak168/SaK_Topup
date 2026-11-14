@@ -248,33 +248,13 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
  * Preserves existing admin customizations (images, descriptions, selling prices, active states).
  */
 export async function syncGamesFromSuppliers(options: { supplier?: "webbuilder" | "vngzz2" | "g2bulk" } = {}): Promise<FullSyncResult["games"]> {
-  if (options.supplier === "vngzz2") {
-    // VNGZZ2 game top-up sync is discontinued; VNGZZ2 is used exclusively for SMM services & ABA PayWay payment gateway.
+  if (options.supplier === "vngzz2" || options.supplier === "g2bulk") {
     return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, emptyVngzzStats(), emptyG2BulkStats());
   }
 
-  if (options.supplier === "g2bulk") {
-    const g2Stats = await syncG2BulkRobloxGame();
-    invalidateCatalogueCache();
-    return combinedStats(
-      { ...emptyVngzzStats(), supplier: "webbuilder" },
-      emptyVngzzStats(),
-      g2Stats
-    );
-  }
   const { games: webbuilderStats } = await syncWebBuilderCatalogue();
-
   const vngzzStats = emptyVngzzStats();
-
-  let g2bulkStats = emptyG2BulkStats();
-  if (options.supplier !== "webbuilder") {
-    try {
-      g2bulkStats = await syncG2BulkRobloxGame();
-    } catch (error) {
-      g2bulkStats.failed++;
-      g2bulkStats.errors.push(error instanceof Error ? error.message : "G2Bulk sync failed");
-    }
-  }
+  const g2bulkStats = emptyG2BulkStats();
 
   invalidateCatalogueCache();
   return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);
@@ -295,33 +275,13 @@ export async function syncPackagesFromSuppliers(options: {
     const selectedGame = await Game.findOne({ slug: options.gameCode }).lean();
     if (selectedGame) options = { ...options, supplier: selectedGame.supplier, gameCode: selectedGame.supplierGameCode };
   }
-  if (options.supplier === "vngzz2") {
-    // VNGZZ2 game top-up sync is discontinued; VNGZZ2 is used exclusively for SMM services & ABA PayWay payment gateway.
+  if (options.supplier === "vngzz2" || options.supplier === "g2bulk") {
     return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, emptyVngzzStats(), emptyG2BulkStats());
   }
 
-  if (options.supplier === "g2bulk" || (!options.supplier && options.gameCode === "roblox")) {
-    const g2Stats = await syncG2BulkRobloxPackages();
-    invalidateCatalogueCache();
-    return combinedStats(
-      { ...emptyVngzzStats(), supplier: "webbuilder" },
-      emptyVngzzStats(),
-      g2Stats
-    );
-  }
   const { packages: webbuilderStats } = await syncWebBuilderCatalogue({ ...options, packages: true });
-
   const vngzzStats = emptyVngzzStats();
-
-  let g2bulkStats = emptyG2BulkStats();
-  if (options.supplier !== "webbuilder" && (!options.gameCode || options.gameCode === "roblox")) {
-    try {
-      g2bulkStats = await syncG2BulkRobloxPackages();
-    } catch (error) {
-      g2bulkStats.failed++;
-      g2bulkStats.errors.push(error instanceof Error ? error.message : "G2Bulk packages sync failed");
-    }
-  }
+  const g2bulkStats = emptyG2BulkStats();
 
   invalidateCatalogueCache();
   return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);

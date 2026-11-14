@@ -42,16 +42,6 @@ export const SUPPLIERS: SupplierDefinition[] = [
     catalogModes: ["smm"],
   },
   {
-    id: "g2bulk",
-    displayName: "G2Bulk",
-    baseUrl: (process.env.G2BULK_BASE_URL || "https://api.g2bulk.com/v1").replace(/\/+$/, ""),
-    configured: Boolean(process.env.G2BULK_API_KEY?.trim()),
-    credentials: ["G2BULK_API_KEY"],
-    capabilities: ["game", "smm"],
-    balanceScopes: ["smm"],
-    catalogModes: ["game", "smm"],
-  },
-  {
     id: "webbuilder",
     displayName: "WebBuilder",
     baseUrl: (process.env.WEBBUILDER_BASE_URL || "https://webbuilderservice.dev/v1").replace(/\/+$/, ""),

@@ -372,7 +372,6 @@ export default function AdminGamesPage() {
           >
             <option value="all">All suppliers</option>
             <option value="webbuilder">WebBuilder</option>
-            <option value="g2bulk">G2Bulk</option>
           </select>
 
           {/* Visibility Filter */}

@@ -126,9 +126,10 @@ test("admin finance routes authorize before reading data and supplier identities
   });
 
   assert.deepEqual(
-    ["vngzz2", "g2bulk", "webbuilder"].filter(manager.isSupplierId),
-    ["vngzz2", "g2bulk", "webbuilder"]
+    ["vngzz2", "webbuilder"].filter(manager.isSupplierId),
+    ["vngzz2", "webbuilder"]
   );
+  assert.equal(manager.isSupplierId("g2bulk"), false);
   assert.equal(manager.isSupplierId("vizo"), false);
   assert.equal(authChecks, routeFiles.length);
   assert.equal(serviceCalls, 0);

@@ -745,7 +745,6 @@ function PackagesManagerContent() {
       <div className="admin-package-stats">
         {[
           { label: "WebBuilder", value: kpi.webbuilderPkgs, detail: `${(kpi.webbuilderConfiguredPkgs ?? 0).toLocaleString("en-US")} prices configured`, icon: Globe, tone: "sky", active: supplierFilter === "webbuilder", action: () => handleSwitchSupplier("webbuilder") },
-          { label: "G2Bulk (Roblox)", value: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs), detail: "Roblox Robux packages", icon: Package, tone: "violet", active: supplierFilter === "g2bulk", action: () => handleSwitchSupplier("g2bulk") },
           { label: "Prices configured", value: kpi.configuredPkgs, detail: "Packages with a selling price", icon: CheckCircle2, tone: "green", active: statusFilter === "configured", action: () => { setStatusFilter(previous => previous === "configured" ? "all" : "configured"); setPage(1); } },
           { label: "Needs a price", value: kpi.unconfiguredPkgs, detail: "Review before making available", icon: AlertCircle, tone: "amber", active: statusFilter === "unconfigured", action: () => { setStatusFilter(previous => previous === "unconfigured" ? "all" : "unconfigured"); setPage(1); } },
         ].map(stat => {
@@ -767,7 +766,6 @@ function PackagesManagerContent() {
           {[
             { id: "all", label: "All suppliers", count: kpi.totalPkgs, icon: Layers },
             { id: "webbuilder", label: "WebBuilder", count: kpi.webbuilderPkgs, icon: Globe },
-            { id: "g2bulk", label: "G2Bulk", count: Math.max(0, kpi.totalPkgs - kpi.webbuilderPkgs), icon: Package },
           ].map(tab => {
             const Icon = tab.icon;
             return <button key={tab.id} type="button" onClick={() => handleSwitchSupplier(tab.id)} aria-pressed={supplierFilter === tab.id} className="admin-supplier-tab"><Icon className="h-4 w-4" /><span>{tab.label}</span><small>{tab.count.toLocaleString("en-US")}</small></button>;
@@ -842,34 +840,19 @@ function PackagesManagerContent() {
             <option value="all">
               {supplierFilter === "webbuilder"
                 ? `All WebBuilder Games (${filteredGames.length})`
-                : supplierFilter === "g2bulk"
-                ? `All G2Bulk Games (${filteredGames.length})`
                 : `All Games (${availableGames.length})`}
             </option>
 
             {supplierFilter === "all" ? (
-              <>
-                <optgroup label="WebBuilder Wholesale Games">
-                  {availableGames
-                    .filter((g) => g.supplier === "webbuilder")
-                    .map((g) => (
-                      <option key={`wb:${g.code || g.slug}`} value={g.slug}>
-                        {g.name}
-                      </option>
-                    ))}
-                </optgroup>
-                {availableGames.filter((g) => g.supplier === "g2bulk").length > 0 && (
-                  <optgroup label="G2Bulk Games">
-                    {availableGames
-                      .filter((g) => g.supplier === "g2bulk")
-                      .map((g) => (
-                        <option key={`g2:${g.code || g.slug}`} value={g.slug}>
-                          {g.name}
-                        </option>
-                      ))}
-                  </optgroup>
-                )}
-              </>
+              <optgroup label="WebBuilder Wholesale Games">
+                {availableGames
+                  .filter((g) => g.supplier === "webbuilder")
+                  .map((g) => (
+                    <option key={`wb:${g.code || g.slug}`} value={g.slug}>
+                      {g.name}
+                    </option>
+                  ))}
+              </optgroup>
             ) : (
               filteredGames.map((g) => (
                 <option key={`${g.supplier}:${g.code || g.slug}`} value={g.code || g.slug}>

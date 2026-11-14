@@ -405,7 +405,6 @@ export default function AdminOrdersPage() {
             <option value="all">All Suppliers</option>
             <option value="webbuilder">WebBuilder</option>
             <option value="vngzz2">VNGZZ2</option>
-            <option value="g2bulk">G2Bulk</option>
           </select>
         </div>
       </div>
