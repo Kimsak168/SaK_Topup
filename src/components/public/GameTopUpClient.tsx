@@ -360,22 +360,10 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           window.open(tgUrl, "_blank", "noopener,noreferrer");
         }
 
-        const newOrderInfo: ActiveOrderInfo = {
-          orderNumber,
-          transactionId: data.transactionId || orderNumber,
-          amount: packageToPurchase.sellingPrice || 0,
-          packageName: packageToPurchase.name,
-          playerId: userId.trim(),
-          playerName: verifiedName || userId.trim(),
-          paymentStatus: "PENDING",
-          fulfillmentStatus: "NOT_STARTED",
-        };
-        setActiveOrder(newOrderInfo);
-        setCheckoutComplete(true);
-        toast.success("Order Created! Opening Telegram...", {
+        toast.success("Opening Telegram...", {
           id: "checkout",
           description: "Chat with admin to complete payment and receive your Robux.",
-          duration: 6000,
+          duration: 4000,
         });
       } catch {
         toast.error("Unable to create order", {
@@ -914,30 +902,21 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       </div>
 
       {/* Checkout Confirmation Modal / Alert */}
-      {checkoutComplete && activeOrder && (
+      {!isTelegramGame && checkoutComplete && activeOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl bg-white border border-[#DCFCE7] p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 shadow-xs">
-            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${isTelegramGame ? "bg-sky-50 text-[#0088CC] border border-[#0088CC]/30" : "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"}`}>
-              {isTelegramGame ? <Send className="h-8 w-8 translate-x-[-1px] translate-y-[1px]" /> : <CheckCircle2 className="h-8 w-8" />}
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
+              <CheckCircle2 className="h-8 w-8" />
             </div>
 
             <div className="space-y-1">
-              <span className={`inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isTelegramGame ? "bg-sky-50 text-[#0088CC] border border-[#0088CC]/30" : "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"}`}>
-                {isTelegramGame ? "Telegram Direct Order" : "Payment Verified"}
+              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
+                Payment Verified
               </span>
-              <h3 className="text-xl font-black text-[#172033]">
-                {isTelegramGame ? "Order Registered!" : "Top-Up Dispatched!"}
-              </h3>
+              <h3 className="text-xl font-black text-[#172033]">Top-Up Dispatched!</h3>
               <p className="text-xs text-[#64748B]">
-                {isTelegramGame ? (
-                  <>
-                    Your top-up for <strong className="text-[#0088CC]">{activeOrder.packageName}</strong> has been created. Chat on Telegram to complete your payment (ABA / Wing / Bakong) and receive your Robux!
-                  </>
-                ) : (
-                  <>
-                    Your payment for <strong className="text-[#16A34A]">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
-                  </>
-                )}
+                Your payment for{" "}
+                <strong className="text-[#16A34A]">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
               </p>
             </div>
 
@@ -967,7 +946,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </div>
 
               <div className="flex justify-between">
-                <span className="text-[#64748B] font-sans">{game.userIdLabel}:</span>
+                <span className="text-[#64748B] font-sans">Player ID:</span>
                 <span className="text-[#172033] font-bold">{activeOrder.playerId}</span>
               </div>
 
@@ -980,50 +959,30 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
               {activeOrder.playerName && (
                 <div className="flex justify-between">
-                  <span className="text-[#64748B] font-sans">Username:</span>
+                  <span className="text-[#64748B] font-sans">IGN:</span>
                   <span className="text-[#22C55E] font-sans">{activeOrder.playerName}</span>
                 </div>
               )}
 
               <div className="flex justify-between">
-                <span className="text-[#64748B] font-sans">Amount:</span>
+                <span className="text-[#64748B] font-sans">Amount Paid:</span>
                 <span className="text-[#16A34A] font-bold text-sm">
-                  ${activeOrder.amount.toFixed(2)} USD (≈ {Math.round(activeOrder.amount * 4100).toLocaleString()} KHR)
+                  ${activeOrder.amount.toFixed(2)} USD
                 </span>
               </div>
 
               <div className="flex justify-between pt-1 border-t border-[#DCFCE7]">
                 <span className="text-[#64748B] font-sans">Status:</span>
-                <span className="text-[#0088CC] font-bold font-sans">
-                  {isTelegramGame ? "PENDING (CHAT ADMIN)" : "PAID (CONFIRMED)"}
-                </span>
+                <span className="text-[#22C55E] font-bold">PAID (CONFIRMED)</span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-[#64748B] font-sans">Delivery:</span>
-                <span className="text-[#16A34A] font-sans">
-                  {isTelegramGame ? "Roblox Send (Safe & Fast)" : "Automated Direct API"}
-                </span>
+                <span className="text-[#16A34A] font-sans">Automated Direct API</span>
               </div>
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
-              {isTelegramGame && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const khrAmount = Math.round((activeOrder.amount || 0) * 4100).toLocaleString();
-                    const tgMessage = `🛒 TOP-UP ORDER - ROBLOX SEND\n━━━━━━━━━━━━━━━━━━\nStore: ASURA Store\nOrder ID: ${activeOrder.orderNumber}\nGame: Roblox (Robux Send)\nRoblox Username: ${activeOrder.playerId}\nPackage: ${activeOrder.packageName}\nPrice: $${(activeOrder.amount || 0).toFixed(2)} USD (≈ ${khrAmount} KHR)\nPayment: ABA / Wing / Bakong\n━━━━━━━━━━━━━━━━━━\nHello admin! I want to top up Robux Send for this account.`;
-                    const tgBase = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
-                    const tgUrl = `${tgBase}${tgBase.includes("?") ? "&" : "?"}text=${encodeURIComponent(tgMessage)}`;
-                    window.open(tgUrl, "_blank", "noopener,noreferrer");
-                  }}
-                  className="w-full rounded-xl bg-[#0088CC] hover:bg-[#0077B5] active:bg-[#006699] py-3 text-xs font-bold text-white transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <Send className="h-4 w-4" />
-                  <span>Open Telegram Chat Again</span>
-                </button>
-              )}
               <Link
                 href={`/orders?orderNumber=${encodeURIComponent(activeOrder.orderNumber)}`}
                 className="w-full rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] py-3 text-xs font-bold text-white transition-colors shadow-xs flex items-center justify-center gap-1.5"
