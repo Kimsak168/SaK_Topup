@@ -3,7 +3,7 @@
 export const SOCIAL_URLS = {
   facebook: process.env.NEXT_PUBLIC_FACEBOOK_URL || "",
   tiktok: process.env.NEXT_PUBLIC_TIKTOK_URL || "",
-  telegram: process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support",
+  telegram: process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/Asuratopupstore",
   discord: process.env.NEXT_PUBLIC_DISCORD_URL || "",
   youtube: process.env.NEXT_PUBLIC_YOUTUBE_URL || "",
 } as const;

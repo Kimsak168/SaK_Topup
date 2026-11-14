@@ -25,7 +25,7 @@ export default function AdminSettingsPage() {
     siteName: "Asura Store",
     siteTagline: "Official Direct Game Recharge & 24/7 Fast Delivery",
     logoUrl: "",
-    telegramSupport: "https://t.me/saksuuu_support",
+    telegramSupport: "https://t.me/Asuratopupstore",
     whatsappSupport: "",
     defaultMarginPercent: 10,
     currencyRateKHR: 4100,
@@ -211,7 +211,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={form.telegramSupport}
                 onChange={(e) => setForm({ ...form, telegramSupport: e.target.value })}
-                placeholder="https://t.me/saksuuu_support"
+                placeholder="https://t.me/Asuratopupstore"
                 className="w-full rounded-lg border border-[#243047] bg-[#151F31] px-3.5 py-2 text-sm text-[#F8FAFC] placeholder-[#64748B] focus:border-[#22C55E] focus:outline-none focus:ring-1 focus:ring-[#22C55E] font-mono text-xs"
               />
             </div>

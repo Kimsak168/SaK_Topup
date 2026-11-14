@@ -164,7 +164,7 @@ function OrderTrackingContent() {
                 No top-up record matched &quot;{submittedQuery}&quot;. Please verify your Player ID or Order Number, or contact our 24/7 support.
               </p>
               <Link
-                href="https://t.me/saksuuu_support"
+                href={process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/Asuratopupstore"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs font-bold text-[#16A34A] hover:text-[#22C55E] underline underline-offset-4"

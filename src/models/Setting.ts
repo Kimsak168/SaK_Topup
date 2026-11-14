@@ -36,7 +36,7 @@ const SettingSchema = new Schema<ISetting>(
     },
     telegramSupport: {
       type: String,
-      default: "https://t.me/saksuuu_support",
+      default: "https://t.me/Asuratopupstore",
     },
     whatsappSupport: {
       type: String,

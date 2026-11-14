@@ -11,7 +11,7 @@ const DEFAULT_SETTINGS = {
   siteName: "Asura Store",
   siteTagline: "Official Direct Game Recharge & 24/7 Fast Delivery",
   logoUrl: "",
-  telegramSupport: "https://t.me/saksuuu_support",
+  telegramSupport: "https://t.me/Asuratopupstore",
   whatsappSupport: "",
   defaultMarginPercent: 10,
   currencyRateKHR: 4100,

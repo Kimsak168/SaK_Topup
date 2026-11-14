@@ -358,7 +358,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
         const khrAmount = Math.round((packageToPurchase.sellingPrice || 0) * 4100).toLocaleString();
         const tgMessage = `🛒 TOP-UP ORDER - ROBLOX SEND\n━━━━━━━━━━━━━━━━━━\nStore: ASURA Store\nOrder ID: ${orderNumber}\nGame: Roblox (Robux Send)\nRoblox Username: ${userId.trim()}\nPackage: ${packageToPurchase.name}\nPrice: $${(packageToPurchase.sellingPrice || 0).toFixed(2)} USD (≈ ${khrAmount} KHR)\nPayment: ABA / Wing / Bakong\n━━━━━━━━━━━━━━━━━━\nHello admin! I want to top up Robux Send for this account.`;
 
-        const tgBase = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
+        const tgBase = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/Asuratopupstore";
         const tgUrl = `${tgBase}${tgBase.includes("?") ? "&" : "?"}text=${encodeURIComponent(tgMessage)}`;
 
         if (typeof window !== "undefined") {
@@ -719,7 +719,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                           Order via Telegram (Roblox Send)
                         </span>
                         <span className="inline-flex items-center rounded-full bg-[#0088CC]/10 px-2 py-0.5 text-[10px] font-bold text-[#0088CC]">
-                          @ASURA store
+                          @Asuratopupstore
                         </span>
                       </span>
                       <span className="mt-1 block text-xs text-muted-foreground leading-relaxed">
@@ -805,7 +805,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <div className="topup-summary-row">
                 <span className="topup-summary-label">Payment</span>
                 <span className="topup-summary-value font-bold">
-                  {isTelegramGame ? "Telegram Chat (@ASURA store)" : "KHQR (ABA PayWay)"}
+                  {isTelegramGame ? "Telegram Chat (@Asuratopupstore)" : "KHQR (ABA PayWay)"}
                 </span>
               </div>
             </div>
