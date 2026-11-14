@@ -870,7 +870,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               ) : isTelegramGame ? (
                 <>
                   <Send className="h-4 w-4" />
-                  <span>Chat on Telegram to Top Up</span>
+                  <span>ទាក់ទង Telegram ដើម្បីទិញ Robux</span>
                 </>
               ) : (
                 <>
@@ -908,7 +908,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           {isCheckingOut ? (
             <><RefreshCw aria-hidden="true" className="topup-mobile-payment-spinner" /><span>Processing</span></>
           ) : isTelegramGame ? (
-            <><Send aria-hidden="true" className="h-4 w-4 inline mr-1" /><span>Chat Telegram</span></>
+            <><Send aria-hidden="true" className="h-4 w-4 inline mr-1" /><span>ទាក់ទង Telegram</span></>
           ) : (
             <><span>Payment</span><ArrowRight aria-hidden="true" /></>
           )}
