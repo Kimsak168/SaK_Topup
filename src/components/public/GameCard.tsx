@@ -84,6 +84,13 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           >
             Coming Soon
           </span>
+        ) : game.badge ? (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-[#B54779] px-2 py-0.5 border border-pink-200/75 shadow-md backdrop-blur-md text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white"
+          >
+            {game.badge}
+          </span>
         ) : (
           /* Water Festival festive badge sticker */
           <span
@@ -118,15 +125,19 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         />
       </div>
 
-      <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
+      <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon || game.badge ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
         <h3 className="line-clamp-2 w-full min-w-0 text-center text-[12px] leading-4 font-semibold wrap-anywhere text-[#172033] sm:text-[14px] sm:leading-5">
           {game.name}
         </h3>
-        {isComingSoon && (
+        {isComingSoon ? (
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
             Coming Soon
           </span>
-        )}
+        ) : game.badge ? (
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
+            {game.badge}
+          </span>
+        ) : null}
       </div>
     </StorefrontLink>
   );

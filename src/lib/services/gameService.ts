@@ -43,7 +43,7 @@ const CURRENT_GAME_COVER_ART: Record<string, string> = {
   "webbuilder-mlbb-br": "/images/mlbb/mlbb_br.webp?v=2026",
   "webbuilder-mlbb-special": "/images/mlbb/mlbb_special.webp?v=2026",
   "pubg-mobile": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4f/8d/38/4f8d3800-68b5-1c53-b0f7-7d46bda6a394/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/512x512bb.jpg",
-  roblox: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/68/66/b0/6866b035-efb2-9a39-c8aa-21c60dec2a0a/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
+  roblox: "/images/roblox.webp",
   "8-ball-pool": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/64/0c/3d/640c3d70-3a45-da59-3aa1-5e13eccdf116/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "blood-strike": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b8/a4/e7/b8a4e7ad-660b-a456-77de-1b2f5c4a9b6a/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg",
   "magic-chess-gogo": "/images/magic-chess.webp?v=2026",

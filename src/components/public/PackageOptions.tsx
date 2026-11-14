@@ -213,6 +213,7 @@ export const PackageOptions = memo(function PackageOptions({
       : packages.some(p => p.customImage?.includes("mlbb-diamond") || p.id?.toLowerCase().includes("mlbb") || p.supplierProductCode?.toLowerCase().includes("mlbb"))
   );
   const isFreeFire = Boolean(gameSlug && /free-?fire/i.test(gameSlug));
+  const isRoblox = Boolean((gameSlug && /roblox/i.test(gameSlug)) || /robux/i.test(currencyName || ""));
 
   const gameKind: "pubg" | "hok" | "mlbb" | "freefire" | "other" = isPubg
     ? "pubg"
@@ -226,6 +227,8 @@ export const PackageOptions = memo(function PackageOptions({
 
   const defaultCurrencyImage = isMlbbGame
     ? "/images/mlbb-diamond.webp"
+    : isRoblox
+    ? "/images/robux-coin.webp"
     : isPubg || isHok
     ? undefined
     : DEFAULT_DIAMOND_IMAGE;
@@ -234,6 +237,8 @@ export const PackageOptions = memo(function PackageOptions({
     ? "UC"
     : isHok
     ? "Tokens"
+    : isRoblox
+    ? "Robux"
     : isFreeFire || isMlbbGame || /diamonds?/i.test(currencyName)
     ? "Diamonds"
     : currencyName || "Currency";
@@ -244,6 +249,7 @@ export const PackageOptions = memo(function PackageOptions({
     const currencyPackages: ClientPackage[] = [];
 
     const isSpecialPackage = (pkg: ClientPackage): boolean => {
+      if (isRoblox) return false;
       if (pkg.group === "special" || pkg.category === "special") return true;
 
       const visibleName = (pkg.name || pkg.diamondsOrPoints || "").trim();
@@ -264,7 +270,7 @@ export const PackageOptions = memo(function PackageOptions({
         return !isToken;
       }
 
-      const diamondName = /\bdiamonds?\b/i.test(visibleName) || /^\d[\d,\s]*$/.test(visibleName);
+      const diamondName = /\bdiamonds?\b/i.test(visibleName) || /\brobux\b/i.test(visibleName) || /^\d[\d,\s]*$/.test(visibleName);
       return !diamondName;
     };
 
@@ -277,7 +283,7 @@ export const PackageOptions = memo(function PackageOptions({
     }
 
     return { validPackages, specialPackages, currencyPackages };
-  }, [packages, isPubg, isHok]);
+  }, [packages, isPubg, isHok, isRoblox]);
 
   const eagerSpecialCount = Math.min(specialPackages.length, 3);
   const renderPackageCard = (pkg: ClientPackage, isCurrency: boolean, loadImageEagerly: boolean) => (
@@ -328,7 +334,7 @@ export const PackageOptions = memo(function PackageOptions({
           {currencyPackages.length > 0 && (
             <div className="space-y-2 sm:space-y-3">
               <div className={`flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#C084FC] ${specialPackages.length > 0 ? "border-t border-[#2E1F45] pt-3.5" : ""}`}>
-                {isPubg || isHok ? (
+                {isPubg || isHok || isRoblox ? (
                   <Coins className="h-4 w-4 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
                 ) : (
                   <Zap className="h-4 w-4 text-[#C084FC] drop-shadow-[0_0_8px_rgba(192,132,252,0.6)]" />

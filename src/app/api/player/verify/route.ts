@@ -115,6 +115,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (gameIdentifier === "roblox" || gameIdentifier === "robux") {
+      return respond({
+        success: true,
+        isValid: true,
+        playerName: cleanUserId,
+        message: "Roblox username confirmed",
+      });
+    }
+
     const isFreeFire =
       gameIdentifier.includes("freefire") ||
       gameIdentifier === "ff" ||

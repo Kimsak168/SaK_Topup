@@ -18,6 +18,8 @@ import {
   Check,
   Copy,
   QrCode,
+  Send,
+  MessageCircle,
 } from "lucide-react";
 import { ClientGame, ClientPackage } from "@/types/game";
 import { PackageOptions } from "./PackageOptions";
@@ -95,10 +97,12 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const [paywayV2ModalData, setPaywayV2ModalData] = useState<AbaPayWayV2ModalData | null>(null);
   const [isPaywayV2Open, setIsPaywayV2Open] = useState(false);
 
+  const isTelegramGame = game.slug === "roblox" || game.code === "roblox";
+
   const isAccountReady = Boolean(userId.trim()) &&
     (!game.requiresServer || Boolean(serverId.trim())) &&
     !verifying &&
-    (verifyStatusType === "success" || verifyStatusType === "unsupported" || verifyStatusType === "unavailable");
+    (isTelegramGame || verifyStatusType === "success" || verifyStatusType === "unsupported" || verifyStatusType === "unavailable");
   const selectedTotal = selectedPackage?.sellingPrice ?? null;
   const selectedSubtotal = selectedPackage && selectedPackage.originalPrice !== null && selectedPackage.originalPrice > (selectedTotal ?? 0)
     ? selectedPackage.originalPrice
@@ -319,6 +323,72 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     checkoutPendingRef.current = true;
     setIsCheckingOut(true);
 
+    if (isTelegramGame) {
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gameSlug: game.slug || game.code,
+            supplier: game.supplier,
+            supplierProductCode: packageToPurchase.supplierProductCode || packageToPurchase.id,
+            playerId: userId.trim(),
+            playerName: verifiedName || userId.trim(),
+            paymentMethod: "manual",
+          }),
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          toast.error("Unable to create order", {
+            id: "checkout",
+            description: data?.error || "Please try again or contact support.",
+          });
+          return;
+        }
+
+        const orderNumber = data.orderNumber;
+        const khrAmount = Math.round((packageToPurchase.sellingPrice || 0) * 4100).toLocaleString();
+        const tgMessage = `🛒 TOP-UP ORDER - ROBLOX SEND\n━━━━━━━━━━━━━━━━━━\nStore: ASURA Store\nOrder ID: ${orderNumber}\nGame: Roblox (Robux Send)\nRoblox Username: ${userId.trim()}\nPackage: ${packageToPurchase.name}\nPrice: $${(packageToPurchase.sellingPrice || 0).toFixed(2)} USD (≈ ${khrAmount} KHR)\nPayment: ABA / Wing / Bakong\n━━━━━━━━━━━━━━━━━━\nHello admin! I want to top up Robux Send for this account.`;
+
+        const tgBase = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
+        const tgUrl = `${tgBase}${tgBase.includes("?") ? "&" : "?"}text=${encodeURIComponent(tgMessage)}`;
+
+        if (typeof window !== "undefined") {
+          window.open(tgUrl, "_blank", "noopener,noreferrer");
+        }
+
+        const newOrderInfo: ActiveOrderInfo = {
+          orderNumber,
+          transactionId: data.transactionId || orderNumber,
+          amount: packageToPurchase.sellingPrice || 0,
+          packageName: packageToPurchase.name,
+          playerId: userId.trim(),
+          playerName: verifiedName || userId.trim(),
+          paymentStatus: "PENDING",
+          fulfillmentStatus: "NOT_STARTED",
+        };
+        setActiveOrder(newOrderInfo);
+        setCheckoutComplete(true);
+        toast.success("Order Created! Opening Telegram...", {
+          id: "checkout",
+          description: "Chat with admin to complete payment and receive your Robux.",
+          duration: 6000,
+        });
+      } catch {
+        toast.error("Unable to create order", {
+          id: "checkout",
+          description: "Check your connection and try again.",
+        });
+      } finally {
+        checkoutPendingRef.current = false;
+        setIsCheckingOut(false);
+      }
+      return;
+    }
+
     // Instant modal display for zero perceived wait time
     setPaywayV2ModalData({
       orderNumber: "",
@@ -509,7 +579,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-4">
-              <div>
+              <div className={!game.requiresServer ? "sm:col-span-2" : ""}>
                 <label htmlFor="player-id" className="block text-xs font-semibold text-[#172033] mb-1">
                   {game.userIdLabel} <span className="text-[#16A34A]">*</span>
                 </label>
@@ -529,7 +599,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                     setVerifyError(null);
                     setVerifyStatusType(null);
                   }}
-                  placeholder="Enter Player ID"
+                  placeholder={isTelegramGame ? "Enter your Roblox Username (e.g. Player123)" : `Enter ${game.userIdLabel}`}
                   aria-invalid={Boolean(fieldErrors.userId || (verifyError && verifyStatusType === "invalid"))}
                   aria-describedby={fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "player-id-error" : undefined}
                   className={`h-11 w-full rounded-xl border bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus-visible:outline-none focus:ring-2 transition-all font-mono shadow-xs ${fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "border-rose-300 focus:border-rose-400 focus:ring-rose-200" : "border-[#DCFCE7] focus:border-[#22C55E] focus:ring-[#22C55E]/20"}`}
@@ -592,7 +662,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                 ) : (
                   <>
                     <ShieldCheck className="h-3.5 w-3.5" />
-                    <span>Verify Player</span>
+                    <span>{isTelegramGame ? "Confirm Username" : "Verify Player"}</span>
                   </>
                 )}
               </button>
@@ -623,32 +693,64 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             <div className="flex flex-wrap items-center justify-between gap-2.5">
               <div className="topup-step-title">
                 <span className="topup-step-number">3</span>
-                <h2 className="text-sm sm:text-base font-bold">Payment method</h2>
+                <h2 className="text-sm sm:text-base font-bold">
+                  {isTelegramGame ? "Order & Payment Method" : "Payment method"}
+                </h2>
               </div>
-              <span className="text-xs font-semibold text-[#64748B]">Scan & Pay</span>
+              <span className="text-xs font-semibold text-[#64748B]">
+                {isTelegramGame ? "Direct Telegram Chat" : "Scan & Pay"}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 gap-3">
-              <div
-                className="topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20 p-3 text-left transition-all"
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
-                    <Image src="/images/aba-logo.webp" alt="ABA" fill sizes="44px" quality={80} loading="lazy" className="object-cover" />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="flex items-center gap-1.5 flex-wrap">
-                      <span className="payment-method-title text-sm font-bold text-foreground">KHQR</span>
+              {isTelegramGame ? (
+                <div
+                  className="topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border border-[#0088CC] bg-sky-50/60 ring-2 ring-[#0088CC]/25 p-3 sm:p-4 text-left transition-all"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#0088CC] text-white shadow-xs">
+                      <Send className="h-5 w-5 text-white translate-x-[-1px] translate-y-[1px]" />
                     </span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">
-                      ABA Mobile &amp; All Cambodian Banks (KHQR)
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-1.5 flex-wrap">
+                        <span className="payment-method-title text-sm font-bold text-foreground">
+                          Order via Telegram (Roblox Send)
+                        </span>
+                        <span className="inline-flex items-center rounded-full bg-[#0088CC]/10 px-2 py-0.5 text-[10px] font-bold text-[#0088CC]">
+                          @ASURA store
+                        </span>
+                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground leading-relaxed">
+                        Chat directly to complete payment via <strong className="text-[#172033]">ABA</strong>, <strong className="text-[#172033]">Wing Bank</strong>, or <strong className="text-[#172033]">Bakong</strong> &amp; receive instant Robux Send.
+                      </span>
                     </span>
                   </span>
-                </span>
-                <span className="topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#004B87] text-white">
-                  <Check className="h-3.5 w-3.5" aria-hidden="true" />
-                </span>
-              </div>
+                  <span className="topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#0088CC] text-white">
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </div>
+              ) : (
+                <div
+                  className="topup-payment-method-option flex min-h-[76px] w-full items-center justify-between gap-3 rounded-xl border border-[#004B87] bg-sky-50/50 ring-2 ring-[#004B87]/20 p-3 text-left transition-all"
+                >
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="relative h-11 w-11 shrink-0 overflow-hidden rounded-lg bg-[#004B87]">
+                      <Image src="/images/aba-logo.webp" alt="ABA" fill sizes="44px" quality={80} loading="lazy" className="object-cover" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="flex items-center gap-1.5 flex-wrap">
+                        <span className="payment-method-title text-sm font-bold text-foreground">KHQR</span>
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        ABA Mobile &amp; All Cambodian Banks (KHQR)
+                      </span>
+                    </span>
+                  </span>
+                  <span className="topup-payment-method-check flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#004B87] text-white">
+                    <Check className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                </div>
+              )}
             </div>
           </section>
 
@@ -701,7 +803,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               <div className="topup-summary-row">
                 <span className="topup-summary-label">Payment</span>
                 <span className="topup-summary-value font-bold">
-                  KHQR (ABA PayWay)
+                  {isTelegramGame ? "Telegram Chat (@ASURA store)" : "KHQR (ABA PayWay)"}
                 </span>
               </div>
             </div>
@@ -739,9 +841,11 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               {isComingSoon
                 ? "Coming Soon — Not available for purchase yet."
                 : !isAccountReady
-                ? "Verify your account to continue."
+                ? (isTelegramGame ? "Enter your username to continue." : "Verify your account to continue.")
                 : !selectedPackage
                 ? "Choose your package to continue."
+                : isTelegramGame
+                ? "Chat directly on Telegram to complete top-up."
                 : "Continue to secure KHQR checkout."}
             </p>
 
@@ -750,12 +854,21 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               type="button"
               onClick={handleConfirmCheckout}
               disabled={!canStartCheckout}
-              className="topup-desktop-checkout w-full rounded-xl py-3 px-4 font-bold text-xs sm:text-sm text-white bg-[#16A34A] hover:bg-[#15803D] active:bg-[#15803D] disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+              className={`topup-desktop-checkout w-full rounded-xl py-3 px-4 font-bold text-xs sm:text-sm text-white ${
+                isTelegramGame
+                  ? "bg-[#0088CC] hover:bg-[#0077B5] active:bg-[#006699]"
+                  : "bg-[#16A34A] hover:bg-[#15803D] active:bg-[#15803D]"
+              } disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-xs cursor-pointer flex items-center justify-center gap-2 active:scale-98`}
             >
               {isCheckingOut ? (
                 <>
                   <RefreshCw className="h-4 w-4 animate-spin" />
                   <span>Processing Order...</span>
+                </>
+              ) : isTelegramGame ? (
+                <>
+                  <Send className="h-4 w-4" />
+                  <span>Chat on Telegram to Top Up</span>
                 </>
               ) : (
                 <>
@@ -766,9 +879,11 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </button>
 
             <div className="topup-payment-assurance flex items-center justify-center gap-1.5 pt-0.5">
-              <ShieldCheck aria-hidden="true" className="h-3.5 w-3.5 text-[#22C55E]" />
+              <ShieldCheck aria-hidden="true" className={`h-3.5 w-3.5 ${isTelegramGame ? "text-[#0088CC]" : "text-[#22C55E]"}`} />
               <span>
-                {selectedPaymentMethod === "aba_payway_v2"
+                {isTelegramGame
+                  ? "100% Secure • Safe & Fast Delivery"
+                  : selectedPaymentMethod === "aba_payway_v2"
                   ? "Official ABA PayWay Rail"
                   : "Secure KHQR Checkout"}
               </span>
@@ -782,9 +897,16 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
           <span>Total Payment</span>
           <strong>{new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(selectedTotal ?? 0)}</strong>
         </div>
-        <button type="button" onClick={handleConfirmCheckout} disabled={!canStartCheckout}>
+        <button
+          type="button"
+          onClick={handleConfirmCheckout}
+          disabled={!canStartCheckout}
+          className={isTelegramGame ? "bg-[#0088CC]! hover:bg-[#0077B5]!" : undefined}
+        >
           {isCheckingOut ? (
             <><RefreshCw aria-hidden="true" className="topup-mobile-payment-spinner" /><span>Processing</span></>
+          ) : isTelegramGame ? (
+            <><Send aria-hidden="true" className="h-4 w-4 inline mr-1" /><span>Chat Telegram</span></>
           ) : (
             <><span>Payment</span><ArrowRight aria-hidden="true" /></>
           )}
@@ -795,18 +917,27 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       {checkoutComplete && activeOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl bg-white border border-[#DCFCE7] p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 shadow-xs">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
-              <CheckCircle2 className="h-8 w-8" />
+            <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${isTelegramGame ? "bg-sky-50 text-[#0088CC] border border-[#0088CC]/30" : "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"}`}>
+              {isTelegramGame ? <Send className="h-8 w-8 translate-x-[-1px] translate-y-[1px]" /> : <CheckCircle2 className="h-8 w-8" />}
             </div>
 
             <div className="space-y-1">
-              <span className="inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
-                Payment Verified
+              <span className={`inline-block px-3 py-0.5 rounded-full text-[10px] font-extrabold uppercase ${isTelegramGame ? "bg-sky-50 text-[#0088CC] border border-[#0088CC]/30" : "bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30"}`}>
+                {isTelegramGame ? "Telegram Direct Order" : "Payment Verified"}
               </span>
-              <h3 className="text-xl font-black text-[#172033]">Top-Up Dispatched!</h3>
+              <h3 className="text-xl font-black text-[#172033]">
+                {isTelegramGame ? "Order Registered!" : "Top-Up Dispatched!"}
+              </h3>
               <p className="text-xs text-[#64748B]">
-                Your payment for{" "}
-                <strong className="text-[#16A34A]">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
+                {isTelegramGame ? (
+                  <>
+                    Your top-up for <strong className="text-[#0088CC]">{activeOrder.packageName}</strong> has been created. Chat on Telegram to complete your payment (ABA / Wing / Bakong) and receive your Robux!
+                  </>
+                ) : (
+                  <>
+                    Your payment for <strong className="text-[#16A34A]">{activeOrder.packageName}</strong> has been confirmed and queued for direct delivery.
+                  </>
+                )}
               </p>
             </div>
 
@@ -836,7 +967,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
               </div>
 
               <div className="flex justify-between">
-                <span className="text-[#64748B] font-sans">Player ID:</span>
+                <span className="text-[#64748B] font-sans">{game.userIdLabel}:</span>
                 <span className="text-[#172033] font-bold">{activeOrder.playerId}</span>
               </div>
 
@@ -849,30 +980,50 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
               {activeOrder.playerName && (
                 <div className="flex justify-between">
-                  <span className="text-[#64748B] font-sans">IGN:</span>
+                  <span className="text-[#64748B] font-sans">Username:</span>
                   <span className="text-[#22C55E] font-sans">{activeOrder.playerName}</span>
                 </div>
               )}
 
               <div className="flex justify-between">
-                <span className="text-[#64748B] font-sans">Amount Paid:</span>
+                <span className="text-[#64748B] font-sans">Amount:</span>
                 <span className="text-[#16A34A] font-bold text-sm">
-                  ${activeOrder.amount.toFixed(2)} USD
+                  ${activeOrder.amount.toFixed(2)} USD (≈ {Math.round(activeOrder.amount * 4100).toLocaleString()} KHR)
                 </span>
               </div>
 
               <div className="flex justify-between pt-1 border-t border-[#DCFCE7]">
                 <span className="text-[#64748B] font-sans">Status:</span>
-                <span className="text-[#22C55E] font-bold">PAID (CONFIRMED)</span>
+                <span className="text-[#0088CC] font-bold font-sans">
+                  {isTelegramGame ? "PENDING (CHAT ADMIN)" : "PAID (CONFIRMED)"}
+                </span>
               </div>
 
               <div className="flex justify-between">
                 <span className="text-[#64748B] font-sans">Delivery:</span>
-                <span className="text-[#16A34A] font-sans">Automated Direct API</span>
+                <span className="text-[#16A34A] font-sans">
+                  {isTelegramGame ? "Roblox Send (Safe & Fast)" : "Automated Direct API"}
+                </span>
               </div>
             </div>
 
             <div className="flex flex-col gap-2 pt-2">
+              {isTelegramGame && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const khrAmount = Math.round((activeOrder.amount || 0) * 4100).toLocaleString();
+                    const tgMessage = `🛒 TOP-UP ORDER - ROBLOX SEND\n━━━━━━━━━━━━━━━━━━\nStore: ASURA Store\nOrder ID: ${activeOrder.orderNumber}\nGame: Roblox (Robux Send)\nRoblox Username: ${activeOrder.playerId}\nPackage: ${activeOrder.packageName}\nPrice: $${(activeOrder.amount || 0).toFixed(2)} USD (≈ ${khrAmount} KHR)\nPayment: ABA / Wing / Bakong\n━━━━━━━━━━━━━━━━━━\nHello admin! I want to top up Robux Send for this account.`;
+                    const tgBase = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/saksuuu_support";
+                    const tgUrl = `${tgBase}${tgBase.includes("?") ? "&" : "?"}text=${encodeURIComponent(tgMessage)}`;
+                    window.open(tgUrl, "_blank", "noopener,noreferrer");
+                  }}
+                  className="w-full rounded-xl bg-[#0088CC] hover:bg-[#0077B5] active:bg-[#006699] py-3 text-xs font-bold text-white transition-colors shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Open Telegram Chat Again</span>
+                </button>
+              )}
               <Link
                 href={`/orders?orderNumber=${encodeURIComponent(activeOrder.orderNumber)}`}
                 className="w-full rounded-xl bg-[#16A34A] hover:bg-[#22C55E] active:bg-[#15803D] py-3 text-xs font-bold text-white transition-colors shadow-xs flex items-center justify-center gap-1.5"
