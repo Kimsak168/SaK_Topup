@@ -145,7 +145,9 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     const cleanServerId = serverId.trim();
     const nextFieldErrors: { userId?: string; serverId?: string } = {};
     if (!cleanUserId) {
-      nextFieldErrors.userId = `Enter your ${game.userIdLabel}.`;
+      nextFieldErrors.userId = isTelegramGame
+        ? "ត្រូវបញ្ចូល Roblox Username ឱ្យបានត្រឹមត្រូវ"
+        : `Enter your ${game.userIdLabel}.`;
     }
     if (game.requiresServer && !cleanServerId) {
       nextFieldErrors.serverId = `Enter your ${game.serverLabel}.`;
@@ -289,9 +291,12 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
 
   const validateCheckout = () => {
     if (!userId.trim()) {
-      setFieldErrors((current) => ({ ...current, userId: `Enter your ${game.userIdLabel}.` }));
+      const errorMsg = isTelegramGame
+        ? "ត្រូវបញ្ចូល Roblox Username ឱ្យបានត្រឹមត្រូវ"
+        : `Enter your ${game.userIdLabel}.`;
+      setFieldErrors((current) => ({ ...current, userId: errorMsg }));
       document.getElementById("player-id")?.focus();
-      toast.error(`Please provide your ${game.userIdLabel} before checking out`, { id: "checkout" });
+      toast.error(errorMsg, { id: "checkout" });
       return false;
     }
     if (game.requiresServer && !serverId.trim()) {
@@ -592,11 +597,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
                   aria-describedby={fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "player-id-error" : undefined}
                   className={`h-11 w-full rounded-xl border bg-white px-3 sm:px-4 text-xs sm:text-sm text-[#172033] placeholder:text-xs sm:placeholder:text-sm placeholder:text-[#94A3B8] focus-visible:outline-none focus:ring-2 transition-all font-mono shadow-xs ${fieldErrors.userId || (verifyError && verifyStatusType === "invalid") ? "border-rose-300 focus:border-rose-400 focus:ring-rose-200" : "border-[#DCFCE7] focus:border-[#22C55E] focus:ring-[#22C55E]/20"}`}
                 />
-                {(fieldErrors.userId || (verifyError && verifyStatusType === "invalid")) && (
+                {fieldErrors.userId ? (
                   <p id="player-id-error" role="alert" className="mt-1.5 text-xs font-medium text-rose-600">
-                    {fieldErrors.userId || verifyError}
+                    {fieldErrors.userId}
                   </p>
-                )}
+                ) : isTelegramGame ? (
+                  <p className="mt-1.5 text-xs sm:text-[13px] font-medium text-rose-500 flex items-center gap-1">
+                    <span className="text-amber-500">⚠️</span>
+                    <span>ត្រូវបញ្ចូល Roblox Username ឱ្យបានត្រឹមត្រូវ</span>
+                  </p>
+                ) : (verifyError && verifyStatusType === "invalid") ? (
+                  <p id="player-id-error" role="alert" className="mt-1.5 text-xs font-medium text-rose-600">
+                    {verifyError}
+                  </p>
+                ) : null}
               </div>
 
               {game.requiresServer && (
