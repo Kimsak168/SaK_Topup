@@ -26,8 +26,9 @@ async function main() {
     process.exit(1);
   }
 
-  await mongoose.connect(process.env.MONGODB_URI);
-  console.log("Connected to MongoDB Atlas");
+  const dbName = process.env.MONGODB_DB_NAME || "Sak_Topup";
+  await mongoose.connect(process.env.MONGODB_URI, { dbName });
+  console.log(`Connected to MongoDB Atlas database: ${dbName}`);
   const db = mongoose.connection.db;
 
   // 1. Upsert Roblox Game
@@ -97,3 +98,4 @@ main().catch(err => {
   console.error("Seed error:", err);
   process.exit(1);
 });
+
