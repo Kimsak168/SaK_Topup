@@ -1036,20 +1036,82 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   .service-page-hero__description { margin-top: 2px; font-size: 12px; line-height: 1.5; }
 }
 
-/* A soft moving light keeps every storefront game card lively. */
+@property --card-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* 1. Running Light Border Beam on every Game Card (ភ្លើងរត់តាមគែម Card) */
+.public-theme .game-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.public-theme .game-card:not([aria-hidden="true"])::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(
+    from var(--card-border-angle, 0deg) at 50% 50%,
+    transparent 0deg,
+    transparent 65deg,
+    rgba(244, 63, 94, 0.35) 78deg,
+    #F43F5E 90deg,
+    #FBBF24 95deg,
+    #FFFFFF 98deg,
+    #F43F5E 102deg,
+    #EC4899 110deg,
+    rgba(236, 72, 153, 0.35) 122deg,
+    transparent 135deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 25;
+  animation: game-card-border-run 3.8s linear infinite;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.65));
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.public-theme .game-card:nth-child(4n + 2)::before { animation-delay: -0.95s; }
+.public-theme .game-card:nth-child(4n + 3)::before { animation-delay: -1.9s; }
+.public-theme .game-card:nth-child(4n)::before { animation-delay: -2.85s; }
+
+.public-theme .game-card:hover::before {
+  opacity: 1;
+  filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 3px #FDE047);
+}
+
+@keyframes game-card-border-run {
+  0% {
+    --card-border-angle: 0deg;
+  }
+  100% {
+    --card-border-angle: 360deg;
+  }
+}
+
+/* 2. Luminous Light Sweep Across the Card Face (active on both mobile and desktop) */
 .public-theme .game-card:not([aria-hidden="true"])::after {
   position: absolute;
   z-index: 20;
   inset: 0;
   border-radius: inherit;
   background: linear-gradient(
-    112deg,
+    115deg,
     transparent 0%,
     transparent 42%,
-    color-mix(in srgb, var(--storefront-primary) 18%, transparent) 48%,
-    rgb(255 255 255 / .42) 50%,
-    color-mix(in srgb, var(--storefront-primary) 18%, transparent) 52%,
-    transparent 60%,
+    rgba(255, 255, 255, 0.14) 47%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(244, 63, 94, 0.3) 53%,
+    transparent 58%,
     transparent 100%
   );
   background-size: 260% 100%;
@@ -1057,21 +1119,63 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   content: "";
   opacity: 0;
   pointer-events: none;
-  animation: game-card-light-sweep 5.8s ease-in-out infinite;
+  animation: game-card-light-sweep 4.6s ease-in-out infinite;
 }
-.public-theme .game-card:nth-child(4n + 2)::after { animation-delay: -1.45s; }
-.public-theme .game-card:nth-child(4n + 3)::after { animation-delay: -2.9s; }
-.public-theme .game-card:nth-child(4n)::after { animation-delay: -4.35s; }
+
+.public-theme .game-card:nth-child(4n + 2)::after { animation-delay: -1.15s; }
+.public-theme .game-card:nth-child(4n + 3)::after { animation-delay: -2.3s; }
+.public-theme .game-card:nth-child(4n)::after { animation-delay: -3.45s; }
 
 @keyframes game-card-light-sweep {
-  0%, 12% { background-position: 120% 0; opacity: 0; }
-  22% { opacity: .5; }
-  62% { background-position: -35% 0; opacity: .28; }
-  74%, 100% { background-position: -35% 0; opacity: 0; }
+  0%, 15% { background-position: 120% 0; opacity: 0; }
+  25% { opacity: 0.7; }
+  58% { background-position: -30% 0; opacity: 0.35; }
+  70%, 100% { background-position: -30% 0; opacity: 0; }
 }
 
-@media (max-width: 768px), (prefers-reduced-motion: reduce) {
-  .public-theme .game-card:not([aria-hidden="true"])::after {
+/* 3. Glowing Light Ribbon Shimmer */
+.game-card-ribbon {
+  position: relative;
+  overflow: hidden;
+}
+
+.ribbon-light-shimmer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: ribbon-light-run 3s ease-in-out infinite;
+}
+
+.public-theme .game-card:nth-child(4n + 2) .ribbon-light-shimmer { animation-delay: -0.75s; }
+.public-theme .game-card:nth-child(4n + 3) .ribbon-light-shimmer { animation-delay: -1.5s; }
+.public-theme .game-card:nth-child(4n) .ribbon-light-shimmer { animation-delay: -2.25s; }
+
+@keyframes ribbon-light-run {
+  0%, 20% {
+    transform: translateX(-120%);
+  }
+  50% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(120%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-theme .game-card:not([aria-hidden="true"])::before,
+  .public-theme .game-card:not([aria-hidden="true"])::after,
+  .ribbon-light-shimmer {
     animation: none !important;
     display: none !important;
     opacity: 0 !important;
