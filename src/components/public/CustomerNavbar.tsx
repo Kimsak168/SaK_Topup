@@ -55,21 +55,49 @@ const drawerSocialLinks = [
   },
 ].filter((link): link is typeof link & { href: string } => Boolean(link.href));
 
+const FULL_BRAND_TEXT = "Asura Store";
+
 export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
   const pathname = usePathname();
   const [resolvedLogoUrl, setResolvedLogoUrl] = useState(logoUrl || undefined);
   const [activeHomeSection, setActiveHomeSection] = useState<HomeSection>("home");
-  const [brandTyping, setBrandTyping] = useState(false);
+  const [typedText, setTypedText] = useState(FULL_BRAND_TEXT);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const drawerId = useId();
   const drawerCloseRef = useRef<HTMLButtonElement>(null);
   const drawerTriggerRef = useRef<HTMLButtonElement>(null);
 
+  // Continuous looping writing (typewriter) animation for "Asura Store"
   useEffect(() => {
-    setBrandTyping(true);
-    const timer = window.setTimeout(() => setBrandTyping(false), 900);
-    return () => window.clearTimeout(timer);
-  }, []);
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting) {
+      if (typedText.length < FULL_BRAND_TEXT.length) {
+        timer = setTimeout(() => {
+          setTypedText(FULL_BRAND_TEXT.slice(0, typedText.length + 1));
+        }, 130);
+      } else {
+        // Full text visible: stay for 3.0s before erasing
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 3000);
+      }
+    } else {
+      if (typedText.length > 0) {
+        timer = setTimeout(() => {
+          setTypedText(FULL_BRAND_TEXT.slice(0, typedText.length - 1));
+        }, 60);
+      } else {
+        // Erased completely: pause 450ms then start writing again
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+        }, 450);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [typedText, isDeleting]);
 
   useEffect(() => {
     // null means the server successfully resolved the existing default logo.
@@ -212,8 +240,9 @@ export function CustomerNavbar({ logoUrl }: { logoUrl?: string | null } = {}) {
             </span>
           </span>
           <span aria-hidden="true" className={styles.wordmark}>
-            <span className={`${styles.wordmarkText} ${brandTyping ? styles.wordmarkTyping : ""}`}>
-              Asura Store
+            <span className={styles.wordmarkText}>
+              {typedText}
+              <span className={styles.caret} aria-hidden="true">|</span>
             </span>
             <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-sky-500/40 bg-gradient-to-r from-sky-500/15 via-blue-500/15 to-amber-500/15 px-2 py-0.5 text-[10px] font-extrabold tracking-wider text-sky-700 dark:text-sky-300 shadow-sm ml-2 align-middle">
               <span className="text-xs leading-none">🚣‍♂️</span>

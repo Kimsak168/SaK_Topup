@@ -53,8 +53,9 @@
 }
 
 .wordmark {
-  display: inline-block;
-  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  min-width: 140px;
   font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 21px;
   font-weight: 750;
@@ -63,51 +64,32 @@
 }
 
 .wordmarkText {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   white-space: nowrap;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(
-    110deg,
-    #9D174D 0%,
-    #BE185D 18%,
-    #F43F5E 36%,
-    #FDE047 48%,
-    #FFFFFF 51%,
-    #FDE047 54%,
-    #EC4899 64%,
-    #BE185D 82%,
-    #9D174D 100%
-  );
-  background-size: 260% 100%;
-  background-position: 100% 50%;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--storefront-primary, #BE185D);
+  background-image: linear-gradient(135deg, #BE185D 0%, #EC4899 50%, #9D174D 100%);
   background-clip: text;
   -webkit-background-clip: text;
-  animation: asura-running-light 2.8s linear infinite;
-  filter: drop-shadow(0 0 1px rgba(244, 63, 94, 0.35));
-  will-change: background-position;
+  -webkit-text-fill-color: transparent;
 }
 
-.brand:hover .wordmarkText {
-  animation-duration: 1.6s;
-  filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.65)) drop-shadow(0 0 12px rgba(236, 72, 153, 0.4));
+.caret {
+  display: inline-block;
+  margin-left: 1.5px;
+  color: #EC4899;
+  font-weight: 300;
+  font-size: 0.95em;
+  animation: caret-blink 0.8s steps(2, start) infinite;
+  user-select: none;
+  -webkit-text-fill-color: #EC4899;
 }
 
-.wordmarkTyping {
-  animation: type-saksuuu 820ms steps(11, end) both, asura-running-light 2.8s linear infinite;
-}
-
-@keyframes type-saksuuu {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0 0 0 0); }
-}
-
-@keyframes asura-running-light {
-  0% {
-    background-position: 130% 50%;
-  }
-  100% {
-    background-position: -130% 50%;
+@keyframes caret-blink {
+  to {
+    visibility: hidden;
   }
 }
 
@@ -475,13 +457,12 @@
 
   .brand { gap: 5px; }
   .logo { width: 44px; height: 44px; }
-  .wordmark { font-size: 15px; }
+  .wordmark { font-size: 15px; min-width: 96px; }
   .primaryNav { display: none; }
   .navLink { min-height: 42px; padding-inline: 4px; font-size: 13px; }
   .navLink::after { bottom: 2px; }
   .navLinkActive::after { right: 4px; left: 4px; }
   .actions { gap: 6px; }
-  .wordmarkText { animation: asura-running-light 2.8s linear infinite; }
   .searchButton { display: none; }
   .telegramButton { display: inline-flex; }
   .searchButton,
