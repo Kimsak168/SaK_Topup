@@ -5,7 +5,6 @@ import { StorefrontLink } from "./StorefrontLink";
 import Image from "next/image";
 import { toast } from "sonner";
 import { ClientGame } from "@/types/game";
-import { SpiderWebSvg, getHalloweenSticker } from "./HalloweenAccents";
 
 interface GameCardProps {
   game: ClientGame;
@@ -40,7 +39,6 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
   const imgSrc = failedImage === imageSource || failedImageSources.has(imageSource)
     ? FALLBACK_IMAGE
     : imageSource;
-  const sticker = getHalloweenSticker(game.id || game.slug || game.name);
   const isComingSoon = game.badge?.trim().toUpperCase().replace(/[\s-]+/g, "_") === "COMING_SOON";
 
   return (
@@ -74,48 +72,6 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
       className={`game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-[#FDF2F8] outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_22px_-4px_rgba(249,115,22,0.3)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
       <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
-        {/* Water Festival corner ripple */}
-        <SpiderWebSvg className="pointer-events-none absolute -top-0.5 -left-0.5 size-7 sm:size-9 text-white/60 z-20 drop-shadow-sm transition-opacity duration-300 group-hover:text-sky-200/90" />
-
-        {/* Light Ribbon Badge */}
-        {isComingSoon ? (
-          <div
-            aria-hidden="true"
-            className="game-card-ribbon pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center rounded-full bg-gradient-to-r from-[#BE185D] via-[#DB2777] to-[#BE185D] px-2 py-0.5 border border-pink-200/85 shadow-[0_2px_8px_rgba(190,24,93,0.45)] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white"
-          >
-            <span className="relative z-10 flex items-center gap-1">
-              <span>⏳</span>
-              <span>Coming Soon</span>
-            </span>
-            <span className="ribbon-light-shimmer" />
-          </div>
-        ) : game.badge ? (
-          <div
-            aria-hidden="true"
-            className="game-card-ribbon pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#DB2777] via-[#F43F5E] to-[#BE185D] px-2 py-0.5 border border-pink-200/90 shadow-[0_2px_10px_rgba(244,63,94,0.5)] text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-white"
-          >
-            <span className="relative z-10 flex items-center gap-1">
-              <span>✨</span>
-              <span>{game.badge}</span>
-            </span>
-            <span className="ribbon-light-shimmer" />
-          </div>
-        ) : (
-          /* Water Festival festive badge sticker with Light Ribbon */
-          <div
-            aria-hidden="true"
-            className="game-card-ribbon pointer-events-none absolute top-1.5 right-1.5 z-20 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#1E1B4B]/90 via-[#312E81]/90 to-[#1E1B4B]/90 px-1.5 py-0.5 border border-sky-400/50 shadow-md shadow-sky-950/40 transition-all duration-200 group-hover:scale-105 group-hover:border-sky-300"
-          >
-            <span className="relative z-10 flex items-center gap-1">
-              <span className="text-[11px] sm:text-xs leading-none select-none">{sticker.icon}</span>
-              <span className="hidden min-[420px]:inline text-[9px] font-extrabold uppercase tracking-wider text-sky-200">
-                {sticker.label}
-              </span>
-            </span>
-            <span className="ribbon-light-shimmer" />
-          </div>
-        )}
-
         {!isLoaded && (
           <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
         )}
@@ -137,19 +93,15 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         />
       </div>
 
-      <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon || game.badge ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
+      <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
         <h3 className="line-clamp-2 w-full min-w-0 text-center text-[12px] leading-4 font-semibold wrap-anywhere text-[#172033] sm:text-[14px] sm:leading-5">
           {game.name}
         </h3>
-        {isComingSoon ? (
+        {isComingSoon && (
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
             Coming Soon
           </span>
-        ) : game.badge ? (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
-            {game.badge}
-          </span>
-        ) : null}
+        )}
       </div>
     </StorefrontLink>
   );
