@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ChevronLeft,
@@ -176,9 +177,20 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
       <div className="rounded-3xl border border-[#BBF7D0] bg-white p-6 sm:p-8 space-y-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#DCFCE7] pb-6">
           <div className="space-y-1">
-            <span className="text-[10px] uppercase font-bold text-[#64748B] tracking-wider">
-              Authoritative Order Record
-            </span>
+            <div className="flex items-center gap-2 pb-1">
+              <Image
+                src="/images/asura-store-logo.webp"
+                alt="Asura Store"
+                width={28}
+                height={28}
+                quality={90}
+                className="size-7 rounded-lg object-contain border border-pink-100 shadow-2xs"
+              />
+              <span className="text-xs font-black text-[#172033] tracking-tight">
+                Asura Store
+              </span>
+              <span className="text-[10px] text-[#64748B]">| Official Receipt</span>
+            </div>
             <div className="flex items-center gap-2">
               <h1 className="min-w-0 break-all text-2xl sm:text-3xl font-black text-[#172033] font-mono">
                 {order.orderNumber}
@@ -291,9 +303,19 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
         {/* Details Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
           <div className="public-order-details rounded-2xl bg-[#F0FDF4] border border-[#DCFCE7] p-4 space-y-2.5">
-            <h2 className="text-[11px] font-sans font-extrabold uppercase text-[#64748B] tracking-wider">
-              Product Information
-            </h2>
+            <div className="flex justify-between items-center pb-1.5 border-b border-[#DCFCE7]">
+              <span className="text-[#64748B] font-sans">Store:</span>
+              <span className="text-[#172033] font-sans font-bold flex items-center gap-1.5">
+                <Image
+                  src="/images/asura-store-logo.webp"
+                  alt=""
+                  width={16}
+                  height={16}
+                  className="size-4 rounded-sm object-contain"
+                />
+                Asura Store
+              </span>
+            </div>
             <div className="flex justify-between">
               <span className="text-[#64748B] font-sans">Game:</span>
               <span className="text-[#172033] font-sans font-bold">{order.gameName}</span>

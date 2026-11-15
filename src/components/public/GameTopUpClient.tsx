@@ -918,9 +918,31 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
       {/* Checkout Confirmation Modal / Alert */}
       {!isTelegramGame && checkoutComplete && activeOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl bg-white border border-[#DCFCE7] p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 shadow-xs">
-            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
-              <CheckCircle2 className="h-8 w-8" />
+          <div className="w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto rounded-3xl bg-white border border-[#DCFCE7] p-6 sm:p-8 space-y-5 text-center animate-in zoom-in-95 shadow-xs">
+            {/* Branded Store Header */}
+            <div className="flex items-center justify-center gap-2.5 pb-2 border-b border-emerald-100/60">
+              <div className="relative size-10 overflow-hidden rounded-xl border border-pink-200/60 bg-[#FDF2F8] shadow-2xs">
+                <Image
+                  src="/images/asura-store-logo.webp"
+                  alt="Asura Store"
+                  width={40}
+                  height={40}
+                  quality={90}
+                  className="size-full object-contain p-0.5"
+                />
+              </div>
+              <div className="text-left">
+                <span className="block text-sm font-black text-[#172033] tracking-tight">
+                  Asura Store
+                </span>
+                <span className="block text-[10px] font-semibold text-[#64748B] tracking-wider uppercase">
+                  Official Top-Up Receipt
+                </span>
+              </div>
+            </div>
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-[#22C55E] border border-[#22C55E]/30">
+              <CheckCircle2 className="h-7 w-7" />
             </div>
 
             <div className="space-y-1">
@@ -935,6 +957,20 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
             </div>
 
             <div className="public-order-details rounded-xl bg-[#F0FDF4] p-4 text-xs text-left space-y-2.5 border border-[#DCFCE7] font-mono">
+              <div className="flex justify-between items-center pb-1.5 border-b border-[#DCFCE7]">
+                <span className="text-[#64748B] font-sans">Store:</span>
+                <span className="text-[#172033] font-sans font-bold flex items-center gap-1.5">
+                  <Image
+                    src="/images/asura-store-logo.webp"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="size-4 rounded-sm object-contain"
+                  />
+                  Asura Store
+                </span>
+              </div>
+
               <div className="flex justify-between items-center">
                 <span className="text-[#64748B] font-sans">Order Number:</span>
                 <div className="flex items-center gap-1.5">
