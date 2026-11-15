@@ -67,16 +67,34 @@
   white-space: nowrap;
   color: transparent;
   -webkit-text-fill-color: transparent;
-  background-image: linear-gradient(100deg, var(--storefront-primary, #BE185D) 0%, #8F3260 52%, var(--storefront-accent, #A21D58) 100%);
-  background-size: 100% 100%;
-  background-position: 0% 50%;
+  background-image: linear-gradient(
+    110deg,
+    #9D174D 0%,
+    #BE185D 18%,
+    #F43F5E 36%,
+    #FDE047 48%,
+    #FFFFFF 51%,
+    #FDE047 54%,
+    #EC4899 64%,
+    #BE185D 82%,
+    #9D174D 100%
+  );
+  background-size: 260% 100%;
+  background-position: 100% 50%;
   background-clip: text;
   -webkit-background-clip: text;
-  animation: wordmark-color-cycle 4s linear infinite alternate;
+  animation: asura-running-light 2.8s linear infinite;
+  filter: drop-shadow(0 0 1px rgba(244, 63, 94, 0.35));
+  will-change: background-position;
+}
+
+.brand:hover .wordmarkText {
+  animation-duration: 1.6s;
+  filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.65)) drop-shadow(0 0 12px rgba(236, 72, 153, 0.4));
 }
 
 .wordmarkTyping {
-  animation: type-saksuuu 820ms steps(11, end) both, wordmark-color-cycle 4s linear infinite alternate;
+  animation: type-saksuuu 820ms steps(11, end) both, asura-running-light 2.8s linear infinite;
 }
 
 @keyframes type-saksuuu {
@@ -84,9 +102,13 @@
   to { clip-path: inset(0 0 0 0); }
 }
 
-@keyframes wordmark-color-cycle {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
+@keyframes asura-running-light {
+  0% {
+    background-position: 130% 50%;
+  }
+  100% {
+    background-position: -130% 50%;
+  }
 }
 
 .primaryNav {
@@ -459,7 +481,7 @@
   .navLink::after { bottom: 2px; }
   .navLinkActive::after { right: 4px; left: 4px; }
   .actions { gap: 6px; }
-  .wordmarkText { animation: none; background-position: 0% 50%; }
+  .wordmarkText { animation: asura-running-light 2.8s linear infinite; }
   .searchButton { display: none; }
   .telegramButton { display: inline-flex; }
   .searchButton,
