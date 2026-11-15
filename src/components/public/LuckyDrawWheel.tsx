@@ -14,6 +14,7 @@ interface LuckyDrawWheelProps {
   title?: string;
   wheelSize?: number;
   isCompact?: boolean;
+  onRequestOrderInput?: () => void;
 }
 
 // Synthesize a quick mechanical tick using Web Audio API
@@ -125,6 +126,7 @@ export function LuckyDrawWheel({
   title,
   wheelSize,
   isCompact,
+  onRequestOrderInput,
 }: LuckyDrawWheelProps) {
   const isSmall = Boolean(isCompact || (wheelSize && wheelSize < 280));
   const effectiveSize = wheelSize || (isCompact ? 256 : 336);
@@ -147,7 +149,7 @@ export function LuckyDrawWheel({
   const confettiCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const audioTickIntervalRef = useRef<number | null>(null);
 
-  // Check order eligibility or daily free spin on mount
+  // Check order eligibility on mount or when orderNumber changes
   useEffect(() => {
     let active = true;
 
@@ -174,24 +176,10 @@ export function LuckyDrawWheel({
           }
         });
     } else {
-      // Free Daily Spin mode for visitors
-      try {
-        const today = new Date().toDateString();
-        const lastSpun = localStorage.getItem("asura_last_free_spin");
-        if (lastSpun === today) {
-          setAlreadySpun(true);
-          setEligible(false);
-          const savedPrize = localStorage.getItem("asura_free_spin_prize");
-          if (savedPrize) {
-            setPrizeResult(JSON.parse(savedPrize));
-          }
-        } else {
-          setAlreadySpun(false);
-          setEligible(true);
-        }
-      } catch {
-        setEligible(true);
-      }
+      // Lucky draw is exclusive to buyers with a completed order
+      setEligible(false);
+      setAlreadySpun(false);
+      setPrizeResult(null);
       setStatusChecked(true);
     }
 
@@ -321,7 +309,25 @@ export function LuckyDrawWheel({
 
   // Handle spin action
   const handleSpin = useCallback(async () => {
-    if (spinning || alreadySpun || eligible === false) return;
+    if (spinning || alreadySpun) return;
+
+    if (!orderNumber) {
+      toast.info("Buyer Exclusive Lucky Draw", {
+        description: "Please enter your paid Order Number or complete a top-up to spin!",
+      });
+      if (onRequestOrderInput) {
+        onRequestOrderInput();
+      }
+      return;
+    }
+
+    if (eligible === false) {
+      toast.error("Not Eligible", {
+        description: "Only confirmed paid orders are eligible for the Lucky Draw.",
+      });
+      return;
+    }
+
     setSpinning(true);
 
     try {
@@ -334,15 +340,10 @@ export function LuckyDrawWheel({
       }, 140);
       audioTickIntervalRef.current = tickTimer;
 
-      const endpoint = orderNumber ? "/api/lucky-draw/spin" : "/api/lucky-draw/free-spin";
-      const payload = orderNumber
-        ? { orderNumber }
-        : { identifier: typeof window !== "undefined" ? localStorage.getItem("asura_client_id") || "guest" : "guest" };
-
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/lucky-draw/spin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ orderNumber }),
       });
       const data = await res.json();
 
@@ -356,7 +357,6 @@ export function LuckyDrawWheel({
       const targetIndex = Number(data.sliceIndex ?? 0);
       const sliceDeg = 360 / LUCKY_PRIZES.length; // 45 deg
       // Top pointer is at 270 deg. Center of slice i is (i * 45 + 22.5).
-      // Angle to place slice center at top pointer:
       const sliceCenter = targetIndex * sliceDeg + sliceDeg / 2;
       const targetDegree = 270 - sliceCenter;
       const fullRotations = 360 * 5; // 5 full exciting spins
@@ -371,16 +371,6 @@ export function LuckyDrawWheel({
         setAlreadySpun(true);
         setPrizeResult(data.prize);
         playWinSound();
-
-        // Remember free spin in localStorage
-        if (!orderNumber) {
-          try {
-            localStorage.setItem("asura_last_free_spin", new Date().toDateString());
-            localStorage.setItem("asura_free_spin_prize", JSON.stringify(data.prize));
-          } catch {
-            // ignore
-          }
-        }
 
         if (confettiCanvasRef.current) {
           triggerConfetti(confettiCanvasRef.current);
@@ -404,7 +394,7 @@ export function LuckyDrawWheel({
       setSpinning(false);
       if (audioTickIntervalRef.current) clearInterval(audioTickIntervalRef.current);
     }
-  }, [orderNumber, spinning, alreadySpun, eligible, onWin]);
+  }, [orderNumber, spinning, alreadySpun, eligible, onWin, onRequestOrderInput]);
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
@@ -445,7 +435,7 @@ export function LuckyDrawWheel({
             <h3 className={`font-extrabold tracking-tight text-[#332733] flex items-center gap-1.5 flex-wrap ${
               isSmall ? "text-[15px]" : "text-base sm:text-lg"
             }`}>
-              <span className="truncate">{title || (orderNumber ? "Order Lucky Draw Reward" : "Daily Free Lucky Spin")}</span>
+              <span className="truncate">{title || (orderNumber ? "Buyer Lucky Draw Reward" : "Buyer Lucky Draw")}</span>
               <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#FCE7F3] text-[#BE185D] border border-[#F9A8D4]/70 shrink-0">
                 100% WIN
               </span>
@@ -454,7 +444,7 @@ export function LuckyDrawWheel({
               {orderNumber ? (
                 <>Order: <span className="font-mono text-[#BE185D] font-bold">{orderNumber}</span></>
               ) : (
-                <span>🎁 1 Free Spin Daily · Win Points &amp; Coupons</span>
+                <span>🎁 Free Fire &amp; MLBB Weekly Passes &amp; Diamonds</span>
               )}
             </p>
           </div>
@@ -513,7 +503,7 @@ export function LuckyDrawWheel({
           <button
             type="button"
             onClick={handleSpin}
-            disabled={spinning || alreadySpun || eligible === false}
+            disabled={spinning || alreadySpun || (Boolean(orderNumber) && eligible === false)}
             className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 rounded-full border-[3px] border-white font-black uppercase tracking-wider shadow-[0_6px_18px_rgba(51,39,51,0.38)] flex flex-col items-center justify-center transition-all ${
               isSmall ? "size-[52px] text-[10px]" : "size-[68px] text-xs"
             } ${
@@ -521,6 +511,8 @@ export function LuckyDrawWheel({
                 ? "bg-gradient-to-b from-[#EC4899] to-[#BE185D] text-white scale-95 opacity-90 cursor-not-allowed"
                 : alreadySpun
                 ? "bg-gradient-to-b from-[#4B394B] to-[#332733] text-white/95 cursor-not-allowed"
+                : Boolean(orderNumber) && eligible === false
+                ? "bg-gradient-to-b from-[#705B68] to-[#4B394B] text-white/80 cursor-not-allowed"
                 : "bg-gradient-to-b from-[#F472B6] via-[#DB2777] to-[#9D174D] text-white hover:scale-105 active:scale-95 cursor-pointer ring-4 ring-pink-300/40"
             }`}
           >
@@ -528,6 +520,11 @@ export function LuckyDrawWheel({
               <RotateCcw className={`${isSmall ? "size-4" : "size-5"} animate-spin`} />
             ) : alreadySpun ? (
               <span className="text-[10px] font-extrabold tracking-wide leading-tight">DONE</span>
+            ) : !orderNumber ? (
+              <>
+                <span className="leading-none">SPIN</span>
+                <span className="text-[7.5px] font-bold text-pink-100 mt-0.5">NOW</span>
+              </>
             ) : (
               <>
                 <span className="leading-none">SPIN</span>
@@ -574,13 +571,16 @@ export function LuckyDrawWheel({
         <div className="relative z-10 mt-2 text-xs font-medium text-[#705B68]">
           {orderNumber
             ? "This order has already redeemed its Lucky Spin."
-            : "You used today's free spin! Come back tomorrow or top up to spin again."}
+            : "This order has already been spun."}
+        </div>
+      ) : !orderNumber ? (
+        <div className="relative z-10 mt-2 text-xs text-[#BE185D] font-semibold flex items-center justify-center gap-1.5">
+          <Gift className="size-3.5 text-[#DB2777]" />
+          <span>Exclusive for Top-Up Clients · Enter Order # below to spin</span>
         </div>
       ) : statusChecked && eligible === false ? (
         <div className="relative z-10 mt-2 text-xs text-[#BE185D] font-semibold">
-          {orderNumber
-            ? "Complete payment first to unlock your free Lucky Spin!"
-            : "Free spin unavailable right now."}
+          Complete payment first to unlock your Lucky Spin!
         </div>
       ) : (
         <div className="relative z-10 mt-2 text-xs text-[#5C4754] flex items-center justify-center gap-1.5">

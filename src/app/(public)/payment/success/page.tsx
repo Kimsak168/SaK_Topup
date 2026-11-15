@@ -390,10 +390,10 @@ function SuccessContent() {
           <div className="pt-1 rounded-2xl border border-amber-400/40 bg-gradient-to-r from-amber-950/30 via-pink-950/30 to-purple-950/30 p-4 text-center space-y-2">
             <div className="flex items-center justify-center gap-1.5 text-xs font-black text-amber-300">
               <span className="text-base animate-bounce">🎁</span>
-              <span>You Unlocked 1 Lucky Draw Bonus Spin!</span>
+              <span>You Unlocked 1 Buyer Lucky Draw Spin!</span>
             </div>
             <p className="text-[11px] text-slate-300">
-              100% Win Guarantee — spin now to claim instant discount vouchers or points.
+              100% Win Guarantee — spin now to win Free Fire Weekly Membership, MLBB Weekly Diamond Pass, or bonus diamonds!
             </p>
             <button
               type="button"

@@ -45,7 +45,7 @@ export function TelegramSupportWidget() {
             onClick={handleOpenLuckyDraw}
             className={styles.luckyButton}
             aria-label="Open Lucky Draw Wheel"
-            title="កង់សំណាង · Lucky Draw (Free Daily Spin)"
+            title="កង់សំណាង · Lucky Draw (Free Fire & MLBB Weekly)"
           >
             <div className={styles.luckyIconWrapper}>
               {/* Spinning colorful wheel slices */}

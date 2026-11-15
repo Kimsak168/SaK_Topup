@@ -80,12 +80,16 @@ export async function spinOrderLuckyDraw(orderNumber: string) {
 
   // 2. Generate voucher code if applicable
   let code: string | undefined;
-  if (prize.type === "discount") {
+  if (prize.id === "ff-weekly") {
+    code = generateVoucherCode("FF-WEEKLY");
+  } else if (prize.id === "mlbb-weekly") {
+    code = generateVoucherCode("MLBB-WEEKLY");
+  } else if (prize.type === "discount") {
     code = generateVoucherCode("SAVE");
   } else if (prize.type === "diamonds") {
     code = generateVoucherCode("DIA");
-  } else if (prize.type === "views") {
-    code = generateVoucherCode("VIEWS");
+  } else if (prize.type === "pass") {
+    code = generateVoucherCode("PASS");
   }
 
   const wonPrize = {
@@ -147,7 +151,7 @@ export async function spinOrderLuckyDraw(orderNumber: string) {
     wallet.vouchers.push({
       code,
       title: prize.label,
-      type: prize.type as "discount" | "diamonds" | "views",
+      type: prize.type as "discount" | "diamonds" | "views" | "pass",
       value: prize.value,
       minSpend: prize.type === "discount" ? 0.50 : 0,
       isUsed: false,

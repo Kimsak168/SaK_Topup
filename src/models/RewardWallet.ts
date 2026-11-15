@@ -11,7 +11,7 @@ export interface IRewardTransaction {
 export interface IRewardVoucher {
   code: string;
   title: string;
-  type: "discount" | "diamonds" | "views";
+  type: "discount" | "diamonds" | "views" | "pass";
   value: number; // e.g. 0.10, 0.25, 10
   minSpend?: number;
   isUsed: boolean;
@@ -46,7 +46,7 @@ const RewardVoucherSchema = new Schema<IRewardVoucher>(
   {
     code: { type: String, required: true, trim: true, uppercase: true },
     title: { type: String, required: true },
-    type: { type: String, enum: ["discount", "diamonds", "views"], required: true },
+    type: { type: String, enum: ["discount", "diamonds", "views", "pass"], required: true },
     value: { type: Number, required: true },
     minSpend: { type: Number, default: 0 },
     isUsed: { type: Boolean, default: false },

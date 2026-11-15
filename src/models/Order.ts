@@ -90,7 +90,7 @@ export interface IOrder extends Document {
       name: string;
       label: string;
       icon: string;
-      type: "points" | "discount" | "diamonds" | "views";
+      type: "points" | "discount" | "diamonds" | "views" | "pass";
       value: number;
       code?: string;
       description?: string;

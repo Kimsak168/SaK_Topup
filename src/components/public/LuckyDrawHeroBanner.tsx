@@ -68,39 +68,77 @@ export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className={styles.bannerTitle}>
-                Lucky Draw &amp; Points Wheel
+                Free Fire &amp; MLBB Lucky Draw
               </h1>
               <span className={styles.badgeDaily}>
-                Daily Free Spin
+                Buyer Exclusive
               </span>
             </div>
             <p className={styles.bannerSubtitle}>
-              បង្វិលកង់សំណាងឈ្នះរង្វាន់ឥតគិតថ្លៃ — Free Diamonds, Discount Codes, Loyalty Points និង TikTok Views!
+              បង្វិលកង់សំណាងឈ្នះ Free Fire Weekly Membership, MLBB Weekly Diamond Pass, Diamonds និង Discount Vouchers!
             </p>
           </div>
 
           {/* 4 Prize Cards */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-            {/* Card 1: Free Diamonds */}
+            {/* Card 1: FF Weekly Membership */}
             <div className={styles.rewardCard}>
               <span
                 className={styles.cardIconBox}
                 style={{
-                  background: "rgba(56, 189, 248, 0.2)",
-                  boxShadow: "0 0 12px rgba(56, 189, 248, 0.35)",
+                  background: "rgba(239, 68, 68, 0.2)",
+                  boxShadow: "0 0 12px rgba(239, 68, 68, 0.35)",
+                }}
+              >
+                🔥
+              </span>
+              <div className="min-w-0">
+                <div className={styles.rewardCardTitle}>FF Weekly</div>
+                <div className={styles.rewardCardMeta} style={{ color: "#FCA5A5" }}>
+                  Membership
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2: MLBB Weekly Diamond Pass */}
+            <div className={styles.rewardCard}>
+              <span
+                className={styles.cardIconBox}
+                style={{
+                  background: "rgba(139, 92, 246, 0.2)",
+                  boxShadow: "0 0 12px rgba(139, 92, 246, 0.35)",
+                }}
+              >
+                👑
+              </span>
+              <div className="min-w-0">
+                <div className={styles.rewardCardTitle}>MLBB Weekly</div>
+                <div className={styles.rewardCardMeta} style={{ color: "#C4B5FD" }}>
+                  Diamond Pass
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3: Free Fire & MLBB Diamonds */}
+            <div className={styles.rewardCard}>
+              <span
+                className={styles.cardIconBox}
+                style={{
+                  background: "rgba(56, 189, 248, 0.22)",
+                  boxShadow: "0 0 12px rgba(56, 189, 248, 0.4)",
                 }}
               >
                 💎
               </span>
               <div className="min-w-0">
-                <div className={styles.rewardCardTitle}>Free Diamonds</div>
+                <div className={styles.rewardCardTitle}>Bonus Diamonds</div>
                 <div className={styles.rewardCardMeta} style={{ color: "#7DD3FC" }}>
-                  10–50 Free
+                  Up to 50 Dia
                 </div>
               </div>
             </div>
 
-            {/* Card 2: Discount Vouchers */}
+            {/* Card 4: Pass & Top-Up Vouchers */}
             <div className={styles.rewardCard}>
               <span
                 className={styles.cardIconBox}
@@ -112,47 +150,9 @@ export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
                 🎟️
               </span>
               <div className="min-w-0">
-                <div className={styles.rewardCardTitle}>Discount Codes</div>
+                <div className={styles.rewardCardTitle}>Pass Vouchers</div>
                 <div className={styles.rewardCardMeta} style={{ color: "#F472B6" }}>
-                  Up to $0.25
-                </div>
-              </div>
-            </div>
-
-            {/* Card 3: Asura Points */}
-            <div className={styles.rewardCard}>
-              <span
-                className={styles.cardIconBox}
-                style={{
-                  background: "rgba(245, 158, 11, 0.22)",
-                  boxShadow: "0 0 12px rgba(245, 158, 11, 0.4)",
-                }}
-              >
-                👑
-              </span>
-              <div className="min-w-0">
-                <div className={styles.rewardCardTitle}>100 Pts Jackpot</div>
-                <div className={styles.rewardCardMeta} style={{ color: "#FDE047" }}>
-                  Wallet Credit
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4: TikTok Views */}
-            <div className={styles.rewardCard}>
-              <span
-                className={styles.cardIconBox}
-                style={{
-                  background: "rgba(16, 185, 129, 0.2)",
-                  boxShadow: "0 0 12px rgba(16, 185, 129, 0.35)",
-                }}
-              >
-                🚀
-              </span>
-              <div className="min-w-0">
-                <div className={styles.rewardCardTitle}>TikTok Views</div>
-                <div className={styles.rewardCardMeta} style={{ color: "#6EE7B7" }}>
-                  1,000 Views
+                  Up to $0.50 OFF
                 </div>
               </div>
             </div>
@@ -170,7 +170,7 @@ export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
             </span>
             <span className={styles.trustPill}>
               <Trophy className="size-3.5 text-sky-400" />
-              <span>🎁 1 Free Spin Every Day</span>
+              <span>🎁 1 Guaranteed Spin Per Order</span>
             </span>
           </div>
         </div>
@@ -189,21 +189,18 @@ export function LuckyDrawHeroBanner({ onSpinClick }: LuckyDrawHeroBannerProps) {
             </div>
 
             <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-black text-white tracking-tight drop-shadow-md">
-                100 PTS
-              </span>
-              <span className="text-xs font-bold text-slate-300">
-                or $0.25 OFF
+              <span className="text-2xl sm:text-3xl font-black text-white tracking-tight drop-shadow-md">
+                WEEKLY PASS
               </span>
             </div>
 
             <p className="mt-2 text-xs text-slate-300 leading-relaxed">
-              Earn <strong className="text-amber-300">10 Points per \$1.00</strong> on orders + spin to win instant coupons.
+              Win <strong className="text-amber-300">Free Fire Weekly Membership</strong> or <strong className="text-purple-300">MLBB Weekly Pass</strong> on every top-up!
             </p>
 
             <div className="mt-3 flex items-center gap-2 text-[11px] font-bold text-emerald-400">
               <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>Active 24/7 for All Customers</span>
+              <span>Exclusive for Paying Clients</span>
             </div>
           </div>
 

@@ -24,12 +24,12 @@ export default function LuckyDrawPage() {
       {/* 1. Hero Showcase Banner */}
       <LuckyDrawHeroBanner />
 
-      {/* 2. Interactive Wheel - Always Visible for Visitors & Customers */}
+      {/* 2. Interactive Wheel - Buyer Exclusive */}
       <div id="wheel-section" className="pt-2 scroll-mt-28">
         <LuckyDrawWheel
           orderNumber={activeOrder || undefined}
           isOpen={true}
-          title={activeOrder ? `Order Spin: ${activeOrder}` : "Daily Free Lucky Spin"}
+          title={activeOrder ? `Order Spin: ${activeOrder}` : "Buyer Lucky Draw"}
         />
       </div>
 
@@ -37,7 +37,7 @@ export default function LuckyDrawPage() {
       <div className="lucky-draw-order-form max-w-md mx-auto rounded-3xl border border-[#F0C6DA] bg-white p-5 sm:p-6 shadow-md">
         <form onSubmit={handleSubmit} className="space-y-3">
           <label htmlFor="orderInput" className="block text-xs font-bold text-[#332733]">
-            Have a Paid Order? Enter Order Number for Bonus Spins:
+            Have a Paid Order? Enter Order Number to Unlock Spin:
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
@@ -59,7 +59,7 @@ export default function LuckyDrawPage() {
             </button>
           </div>
           <p className="text-[11px] text-[#705B68]">
-            Every paid top-up order unlocks 1 bonus spin with guaranteed rewards!
+            Every paid Free Fire &amp; MLBB top-up unlocks 1 guaranteed spin!
           </p>
         </form>
       </div>
@@ -95,7 +95,7 @@ export default function LuckyDrawPage() {
             <span>Step 1: Top Up</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Order your favorite game diamonds or social media boost via KHQR / ABA PayWay.
+            Order your Free Fire or MLBB top-up via KHQR / ABA PayWay.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function LuckyDrawPage() {
             <span>Step 3: Redeem Vouchers</span>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed">
-            Collect loyalty points and discount voucher codes to save money on future orders!
+            Redeem your Free Fire Weekly Membership, MLBB Weekly Pass, or diamond vouchers!
           </p>
         </div>
       </div>
