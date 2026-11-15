@@ -218,9 +218,9 @@
   .home-loading-icon { animation: none !important; }
   .home-checkout-link { transition: none; }
 }
-.public-theme .game-card,
+.public-theme .game-card-inner,
 .public-theme .game-card-title,
-.public-theme .game-card > div:first-child { background-color: var(--storefront-soft); }
+.public-theme .game-card-inner > div:first-child { background-color: var(--storefront-soft); }
 .public-theme .game-card {
   box-shadow: 0 3px 12px rgb(105 64 91 / .05);
   transition: translate 220ms cubic-bezier(.2, .7, .2, 1), box-shadow 220ms ease;
@@ -653,9 +653,9 @@ body:has(.public-theme) { background-color: #FFF9FC; }
 .public-theme :is(.public-button, .game-action-button):active:not(:disabled) { background-color: var(--storefront-primary-hover); background-image: linear-gradient(110deg, var(--storefront-primary-hover), var(--storefront-accent)); color: #FFFFFF; }
 .public-theme :is(.public-button, .game-action-button):disabled { background-color: var(--storefront-soft); background-image: none; }
 
-.public-theme .game-card,
+.public-theme .game-card-inner,
 .public-theme .game-card-title,
-.public-theme .game-card > div:first-child {
+.public-theme .game-card-inner > div:first-child {
   background-color: var(--storefront-soft);
 }
 .public-theme .game-card {
@@ -1036,66 +1036,57 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
   .service-page-hero__description { margin-top: 2px; font-size: 12px; line-height: 1.5; }
 }
 
-@property --card-border-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-/* 1. Running Light Border Beam on every Game Card (ភ្លើងរត់តាមគែម Card) */
-.public-theme .game-card {
-  position: relative;
-  isolation: isolate;
-}
-
-.public-theme .game-card:not([aria-hidden="true"])::before {
-  content: "";
+/* ==========================================================================
+   1. Continuous Running Light Border Beam on Every Card (ភ្លើងរត់តាមគែម Card)
+   ========================================================================== */
+.card-running-light-beam {
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  padding: 2px;
+  inset: -160%;
+  margin: auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
   background: conic-gradient(
-    from var(--card-border-angle, 0deg) at 50% 50%,
+    from 0deg,
     transparent 0deg,
-    transparent 65deg,
-    rgba(244, 63, 94, 0.35) 78deg,
-    #F43F5E 90deg,
-    #FBBF24 95deg,
-    #FFFFFF 98deg,
-    #F43F5E 102deg,
-    #EC4899 110deg,
-    rgba(236, 72, 153, 0.35) 122deg,
-    transparent 135deg,
-    transparent 360deg
+    transparent 260deg,
+    rgba(244, 63, 94, 0.25) 285deg,
+    #F43F5E 310deg,
+    #FB7185 330deg,
+    #FBBF24 345deg,
+    #FFFFFF 355deg,
+    #F43F5E 360deg
   );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
+  animation: card-running-beam-spin 3.2s linear infinite;
+  filter: drop-shadow(0 0 6px #F43F5E) drop-shadow(0 0 2px #FDE047);
   pointer-events: none;
-  z-index: 25;
-  animation: game-card-border-run 3.8s linear infinite;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 5px rgba(244, 63, 94, 0.65));
-  transition: opacity 0.3s ease, filter 0.3s ease;
+  z-index: 1;
+  will-change: transform;
 }
 
-.public-theme .game-card:nth-child(4n + 2)::before { animation-delay: -0.95s; }
-.public-theme .game-card:nth-child(4n + 3)::before { animation-delay: -1.9s; }
-.public-theme .game-card:nth-child(4n)::before { animation-delay: -2.85s; }
-
-.public-theme .game-card:hover::before {
-  opacity: 1;
-  filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.95)) drop-shadow(0 0 3px #FDE047);
+@keyframes card-running-beam-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-@keyframes game-card-border-run {
-  0% {
-    --card-border-angle: 0deg;
-  }
-  100% {
-    --card-border-angle: 360deg;
-  }
+/* Stagger animation across cards for a rhythmic wave effect */
+.storefront-grid > *:nth-child(4n + 2) .card-running-light-beam {
+  animation-delay: -0.8s;
+}
+.storefront-grid > *:nth-child(4n + 3) .card-running-light-beam {
+  animation-delay: -1.6s;
+}
+.storefront-grid > *:nth-child(4n) .card-running-light-beam {
+  animation-delay: -2.4s;
+}
+
+/* Hover boost: spins faster and glows intensely */
+.public-theme .game-card:hover .card-running-light-beam {
+  animation-duration: 2s;
+  filter: drop-shadow(0 0 10px #F43F5E) drop-shadow(0 0 5px #FDE047) drop-shadow(0 0 2px #FFFFFF);
 }
 
 /* 2. Luminous Light Sweep Across the Card Face (active on both mobile and desktop) */
@@ -1134,7 +1125,7 @@ body:has(.public-theme)::-webkit-scrollbar-thumb:hover { background: var(--store
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .public-theme .game-card:not([aria-hidden="true"])::before,
+  .card-running-light-beam,
   .public-theme .game-card:not([aria-hidden="true"])::after {
     animation: none !important;
     display: none !important;

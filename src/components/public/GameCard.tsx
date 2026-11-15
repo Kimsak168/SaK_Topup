@@ -69,39 +69,54 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         }
       }}
       aria-current={onSelect && isSelected ? "true" : undefined}
-      className={`game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-[#FDF2F8] outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_22px_-4px_rgba(249,115,22,0.3)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
+      className={`game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
-      <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
-        {!isLoaded && (
-          <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
-        )}
-        <Image
-          src={imgSrc}
-          alt={game.name}
-          fill
-          sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 17vw, 240px"
-          quality={80}
-          loading="lazy"
-          className="game-card-image relative z-10 object-cover object-center motion-reduce:transition-none"
-          onLoad={() => setIsLoaded(true)}
-          onError={() => {
-            setIsLoaded(true);
-            if (imgSrc === FALLBACK_IMAGE) return;
-            failedImageSources.add(imageSource);
-            setFailedImage(imageSource);
-          }}
-        />
-      </div>
+      {/* Subtle base border ring */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 rounded-[inherit] border border-rose-500/20"
+      />
 
-      <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
-        <h3 className="line-clamp-2 w-full min-w-0 text-center text-[12px] leading-4 font-semibold wrap-anywhere text-[#172033] sm:text-[14px] sm:leading-5">
-          {game.name}
-        </h3>
-        {isComingSoon && (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
-            Coming Soon
-          </span>
-        )}
+      {/* Running Light Border Beam (ភ្លើងរត់) */}
+      <span
+        aria-hidden="true"
+        className="card-running-light-beam pointer-events-none absolute -inset-[150%] m-auto aspect-square z-0"
+      />
+
+      {/* Inner Card Container */}
+      <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-[#FDF2F8] sm:rounded-[14px]">
+        <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
+          {!isLoaded && (
+            <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
+          )}
+          <Image
+            src={imgSrc}
+            alt={game.name}
+            fill
+            sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 17vw, 240px"
+            quality={80}
+            loading="lazy"
+            className="game-card-image relative z-10 object-cover object-center motion-reduce:transition-none"
+            onLoad={() => setIsLoaded(true)}
+            onError={() => {
+              setIsLoaded(true);
+              if (imgSrc === FALLBACK_IMAGE) return;
+              failedImageSources.add(imageSource);
+              setFailedImage(imageSource);
+            }}
+          />
+        </div>
+
+        <div className={`game-card-title flex h-12 min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-2 py-1.5 sm:h-14 sm:px-3`}>
+          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[12px] leading-4 font-semibold wrap-anywhere text-[#172033] sm:text-[14px] sm:leading-5">
+            {game.name}
+          </h3>
+          {isComingSoon && (
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
+              Coming Soon
+            </span>
+          )}
+        </div>
       </div>
     </StorefrontLink>
   );
