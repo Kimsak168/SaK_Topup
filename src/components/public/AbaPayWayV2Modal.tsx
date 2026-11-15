@@ -49,6 +49,7 @@ function KhqrPaymentDialog({
   const [timeLeft, setTimeLeft] = useState(initialSeconds);
   const [paymentStatus, setPaymentStatus] = useState(data.paymentStatus?.toUpperCase() || "PENDING");
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [renderedQr, setRenderedQr] = useState<string | null>(data.qrImage || data.qrPngUrl || null);
   const [qrError, setQrError] = useState(false);
 
@@ -58,6 +59,35 @@ function KhqrPaymentDialog({
   const notifySuccess = useEffectEvent(() =>
     onSuccess({ orderNumber: data.orderNumber, transactionId: data.transactionId })
   );
+
+  const handleManualCheck = async () => {
+    if (isCheckingPayment || !data.orderNumber) return;
+    setIsCheckingPayment(true);
+    try {
+      const response = await fetch("/api/payment/vngzz2/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderNumber: data.orderNumber, transactionId: data.transactionId }),
+      });
+      const result = response.ok ? await response.json() : null;
+      if (result?.success) {
+        const status = result.isPaid ? "PAID" : String(result.paymentStatus || "PENDING").toUpperCase();
+        setPaymentStatus(status);
+        if (status === "PAID") {
+          setIsSuccess(true);
+          toast.success("Payment received", { description: "Your order is now being processed." });
+          return;
+        }
+        if (status === "EXPIRED") {
+          toast.info("Payment not detected yet", { description: "If you already transferred in ABA, wait a few seconds and tap again." });
+        }
+      }
+    } catch {
+      toast.error("Network error", { description: "Could not reach payment server." });
+    } finally {
+      setIsCheckingPayment(false);
+    }
+  };
 
   const requestClose = () => {
     if (data.isLoading || data.transactionId === "generating") {
@@ -183,7 +213,8 @@ function KhqrPaymentDialog({
     const controller = new AbortController();
 
     const check = async () => {
-      if (Date.now() >= deadline) return;
+      // Allow checking up to 7 minutes after deadline in case customer switched apps to pay
+      if (Date.now() >= deadline + 420_000) return;
       try {
         const response = await fetch("/api/payment/vngzz2/check", {
           method: "POST",
@@ -206,13 +237,26 @@ function KhqrPaymentDialog({
       } catch {
         // A temporary network failure must never be treated as a paid order.
       }
-      if (!cancelled) nextCheck = setTimeout(check, 2500);
+      if (!cancelled && Date.now() < deadline) {
+        nextCheck = setTimeout(check, 2500);
+      }
     };
+
+    // Auto-check immediately when customer returns from ABA mobile banking app
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && !cancelled) {
+        void check();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleVisibilityChange);
 
     nextCheck = setTimeout(check, 2500);
     return () => {
       cancelled = true;
       clearTimeout(nextCheck);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleVisibilityChange);
       controller.abort();
     };
   }, [data.orderNumber, data.transactionId, data.isLoading, deadline, paymentEnded]);
@@ -348,6 +392,17 @@ function KhqrPaymentDialog({
                 : "KHQR unavailable"}
             </strong>
             <span>Create a new secure payment session to continue.</span>
+            {isExpired && (
+              <button
+                type="button"
+                onClick={handleManualCheck}
+                disabled={isCheckingPayment}
+                className={styles.abaV2Download}
+                style={{ width: "100%", justifyContent: "center", marginBottom: "0.5rem" }}
+              >
+                {isCheckingPayment ? "Checking Payment..." : "I Already Paid — Check Status"}
+              </button>
+            )}
             {onRetry && (
               <button type="button" onClick={onRetry}>
                 Create new payment

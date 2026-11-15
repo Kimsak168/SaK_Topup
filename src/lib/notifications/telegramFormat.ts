@@ -63,7 +63,7 @@ export function classifyPaymentStatus(value: unknown): TelegramNotificationStatu
 
 export function classifyOrderStatus(value: unknown): TelegramNotificationStatus | null {
   const status = String(value ?? "").trim().toUpperCase();
-  if (["NOT_STARTED", "PENDING", "PROCESSING"].includes(status)) return "PENDING";
+  if (["PENDING", "PROCESSING"].includes(status)) return "PENDING";
   if (["COMPLETED", "DELIVERED", "SUCCESS", "SUCCEEDED"].includes(status)) return "SUCCESS";
   if (status === "FAILED") return "FAILED";
   return null;

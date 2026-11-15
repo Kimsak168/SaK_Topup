@@ -351,13 +351,16 @@ function createOrderStatusEvents(current: Record<string, unknown>, next: Record<
   const previousPayment = classifyPaymentStatus(current.paymentStatus);
   const nextPayment = classifyPaymentStatus(next.paymentStatus);
   if (nextPayment && nextPayment !== previousPayment) {
-    events.push(createTelegramNotificationEvent({
-      order: next,
-      kind: "PAYMENT",
-      status: nextPayment,
-      dedupeKey: `payment-transition:${Number(current.notificationRevision || 0) + 1}`,
-      errorReason: typeof next.paymentErrorReason === "string" ? next.paymentErrorReason : undefined,
-    }));
+    // Only send PAYMENT notifications for SUCCESS / FAILED (suppress PENDING and EXPIRED spam)
+    if (nextPayment !== "PENDING" && nextPayment !== "EXPIRED") {
+      events.push(createTelegramNotificationEvent({
+        order: next,
+        kind: "PAYMENT",
+        status: nextPayment,
+        dedupeKey: `payment-transition:${Number(current.notificationRevision || 0) + 1}`,
+        errorReason: typeof next.paymentErrorReason === "string" ? next.paymentErrorReason : undefined,
+      }));
+    }
   }
 
   const previousOrder = classifyOrderStatus(current.fulfillmentStatus);
