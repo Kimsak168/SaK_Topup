@@ -445,6 +445,48 @@ export async function reconcileSupplierFulfillment(
 
   // WebBuilder Reconciliation
   if (order.supplier !== "webbuilder") return { success: true, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "This supplier requires an admin delivery check." };
+
+  if (!order.supplierOrderId) {
+    // If supplierOrderId was not set (e.g. initial attempt failed due to balance or timeout),
+    // safely retry order submission using the order's stable idempotency key:
+    try {
+      const wbOrder = await createWebBuilderOrder({
+        localOrderId: order.orderNumber,
+        productId: order.supplierProductCode,
+        playerId: order.playerId,
+        zoneId: order.serverId,
+        reference: order.orderNumber,
+      });
+
+      order.supplierOrderId = wbOrder.id;
+      order.lastSupplierStatus = wbOrder.status;
+      if (wbOrder.status === "succeeded") {
+        order.fulfillmentStatus = "completed";
+        order.fulfilledAt = new Date();
+        order.adminNotes = "Delivered via WebBuilder official Reseller API (reconcile retry)";
+        await order.save();
+        return {
+          success: true,
+          orderNumber,
+          fulfillmentStatus: "completed",
+          supplierOrderId: wbOrder.id,
+          message: "WebBuilder order confirmed succeeded",
+        };
+      }
+      await order.save();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "WebBuilder submission error";
+      order.errorLog = `Fulfillment retry exception: ${msg}`;
+      await order.save();
+      return {
+        success: false,
+        orderNumber,
+        fulfillmentStatus: "processing",
+        message: msg,
+      };
+    }
+  }
+
   const wbOrder = await getWebBuilderOrder(order.supplierOrderId);
   if (wbOrder) {
     if (wbOrder.status === "succeeded") {
