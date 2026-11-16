@@ -56,6 +56,9 @@ function KhqrPaymentDialog({
   const isExpired = timeLeft === 0 || paymentStatus === "EXPIRED";
   const isFailed = paymentStatus === "FAILED";
   const paymentEnded = isExpired || isFailed || isSuccess;
+  // Polling continues in the background even if the 3-minute visual timer reaches 0,
+  // allowing late payments (up to 7 minutes) from mobile banking apps to be caught automatically!
+  const pollingFinished = isSuccess || isFailed;
   const notifySuccess = useEffectEvent(() =>
     onSuccess({ orderNumber: data.orderNumber, transactionId: data.transactionId })
   );
@@ -207,7 +210,7 @@ function KhqrPaymentDialog({
 
   // Payment status polling
   useEffect(() => {
-    if (paymentEnded || data.isLoading || data.transactionId === "generating" || !data.orderNumber) return;
+    if (pollingFinished || data.isLoading || data.transactionId === "generating" || !data.orderNumber) return;
     let cancelled = false;
     let nextCheck: ReturnType<typeof setTimeout>;
     const controller = new AbortController();
@@ -232,13 +235,13 @@ function KhqrPaymentDialog({
             toast.success("Payment received", { description: "Your order is now being processed." });
             return;
           }
-          if (status === "EXPIRED" || status === "FAILED") return;
+          if (status === "FAILED") return;
         }
       } catch {
         // A temporary network failure must never be treated as a paid order.
       }
-      if (!cancelled && Date.now() < deadline) {
-        nextCheck = setTimeout(check, 2500);
+      if (!cancelled && Date.now() < deadline + 420_000) {
+        nextCheck = setTimeout(check, Date.now() < deadline ? 2500 : 5000);
       }
     };
 
@@ -259,7 +262,7 @@ function KhqrPaymentDialog({
       window.removeEventListener("focus", handleVisibilityChange);
       controller.abort();
     };
-  }, [data.orderNumber, data.transactionId, data.isLoading, deadline, paymentEnded]);
+  }, [data.orderNumber, data.transactionId, data.isLoading, deadline, pollingFinished]);
 
   useEffect(() => {
     if (!isSuccess) return;
@@ -363,6 +366,14 @@ function KhqrPaymentDialog({
             </div>
 
             <footer className={styles.abaV2Footer}>
+              {data.deepLink && (
+                <a
+                  href={data.deepLink}
+                  className={styles.abaV2Deeplink}
+                >
+                  🚀 Open ABA Mobile App
+                </a>
+              )}
               <div className={styles.abaV2Scan}>
                 <b>Scan to pay</b>
                 <span>or</span>

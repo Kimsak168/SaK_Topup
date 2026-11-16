@@ -184,6 +184,33 @@
   background: #ffffff;
 }
 
+.abaV2Deeplink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #005F73;
+  color: #ffffff !important;
+  font-family: Arial, Helvetica, "Khmer UI", sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 95, 115, 0.25);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.abaV2Deeplink:hover {
+  background: #084c5b;
+  color: #ffffff !important;
+}
+
+.abaV2Deeplink:active {
+  transform: scale(0.98);
+}
+
 .abaV2Scan {
   display: grid;
   justify-items: center;
