@@ -69,7 +69,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         }
       }}
       aria-current={onSelect && isSelected ? "true" : undefined}
-      className={`game-card group relative flex h-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
+      className={`game-card group relative flex aspect-square w-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
       {/* Subtle base border ring */}
       <span
@@ -84,10 +84,10 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
       />
 
       {/* Inner Card Container */}
-      <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-[#FDF2F8] sm:rounded-[14px]">
-        <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F1F5F9]">
+      <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-slate-900 sm:rounded-[14px]">
+        <div className="relative h-full w-full overflow-hidden bg-slate-900">
           {!isLoaded && (
-            <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-100 via-emerald-50/40 to-slate-100" />
+            <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-800 via-slate-700 to-slate-800" />
           )}
           <Image
             src={imgSrc}
@@ -96,7 +96,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
             sizes="(max-width: 339px) 50vw, (max-width: 767px) 33vw, (max-width: 1023px) 25vw, (max-width: 1599px) 17vw, 240px"
             quality={80}
             loading="lazy"
-            className="game-card-image relative z-10 object-cover object-center motion-reduce:transition-none"
+            className="game-card-image relative z-10 object-cover object-center transition-transform duration-300 ease-out group-hover:scale-105 motion-reduce:transition-none"
             onLoad={() => setIsLoaded(true)}
             onError={() => {
               setIsLoaded(true);
@@ -105,17 +105,18 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
               setFailedImage(imageSource);
             }}
           />
-        </div>
 
-        <div className={`game-card-title flex h-[30px] min-[380px]:h-[34px] sm:h-[38px] min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-1.5 py-0.5 min-[380px]:px-2 min-[380px]:py-0.5 sm:px-2.5 sm:py-1`}>
-          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[12.5px] min-[380px]:text-[11.5px] min-[380px]:leading-[14px] sm:text-[13px] sm:leading-[16px] font-semibold tracking-[-0.01em] wrap-anywhere text-[#172033]">
-            {game.name}
-          </h3>
-          {isComingSoon && (
-            <span className="text-[8.5px] min-[380px]:text-[9px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
-              Coming Soon
-            </span>
-          )}
+          {/* Floating Dark Gradient + Frosted Glass Blur Overlay for Game Title */}
+          <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex min-h-[36px] min-[380px]:min-h-[40px] sm:min-h-[46px] ${isComingSoon ? "flex-col gap-0.5" : "flex-col"} items-center justify-end px-1.5 pt-6 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:px-2.5 sm:pb-2.5`}>
+            <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16.5px] font-bold tracking-[-0.01em] wrap-anywhere text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+              {game.name}
+            </h3>
+            {isComingSoon && (
+              <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-rose-400 drop-shadow-sm leading-none">
+                Coming Soon
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </StorefrontLink>

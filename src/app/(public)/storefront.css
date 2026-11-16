@@ -219,8 +219,26 @@
   .home-checkout-link { transition: none; }
 }
 .public-theme .game-card-inner,
-.public-theme .game-card-title,
+.public-theme .game-card-title:not(.game-card-overlay-title),
 .public-theme .game-card-inner > div:first-child { background-color: var(--storefront-soft); }
+
+.public-theme .game-card-overlay-title {
+  background: linear-gradient(
+    to top,
+    rgba(10, 8, 14, 0.92) 0%,
+    rgba(10, 8, 14, 0.68) 55%,
+    rgba(10, 8, 14, 0.22) 80%,
+    transparent 100%
+  ) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.public-theme .game-card-overlay-title h3 {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 1px rgba(0, 0, 0, 0.95);
+  letter-spacing: -0.01em;
+}
 .public-theme .game-card {
   box-shadow: 0 3px 12px rgb(105 64 91 / .05);
   transition: translate 220ms cubic-bezier(.2, .7, .2, 1), box-shadow 220ms ease;
@@ -229,7 +247,7 @@
   transform: scale(1);
   transition: transform 320ms cubic-bezier(.2, .7, .2, 1), opacity 300ms ease;
 }
-.public-theme .game-card-title h3 {
+.public-theme .game-card-title:not(.game-card-overlay-title) h3 {
   color: var(--storefront-foreground, #3B2D39);
   letter-spacing: -0.01em;
 }
@@ -657,7 +675,7 @@ body:has(.public-theme) { background-color: #FFF9FC; }
 .public-theme :is(.public-button, .game-action-button):disabled { background-color: var(--storefront-soft); background-image: none; }
 
 .public-theme .game-card-inner,
-.public-theme .game-card-title,
+.public-theme .game-card-title:not(.game-card-overlay-title),
 .public-theme .game-card-inner > div:first-child {
   background-color: var(--storefront-soft);
 }
@@ -665,7 +683,7 @@ body:has(.public-theme) { background-color: #FFF9FC; }
   border: 0;
   box-shadow: 0 5px 18px rgb(39 25 61 / .07);
 }
-.public-theme .game-card-title h3 { color: var(--storefront-foreground); }
+.public-theme .game-card-title:not(.game-card-overlay-title) h3 { color: var(--storefront-foreground); }
 .public-theme .ticker-wrapper {
   border-color: var(--storefront-border);
   background: var(--storefront-card);
