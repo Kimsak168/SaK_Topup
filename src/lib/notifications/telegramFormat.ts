@@ -259,3 +259,60 @@ export function formatTelegramNotificationMessage(event: Pick<TelegramNotificati
 
   return lines.join("\n");
 }
+
+export interface ManualFulfillmentAlertParams {
+  orderNumber: string;
+  playerId?: string;
+  serverId?: string;
+  playerName?: string;
+  gameName: string;
+  packageName: string;
+  amount: number;
+  currency?: string;
+  transactionId?: string;
+  reason: string;
+}
+
+export function cleanFulfillmentErrorReason(errorMsg?: string): string {
+  if (!errorMsg || typeof errorMsg !== "string") return "Insufficient balance";
+  const lower = errorMsg.toLowerCase();
+  if (lower.includes("insufficient") && (lower.includes("balance") || lower.includes("reseller"))) {
+    return "Insufficient balance";
+  }
+  if (lower.includes("out of stock") || lower.includes("out_of_stock") || lower.includes("nostock")) {
+    return "Out of stock";
+  }
+  if (lower.includes("spending limit")) {
+    return "Account spending limit reached";
+  }
+  if (lower.includes("conflict")) {
+    return "Insufficient balance";
+  }
+  return errorMsg.trim().slice(0, 120);
+}
+
+export function formatManualFulfillmentMessage(params: ManualFulfillmentAlertParams): string {
+  const ign = params.playerName && params.playerName !== "Not collected" ? params.playerName : "N/A";
+  const lines: string[] = [
+    `⚠️ <b>Order Pending (Manual Fulfillment)</b>`,
+    `Order ID: <code>${escapeTelegramHtml(params.orderNumber)}</code>`,
+    `ID: <code>${escapeTelegramHtml(params.playerId || "Not provided")}</code>`,
+  ];
+
+  if (params.serverId && params.serverId.trim()) {
+    lines.push(`Zone: <code>${escapeTelegramHtml(params.serverId)}</code>`);
+  }
+
+  lines.push(`IGN: <code>${escapeTelegramHtml(ign)}</code>`);
+  lines.push(`Game: ${escapeTelegramHtml(params.gameName)}`);
+  lines.push(`Package: ${escapeTelegramHtml(params.packageName)}`);
+  lines.push(`Price: $${params.amount.toFixed(2)}`);
+
+  const abaRef = params.transactionId && params.transactionId !== "N/A"
+    ? params.transactionId
+    : "N/A";
+  lines.push(`ABA: <code>${escapeTelegramHtml(abaRef)}</code>`);
+  lines.push(`Reason: ${escapeTelegramHtml(cleanFulfillmentErrorReason(params.reason))}`);
+
+  return lines.join("\n");
+}

@@ -10,6 +10,35 @@ import {
 } from "@/lib/suppliers/webbuilder";
 import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk";
 import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder, checkVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
+import { sendTelegramManualFulfillmentAlert } from "@/lib/services/telegramNotificationService";
+import { cleanFulfillmentErrorReason } from "@/lib/notifications/telegramFormat";
+
+async function notifyManualFulfillmentNeeded(order: IOrder, rawReason: string): Promise<void> {
+  try {
+    const claimed = await Order.findOneAndUpdate(
+      { _id: order._id, manualAlertSentAt: { $exists: false } },
+      { $set: { manualAlertSentAt: new Date() } }
+    );
+    if (!claimed) return;
+
+    await sendTelegramManualFulfillmentAlert({
+      orderNumber: order.orderNumber,
+      playerId: order.playerId,
+      serverId: order.serverId,
+      playerName: order.playerName,
+      gameName: order.gameName,
+      packageName: order.packageName,
+      amount: order.amount,
+      currency: order.currency,
+      transactionId: order.transactionId,
+      reason: cleanFulfillmentErrorReason(rawReason),
+    }).catch((err) => {
+      console.error(`[ManualFulfillmentAlert] Error sending Telegram alert for ${order.orderNumber}:`, err);
+    });
+  } catch (err) {
+    console.error(`[ManualFulfillmentAlert] Error claiming manual alert for ${order.orderNumber}:`, err);
+  }
+}
 
 export interface FulfillmentResult {
   success: boolean;
@@ -119,6 +148,10 @@ export async function triggerAutomaticFulfillment(
         },
       });
 
+      if (isFailed) {
+        await notifyManualFulfillmentNeeded(order, smmRes.message || "SMM fulfillment failed");
+      }
+
       return {
         success: !isFailed,
         orderNumber: order.orderNumber,
@@ -187,6 +220,10 @@ export async function triggerAutomaticFulfillment(
         },
       });
 
+      if (isFailed) {
+        await notifyManualFulfillmentNeeded(order, g2Res.message || "G2Bulk fulfillment failed");
+      }
+
       return {
         success: isCompleted || g2Res.status === "processing",
         orderNumber: order.orderNumber,
@@ -251,22 +288,25 @@ export async function triggerAutomaticFulfillment(
         message: `${order.gameName || "Game"} delivered successfully via WebBuilder`,
       };
     } else if (finalOrder.status === "failed") {
+      const reason = finalOrder.failure_reason || "WebBuilder order failed";
       await Order.findByIdAndUpdate(order._id, {
         $set: {
           fulfillmentStatus: "failed",
           lastSupplierStatus: "failed",
-          errorLog: finalOrder.failure_reason || "WebBuilder order failed",
+          errorLog: reason,
           adminNotes: "WebBuilder marked failed. Reserved funds released.",
         },
       });
+      await notifyManualFulfillmentNeeded(order, reason);
       return {
         success: false,
         orderNumber: order.orderNumber,
         fulfillmentStatus: "failed",
         supplierOrderId: finalOrder.id,
-        message: finalOrder.failure_reason || "WebBuilder fulfillment failed",
+        message: reason,
       };
     } else if (finalOrder.status === "manual_review") {
+      const reason = "Order flagged by WebBuilder for manual review";
       // Uncertain: stop automatic retries, keep customer order pending, contact support
       await Order.findByIdAndUpdate(order._id, {
         $set: {
@@ -275,6 +315,7 @@ export async function triggerAutomaticFulfillment(
           adminNotes: "Flagged by WebBuilder for manual review. Automatic retries stopped. Awaiting administrator reconciliation.",
         },
       });
+      await notifyManualFulfillmentNeeded(order, reason);
       return {
         success: true,
         orderNumber: order.orderNumber,
@@ -310,6 +351,8 @@ export async function triggerAutomaticFulfillment(
         adminNotes: "Execution failed or timed out. Awaiting manual check before retrying.",
       },
     });
+
+    await notifyManualFulfillmentNeeded(order, errorMsg);
 
     return {
       success: false,
@@ -478,6 +521,7 @@ export async function reconcileSupplierFulfillment(
       const msg = err instanceof Error ? err.message : "WebBuilder submission error";
       order.errorLog = `Fulfillment retry exception: ${msg}`;
       await order.save();
+      await notifyManualFulfillmentNeeded(order, msg);
       return {
         success: false,
         orderNumber,
@@ -502,21 +546,24 @@ export async function reconcileSupplierFulfillment(
         message: "WebBuilder order confirmed succeeded",
       };
     } else if (wbOrder.status === "failed") {
+      const reason = wbOrder.failure_reason || "WebBuilder order marked failed";
       order.fulfillmentStatus = "failed";
       order.lastSupplierStatus = "failed";
-      order.errorLog = wbOrder.failure_reason || "WebBuilder order marked failed";
+      order.errorLog = reason;
       await order.save();
+      await notifyManualFulfillmentNeeded(order, reason);
       return {
         success: false,
         orderNumber,
         fulfillmentStatus: "failed",
         supplierOrderId: order.supplierOrderId,
-        message: wbOrder.failure_reason || "WebBuilder order marked failed",
+        message: reason,
       };
     } else if (wbOrder.status === "manual_review") {
       order.lastSupplierStatus = "manual_review";
       order.adminNotes = "WebBuilder order under manual review.";
       await order.save();
+      await notifyManualFulfillmentNeeded(order, "WebBuilder order under manual review");
       return {
         success: true,
         orderNumber,

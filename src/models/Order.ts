@@ -80,6 +80,7 @@ export interface IOrder extends Document {
   supplierPollToken?: string;
   paidAt?: Date;
   fulfilledAt?: Date;
+  manualAlertSentAt?: Date;
   refundVersion?: number;
   luckyDraw?: {
     eligible: boolean;
@@ -331,6 +332,9 @@ const OrderSchema = new Schema<IOrder>(
       type: Date,
     },
     fulfilledAt: {
+      type: Date,
+    },
+    manualAlertSentAt: {
       type: Date,
     },
     refundVersion: { type: Number, default: 0, select: false },
