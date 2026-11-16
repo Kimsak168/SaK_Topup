@@ -62,11 +62,11 @@ export const PlatformCard = memo(function PlatformCard({
           />
         </div>
 
-        <div className="game-card-title flex min-h-[46px] min-[380px]:min-h-[50px] sm:min-h-[66px] min-w-0 shrink-0 flex-col items-center justify-center gap-0.5 min-[380px]:gap-1 bg-white px-1.5 py-1 min-[380px]:px-2.5 sm:px-3">
-          <h3 className="line-clamp-1 w-full min-w-0 text-center text-[11px] leading-tight min-[380px]:text-[12px] min-[380px]:leading-4 sm:text-[14px] sm:leading-5 font-semibold tracking-[-0.01em] wrap-anywhere text-[#172033]">
+        <div className="game-card-title flex min-h-[38px] min-[380px]:min-h-[42px] sm:min-h-[50px] min-w-0 shrink-0 flex-col items-center justify-center gap-0.5 bg-white px-1.5 py-0.5 min-[380px]:px-2 sm:px-2.5 sm:py-1">
+          <h3 className="line-clamp-1 w-full min-w-0 text-center text-[10.5px] leading-tight min-[380px]:text-[11.5px] min-[380px]:leading-[14px] sm:text-[13px] sm:leading-[16px] font-semibold tracking-[-0.01em] wrap-anywhere text-[#172033]">
             {platform.name}
           </h3>
-          <span className="game-card-cta text-[8.5px] min-[380px]:text-[9px]">
+          <span className="game-card-cta text-[8px] min-[380px]:text-[8.5px]">
             {typeof platform.count === "number" && platform.count > 0
               ? `${platform.count.toLocaleString()} services`
               : "Browse services"}{" "}

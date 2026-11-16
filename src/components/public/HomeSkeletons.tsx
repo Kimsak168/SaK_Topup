@@ -18,8 +18,8 @@ export function GameCardSkeleton() {
       <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#F0FDF4]">
         <div className="absolute inset-0 bg-[#DCFCE7]/60 motion-safe:animate-pulse" />
       </div>
-      <div className="game-card-title flex h-[40px] min-[380px]:h-[44px] sm:h-14 min-w-0 shrink-0 items-center justify-center bg-white px-1.5 py-1 min-[380px]:px-2.5 min-[380px]:py-1.5 sm:px-3 sm:py-2">
-        <div className="h-3 w-3/4 rounded bg-[#BBF7D0]/60 motion-safe:animate-pulse sm:h-4" />
+      <div className="game-card-title flex h-[30px] min-[380px]:h-[34px] sm:h-[38px] min-w-0 shrink-0 items-center justify-center bg-white px-1.5 py-0.5 min-[380px]:px-2 min-[380px]:py-0.5 sm:px-2.5 sm:py-1">
+        <div className="h-2.5 w-3/4 rounded bg-[#BBF7D0]/60 motion-safe:animate-pulse sm:h-3" />
       </div>
     </div>
   );

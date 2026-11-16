@@ -107,12 +107,12 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           />
         </div>
 
-        <div className={`game-card-title flex h-[40px] min-[380px]:h-[44px] sm:h-14 min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-1.5 py-1 min-[380px]:px-2.5 min-[380px]:py-1.5 sm:px-3 sm:py-2`}>
-          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[11px] leading-[13.5px] min-[380px]:text-[12px] min-[380px]:leading-[15px] sm:text-[13.5px] sm:leading-5 font-semibold tracking-[-0.01em] wrap-anywhere text-[#172033]">
+        <div className={`game-card-title flex h-[30px] min-[380px]:h-[34px] sm:h-[38px] min-w-0 shrink-0 ${isComingSoon ? "flex-col gap-0.5" : ""} items-center justify-center bg-[#FDF2F8] px-1.5 py-0.5 min-[380px]:px-2 min-[380px]:py-0.5 sm:px-2.5 sm:py-1`}>
+          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[12.5px] min-[380px]:text-[11.5px] min-[380px]:leading-[14px] sm:text-[13px] sm:leading-[16px] font-semibold tracking-[-0.01em] wrap-anywhere text-[#172033]">
             {game.name}
           </h3>
           {isComingSoon && (
-            <span className="text-[9px] min-[380px]:text-[10px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
+            <span className="text-[8.5px] min-[380px]:text-[9px] font-bold uppercase tracking-wider text-[#B54779] leading-none">
               Coming Soon
             </span>
           )}
