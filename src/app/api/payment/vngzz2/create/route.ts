@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
@@ -10,8 +10,10 @@ import {
   isVngZz2Configured,
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
+import { watchOrderPaymentUntilSettled } from "@/lib/services/serverPaymentWatcher";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
   try {
@@ -253,6 +255,20 @@ export async function POST(req: NextRequest) {
         { upsert: true, returnDocument: "after" }
       ),
     ]);
+
+    const createdOrderNumber = targetOrder.orderNumber;
+    const createdTxnId = qrResult.transactionId;
+
+    // Server-side Watcher: Actively monitors this order on the server for the next 50s.
+    // Even if the customer completely closes the website ("clear website") or switches apps,
+    // the server will detect the payment settlement and dispatch diamonds automatically!
+    try {
+      after(async () => {
+        await watchOrderPaymentUntilSettled(createdOrderNumber, createdTxnId);
+      });
+    } catch {
+      void watchOrderPaymentUntilSettled(createdOrderNumber, createdTxnId).catch(() => {});
+    }
 
     return NextResponse.json({
       success: true,

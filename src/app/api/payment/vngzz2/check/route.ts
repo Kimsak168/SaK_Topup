@@ -6,6 +6,8 @@ import {
   dispatchOrderNotifications,
   dispatchPendingTelegramNotifications,
 } from "@/lib/services/telegramNotificationService";
+import { reconcilePendingPaymentsBatch } from "@/lib/services/cronPaymentWorker";
+import { reconcileSupplierOrdersBatch } from "@/lib/services/cronSupplierWorker";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -29,6 +31,9 @@ export async function POST(req: NextRequest) {
     try {
       after(async () => {
         await dispatchOrderNotifications(currentOrderNumber).catch(() => {});
+        // Opportunistic sweep: also check up to 2 other pending orders in background
+        await reconcilePendingPaymentsBatch(2, 4000).catch(() => {});
+        await reconcileSupplierOrdersBatch(2, 4000).catch(() => {});
       });
     } catch {
       void dispatchOrderNotifications(currentOrderNumber).catch(() => {});

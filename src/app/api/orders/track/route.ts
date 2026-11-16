@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
+import { reconcileOrderPayment } from "@/lib/services/paymentReconciliationService";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +30,19 @@ export async function GET(req: NextRequest) {
         .sort({ createdAt: -1 })
         .limit(10)
         .lean();
+
+      // For any pending order, perform an on-the-fly reconciliation so customers see instant live updates
+      for (const o of orders) {
+        if (String(o.paymentStatus).toUpperCase() === "PENDING" && o.transactionId) {
+          try {
+            const updated = await reconcileOrderPayment(o.orderNumber, true);
+            o.paymentStatus = updated.paymentStatus;
+            o.fulfillmentStatus = updated.fulfillmentStatus;
+          } catch {
+            // Ignore transient provider errors during live lookup
+          }
+        }
+      }
 
       // SANITIZE: Strictly return public customer data only!
       // NEVER expose buyingPrice, profit, supplier internal credentials, or error logs!
