@@ -227,8 +227,6 @@ test("homepage streams games and banners before slow social and featured package
     assert.match(html, /Loading featured packages/);
     assert.doesNotMatch(html, /FEATURED_READY/);
     assert.match(html, /PLATFORMS_LOADING/);
-    assert.match(html, /EVENTS_READY/);
-    assert.ok(html.indexOf("PLATFORMS_LOADING") < html.indexOf("EVENTS_READY"));
     assert.doesNotMatch(html, /PLATFORMS_READY/);
   } finally {
     finishPlatforms();

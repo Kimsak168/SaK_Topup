@@ -69,7 +69,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         }
       }}
       aria-current={onSelect && isSelected ? "true" : undefined}
-      className={`game-card group relative flex aspect-square w-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
+      className={`game-card group relative flex aspect-square sm:aspect-auto sm:h-full w-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
       {/* Subtle base border ring */}
       <span
@@ -84,10 +84,10 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
       />
 
       {/* Inner Card Container */}
-      <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-slate-900 sm:rounded-[14px]">
-        <div className="relative h-full w-full overflow-hidden bg-slate-900">
+      <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-[#FDF2F8] sm:rounded-[14px]">
+        <div className="relative h-full w-full sm:h-auto sm:aspect-square sm:shrink-0 overflow-hidden bg-[#FDF2F8]">
           {!isLoaded && (
-            <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-slate-800 via-slate-700 to-slate-800" />
+            <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-pink-100 via-rose-50 to-purple-100" />
           )}
           <Image
             src={imgSrc}
@@ -105,18 +105,18 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
               setFailedImage(imageSource);
             }}
           />
+        </div>
 
-          {/* Floating Dark Gradient + Frosted Glass Blur Overlay for Game Title */}
-          <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex min-h-[36px] min-[380px]:min-h-[40px] sm:min-h-[46px] ${isComingSoon ? "flex-col gap-0.5" : "flex-col"} items-center justify-end px-1.5 pt-6 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:px-2.5 sm:pb-2.5`}>
-            <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16.5px] font-bold tracking-[-0.01em] wrap-anywhere text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-              {game.name}
-            </h3>
-            {isComingSoon && (
-              <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-rose-400 drop-shadow-sm leading-none">
-                Coming Soon
-              </span>
-            )}
-          </div>
+        {/* Mobile (<640px): Floating inside card | Desktop (>=640px): Under card image */}
+        <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex sm:static sm:inset-auto sm:h-[38px] sm:min-w-0 sm:shrink-0 ${isComingSoon ? "flex-col gap-0.5" : "flex-col"} items-center justify-end sm:justify-center px-1.5 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:bg-[#FDF2F8] sm:px-2.5 sm:py-1`}>
+          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-extrabold sm:font-bold tracking-[-0.01em] wrap-anywhere text-[#DB2777]">
+            {game.name}
+          </h3>
+          {isComingSoon && (
+            <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-[#BE185D] leading-none">
+              Coming Soon
+            </span>
+          )}
         </div>
       </div>
     </StorefrontLink>

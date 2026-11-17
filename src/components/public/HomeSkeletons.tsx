@@ -14,12 +14,12 @@ export function BannerSkeleton() {
 
 export function GameCardSkeleton() {
   return (
-    <div aria-hidden="true" className="game-card flex aspect-square w-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-slate-900 sm:rounded-[16px]">
-      <div className="relative h-full w-full overflow-hidden bg-slate-800">
-        <div className="absolute inset-0 bg-slate-700/60 motion-safe:animate-pulse" />
-        <div className="absolute inset-x-0 bottom-0 z-20 flex min-h-[36px] items-center justify-center p-2 bg-gradient-to-t from-black/80 to-transparent">
-          <div className="h-2.5 w-3/4 rounded bg-white/30 motion-safe:animate-pulse sm:h-3" />
-        </div>
+    <div aria-hidden="true" className="game-card relative flex aspect-square sm:aspect-auto sm:h-full w-full min-w-0 flex-col overflow-hidden rounded-[14px] border-0 bg-[#FDF2F8] sm:rounded-[16px]">
+      <div className="relative h-full w-full sm:h-auto sm:aspect-square sm:shrink-0 overflow-hidden bg-pink-50">
+        <div className="absolute inset-0 bg-pink-100/70 motion-safe:animate-pulse" />
+      </div>
+      <div className="absolute inset-x-0 bottom-0 z-20 flex min-h-[28px] sm:static sm:h-[38px] sm:shrink-0 items-center justify-center p-1.5 sm:px-2.5 sm:py-1">
+        <div className="h-2.5 w-3/4 rounded bg-pink-200/80 motion-safe:animate-pulse sm:h-3" />
       </div>
     </div>
   );

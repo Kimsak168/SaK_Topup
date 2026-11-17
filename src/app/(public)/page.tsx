@@ -5,8 +5,7 @@ import { PromotionalBanner } from "@/components/public/PromotionalBanner";
 import { HomeCatalogue } from "@/components/public/HomeCatalogue";
 import { HomeFeaturedPackages } from "@/components/public/HomeFeaturedPackages";
 import { HomePlatforms } from "@/components/public/HomePlatforms";
-import { HomeGameEvents } from "@/components/public/HomeGameEvents";
-import { BannerSkeleton, CatalogueSkeleton, GameEventsSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
+import { BannerSkeleton, CatalogueSkeleton, PlatformsSkeleton } from "@/components/public/HomeSkeletons";
 import { Metadata } from "next";
 import { getPackageVariant, selectFeaturedSlides } from "@/lib/featuredPackages";
 import type { ClientGame } from "@/types/game";
@@ -79,11 +78,6 @@ export default function HomePage() {
       {/* 3. All Platforms (Social Media Growth) */}
       <Suspense fallback={<PlatformsSkeleton />}>
         <HomePlatforms />
-      </Suspense>
-
-      {/* 4. Game events follow the services section */}
-      <Suspense fallback={<GameEventsSkeleton />}>
-        <HomeGameEvents />
       </Suspense>
     </div>
   );

@@ -129,16 +129,6 @@ const NAV_GROUPS: { title: string; items: NavItemConfig[] }[] = [
         },
       },
       {
-        href: "/admin/events",
-        label: "Game Events",
-        icon: CalendarDays,
-        badge: {
-          inactive: "bg-orange-50 dark:bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/70 dark:border-orange-500/25",
-          active: "bg-orange-600 text-white shadow-xs shadow-orange-600/30",
-          indicator: "bg-orange-500",
-        },
-      },
-      {
         href: "/admin/banners",
         label: "Promo Banners",
         icon: ImageIcon,

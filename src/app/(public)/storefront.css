@@ -223,20 +223,21 @@
 .public-theme .game-card-inner > div:first-child { background-color: var(--storefront-soft); }
 
 .public-theme .game-card-overlay-title {
-  background: linear-gradient(
-    to top,
-    rgba(10, 8, 14, 0.92) 0%,
-    rgba(10, 8, 14, 0.68) 55%,
-    rgba(10, 8, 14, 0.22) 80%,
-    transparent 100%
-  ) !important;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  background: transparent !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+@media (min-width: 640px) {
+  .public-theme .game-card-overlay-title {
+    background-color: var(--storefront-soft) !important;
+  }
 }
 
 .public-theme .game-card-overlay-title h3 {
-  color: #FFFFFF !important;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 1px rgba(0, 0, 0, 0.95);
+  color: #DB2777 !important;
+  text-shadow: none !important;
   letter-spacing: -0.01em;
 }
 .public-theme .game-card {

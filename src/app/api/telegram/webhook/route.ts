@@ -41,8 +41,16 @@ function getPersistentMainReplyKeyboard(): {
   return {
     keyboard: [
       [
-        { text: "🎮 Games", style: "primary" },
-        { text: "🚀 Services", style: "primary" },
+        {
+          text: "🎮 Games",
+          style: "primary",
+          web_app: { url: STORE_URL },
+        },
+        {
+          text: "🚀 Services",
+          style: "primary",
+          web_app: { url: `${STORE_URL}/services` },
+        },
       ],
       [
         { text: "👤 គណនី" },
@@ -53,7 +61,10 @@ function getPersistentMainReplyKeyboard(): {
         },
       ],
       [
-        { text: "🗒️ Orders" },
+        {
+          text: "🗒️ Orders",
+          web_app: { url: `${STORE_URL}/orders` },
+        },
         { text: "💬 Support" },
       ],
     ],
