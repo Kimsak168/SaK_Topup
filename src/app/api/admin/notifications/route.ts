@@ -157,9 +157,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const storeUrl = process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://")
-      ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "")
-      : "https://www.asuratopup.store";
+    const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
+    const storeUrl =
+      rawAppUrl.startsWith("https://") && !rawAppUrl.includes(".vercel.app")
+        ? rawAppUrl.replace(/\/+$/, "")
+        : "https://www.asuratopup.store";
     const webhookUrl = `${storeUrl}/api/telegram/webhook`;
     const base = `https://api.telegram.org/bot${token}`;
 

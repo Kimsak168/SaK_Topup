@@ -6,9 +6,11 @@ import { escapeTelegramHtml } from "@/lib/notifications/telegramFormat";
 
 export const dynamic = "force-dynamic";
 
-const STORE_URL = process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://")
-  ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "")
-  : "https://www.asuratopup.store";
+const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
+const STORE_URL =
+  rawAppUrl.startsWith("https://") && !rawAppUrl.includes(".vercel.app")
+    ? rawAppUrl.replace(/\/+$/, "")
+    : "https://www.asuratopup.store";
 
 const SUPPORT_URL = process.env.NEXT_PUBLIC_TELEGRAM_SUPPORT || "https://t.me/Asuratopupstore";
 const CHANNEL_URL = "https://t.me/asura_botstore";

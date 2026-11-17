@@ -66,9 +66,13 @@ export async function watchOrderPaymentUntilSettled(
     }
 
     // If still pending after maxWaitMs, trigger a background cron sweep so the order isn't forgotten
+    const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
     const appUrl =
-      process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+      rawAppUrl && !rawAppUrl.includes(".vercel.app")
+        ? rawAppUrl
+        : process.env.VERCEL_URL
+          ? "https://www.asuratopup.store"
+          : "";
 
     if (appUrl) {
       const pingUrl = `${appUrl.replace(/\/+$/, "")}/api/cron/payments?limit=5`;
