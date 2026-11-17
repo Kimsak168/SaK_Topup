@@ -11,6 +11,7 @@ import {
   VngZz2ConfigError,
 } from "@/lib/services/vngzzPayWayService";
 import { watchOrderPaymentUntilSettled } from "@/lib/services/serverPaymentWatcher";
+import { sendTelegramSystemErrorAlert } from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -159,6 +160,21 @@ export async function POST(req: NextRequest) {
         pkg.sellingPrice <= 0 ||
         pkg.isActive === false || pkg.supplierAvailable === false
       ) {
+        void sendTelegramSystemErrorAlert({
+          source: "Client Checkout (Package Unavailable)",
+          gameName: game?.name || cleanGameSlug,
+          packageName: pkg?.name || cleanProductCode,
+          playerId: cleanPlayerId,
+          serverId: serverId ? String(serverId).trim() : undefined,
+          playerName: playerName ? String(playerName).trim() : undefined,
+          supplier: cleanSupplier,
+          reason: !pkg
+            ? `Package code "${cleanProductCode}" not found`
+            : pkg.supplierAvailable === false
+              ? "Package marked unavailable by supplier (Out of Stock)"
+              : "Package is inactive or missing selling price",
+        }).catch(() => {});
+
         return NextResponse.json(
           { success: false, error: "The selected package is unavailable or pending price configuration." },
           { status: 400 }
@@ -287,6 +303,12 @@ export async function POST(req: NextRequest) {
       isSandbox: false,
     });
   } catch (error: unknown) {
+    const errMessage = error instanceof Error ? error.message : "Unknown payment creation error";
+    void sendTelegramSystemErrorAlert({
+      source: "Client Checkout (Payment QR Generation Error)",
+      reason: errMessage,
+    }).catch(() => {});
+
     if (error instanceof VngZz2ConfigError) {
       console.warn("[VngZz2 Create] Configuration note:", error.message);
       return NextResponse.json(

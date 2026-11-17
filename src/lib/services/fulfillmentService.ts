@@ -21,7 +21,7 @@ async function notifyManualFulfillmentNeeded(order: IOrder, rawReason: string): 
     );
     if (!claimed) return;
 
-    await sendTelegramManualFulfillmentAlert({
+    const res = await sendTelegramManualFulfillmentAlert({
       orderNumber: order.orderNumber,
       playerId: order.playerId,
       serverId: order.serverId,
@@ -34,7 +34,16 @@ async function notifyManualFulfillmentNeeded(order: IOrder, rawReason: string): 
       reason: cleanFulfillmentErrorReason(rawReason),
     }).catch((err) => {
       console.error(`[ManualFulfillmentAlert] Error sending Telegram alert for ${order.orderNumber}:`, err);
+      return { ok: false as const };
     });
+
+    if (!res?.ok) {
+      if (typeof (Order as any).updateOne === "function") {
+        await (Order as any).updateOne({ _id: order._id }, { $unset: { manualAlertSentAt: "" } }).catch(() => {});
+      } else if (typeof (Order as any).findOneAndUpdate === "function") {
+        await (Order as any).findOneAndUpdate({ _id: order._id }, { $unset: { manualAlertSentAt: "" } }).catch(() => {});
+      }
+    }
   } catch (err) {
     console.error(`[ManualFulfillmentAlert] Error claiming manual alert for ${order.orderNumber}:`, err);
   }
@@ -414,6 +423,9 @@ export async function reconcileSupplierFulfillment(
       if (smmResult.status === "completed") order.fulfilledAt = new Date();
       if (smmResult.status === "failed") order.errorLog = smmResult.message;
       await order.save();
+      if (smmResult.status === "failed") {
+        await notifyManualFulfillmentNeeded(order, smmResult.message || "SMM order failed");
+      }
     }
     return {
       success: String(order.fulfillmentStatus).toLowerCase() !== "failed",
@@ -435,6 +447,9 @@ export async function reconcileSupplierFulfillment(
       if (result.status === "completed") order.fulfilledAt = new Date();
       if (result.status === "failed") order.errorLog = result.message;
       await order.save();
+      if (result.status === "failed") {
+        await notifyManualFulfillmentNeeded(order, result.message || "VngZz2 order failed");
+      }
     }
     return { success: order.fulfillmentStatus !== "failed", orderNumber, fulfillmentStatus: order.fulfillmentStatus, supplierOrderId: order.supplierOrderId, message: result.message };
   }
@@ -469,6 +484,7 @@ export async function reconcileSupplierFulfillment(
         order.lastSupplierStatus = "failed";
         order.errorLog = g2Status.message || "G2Bulk order failed";
         await order.save();
+        await notifyManualFulfillmentNeeded(order, g2Status.message || "G2Bulk order failed");
         return {
           success: false,
           orderNumber,

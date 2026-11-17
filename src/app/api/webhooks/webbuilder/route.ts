@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { verifyWebBuilderWebhookSignature } from "@/lib/suppliers/webbuilder";
+import { sendTelegramManualFulfillmentAlert } from "@/lib/services/telegramNotificationService";
+import { cleanFulfillmentErrorReason } from "@/lib/notifications/telegramFormat";
 
 export const dynamic = "force-dynamic";
 
@@ -132,6 +134,22 @@ export async function POST(req: NextRequest) {
       fulfillmentStatus: { $in: ["processing", "PROCESSING", "pending", "NOT_STARTED"] },
       webhookEvents: { $ne: effectiveEventId },
     }, updateQuery);
+
+    if (eventType === "order.failed" || eventType === "order.manual_review") {
+      const reason = failureReason || (eventType === "order.manual_review" ? "Order flagged for manual review" : "WebBuilder order failed");
+      await sendTelegramManualFulfillmentAlert({
+        orderNumber: order.orderNumber,
+        playerId: order.playerId,
+        serverId: order.serverId,
+        playerName: order.playerName,
+        gameName: order.gameName,
+        packageName: order.packageName,
+        amount: order.amount,
+        currency: order.currency,
+        transactionId: order.transactionId,
+        reason: cleanFulfillmentErrorReason(reason),
+      }).catch(() => {});
+    }
 
     console.log(
       `[WebBuilder Webhook] Durably recorded event ${effectiveEventId} (${eventType}) for order ${order.orderNumber}`

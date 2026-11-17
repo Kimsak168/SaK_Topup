@@ -9,6 +9,7 @@ import {
   isVngZz2Configured,
 } from "@/lib/services/vngzzPayWayService";
 import { calculateSmmCustomerRate, calculateSmmOrderAmount } from "@/lib/services/smmPricing";
+import { sendTelegramSystemErrorAlert } from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 
@@ -214,10 +215,17 @@ export async function POST(req: NextRequest) {
     });
   } catch (error: unknown) {
     console.error("[SMM Order Creation Error]:", error);
+    const errMsg = error instanceof Error ? error.message : "Failed to create SMM order";
+    void sendTelegramSystemErrorAlert({
+      source: "SMM Service Checkout Error",
+      supplier: "vngzz2",
+      reason: errMsg,
+    }).catch(() => {});
+
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : "Failed to create SMM order",
+        error: errMsg,
       },
       { status: 500 }
     );

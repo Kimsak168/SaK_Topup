@@ -3,7 +3,9 @@ import "server-only";
 import {
   formatTelegramNotificationMessage,
   formatManualFulfillmentMessage,
+  formatSystemErrorAlertMessage,
   type ManualFulfillmentAlertParams,
+  type SystemErrorAlertParams,
   type TelegramNotificationEvent,
   type TelegramNotificationStatus,
 } from "@/lib/notifications/telegramFormat";
@@ -410,6 +412,75 @@ export async function sendTelegramManualFulfillmentAlert(
   } catch (error) {
     const isTimeout = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
     return { ok: false, retryable: true, error: isTimeout ? "Manual fulfillment alert timed out." : "Telegram is unreachable." };
+  }
+}
+
+export async function sendTelegramSystemErrorAlert(
+  params: SystemErrorAlertParams,
+  fetcher?: typeof fetch,
+  env: NodeJS.ProcessEnv = process.env
+): Promise<TelegramSendResult> {
+  const token = env.TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = env.TELEGRAM_ADMIN_CHAT_ID?.trim();
+  if (!token || !chatId) {
+    return { ok: false, retryable: false, error: "Telegram bot credentials are not configured in environment variables." };
+  }
+
+  const effectiveFetch = fetcher || (typeof fetch !== "undefined" ? fetch : (globalThis as unknown as { fetch?: typeof fetch }).fetch);
+  if (typeof effectiveFetch !== "function") {
+    return { ok: false, retryable: false, error: "Fetch is not available." };
+  }
+
+  const topicId = getTelegramTopicThreadId("FAILED", env) ?? getTelegramTopicThreadId("PENDING", env);
+  const text = formatSystemErrorAlertMessage(params);
+
+  const payload: Record<string, unknown> = {
+    chat_id: chatId,
+    text,
+    parse_mode: "HTML",
+    link_preview_options: { is_disabled: true },
+  };
+
+  if (typeof topicId === "number" && topicId > 0) {
+    payload.message_thread_id = topicId;
+  }
+
+  try {
+    let res = await effectiveFetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+
+    let body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+
+    if (
+      !res.ok &&
+      typeof topicId === "number" &&
+      typeof body?.description === "string" &&
+      body.description.toLowerCase().includes("thread not found")
+    ) {
+      delete payload.message_thread_id;
+      res = await effectiveFetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      });
+      body = (await res.json().catch(() => null)) as Record<string, unknown> | null;
+    }
+
+    if (res.ok && body?.ok === true) {
+      const result = (body.result || {}) as Record<string, unknown>;
+      return { ok: true, ...(result.message_id ? { messageId: String(result.message_id) } : {}) };
+    }
+
+    const description = cleanError(body?.description, token);
+    return { ok: false, retryable: false, error: description || `Telegram rejected message (HTTP ${res.status}).` };
+  } catch (error) {
+    const isTimeout = error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError");
+    return { ok: false, retryable: true, error: isTimeout ? "System error alert timed out." : "Telegram is unreachable." };
   }
 }
 

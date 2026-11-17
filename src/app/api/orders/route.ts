@@ -5,6 +5,7 @@ import { Order } from "@/models/Order";
 import { Game } from "@/models/Game";
 import { GamePackage } from "@/models/GamePackage";
 import { Payment } from "@/models/Payment";
+import { sendTelegramSystemErrorAlert } from "@/lib/services/telegramNotificationService";
 
 export const dynamic = "force-dynamic";
 
@@ -165,6 +166,12 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("Order creation error:", error);
+    const errMsg = error instanceof Error ? error.message : "Failed to create order";
+    void sendTelegramSystemErrorAlert({
+      source: "Manual/Roblox Order Creation Error",
+      reason: errMsg,
+    }).catch(() => {});
+
     return NextResponse.json(
       { success: false, error: "Failed to create order" },
       { status: 500 }

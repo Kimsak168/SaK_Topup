@@ -276,7 +276,7 @@ export interface ManualFulfillmentAlertParams {
 export function cleanFulfillmentErrorReason(errorMsg?: string): string {
   if (!errorMsg || typeof errorMsg !== "string") return "Insufficient balance";
   const lower = errorMsg.toLowerCase();
-  if (lower.includes("insufficient") && (lower.includes("balance") || lower.includes("reseller"))) {
+  if (lower.includes("insufficient") && (lower.includes("balance") || lower.includes("reseller") || lower.includes("fund"))) {
     return "Insufficient balance";
   }
   if (lower.includes("out of stock") || lower.includes("out_of_stock") || lower.includes("nostock")) {
@@ -288,13 +288,30 @@ export function cleanFulfillmentErrorReason(errorMsg?: string): string {
   if (lower.includes("conflict")) {
     return "Insufficient balance";
   }
-  return errorMsg.trim().slice(0, 120);
+  return errorMsg.trim().slice(0, 160);
 }
 
 export function formatManualFulfillmentMessage(params: ManualFulfillmentAlertParams): string {
   const ign = params.playerName && params.playerName !== "Not collected" ? params.playerName : "N/A";
+  const cleanedReason = cleanFulfillmentErrorReason(params.reason);
+  const isBalanceError =
+    cleanedReason.toLowerCase().includes("insufficient balance") ||
+    params.reason.toLowerCase().includes("balance") ||
+    params.reason.toLowerCase().includes("spending limit");
+  const isOutOfStock =
+    cleanedReason.toLowerCase().includes("out of stock") ||
+    params.reason.toLowerCase().includes("out of stock") ||
+    params.reason.toLowerCase().includes("nostock");
+
+  let header = `⚠️ <b>Order Pending (Manual Fulfillment)</b>`;
+  if (isBalanceError) {
+    header = `🚨 <b>Supplier Balance Alert / Manual Fulfillment (Supplier អស់លុយ)</b>`;
+  } else if (isOutOfStock) {
+    header = `📦 <b>Supplier Out of Stock / Manual Fulfillment (ដាច់ស្តុក)</b>`;
+  }
+
   const lines: string[] = [
-    `⚠️ <b>Order Pending (Manual Fulfillment)</b>`,
+    header,
     `Order ID: <code>${escapeTelegramHtml(params.orderNumber)}</code>`,
     `ID: <code>${escapeTelegramHtml(params.playerId || "Not provided")}</code>`,
   ];
@@ -314,5 +331,66 @@ export function formatManualFulfillmentMessage(params: ManualFulfillmentAlertPar
   lines.push(`ABA: <code>${escapeTelegramHtml(abaRef)}</code>`);
   lines.push(`Reason: ${escapeTelegramHtml(cleanFulfillmentErrorReason(params.reason))}`);
 
+  return lines.join("\n");
+}
+
+export interface SystemErrorAlertParams {
+  source: string;
+  orderNumber?: string;
+  gameName?: string;
+  packageName?: string;
+  playerId?: string;
+  serverId?: string;
+  playerName?: string;
+  supplier?: string;
+  amount?: number;
+  transactionId?: string;
+  reason: string;
+}
+
+export function formatSystemErrorAlertMessage(params: SystemErrorAlertParams): string {
+  const cleanedReason = cleanFulfillmentErrorReason(params.reason);
+  const isBalanceError = cleanedReason.toLowerCase().includes("insufficient balance") ||
+    params.reason.toLowerCase().includes("balance") ||
+    params.reason.toLowerCase().includes("spending limit");
+
+  const header = isBalanceError
+    ? `🚨 <b>Supplier Balance Alert (ទឹកប្រាក់ Supplier មិនគ្រប់គ្រាន់)</b>`
+    : `⚠️ <b>Top-Up / System Error Alert</b>`;
+
+  const lines: string[] = [
+    header,
+    `Source: <b>${escapeTelegramHtml(params.source)}</b>`,
+  ];
+
+  if (params.orderNumber) {
+    lines.push(`Order ID: <code>${escapeTelegramHtml(params.orderNumber)}</code>`);
+  }
+  if (params.supplier) {
+    lines.push(`Supplier: <b>${escapeTelegramHtml(params.supplier.toUpperCase())}</b>`);
+  }
+  if (params.gameName) {
+    lines.push(`Game/Service: ${escapeTelegramHtml(params.gameName)}`);
+  }
+  if (params.packageName) {
+    lines.push(`Package: ${escapeTelegramHtml(params.packageName)}`);
+  }
+  if (params.playerId) {
+    lines.push(`ID: <code>${escapeTelegramHtml(params.playerId)}</code>`);
+  }
+  if (params.serverId && params.serverId.trim()) {
+    lines.push(`Zone: <code>${escapeTelegramHtml(params.serverId)}</code>`);
+  }
+  if (params.playerName && params.playerName !== "Not collected") {
+    lines.push(`IGN: <code>${escapeTelegramHtml(params.playerName)}</code>`);
+  }
+  if (typeof params.amount === "number" && Number.isFinite(params.amount)) {
+    lines.push(`Price: $${params.amount.toFixed(2)}`);
+  }
+  if (params.transactionId) {
+    lines.push(`ABA: <code>${escapeTelegramHtml(params.transactionId)}</code>`);
+  }
+
+  lines.push(`Reason: <b>${escapeTelegramHtml(params.reason.slice(0, 220))}</b>`);
   return lines.join("\n");
 }
