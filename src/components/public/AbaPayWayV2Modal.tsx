@@ -270,6 +270,27 @@ function KhqrPaymentDialog({
     return () => clearTimeout(timer);
   }, [isSuccess]);
 
+  // Prevent accidental swipe-to-close inside Telegram Mini App while payment is active
+  useEffect(() => {
+    const webApp = typeof window !== "undefined" ? window.Telegram?.WebApp : undefined;
+    if (!paymentEnded && webApp?.enableClosingConfirmation) {
+      try {
+        webApp.enableClosingConfirmation();
+      } catch {
+        // ignore
+      }
+    }
+    return () => {
+      if (webApp?.disableClosingConfirmation) {
+        try {
+          webApp.disableClosingConfirmation();
+        } catch {
+          // ignore
+        }
+      }
+    };
+  }, [paymentEnded]);
+
   const currency = (data.currency || "USD").toUpperCase();
   const amount = new Intl.NumberFormat("en-US", {
     minimumFractionDigits: currency === "KHR" ? 0 : 2,
@@ -279,8 +300,28 @@ function KhqrPaymentDialog({
   const formattedMinutes = Math.floor(timeLeft / 60);
   const formattedSeconds = String(timeLeft % 60).padStart(2, "0");
 
-  const handleSaveQr = () => {
+  const handleSaveQr = async () => {
     if (!renderedQr) return;
+    try {
+      const isTgWebApp = Boolean(typeof window !== "undefined" && window.Telegram?.WebApp?.initData);
+      if (isTgWebApp && typeof navigator !== "undefined" && typeof navigator.share === "function") {
+        const res = await fetch(renderedQr);
+        const blob = await res.blob();
+        const fileName = `KHQR-${data.transactionId || data.orderNumber}.png`;
+        const file = new File([blob], fileName, { type: "image/png" });
+        if (!navigator.canShare || navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: `ABA KHQR - ${data.orderNumber}`,
+          });
+          toast.success("QR Code ready to save or share!");
+          return;
+        }
+      }
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      // Fallback to standard link download
+    }
     const link = document.createElement("a");
     link.href = renderedQr;
     link.download = `KHQR-${data.transactionId || data.orderNumber}.png`;

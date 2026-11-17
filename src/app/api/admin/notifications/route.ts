@@ -146,6 +146,78 @@ export async function POST(req: NextRequest) {
     }, { status: result.ok ? 200 : 400 });
   }
 
+  if (action === "setup_mini_app") {
+    const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    if (!token) {
+      return NextResponse.json(
+        { success: false, error: "TELEGRAM_BOT_TOKEN is not configured." },
+        { status: 400 }
+      );
+    }
+
+    const storeUrl = process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://")
+      ? process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "")
+      : "https://www.asuratopup.store";
+    const webhookUrl = `${storeUrl}/api/telegram/webhook`;
+    const base = `https://api.telegram.org/bot${token}`;
+
+    try {
+      const [menuRes, cmdRes, webhookRes] = await Promise.all([
+        fetch(`${base}/setChatMenuButton`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            menu_button: {
+              type: "web_app",
+              text: "🛍️ Open Store",
+              web_app: { url: storeUrl },
+            },
+          }),
+        }).then((r) => r.json()),
+        fetch(`${base}/setMyCommands`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            commands: [
+              { command: "start", description: "🛍️ បើកហាងទិញពេជ្រហ្គេម (Open Asura Store)" },
+              { command: "shop", description: "💎 ទិញពេជ្រហ្គេម & សេវាកម្ម (Launch Mini App)" },
+              { command: "track", description: "📦 ឆែកមើលស្ថានភាព Order (e.g. /track ASURA-xxx)" },
+              { command: "support", description: "💬 ទាក់ទងផ្នែកជំនួយ (Contact Support)" },
+            ],
+          }),
+        }).then((r) => r.json()),
+        fetch(`${base}/setWebhook`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: webhookUrl,
+            allowed_updates: ["message"],
+            ...(process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
+              ? { secret_token: process.env.TELEGRAM_WEBHOOK_SECRET.trim() }
+              : {}),
+          }),
+        }).then((r) => r.json()),
+      ]);
+
+      return NextResponse.json({
+        success: Boolean(menuRes?.ok && cmdRes?.ok && webhookRes?.ok),
+        storeUrl,
+        webhookUrl,
+        menuOk: Boolean(menuRes?.ok),
+        commandsOk: Boolean(cmdRes?.ok),
+        webhookOk: Boolean(webhookRes?.ok),
+      });
+    } catch (err) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: err instanceof Error ? err.message : "Failed to configure Telegram Mini App",
+        },
+        { status: 500 }
+      );
+    }
+  }
+
   // Default: dispatch pending outbox notifications
   await connectDB();
   const summary = await dispatchPendingTelegramNotifications();

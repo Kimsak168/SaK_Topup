@@ -76,6 +76,7 @@ export function TelegramNotificationSettings() {
   // Action states
   const [testingConnection, setTestingConnection] = useState(false);
   const [sendingTest, setSendingTest] = useState(false);
+  const [settingUpMiniApp, setSettingUpMiniApp] = useState(false);
   const [retryingAll, setRetryingAll] = useState(false);
   const [retryingId, setRetryingId] = useState<string | null>(null);
 
@@ -153,6 +154,28 @@ export function TelegramNotificationSettings() {
       toast.error(err instanceof Error ? err.message : "Network error sending test message");
     } finally {
       setSendingTest(false);
+    }
+  };
+
+  const handleSetupMiniApp = async () => {
+    try {
+      setSettingUpMiniApp(true);
+      const res = await fetch("/api/admin/notifications", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "setup_mini_app" }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toast.success("Telegram Mini App Menu Button & Bot Webhook activated!");
+      } else {
+        toast.error(data.error || "Failed to configure Telegram Mini App");
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Network error configuring Mini App");
+    } finally {
+      setSettingUpMiniApp(false);
     }
   };
 
@@ -349,6 +372,20 @@ export function TelegramNotificationSettings() {
             <Send className="h-3.5 w-3.5" />
           )}
           <span>{sendingTest ? "Sending..." : "Send Test Message"}</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={handleSetupMiniApp}
+          disabled={settingUpMiniApp || !configured}
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold text-[#22C55E] bg-[rgba(34,197,94,0.12)] hover:bg-[rgba(34,197,94,0.2)] border border-[rgba(34,197,94,0.3)] transition-colors cursor-pointer disabled:opacity-50"
+        >
+          {settingUpMiniApp ? (
+            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Bot className="h-3.5 w-3.5" />
+          )}
+          <span>{settingUpMiniApp ? "Activating..." : "Activate Mini App & Bot Webhook"}</span>
         </button>
 
         {stats.failed > 0 && (

@@ -5,6 +5,7 @@ import "./storefront-theme.css";
 import { cn } from "@/lib/utils";
 import { ThemeToaster } from "@/components/ThemeToaster";
 import { StorefrontThemeProvider } from "@/components/StorefrontThemeProvider";
+import { TelegramMiniAppProvider } from "@/components/TelegramMiniAppProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -74,8 +75,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-black text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
         <StorefrontThemeProvider>
-          {children}
-          <ThemeToaster />
+          <TelegramMiniAppProvider>
+            {children}
+            <ThemeToaster />
+          </TelegramMiniAppProvider>
         </StorefrontThemeProvider>
       </body>
     </html>
