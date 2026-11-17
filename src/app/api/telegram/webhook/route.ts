@@ -62,6 +62,13 @@ function getPersistentMainReplyKeyboard(): {
   };
 }
 
+function getCustomerBotToken(): string | undefined {
+  return (
+    process.env.TELEGRAM_CUSTOMER_BOT_TOKEN?.trim() ||
+    process.env.TELEGRAM_BOT_TOKEN?.trim()
+  );
+}
+
 async function sendBotMessage(
   chatId: number | string,
   text: string,
@@ -70,7 +77,7 @@ async function sendBotMessage(
     useMainReplyKeyboard?: boolean;
   }
 ) {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  const botToken = getCustomerBotToken();
   if (!botToken) return;
 
   const payload: Record<string, unknown> = {
@@ -202,12 +209,46 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // Handle Channel Post in @asura_botstore (Asura_Xbot channel) if admin types /start or /shop
+    const channelPost = update.channel_post;
+    if (channelPost && channelPost.chat?.type === "channel") {
+      const channelText = String(channelPost.text || "").trim().toLowerCase();
+      if (channelText.startsWith("/start") || channelText.startsWith("/shop") || channelText.startsWith("/menu")) {
+        const channelMsg = [
+          `🌸 <b>Asura Store Top-Up</b>`,
+          ``,
+          `🎮 Top up games · 🚀 SMM Services`,
+          `💡 បញ្ចូលពេជ្រហ្គេមស្វ័យប្រវត្តិ 24/7 តាម ABA KHQR`,
+          ``,
+          `👇 ចុចប៊ូតុងខាងក្រោមដើម្បីចូលទិញពេជ្រ ឬឆែក Order៖`,
+        ].join("\n");
+
+        await sendBotMessage(channelPost.chat.id, channelMsg, {
+          inlineKeyboard: [
+            [
+              { text: "🎮 Games", url: STORE_URL, style: "primary" },
+              { text: "🚀 Services", url: `${STORE_URL}/services`, style: "primary" },
+            ],
+            [
+              { text: "💎 ទិញពេជ្រ (Open Store)", url: STORE_URL, style: "success" },
+            ],
+            [
+              { text: "🗒️ Orders", url: `${STORE_URL}/orders` },
+              { text: "💬 Support", url: SUPPORT_URL },
+            ],
+          ],
+        });
+      }
+      return NextResponse.json({ ok: true });
+    }
+
     const message = update.message;
     if (!message || !message.chat) {
       return NextResponse.json({ ok: true });
     }
 
     // Strictly respond ONLY in private 1-on-1 customer chats.
+    // Never respond inside the "Asura store" admin notification group (-1003762539876).
     if (message.chat.type !== "private") {
       return NextResponse.json({ ok: true });
     }

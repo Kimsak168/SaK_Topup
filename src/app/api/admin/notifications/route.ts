@@ -147,10 +147,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (action === "setup_mini_app") {
-    const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
+    const token =
+      process.env.TELEGRAM_CUSTOMER_BOT_TOKEN?.trim() ||
+      process.env.TELEGRAM_BOT_TOKEN?.trim();
     if (!token) {
       return NextResponse.json(
-        { success: false, error: "TELEGRAM_BOT_TOKEN is not configured." },
+        { success: false, error: "TELEGRAM_CUSTOMER_BOT_TOKEN or TELEGRAM_BOT_TOKEN is not configured." },
         { status: 400 }
       );
     }
@@ -162,7 +164,7 @@ export async function POST(req: NextRequest) {
     const base = `https://api.telegram.org/bot${token}`;
 
     try {
-      const [menuRes, cmdRes, webhookRes] = await Promise.all([
+      const [menuRes, cmdRes, clearGroupCmdRes, webhookRes] = await Promise.all([
         fetch(`${base}/setChatMenuButton`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -178,6 +180,7 @@ export async function POST(req: NextRequest) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            scope: { type: "all_private_chats" },
             commands: [
               { command: "start", description: "🛍️ បើកហាងទិញពេជ្រហ្គេម (Open Asura Store)" },
               { command: "shop", description: "💎 ទិញពេជ្រហ្គេម & សេវាកម្ម (Launch Mini App)" },
@@ -186,12 +189,20 @@ export async function POST(req: NextRequest) {
             ],
           }),
         }).then((r) => r.json()),
+        fetch(`${base}/setMyCommands`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            scope: { type: "all_group_chats" },
+            commands: [],
+          }),
+        }).then((r) => r.json()),
         fetch(`${base}/setWebhook`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             url: webhookUrl,
-            allowed_updates: ["message"],
+            allowed_updates: ["message", "channel_post"],
             ...(process.env.TELEGRAM_WEBHOOK_SECRET?.trim()
               ? { secret_token: process.env.TELEGRAM_WEBHOOK_SECRET.trim() }
               : {}),
@@ -200,7 +211,7 @@ export async function POST(req: NextRequest) {
       ]);
 
       return NextResponse.json({
-        success: Boolean(menuRes?.ok && cmdRes?.ok && webhookRes?.ok),
+        success: Boolean(menuRes?.ok && cmdRes?.ok && clearGroupCmdRes?.ok && webhookRes?.ok),
         storeUrl,
         webhookUrl,
         menuOk: Boolean(menuRes?.ok),
