@@ -7,7 +7,7 @@ import { WEBBUILDER_GAMES, getWebBuilderGame } from "@/lib/suppliers/webbuilderC
 import type { SyncStats } from "./syncService";
 
 const emptyStats = (): SyncStats => ({ supplier: "webbuilder", imported: 0, updated: 0, skipped: 0, failed: 0, total: 0, errors: [] });
-const DEFAULT_WEBBUILDER_MARGIN_PERCENT = 10;
+const DEFAULT_WEBBUILDER_MARGIN_PERCENT = 15;
 
 /** Apply a complete provider snapshot while retaining admin pricing and artwork. */
 export async function syncWebBuilderCatalogue(options: {
