@@ -57,7 +57,7 @@ export async function syncVngzzCatalogue(options: {
         packages.total += products.length;
         const existingPackages = await GamePackage.find({ supplier: "vngzz2", gameCode: code }).select("supplierProductCode").lean();
         const existingCodes = new Set(existingPackages.map(pkg => pkg.supplierProductCode));
-        const margin = Number.isFinite(savedGame.defaultMarginPercent) && savedGame.defaultMarginPercent >= 0 ? savedGame.defaultMarginPercent : 12;
+        const margin = Number.isFinite(savedGame.defaultMarginPercent) && savedGame.defaultMarginPercent >= 0 ? savedGame.defaultMarginPercent : 10;
         if (products.length) await GamePackage.bulkWrite(products.map((product, i) => {
           const sellingPrice = product.available && product.currency === "USD" ? Math.ceil((product.price * (1 + margin / 100) - 1e-9) * 100) / 100 : null;
           return { updateOne: {

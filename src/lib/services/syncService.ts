@@ -112,7 +112,7 @@ export async function syncG2BulkRobloxGame(): Promise<SyncStats> {
         isPopular: true,
         isTrending: true,
         isActive: true,
-        defaultMarginPercent: 12,
+        defaultMarginPercent: 10,
         sortOrder: G2BULK_ROBLOX_GAME.sortOrder,
       });
       stats.imported++;
@@ -171,7 +171,7 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
       try {
         const prodId = String(prod.id);
         const wholesaleCost = Number(prod.unit_price) || 0;
-        const defaultMargin = robloxGame.defaultMarginPercent || 12;
+        const defaultMargin = robloxGame.defaultMarginPercent || 10;
         const computedSellingPrice = Math.round(wholesaleCost * (1 + defaultMargin / 100) * 100) / 100;
         const computedOriginalPrice = Math.round(computedSellingPrice * 1.15 * 100) / 100;
 

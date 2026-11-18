@@ -125,7 +125,7 @@ const GameSchema = new Schema<IGame>(
     },
     defaultMarginPercent: {
       type: Number,
-      default: 20,
+      default: 10,
     },
     sortOrder: {
       type: Number,
