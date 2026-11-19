@@ -1,6 +1,11 @@
-import "server-only";
 import crypto from "crypto";
 import QRCode from "qrcode";
+import {
+  isKhqrPayConfigured,
+  generateKhqrPayQr,
+  checkKhqrPayTransaction,
+  checkKhqrPayHealth,
+} from "@/lib/services/khqrPayService";
 
 /**
  * ABA PayWay V2 (VngZz2 Payment API) Service
@@ -118,6 +123,7 @@ const UNAVAILABLE_HEALTH_CACHE_MS = 3_000;
  * Check if VngZz2 environment configuration is provided.
  */
 export function isVngZz2Configured(): boolean {
+  if (isKhqrPayConfigured()) return true;
   return Boolean(
     (process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim()
   );
@@ -225,6 +231,38 @@ export function generateVngZz2SandboxQr(params: GenerateQrParams): GenerateQrRes
  * POST /v1/generate_qr
  */
 export async function generateVngZz2Qr(params: GenerateQrParams): Promise<GenerateQrResult> {
+  if (isKhqrPayConfigured()) {
+    const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
+    const storeUrl =
+      rawAppUrl.startsWith("https://") && !rawAppUrl.includes(".vercel.app")
+        ? rawAppUrl.replace(/\/+$/, "")
+        : "https://www.asuratopup.store";
+    const webhookUrl = `${storeUrl}/api/webhooks/khqrpay`;
+
+    const res = await generateKhqrPayQr({
+      amount: params.amount,
+      currency: params.currency,
+      orderNumber: params.orderNumber,
+      webhookUrl,
+      timeoutMs: params.timeoutMs,
+    });
+
+    return {
+      success: true,
+      transactionId: res.transactionId,
+      amount: res.amount,
+      currency: res.currency,
+      state: res.state,
+      qrString: res.qrString,
+      qrImage: res.qrImage,
+      qrPngUrl: res.qrPngUrl,
+      payUrl: res.payUrl,
+      deepLink: res.deepLink,
+      expireInSec: res.expireInSec,
+      expiresAt: res.expiresAt,
+    };
+  }
+
   const config = getVngZz2Config();
   const canonicalAmount = formatVngZzAmount(params.amount);
   const currency = params.currency || config.currency || "USD";
@@ -350,6 +388,24 @@ export async function checkVngZz2Transaction(
     };
   }
 
+  if (isKhqrPayConfigured()) {
+    const res = await checkKhqrPayTransaction(cleanTxnId);
+    return {
+      success: res.success,
+      transactionId: res.transactionId,
+      state: res.state,
+      isPaid: res.isPaid,
+      amount: res.amount,
+      currency: res.currency,
+      action: res.isPaid ? "approved" : undefined,
+      code: res.isPaid ? "00" : undefined,
+      paywayTransactionId: res.transactionId,
+      receiptUrl: res.checkoutUrl,
+      checkedAt: res.checkedAt,
+      message: res.message,
+    };
+  }
+
   // Deduplicate in-flight checks for the exact same transaction ID
   const existing = inFlightChecks.get(cleanTxnId);
   if (existing) return existing;
@@ -440,6 +496,19 @@ export async function checkVngZz2Transaction(
  * GET /v1/status or GET /v1/ping
  */
 export async function checkVngZz2Health(timeoutMs = 5000): Promise<VngZz2HealthResult> {
+  if (isKhqrPayConfigured()) {
+    const khqrHealth = await checkKhqrPayHealth();
+    return {
+      available: khqrHealth.available,
+      state: khqrHealth.available ? "HEALTHY" : "UNAVAILABLE",
+      latencyMs: khqrHealth.latencyMs,
+      service: "khqrpay-site",
+      version: "1.0.0-khqrpay",
+      capabilities: ["aba", "bakong", "khqr"],
+      message: khqrHealth.message,
+    };
+  }
+
   if (!isVngZz2Configured()) {
     return {
       available: true,
