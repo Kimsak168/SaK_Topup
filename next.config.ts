@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Disable Vercel server-side image transformation to stay within free plan (0 transformations used)
+    unoptimized: true,
     // WebP avoids the extra AVIF encoding work on the first image request.
     formats: ["image/webp"],
     qualities: [75, 80, 100],
