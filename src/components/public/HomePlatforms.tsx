@@ -12,7 +12,10 @@ const PLATFORMS = [
 
 export async function HomePlatforms() {
   const summary = await getPublicSmmCatalogSummary().catch(() => null);
-  const counts = new Map(summary?.platforms.map((platform) => [platform.id, platform.count]));
+  if (!summary || summary.catalogTotal === 0) {
+    return null;
+  }
+  const counts = new Map(summary.platforms.map((platform) => [platform.id, platform.count]));
   return (
     <div className="w-full text-slate-100">
       <div id="services" className="scroll-mt-28" />
