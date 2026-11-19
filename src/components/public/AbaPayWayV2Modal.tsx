@@ -407,14 +407,6 @@ function KhqrPaymentDialog({
             </div>
 
             <footer className={styles.abaV2Footer}>
-              {data.deepLink && (
-                <a
-                  href={data.deepLink}
-                  className={styles.abaV2Deeplink}
-                >
-                  🚀 Open ABA Mobile App
-                </a>
-              )}
               <div className={styles.abaV2Scan}>
                 <b>Scan to pay</b>
                 <span>or</span>
