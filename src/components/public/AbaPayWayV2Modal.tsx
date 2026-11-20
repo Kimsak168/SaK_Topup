@@ -407,6 +407,34 @@ function KhqrPaymentDialog({
             </div>
 
             <footer className={styles.abaV2Footer}>
+              {data.deepLink && !data.isLoading && (
+                <div style={{ padding: "0 18px 10px" }}>
+                  <a
+                    href={data.deepLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      width: "100%",
+                      padding: "10px 16px",
+                      borderRadius: "12px",
+                      backgroundColor: "#005f73",
+                      color: "#ffffff",
+                      fontWeight: 700,
+                      fontSize: "14px",
+                      textDecoration: "none",
+                      boxShadow: "0 2px 8px rgba(0, 95, 115, 0.25)",
+                      transition: "all 0.15s ease",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span>🚀</span> Open ABA Mobile App
+                  </a>
+                </div>
+              )}
               <div className={styles.abaV2Scan}>
                 <b>Scan to pay</b>
                 <span>or</span>

@@ -33,6 +33,7 @@ const LEGACY_MEMBERSHIP_ARTWORK: Record<string, string> = {
 // customImage values still take priority over these defaults.
 const CURRENT_GAME_COVER_ART: Record<string, string> = {
   "free-fire-khsgmy": "/images/freefire.webp?v=naruto",
+  "free-fire-likes": "/images/freefire-likes.webp",
   hok: "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/10/e4/fe/10e4fe00-2610-bd44-4cab-f68e49518979/AppIcon-1x_U007emarketing-0-6-0-85-220-0.png/512x512bb.jpg",
   mlbb: "/images/mlbb/mlbb.webp?v=kh",
   "webbuilder-mlbb-global": "/images/mlbb/mlbb_global.webp?v=2026",
@@ -43,7 +44,8 @@ const CURRENT_GAME_COVER_ART: Record<string, string> = {
   "webbuilder-mlbb-br": "/images/mlbb/mlbb_br.webp?v=2026",
   "webbuilder-mlbb-special": "/images/mlbb/mlbb_special.webp?v=2026",
   "pubg-mobile": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/4f/8d/38/4f8d3800-68b5-1c53-b0f7-7d46bda6a394/AppIcon-0-0-1x_U007emarketing-0-7-0-85-220.png/512x512bb.jpg",
-  roblox: "/images/roblox-official.webp?v=2026",
+  roblox: "/images/robux-code.webp",
+  "robux-code": "/images/robux-code.webp",
   "8-ball-pool": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/64/0c/3d/640c3d70-3a45-da59-3aa1-5e13eccdf116/AppIcon-0-0-1x_U007emarketing-0-7-0-0-85-220.png/512x512bb.jpg",
   "blood-strike": "https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/b8/a4/e7/b8a4e7ad-660b-a456-77de-1b2f5c4a9b6a/AppIcon-0-0-1x_U007emarketing-0-11-0-85-220.png/512x512bb.jpg",
   "magic-chess-gogo": "/images/magic-chess.webp?v=2026",
@@ -143,15 +145,15 @@ export const getGameBySupplierAndCode = cache(async (
     const code = aliases[raw] || raw;
     const games = await getCatalogue();
     const matched = games.find(g => g.supplier === supplier && (g.code.toLowerCase() === code || g.slug === code))
-      || games.find(g => g.supplier !== "vngzz2" && (g.code.toLowerCase() === code || g.slug === code));
+      || games.find(g => (g.code.toLowerCase() === code || g.slug === code));
     const targetSupplier = matched?.supplier || (
       (code.includes("freefire") || code === "free-fire" || code === "ff" || code.includes("khsgmy") || code.includes("sgmy")) ? "webbuilder"
-      : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? "webbuilder"
+      : ["mlbb", "mobile-legends", "mlbb_global"].includes(code) ? (matched?.supplier || "vngzz2")
       : ["pubgm", "pubg-mobile"].includes(code) ? (matched?.supplier || "webbuilder")
       : ["hok", "honor-of-kings", "honor_of_kings"].includes(code) ? "webbuilder"
       : "webbuilder"
     );
-    if (!["g2bulk", "webbuilder"].includes(targetSupplier)) return { game: null };
+    if (!["g2bulk", "webbuilder", "vngzz2"].includes(targetSupplier)) return { game: null };
     if (targetSupplier !== supplier || raw !== code) {
       return { game: null, shouldRedirect: `/games/${targetSupplier}/${code}` };
     }
@@ -269,13 +271,16 @@ function getDefaultGamePackageImage(
   isDiamondPackage: boolean
 ): string | null {
   const key = `${code} ${slug}`.toLowerCase();
+  if (key.includes("free-fire-likes") || key.includes("freefire-likes") || key.includes("likes")) {
+    return "/images/freefire-likes.webp";
+  }
   if (key.includes("mlbb") || key.includes("mobile-legends")) {
     return isDiamondPackage ? "/images/mlbb-diamond.webp" : null;
   }
   if (key.includes("freefire") || key.includes("ff-") || key.includes("free-fire")) {
     return isDiamondPackage ? "/images/diamond-crystals.webp" : null;
   }
-  if (key.includes("roblox")) return /gift|\$/i.test(baseName) ? "/images/roblox-official.webp?v=2026" : "/images/robux-coin.webp";
+  if (key.includes("roblox") || key.includes("robux")) return "/images/robux-code.webp";
   if (key.includes("magic_chess") || key.includes("mcgg")) return getMcggPackageImage(baseName);
   if (key.includes("telegram")) {
     return /premium/i.test(baseName) ? "/images/packages/telegram-premium.webp" : "/images/packages/telegram-star.svg";

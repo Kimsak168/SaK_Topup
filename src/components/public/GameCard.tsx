@@ -108,15 +108,19 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         </div>
 
         {/* Mobile (<640px): Floating inside card | Desktop (>=640px): Under card image */}
-        <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex sm:static sm:inset-auto sm:h-[38px] sm:min-w-0 sm:shrink-0 ${isComingSoon ? "flex-col gap-0.5" : "flex-col"} items-center justify-end sm:justify-center px-1.5 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:bg-[#FDF2F8] sm:px-2.5 sm:py-1`}>
-          <h3 className="line-clamp-2 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-extrabold sm:font-bold tracking-[-0.01em] wrap-anywhere text-[#DB2777]">
+        <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex sm:static sm:inset-auto sm:min-h-[46px] sm:h-auto sm:min-w-0 sm:shrink-0 flex-col items-center justify-end sm:justify-center px-1.5 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:bg-[#FDF2F8] sm:px-2.5 sm:py-1.5`}>
+          <h3 className="line-clamp-1 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-extrabold sm:font-bold tracking-[-0.01em] wrap-anywhere text-[#DB2777]">
             {game.name}
           </h3>
-          {isComingSoon && (
+          {game.badge ? (
+            <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[8.5px] min-[380px]:text-[9px] sm:text-[10px] font-semibold bg-[#E6F4EA] text-[#0D652D] border border-emerald-300/60 leading-tight">
+              {game.badge}
+            </span>
+          ) : isComingSoon ? (
             <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-[#BE185D] leading-none">
               Coming Soon
             </span>
-          )}
+          ) : null}
         </div>
       </div>
     </StorefrontLink>

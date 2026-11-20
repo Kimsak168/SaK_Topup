@@ -13,6 +13,7 @@ export type PackageKind =
 
 export function getPackageVariant(game: Pick<ClientGame, "name" | "slug" | "code">): PackageVariant {
   const haystack = `${game.name} ${game.slug} ${game.code}`;
+  if (/free\s*fire\s*likes/i.test(haystack) || /freefire-likes/i.test(haystack)) return "other";
   if (/free\s*fire|freefire/i.test(haystack)) return "free-fire";
   if (/mobile\s*legends|mlbb/i.test(haystack)) return "mobile-legends";
   return "other";

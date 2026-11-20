@@ -248,20 +248,25 @@ export async function syncG2BulkRobloxPackages(): Promise<SyncStats> {
  * Preserves existing admin customizations (images, descriptions, selling prices, active states).
  */
 export async function syncGamesFromSuppliers(options: { supplier?: "webbuilder" | "vngzz2" | "g2bulk" } = {}): Promise<FullSyncResult["games"]> {
-  if (options.supplier === "vngzz2" || options.supplier === "g2bulk") {
-    return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, emptyVngzzStats(), emptyG2BulkStats());
-  }
-
-  const { games: webbuilderStats } = await syncWebBuilderCatalogue();
-  const vngzzStats = emptyVngzzStats();
+  let webbuilderStats = { ...emptyVngzzStats(), supplier: "webbuilder" };
+  let vngzzStats = emptyVngzzStats();
   const g2bulkStats = emptyG2BulkStats();
+
+  if (options.supplier !== "vngzz2" && options.supplier !== "g2bulk") {
+    const res = await syncWebBuilderCatalogue();
+    webbuilderStats = res.games;
+  }
+  if (options.supplier === "vngzz2" && isVngzzGameConfigured()) {
+    const res = await syncVngzzCatalogue();
+    vngzzStats = res.games;
+  }
 
   invalidateCatalogueCache();
   return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);
 }
 
 /**
- * 2. Synchronize packages from WebBuilder API
+ * 2. Synchronize packages from WebBuilder API / VngZz2
  * Preserves customer selling prices, custom package images, admin availability toggles, and badges.
  */
 export async function syncPackagesFromSuppliers(options: {
@@ -275,13 +280,19 @@ export async function syncPackagesFromSuppliers(options: {
     const selectedGame = await Game.findOne({ slug: options.gameCode }).lean();
     if (selectedGame) options = { ...options, supplier: selectedGame.supplier, gameCode: selectedGame.supplierGameCode };
   }
-  if (options.supplier === "vngzz2" || options.supplier === "g2bulk") {
-    return combinedStats({ ...emptyVngzzStats(), supplier: "webbuilder" }, emptyVngzzStats(), emptyG2BulkStats());
-  }
 
-  const { packages: webbuilderStats } = await syncWebBuilderCatalogue({ ...options, packages: true });
-  const vngzzStats = emptyVngzzStats();
+  let webbuilderStats = { ...emptyVngzzStats(), supplier: "webbuilder" };
+  let vngzzStats = emptyVngzzStats();
   const g2bulkStats = emptyG2BulkStats();
+
+  if (options.supplier !== "vngzz2" && options.supplier !== "g2bulk") {
+    const res = await syncWebBuilderCatalogue({ ...options, packages: true });
+    webbuilderStats = res.packages;
+  }
+  if (options.supplier === "vngzz2" && isVngzzGameConfigured()) {
+    const res = await syncVngzzCatalogue({ packages: true, gameCode: options.gameCode, onlyActiveGames: options.onlyActiveGames });
+    vngzzStats = res.packages;
+  }
 
   invalidateCatalogueCache();
   return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);

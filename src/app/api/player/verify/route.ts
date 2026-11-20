@@ -17,6 +17,8 @@ const DEFAULT_PRODUCT_IDS: Record<string, string> = {
   freefire: "web_product_9c49381bdfe8553e36e8e506",
   freefire_khsgmy: "web_product_9c49381bdfe8553e36e8e506",
   "free-fire-khsgmy": "web_product_9c49381bdfe8553e36e8e506",
+  "free-fire-likes": "web_product_9c49381bdfe8553e36e8e506",
+  "freefire-likes": "web_product_9c49381bdfe8553e36e8e506",
   mlbb: "web_product_bdd61202860568f9c8c564bc",
   "mobile-legends": "web_product_bdd61202860568f9c8c564bc",
   hok: "web_product_5d5a074e928d4dbff6bebd6f",
