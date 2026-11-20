@@ -36,7 +36,9 @@ function PackageSlide({ game, pkg, kind, variant }: { game: ClientGame; pkg: Cli
       ? "/images/packages/freefire-monthly-transparent.webp"
       : "/images/packages/freefire-weekly-transparent.webp"
     : game.image || "/images/diamond-crystals.webp";
-  const badge = kind === "monthly" ? "Best value" : pkg.badge;
+  const rawBadge = kind === "monthly" ? "Best value" : pkg.badge;
+  const badgeNorm = rawBadge?.trim().toUpperCase();
+  const badge = badgeNorm === "HOT DEAL" || badgeNorm === "POPULAR" ? null : rawBadge;
   const useMobileLegendsIcon = variant === "mobile-legends" && !customImage;
   const useGameCover = variant === "other" && !customImage;
   const artClassName = useMobileLegendsIcon

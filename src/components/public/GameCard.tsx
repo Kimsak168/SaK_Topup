@@ -40,8 +40,6 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
     ? FALLBACK_IMAGE
     : imageSource;
   const isComingSoon = game.badge?.trim().toUpperCase().replace(/[\s-]+/g, "_") === "COMING_SOON";
-  const isHotDeal = game.badge?.trim().toUpperCase().replace(/[\s_-]+/g, " ") === "HOT DEAL";
-  const displayBadge = isHotDeal ? null : game.badge;
 
   return (
     <StorefrontLink
@@ -114,15 +112,11 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           <h3 className="line-clamp-1 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-extrabold sm:font-bold tracking-[-0.01em] wrap-anywhere text-black">
             {game.name}
           </h3>
-          {displayBadge ? (
-            <span className="mt-0.5 inline-flex items-center px-2 py-0.5 rounded-full text-[8.5px] min-[380px]:text-[9px] sm:text-[10px] font-semibold bg-[#E6F4EA] text-[#0D652D] border border-emerald-300/60 leading-tight">
-              {displayBadge}
-            </span>
-          ) : isComingSoon ? (
-            <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-[#BE185D] leading-none">
+          {isComingSoon && (
+            <span className="text-[8px] min-[380px]:text-[9px] font-extrabold uppercase tracking-wider text-[#BE185D] leading-none mt-0.5">
               Coming Soon
             </span>
-          ) : null}
+          )}
         </div>
       </div>
     </StorefrontLink>

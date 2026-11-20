@@ -188,36 +188,54 @@ export async function triggerAutomaticFulfillment(
     }
 
     if (order.supplier === "vngzz2") {
-      const isManualVngzzGame = ["roblox", "free-fire-likes"].includes(order.gameSlug) ||
-        order.supplierProductCode.startsWith("ff-likes-") ||
-        order.supplierProductCode.startsWith("roblox-");
-
-      if (isManualVngzzGame) {
+      // Robux Send: manual delivery by admin in Roblox, notify Telegram
+      if (order.gameSlug === "roblox" || order.supplierProductCode.startsWith("roblox-send-")) {
         await Order.findByIdAndUpdate(order._id, {
           $set: {
             fulfillmentStatus: "processing",
-            lastSupplierStatus: "PENDING_DELIVERY",
-            adminNotes: `VngZz2 storefront order recorded for ${order.gameName} (${order.packageName}). Code / likes pending delivery.`,
+            lastSupplierStatus: "PENDING_TELEGRAM_SEND",
+            adminNotes: `Robux Send order for ${order.playerId}. Send ${order.packageName} via Roblox manually.`,
             updatedAt: new Date(),
           },
         });
+        await notifyManualFulfillmentNeeded(order, `Robux Send requested. Username: ${order.playerId} | Package: ${order.packageName}`);
         return {
           success: true,
           orderNumber,
           fulfillmentStatus: "processing",
-          message: "Order placed successfully. Details logged for delivery.",
+          message: "Robux Send order placed. Details sent to admin via Telegram for fulfillment.",
         };
       }
 
+      // Free Fire Likes: manual delivery
+      if (order.gameSlug === "free-fire-likes" || order.supplierProductCode.startsWith("ff-likes-")) {
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            fulfillmentStatus: "processing",
+            lastSupplierStatus: "PENDING_DELIVERY",
+            adminNotes: `Free Fire Likes order for UID: ${order.playerId} (${order.packageName}).`,
+            updatedAt: new Date(),
+          },
+        });
+        await notifyManualFulfillmentNeeded(order, `Free Fire Likes requested. UID: ${order.playerId} | Package: ${order.packageName}`);
+        return {
+          success: true,
+          orderNumber,
+          fulfillmentStatus: "processing",
+          message: "Free Fire Likes order recorded for delivery.",
+        };
+      }
+
+      // Robux Code and MLBB: call VngZz2 automated API (/create_order)
       // Persist the stable reference before submitting. A timeout is reconciled
       // through check_order; it must never trigger a second purchase.
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
-      const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId, serverId: order.serverId, reference: order.orderNumber });
+      const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId || "GUEST", serverId: order.serverId, reference: order.orderNumber });
       await Order.findByIdAndUpdate(order._id, { $set: {
-        supplierOrderId: result.id, fulfillmentStatus: "processing", lastSupplierStatus: result.supplierStatus,
+        supplierOrderId: result.id, fulfillmentStatus: result.status, lastSupplierStatus: result.supplierStatus,
         supplierNextPollAt: new Date(Date.now() + 60_000),
       } });
-      return { success: true, orderNumber, fulfillmentStatus: "processing", supplierOrderId: result.id, message: "Supplier submission recorded; delivery awaits a status check." };
+      return { success: true, orderNumber, fulfillmentStatus: result.status, supplierOrderId: result.id, message: result.message };
     }
 
     // G2Bulk Fulfillment (Roblox product purchase & SMM protocol)

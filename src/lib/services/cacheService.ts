@@ -29,7 +29,7 @@ export function cachePublicQuery<Args extends unknown[], Result>(
         pending.delete(argumentKey);
       }
     },
-    ["public-v6", key, query.toString()],
+    ["public-v7", key, query.toString()],
     { tags: [tag], revalidate: 300 }
   );
 }
