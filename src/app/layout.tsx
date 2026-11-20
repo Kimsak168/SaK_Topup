@@ -73,7 +73,10 @@ export default function RootLayout({
         "font-sans"
       )}
     >
-      <body className="min-h-full flex flex-col bg-black text-foreground font-sans selection:bg-primary selection:text-primary-foreground">
+      <body
+        suppressHydrationWarning
+        className="min-h-full flex flex-col bg-black text-foreground font-sans selection:bg-primary selection:text-primary-foreground"
+      >
         <StorefrontThemeProvider>
           <TelegramMiniAppProvider>
             {children}
