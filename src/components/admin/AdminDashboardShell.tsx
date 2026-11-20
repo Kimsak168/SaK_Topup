@@ -173,10 +173,14 @@ function getVerifiedSupplierCount() {
   try {
     const saved = sessionStorage.getItem("saksuuu_supplier_check");
     if (!saved) return 0;
-    const check = JSON.parse(saved) as { timestamp?: string; webbuilder?: { status?: string } };
+    const check = JSON.parse(saved) as {
+      timestamp?: string;
+      webbuilder?: { status?: string };
+      vngzz2?: { status?: string };
+    };
     const checkedAt = Date.parse(check.timestamp || "");
     if (!Number.isFinite(checkedAt) || Date.now() - checkedAt > 10 * 60_000) return 0;
-    return Number(check.webbuilder?.status === "connected");
+    return Number(check.vngzz2?.status === "connected") + Number(check.webbuilder?.status === "connected");
   } catch {
     return 0;
   }
@@ -455,7 +459,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
               } ${
                 isDarkMode ? "bg-[#111A2B] hover:bg-[#151F31] border border-[#243047]" : "bg-slate-50 hover:bg-slate-100 border border-slate-200"
               }`}
-              title={collapsed ? "Supplier API: WebBuilder" : undefined}
+              title={collapsed ? (connectedSuppliers >= 1 ? "Supplier API: VngZz 2 Game" : "Supplier API: Offline") : undefined}
               aria-label="View supplier connection status"
             >
               {!collapsed ? (
@@ -470,7 +474,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                       }`}
                       aria-hidden="true"
                     />
-                    <span className="truncate">WebBuilder</span>
+                    <span className="truncate">{connectedSuppliers >= 1 ? "VngZz 2 Game" : "Offline"}</span>
                   </div>
                 </div>
               ) : (
@@ -705,7 +709,7 @@ export function AdminDashboardShell({ children }: AdminDashboardShellProps) {
                       }`}
                       aria-hidden="true"
                     />
-                    <span className="truncate">WebBuilder</span>
+                    <span className="truncate">{connectedSuppliers >= 1 ? "VngZz 2 Game" : "Offline"}</span>
                   </div>
                 </div>
               </Link>

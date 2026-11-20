@@ -188,6 +188,27 @@ export async function triggerAutomaticFulfillment(
     }
 
     if (order.supplier === "vngzz2") {
+      const isManualVngzzGame = ["roblox", "free-fire-likes"].includes(order.gameSlug) ||
+        order.supplierProductCode.startsWith("ff-likes-") ||
+        order.supplierProductCode.startsWith("roblox-");
+
+      if (isManualVngzzGame) {
+        await Order.findByIdAndUpdate(order._id, {
+          $set: {
+            fulfillmentStatus: "processing",
+            lastSupplierStatus: "PENDING_DELIVERY",
+            adminNotes: `VngZz2 storefront order recorded for ${order.gameName} (${order.packageName}). Code / likes pending delivery.`,
+            updatedAt: new Date(),
+          },
+        });
+        return {
+          success: true,
+          orderNumber,
+          fulfillmentStatus: "processing",
+          message: "Order placed successfully. Details logged for delivery.",
+        };
+      }
+
       // Persist the stable reference before submitting. A timeout is reconciled
       // through check_order; it must never trigger a second purchase.
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });

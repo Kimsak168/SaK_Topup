@@ -36,10 +36,10 @@ export const SUPPLIERS: SupplierDefinition[] = [
     displayName: "VngZz 2 Game",
     baseUrl: (process.env.VNGZZ2_GAME_BASE_URL || process.env.VNGZZ2_PAYMENT_BASE_URL || "https://www.vngzz2game.site/api").replace(/\/+$/, ""),
     configured: Boolean(process.env.VNGZZ2_GAME_API_KEY?.trim() || process.env.VNGZZ2_PRIMARY_API_KEY?.trim() || process.env.VNGZZ2_PAYMENT_API_KEY?.trim()),
-    credentials: ["VNGZZ2_GAME_API_KEY", "VNGZZ2_PRIMARY_API_KEY", "VNGZZ2_PAYMENT_API_KEY"],
-    capabilities: ["smm"],
-    balanceScopes: ["smm"],
-    catalogModes: ["smm"],
+    credentials: ["VNGZZ2_PRIMARY_API_KEY", "VNGZZ2_GAME_API_KEY", "VNGZZ2_PAYMENT_API_KEY"],
+    capabilities: ["game", "smm", "payment"],
+    balanceScopes: ["game", "smm"],
+    catalogModes: ["game", "smm"],
   },
   {
     id: "webbuilder",
@@ -79,12 +79,13 @@ function unwrap(payload: Record<string, unknown>): Record<string, unknown> {
 
 function vngzzBalances(payload: Record<string, unknown>): BalanceEntry[] {
   const data = unwrap(payload);
+  const user = (payload.user && typeof payload.user === "object" ? payload.user : {}) as Record<string, unknown>;
   const entries: BalanceEntry[] = [];
   for (const [walletId, keys] of [
     ["game", ["balance", "game_balance"]],
     ["smm", ["balance_smm", "smm_balance"]],
   ] as const) {
-    const raw = keys.map(key => data[key]).find(value => value !== undefined);
+    const raw = keys.map(key => data[key] ?? user[key]).find(value => value !== undefined);
     const amount = toAmountString(raw);
     if (amount !== null) entries.push({ walletId, amount, currency: "USD" });
   }

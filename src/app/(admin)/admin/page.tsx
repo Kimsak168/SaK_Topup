@@ -27,12 +27,17 @@ interface OverviewData {
   salesChart: Array<{ date: string; revenue: number; orders: number }>;
   suppliers: {
     webbuilder?: { configured: boolean };
+    vngzz2?: { configured: boolean };
   };
 }
 
 interface SupplierCheck {
   timestamp: string;
   webbuilder?: {
+    status: string; apiKeyConfigured: boolean; error: string | null;
+    reseller: { balance?: number | string; username?: string } | null;
+  };
+  vngzz2?: {
     status: string; apiKeyConfigured: boolean; error: string | null;
     reseller: { balance?: number | string; username?: string } | null;
   };
@@ -58,6 +63,14 @@ function getStatusBadge(status: string) {
       <span className="admin-status admin-status-pending">
         <span className="h-1.5 w-1.5 rounded-full bg-[#F59E0B]" />
         {status.toLowerCase()}
+      </span>
+    );
+  }
+  if (norm === "DISABLED") {
+    return (
+      <span className="admin-status bg-slate-500/10 text-slate-400 border border-slate-500/20 px-2 py-0.5 rounded-full text-[11px] inline-flex items-center gap-1.5 font-medium">
+        <span className="h-1.5 w-1.5 rounded-full bg-[#64748B]" />
+        disabled
       </span>
     );
   }
@@ -113,36 +126,77 @@ export default function AdminOverviewPage() {
     void fetchOverview();
   }, [days, fetchOverview]);
 
+  const verifySuppliers = useCallback(async (showToast = true) => {
+    setChecking(true);
+    try {
+      try {
+        await fetch("/api/admin/suppliers/vngzz2/test-connection", { method: "POST" });
+        await fetch("/api/admin/suppliers/vngzz2/sync-balance", { method: "POST" });
+      } catch {
+        // Individual supplier check failure is handled via fetched accounts status
+      }
+
+      const response = await fetch("/api/admin/suppliers", { cache: "no-store" });
+      const body = await response.json();
+      if (!response.ok || !body.success) throw new Error(body.error || `HTTP ${response.status}`);
+
+      const accounts = Array.isArray(body.accounts) ? body.accounts : [];
+      const vngzz = accounts.find((a: Record<string, unknown>) => a.id === "vngzz2") as Record<string, unknown> | undefined;
+      const wb = accounts.find((a: Record<string, unknown>) => a.id === "webbuilder") as Record<string, unknown> | undefined;
+
+      const vngzzBalances = Array.isArray(vngzz?.balances) ? vngzz.balances : [];
+      const wbBalances = Array.isArray(wb?.balances) ? wb.balances : [];
+
+      const checkData: SupplierCheck = {
+        timestamp: new Date().toISOString(),
+        vngzz2: {
+          status: String(vngzz?.status || "connected"),
+          apiKeyConfigured: Boolean(vngzz?.configured),
+          error: (vngzz?.lastError as string) || null,
+          reseller: {
+            balance: vngzzBalances.find((b: { walletId: string }) => b.walletId === "game" || b.walletId === "smm")?.amount ?? (vngzz?.status === "connected" ? 0 : undefined),
+            username: "sok_koemsak (reseller)",
+          },
+        },
+        webbuilder: {
+          status: wb?.enabled === false ? "disabled" : String(wb?.status || "unavailable"),
+          apiKeyConfigured: Boolean(wb?.configured),
+          error: wb?.enabled === false ? "Disabled by administrator" : ((wb?.lastError as string) || null),
+          reseller: wbBalances.length ? {
+            balance: wbBalances.find((b: { walletId: string }) => b.walletId === "available")?.amount ?? 0,
+            username: "WebBuilder",
+          } : null,
+        },
+      };
+
+      setSupplierCheck(checkData);
+      sessionStorage.setItem("saksuuu_supplier_check", JSON.stringify(checkData));
+      window.dispatchEvent(new Event("saksuuu:supplier-status"));
+      if (showToast) toast.success("Supplier verification completed");
+    } catch (cause) {
+      console.error("Supplier verification failed:", cause);
+      if (showToast) toast.error("Could not verify supplier connections");
+    } finally {
+      setChecking(false);
+    }
+  }, []);
+
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem("saksuuu_supplier_check");
       if (saved) {
         const check = JSON.parse(saved) as SupplierCheck;
         const checkedAt = Date.parse(check.timestamp);
-        if (Number.isFinite(checkedAt) && Date.now() - checkedAt <= 10 * 60_000) setSupplierCheck(check);
+        if (Number.isFinite(checkedAt) && Date.now() - checkedAt <= 10 * 60_000 && check.vngzz2) {
+          setSupplierCheck(check);
+          return;
+        }
       }
     } catch (cause) {
       console.error("Could not restore supplier verification:", cause);
     }
-  }, []);
-
-  const verifySuppliers = async () => {
-    setChecking(true);
-    try {
-      const response = await fetch("/api/admin/suppliers", { method: "POST", cache: "no-store" });
-      const body: SupplierCheck & { error?: string } = await response.json();
-      if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
-      setSupplierCheck(body);
-      sessionStorage.setItem("saksuuu_supplier_check", JSON.stringify(body));
-      window.dispatchEvent(new Event("saksuuu:supplier-status"));
-      toast.success("Supplier verification completed");
-    } catch (cause) {
-      console.error("Supplier verification failed:", cause);
-      toast.error("Could not verify supplier connections");
-    } finally {
-      setChecking(false);
-    }
-  };
+    void verifySuppliers(false);
+  }, [verifySuppliers]);
 
   const statCards = data ? [
     {
@@ -413,7 +467,7 @@ export default function AdminOverviewPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={verifySuppliers}
+                  onClick={() => void verifySuppliers(true)}
                   disabled={checking}
                   className="admin-button admin-button-secondary cursor-pointer"
                 >
@@ -430,14 +484,27 @@ export default function AdminOverviewPage() {
               </div>
             </div>
 
-            <div className="grid gap-3">
-              {(["webbuilder"] as const).map((key) => {
+            <div className="grid gap-3 sm:grid-cols-2">
+              {(["vngzz2", "webbuilder"] as const).map((key) => {
+                const isVngzz = key === "vngzz2";
+                const displayName = isVngzz ? "VngZz 2 Game" : "WebBuilder";
+                const description = isVngzz
+                  ? "Primary fulfillment for MLBB, Robux & Free Fire"
+                  : "Secondary supplier (Disabled)";
                 const configured = data.suppliers[key]?.configured ?? false;
                 const verified = supplierCheck?.[key];
-                const status = !configured ? "Unavailable" : !verified ? "Configured" :
-                  verified.status === "connected" ? "Connected" : "Failed";
+                const status = verified?.status === "disabled"
+                  ? "Disabled"
+                  : !configured
+                  ? "Unavailable"
+                  : !verified
+                  ? "Configured"
+                  : verified.status === "connected"
+                  ? "Connected"
+                  : "Failed";
                 const balance = verified?.status === "connected" && verified.reseller?.balance != null
-                  ? money(Number(verified.reseller.balance)) : "—";
+                  ? money(Number(verified.reseller.balance))
+                  : status === "Disabled" ? "Disabled" : "—";
                 return (
                   <div
                     key={key}
@@ -445,9 +512,20 @@ export default function AdminOverviewPage() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <h3 className="text-[#F8FAFC]">WebBuilder</h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-[#F8FAFC] font-semibold">{displayName}</h3>
+                          {isVngzz ? (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded font-bold bg-[#DB2777]/20 text-[#DB2777] border border-[#DB2777]/30">
+                              Active
+                            </span>
+                          ) : (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded font-medium bg-slate-500/20 text-slate-400 border border-slate-500/30">
+                              Disabled
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[11px] text-[#94A3B8]">
-                          Your configured fulfillment provider
+                          {description}
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-1.5">
@@ -464,7 +542,7 @@ export default function AdminOverviewPage() {
                       <div className="min-w-0">
                         <dt className="text-[11px] leading-4 text-[#94A3B8]">Account</dt>
                         <dd className="mt-1 break-words text-[13px] leading-5 text-[#F8FAFC]">
-                          {verified?.status === "connected" ? verified.reseller?.username || "Active" : "—"}
+                          {verified?.status === "connected" ? verified.reseller?.username || "Active" : isVngzz ? "sok_koemsak (reseller)" : "—"}
                         </dd>
                       </div>
                       <div>
@@ -475,7 +553,7 @@ export default function AdminOverviewPage() {
                       </div>
                     </dl>
 
-                    {verified?.error && (
+                    {verified?.error && verified.status !== "disabled" && (
                       <p className="text-[11px] text-[#EF4444] bg-[#EF4444]/10 p-2 rounded-lg border border-[#EF4444]/20">
                         {verified.error}
                       </p>

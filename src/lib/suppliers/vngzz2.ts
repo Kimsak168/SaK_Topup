@@ -174,24 +174,27 @@ export async function getVngzzAccountProfile(): Promise<JsonObject> {
     throw new VngzzGameError(`VNGZZ2 account profile request failed (HTTP ${response.status}).`, response.status);
   }
 
-  // Enrich with verified SMM and game balances from /v1/smm/profile
+  // Enrich with verified game balances from /v1/game/profile
   try {
-    const smmRes = await fetch(`${baseUrl}/v1/smm/profile`, {
+    const gameRes = await fetch(`${baseUrl}/v1/game/profile`, {
       headers: { Accept: "application/json", "X-API-Key": apiKey },
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(Math.min(5000, timeoutMs)),
     });
-    if (smmRes.ok) {
-      const smmJson = (await smmRes.json().catch(() => null)) as Record<string, unknown> | null;
-      const user = smmJson?.user as Record<string, unknown> | undefined;
+    if (gameRes.ok) {
+      const gameJson = (await gameRes.json().catch(() => null)) as Record<string, unknown> | null;
+      const user = gameJson?.user as Record<string, unknown> | undefined;
       if (user && typeof user === "object") {
         const rootData = (data.data && typeof data.data === "object" ? data.data : {}) as Record<string, unknown>;
         data.data = {
           ...rootData,
-          smm_balance: user.smm_balance ?? user.balance ?? 0,
-          game_balance: user.game_balance ?? user.balance ?? 0,
+          username: user.username || rootData.username,
+          role: user.role,
+          status: user.status,
           balance: user.balance ?? 0,
+          game_balance: user.balance ?? 0,
+          smm_balance: user.balance ?? 0,
         };
       }
     }
