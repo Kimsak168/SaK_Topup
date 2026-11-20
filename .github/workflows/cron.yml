@@ -1,0 +1,26 @@
+name: Background Cron Scheduler
+
+on:
+  schedule:
+    # Runs every 10 minutes to reconcile pending payments and supplier orders
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  run-cron:
+    name: Trigger Cron Worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Cron Worker Endpoint
+        run: |
+          APP_URL="${{ secrets.NEXT_PUBLIC_APP_URL || 'https://saksuuu-topup.vercel.app' }}"
+          SECRET="${{ secrets.CRON_SECRET || 'a54aabb7c27c380d61125c7e095486cdc3e4aed39e532e42a361eeb568332dd0' }}"
+          echo "Pinging $APP_URL/api/cron/all..."
+          curl -sS -f -X POST \
+            -H "Authorization: Bearer $SECRET" \
+            -H "User-Agent: github-actions-cron" \
+            "$APP_URL/api/cron/all" || \
+          curl -sS -f \
+            -H "Authorization: Bearer $SECRET" \
+            -H "User-Agent: github-actions-cron" \
+            "$APP_URL/api/cron/all" || echo "Cron ping finished with non-fatal code"

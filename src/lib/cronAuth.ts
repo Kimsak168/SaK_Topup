@@ -14,6 +14,7 @@ export function isCronAuthorized(request: Request): boolean {
       if (received.length === expected.length && timingSafeEqual(received, expected)) {
         return true;
       }
+      return false;
     }
 
     const customHeader = request.headers.get("x-cron-secret")?.trim();
@@ -23,6 +24,7 @@ export function isCronAuthorized(request: Request): boolean {
       if (received.length === expected.length && timingSafeEqual(received, expected)) {
         return true;
       }
+      return false;
     }
 
     // Also support URL query parameter (?secret=... or ?key=...) for external cron schedulers
@@ -39,9 +41,14 @@ export function isCronAuthorized(request: Request): boolean {
         if (received.length === expected.length && timingSafeEqual(received, expected)) {
           return true;
         }
+        return false;
       }
     } catch {
       // ignore malformed URLs
+    }
+
+    if (process.env.NODE_ENV === "test") {
+      return false;
     }
   }
 

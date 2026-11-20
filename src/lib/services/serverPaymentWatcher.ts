@@ -68,16 +68,19 @@ export async function watchOrderPaymentUntilSettled(
     // If still pending after maxWaitMs, trigger a background cron sweep so the order isn't forgotten
     const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
     const appUrl =
-      rawAppUrl && !rawAppUrl.includes(".vercel.app")
-        ? rawAppUrl
+      rawAppUrl
+        ? rawAppUrl.replace(/\/+$/, "")
         : process.env.VERCEL_URL
-          ? "https://www.asuratopup.store"
+          ? `https://${process.env.VERCEL_URL}`
           : "";
 
     if (appUrl) {
-      const pingUrl = `${appUrl.replace(/\/+$/, "")}/api/cron/payments?limit=5`;
+      const pingUrl = `${appUrl}/api/cron/payments?limit=5`;
       void fetch(pingUrl, {
-        headers: { "user-agent": "vercel-cron/self-trigger" },
+        headers: {
+          "user-agent": "vercel-cron/self-trigger",
+          ...(process.env.CRON_SECRET ? { Authorization: `Bearer ${process.env.CRON_SECRET}` } : {}),
+        },
         signal: AbortSignal.timeout(5000),
       }).catch(() => {});
     }

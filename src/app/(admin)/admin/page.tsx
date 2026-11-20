@@ -91,6 +91,7 @@ export default function AdminOverviewPage() {
   const [days, setDays] = useState(14);
   const [supplierCheck, setSupplierCheck] = useState<SupplierCheck | null>(null);
   const [checking, setChecking] = useState(false);
+  const [runningCron, setRunningCron] = useState(false);
   const lastRequestedDays = useRef<number | null>(null);
   const activeRequest = useRef(0);
 
@@ -267,6 +268,35 @@ export default function AdminOverviewPage() {
           >
             <RefreshCw size={13} className={refreshing ? "animate-spin" : ""} />
             <span>{refreshing ? "Refreshing..." : "Refresh"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={async () => {
+              setRunningCron(true);
+              try {
+                const res = await fetch("/api/cron/all");
+                const json = await res.json();
+                if (json.success) {
+                  toast.success("Cron completed successfully", {
+                    description: `Payments: ${json.payments?.checked || 0} checked (${json.payments?.paid || 0} paid). Supplier: ${json.supplierOrders?.checked || 0} checked.`,
+                  });
+                  void fetchOverview(true);
+                } else {
+                  toast.error("Cron run failed", { description: json.error || "Unknown error" });
+                }
+              } catch (err) {
+                toast.error("Failed to run cron", { description: err instanceof Error ? err.message : "Network error" });
+              } finally {
+                setRunningCron(false);
+              }
+            }}
+            disabled={runningCron}
+            className="admin-button admin-button-secondary cursor-pointer"
+            title="Trigger reconciliation sweep for pending payments and supplier orders"
+          >
+            <RefreshCw size={13} className={runningCron ? "animate-spin" : ""} />
+            <span>{runningCron ? "Running Cron..." : "Run Cron"}</span>
           </button>
         </div>
       </div>

@@ -232,10 +232,10 @@ export async function triggerAutomaticFulfillment(
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
       const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId || "GUEST", serverId: order.serverId, reference: order.orderNumber });
       await Order.findByIdAndUpdate(order._id, { $set: {
-        supplierOrderId: result.id, fulfillmentStatus: result.status, lastSupplierStatus: result.supplierStatus,
+        supplierOrderId: result.id, fulfillmentStatus: "processing", lastSupplierStatus: result.supplierStatus,
         supplierNextPollAt: new Date(Date.now() + 60_000),
       } });
-      return { success: true, orderNumber, fulfillmentStatus: result.status, supplierOrderId: result.id, message: result.message };
+      return { success: true, orderNumber, fulfillmentStatus: "processing", supplierOrderId: result.id, message: result.message };
     }
 
     // G2Bulk Fulfillment (Roblox product purchase & SMM protocol)
@@ -477,6 +477,23 @@ export async function reconcileSupplierFulfillment(
 
   if (order.supplier === "vngzz2") {
     if (String(order.paymentStatus).toUpperCase() !== "PAID") return { success: false, orderNumber, fulfillmentStatus: order.fulfillmentStatus, message: "Payment is not verified." };
+
+    // Robux Send and Free Fire Likes are fulfilled manually by admin, never query VngZz2 API
+    if (
+      order.gameSlug === "roblox" ||
+      order.gameSlug === "free-fire-likes" ||
+      order.supplierProductCode?.startsWith("roblox-send-") ||
+      order.supplierProductCode?.startsWith("ff-likes-")
+    ) {
+      return {
+        success: true,
+        orderNumber,
+        fulfillmentStatus: order.fulfillmentStatus,
+        supplierOrderId: order.supplierOrderId,
+        message: "Manual delivery order pending admin fulfillment.",
+      };
+    }
+
     const result = await checkVngzzOrder(order.orderNumber);
     // Never downgrade a completed delivery after a stale provider response.
     if (!["completed", "COMPLETED", "delivered", "DELIVERED"].includes(order.fulfillmentStatus)) {

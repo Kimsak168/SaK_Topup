@@ -45,3 +45,5 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ success: false, error: "Status worker unavailable" }, { status: 503 });
   }
 }
+
+export const POST = GET;
