@@ -231,7 +231,9 @@ export function generateVngZz2SandboxQr(params: GenerateQrParams): GenerateQrRes
  * POST /v1/generate_qr
  */
 export async function generateVngZz2Qr(params: GenerateQrParams): Promise<GenerateQrResult> {
-  if (isKhqrPayConfigured()) {
+  const hasVngzzKey = Boolean((process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim());
+
+  if (!hasVngzzKey && isKhqrPayConfigured()) {
     const rawAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim() || "";
     const storeUrl =
       rawAppUrl.startsWith("https://") && !rawAppUrl.includes(".vercel.app")
@@ -388,7 +390,8 @@ export async function checkVngZz2Transaction(
     };
   }
 
-  if (isKhqrPayConfigured()) {
+  const hasVngzzKey = Boolean((process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim());
+  if (!hasVngzzKey && isKhqrPayConfigured()) {
     const res = await checkKhqrPayTransaction(cleanTxnId);
     return {
       success: res.success,
@@ -496,7 +499,8 @@ export async function checkVngZz2Transaction(
  * GET /v1/status or GET /v1/ping
  */
 export async function checkVngZz2Health(timeoutMs = 5000): Promise<VngZz2HealthResult> {
-  if (isKhqrPayConfigured()) {
+  const hasVngzzKey = Boolean((process.env.VNGZZ2_PRIMARY_API_KEY || process.env.VNGZZ2_PAYMENT_API_KEY)?.trim());
+  if (!hasVngzzKey && isKhqrPayConfigured()) {
     const khqrHealth = await checkKhqrPayHealth();
     return {
       available: khqrHealth.available,
