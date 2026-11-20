@@ -45,7 +45,7 @@ async function HomeGames() {
 
 async function HomeGamePackages({ games }: { games: ClientGame[] }) {
   const featuredGroups = await Promise.all(games
-    .filter((game) => game.supplier === "webbuilder" && game.checkoutSupported !== false)
+    .filter((game) => game.checkoutSupported !== false)
     .map(async (game) => {
       const variant = getPackageVariant(game);
       const packages = await getNormalizedPackages(game.supplier, game.code).catch(() => []);
