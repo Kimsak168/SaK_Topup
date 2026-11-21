@@ -275,7 +275,12 @@ function getDefaultGamePackageImage(
     return "/images/freefire-likes.webp";
   }
   if (key.includes("mlbb") || key.includes("mobile-legends")) {
-    return isDiamondPackage ? "/images/mlbb-diamond.webp" : null;
+    if (/diamond\s*pass/i.test(baseName)) return "/images/packages/mlbb-diamond-pass.webp";
+    if (/weekly\s*elite/i.test(baseName)) return "/images/packages/mlbb-weekly-elite-pack.webp";
+    if (/monthly\s*elite/i.test(baseName)) return "/images/packages/mlbb-monthly-elite-pack.webp";
+    if (/twilight/i.test(baseName)) return "/images/packages/mlbb-twilight.webp";
+    if (/weekly/i.test(baseName)) return "/images/packages/mlbb-weekly.webp";
+    return isDiamondPackage ? "/images/mlbb-diamond.webp" : "/images/mlbb-diamond.webp";
   }
   if (key.includes("freefire") || key.includes("ff-") || key.includes("free-fire")) {
     return isDiamondPackage ? "/images/diamond-crystals.webp" : null;
