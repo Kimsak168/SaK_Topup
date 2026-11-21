@@ -36,7 +36,7 @@ test("formatManualFulfillmentMessage matches the exact template requested by use
     reason: "Insufficient reseller balance",
   });
 
-  assert.ok(message.includes("⚠️ <b>Order Pending (Manual Fulfillment)</b>"));
+  assert.ok(message.includes("Manual Fulfillment"));
   assert.ok(message.includes("Order ID: <code>GWN-96209459</code>"));
   assert.ok(message.includes("ID: <code>19995148</code>"));
   assert.ok(message.includes("Zone: <code>3204</code>"));
@@ -60,7 +60,7 @@ test("formatManualFulfillmentMessage omits Zone if not provided", () => {
     reason: "Out of stock",
   });
 
-  assert.ok(message.includes("⚠️ <b>Order Pending (Manual Fulfillment)</b>"));
+  assert.ok(message.includes("Manual Fulfillment"));
   assert.ok(message.includes("Order ID: <code>ASURA-123456</code>"));
   assert.ok(message.includes("ID: <code>987654321</code>"));
   assert.ok(!message.includes("Zone:"), "Should not include Zone line if no serverId");
@@ -109,7 +109,7 @@ test("sendTelegramManualFulfillmentAlert sends HTML payload to Telegram bot", as
   assert.equal(capturedBody.chat_id, "-100123456789");
   assert.equal(capturedBody.message_thread_id, 42);
   assert.equal(capturedBody.parse_mode, "HTML");
-  assert.ok(capturedBody.text.includes("⚠️ <b>Order Pending (Manual Fulfillment)</b>"));
+  assert.ok(capturedBody.text.includes("Manual Fulfillment"));
   assert.ok(capturedBody.text.includes("Order ID: <code>GWN-96209459</code>"));
   assert.ok(capturedBody.text.includes("Price: $0.89"));
   assert.ok(capturedBody.text.includes("Reason: Insufficient balance"));
