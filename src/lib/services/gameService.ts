@@ -331,6 +331,8 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
 
   return configs.map(cfg => {
     const hasPrice = typeof cfg.sellingPrice === "number" && Number.isFinite(cfg.sellingPrice) && cfg.sellingPrice > 0;
+    const isOutOfStock = cfg.supplierAvailable === false;
+    const isAvailable = hasPrice && cfg.isActive !== false && !isOutOfStock;
     const isNameNumeric = /^\d+$/.test(cfg.name.trim());
     const rawDiamonds = (cfg.diamondsOrPoints || "").trim();
     const isDiamondsNumeric = /^\d+$/.test(rawDiamonds);
@@ -374,7 +376,10 @@ const getSavedPackages = cachePublicQuery("packages", CATALOGUE_TAG, async (
       sellingPrice: hasPrice ? cfg.sellingPrice : null,
       originalPrice: typeof cfg.originalPrice === "number" && cfg.originalPrice > 0 ? cfg.originalPrice : null,
       currency: cfg.currency || "USD", badge: cfg.badge || undefined, bonus: cfg.bonus || undefined,
-      isFeatured: Boolean(cfg.isFeatured), isAvailable: hasPrice && cfg.isActive !== false && cfg.supplierAvailable !== false,
+      isFeatured: Boolean(cfg.isFeatured),
+      isAvailable,
+      isOutOfStock,
+      isActive: cfg.isActive !== false,
       category: group, group,
       customImage: image ? versionImageUrl(image, cfg.updatedAt) : image,
     };

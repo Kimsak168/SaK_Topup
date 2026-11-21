@@ -274,8 +274,17 @@ export default function AdminSmmServicesPage() {
             <thead className="bg-[#0C1422] text-[#94A3B8]"><tr><th className="w-10 px-3 py-3"><input type="checkbox" aria-label="Select all services on this page" checked={visibleIds.length > 0 && visibleIds.every((id) => selected.includes(id))} onChange={(event) => setSelected(event.target.checked ? visibleIds : [])} /></th><th className="px-3 py-3">Service</th><th className="px-3 py-3">Platform / type</th><th className="px-3 py-3">Price / 1,000</th><th className="px-3 py-3">Limits</th><th className="px-3 py-3">Availability</th></tr></thead>
             <tbody>
               {loading ? <tr><td colSpan={6} className="px-4 py-12 text-center text-[#94A3B8]">Loading database services…</td></tr>
-                : !data?.services.length ? <tr><td colSpan={6} className="px-4 py-12 text-center text-[#94A3B8]">No catalog records match these filters. Preview a supplier sync to import real services.</td></tr>
-                  : data.services.map((service) => <tr key={service.id} className="border-t border-[#263246] align-top">
+                : !data?.services.length ? (
+                  <tr>
+                    <td colSpan={6} className="px-4 py-14 text-center">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <Database className="h-8 w-8 text-[#64748B] opacity-50" />
+                        <p className="text-sm font-semibold text-slate-300">No SMM services found</p>
+                        <p className="text-xs text-slate-500 max-w-md">No social media services match the current filters. Note: VNGZZ2 is currently configured for direct Game Top-Up and PayWay automation.</p>
+                      </div>
+                    </td>
+                  </tr>
+                ) : data.services.map((service) => <tr key={service.id} className="border-t border-[#263246] align-top">
                     <td className="px-3 py-3"><input type="checkbox" aria-label={`Select ${service.name || "unnamed service"}`} checked={selected.includes(service.id)} onChange={(event) => setSelected((items) => event.target.checked ? [...items, service.id] : items.filter((id) => id !== service.id))} /></td>
                     <td className="max-w-[340px] px-3 py-3"><p className="font-semibold text-white">{service.name || "Unnamed service"}</p><p className="mt-1 text-[10px] text-[#64748B]">Supplier ID: {service.supplierServiceId}</p>{(service.reviewFlags.length > 0 || service.duplicateCandidate) && <><p className="mt-1 text-[10px] text-amber-300">{[...service.reviewFlags, ...(service.duplicateCandidate ? ["duplicate_candidate"] : [])].join(" · ")}</p><p className="mt-1 line-clamp-2 text-[10px] text-[#94A3B8]">Supplier source: {[service.sourceCategory, service.sourceDescription].filter(Boolean).join(" · ") || "No supplier details provided"}</p></>}</td>
                     <td className="px-3 py-3 capitalize text-[#CBD5E1]">{service.platform}<p className="mt-1 text-[10px] text-[#64748B]">{service.category}</p></td>

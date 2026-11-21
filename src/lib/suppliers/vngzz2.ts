@@ -386,8 +386,12 @@ export async function getVngzzSmmServiceSnapshot(forceRefresh = false): Promise<
         "X-API-Key": apiKey,
       },
       cache: "no-store",
-      signal: AbortSignal.timeout(timeoutMs),
+      signal: AbortSignal.timeout(Math.min(timeoutMs, 5000)),
     });
+
+    if (res.status === 404) {
+      return { total: 0, services: [], fetchedAt: new Date().toISOString() };
+    }
 
     if (!res.ok) {
       if (!forceRefresh && cachedSmmSnapshot?.data?.services.length) return cachedSmmSnapshot.data;

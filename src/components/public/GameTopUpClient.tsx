@@ -84,6 +84,10 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
     setSelectedPackage(pkg);
   }, []);
   const handlePackageSelect = useCallback((pkg: ClientPackage) => {
+    if (!pkg.isAvailable || pkg.isOutOfStock) {
+      toast.error("This package is currently out of stock", { id: "package-selection" });
+      return;
+    }
     const deselected = selectedPackageRef.current?.id === pkg.id;
     applyPackageSelection(deselected ? null : pkg);
     if (deselected) {
@@ -121,6 +125,7 @@ export function GameTopUpClient({ game, initialPackages }: GameTopUpClientProps)
   const isComingSoon = game.badge?.trim().toUpperCase().replace(/[\s-]+/g, "_") === "COMING_SOON";
   const hasValidPayableSelection = Boolean(
     selectedPackage?.isAvailable &&
+    !selectedPackage?.isOutOfStock &&
     selectedTotal !== null &&
     Number.isFinite(selectedTotal) &&
     selectedTotal > 0,

@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     const game = searchParams.get("game")?.trim() || "";
     const supplier = searchParams.get("supplier")?.trim().toLowerCase() || "all";
     const status = searchParams.get("status")?.trim().toLowerCase() || "all"; // all | active | inactive | unconfigured | configured
-    const supplierAvailability = searchParams.get("supplierAvailability")?.trim().toLowerCase() || "available";
+    const supplierAvailability = searchParams.get("supplierAvailability")?.trim().toLowerCase() || "all";
     const { page, limit } = getAdminPagination(searchParams, 50, 250);
 
     const filter: Record<string, unknown> = {};
@@ -70,7 +70,6 @@ export async function GET(req: NextRequest) {
       .lean();
 
     // Stats
-    const availablePackages = { supplierAvailable: { $ne: false } };
     const [
       totalPkgs,
       configuredPkgs,
@@ -79,12 +78,12 @@ export async function GET(req: NextRequest) {
       vngzz2Pkgs,
       vngzz2ConfiguredPkgs,
     ] = await Promise.all([
-      GamePackage.countDocuments(availablePackages).catch(() => 0),
-      GamePackage.countDocuments({ ...availablePackages, sellingPrice: { $gt: 0 } }).catch(() => 0),
-      GamePackage.countDocuments({ ...availablePackages, supplier: "webbuilder" }).catch(() => 0),
-      GamePackage.countDocuments({ ...availablePackages, supplier: "webbuilder", sellingPrice: { $gt: 0 } }).catch(() => 0),
-      GamePackage.countDocuments({ ...availablePackages, supplier: "vngzz2" }).catch(() => 0),
-      GamePackage.countDocuments({ ...availablePackages, supplier: "vngzz2", sellingPrice: { $gt: 0 } }).catch(() => 0),
+      GamePackage.countDocuments({}).catch(() => 0),
+      GamePackage.countDocuments({ sellingPrice: { $gt: 0 } }).catch(() => 0),
+      GamePackage.countDocuments({ supplier: "webbuilder" }).catch(() => 0),
+      GamePackage.countDocuments({ supplier: "webbuilder", sellingPrice: { $gt: 0 } }).catch(() => 0),
+      GamePackage.countDocuments({ supplier: "vngzz2" }).catch(() => 0),
+      GamePackage.countDocuments({ supplier: "vngzz2", sellingPrice: { $gt: 0 } }).catch(() => 0),
     ]);
 
     // Distinct games for filter dropdown

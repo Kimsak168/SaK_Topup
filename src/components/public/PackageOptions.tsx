@@ -30,7 +30,8 @@ const PackageCard = memo(function PackageCard({
   artworkCache,
   onSelect,
 }: PackageCardProps) {
-  const isAvailable = pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
+  const isOutOfStock = Boolean(pkg.isOutOfStock || (!pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0));
+  const isAvailable = pkg.isAvailable && !isOutOfStock && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
   const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
     : 0;
@@ -49,14 +50,16 @@ const PackageCard = memo(function PackageCard({
     <button
       key={pkg.id}
       type="button"
-      title={pkg.name}
+      title={isOutOfStock ? `${pkg.name} (Out of Stock)` : pkg.name}
       aria-pressed={isSelected}
-      disabled={!isAvailable}
+      disabled={!isAvailable || isOutOfStock}
       onClick={() => {
-        if (isAvailable) onSelect(pkg);
+        if (isAvailable && !isOutOfStock) onSelect(pkg);
       }}
       className={`package-option group relative flex min-h-[50px] min-[360px]:min-h-[54px] sm:min-h-[58px] w-full flex-row items-center gap-2 sm:gap-2.5 rounded-xl border px-2 py-1 min-[360px]:px-2.5 text-left cursor-pointer transition-all focus-visible:outline-2 focus-visible:outline-[#C084FC] focus-visible:outline-offset-2 ${
-        !isAvailable
+        isOutOfStock
+          ? "opacity-60 bg-[#0D0914]/40 border-rose-500/30 cursor-not-allowed select-none"
+          : !isAvailable
           ? "opacity-50 bg-[#0D0914]/40 border-[#2E1F45]/60 cursor-not-allowed"
           : isSelected
           ? "bg-[#180E2B] border-[#C084FC] ring-1.5 ring-[#C084FC]/50 shadow-[0_0_18px_rgba(192,132,252,0.22)]"
@@ -138,11 +141,15 @@ const PackageCard = memo(function PackageCard({
             return /^\d[\d,\s]*$/.test(levelUp) && currencyName ? `${levelUp} ${currencyName}` : levelUp;
           })()}
           </div>
-          {pkg.badge && (
+          {isOutOfStock ? (
+            <span className="package-option-badge shrink-0 rounded-full px-2 py-0.5 text-[9px] min-[360px]:text-[10px] font-black uppercase leading-none bg-rose-500/20 text-rose-400 border border-rose-500/40">
+              Out of Stock
+            </span>
+          ) : pkg.badge ? (
             <span className="package-option-badge shrink-0 rounded-full px-2 py-1 font-black uppercase leading-none">
               {pkg.badge}
             </span>
-          )}
+          ) : null}
         </div>
         {pkg.bonus ? (
           <div className="package-option-bonus mt-1 truncate font-semibold leading-none">
@@ -166,6 +173,15 @@ const PackageCard = memo(function PackageCard({
               </span>
             )}
           </div>
+        ) : isOutOfStock && pkg.sellingPrice !== null ? (
+          <div className="package-option-prices mt-1 flex min-w-0 flex-wrap items-baseline gap-x-1.5 gap-y-1 leading-none">
+            <span className="package-option-selling-price font-bold tracking-tight text-rose-400 line-through opacity-75">
+              ${pkg.sellingPrice.toFixed(2)}
+            </span>
+            <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wide">
+              Out of Stock
+            </span>
+          </div>
         ) : (
           <div className="text-[9px] min-[360px]:text-[10px] font-semibold text-[#64748B] flex items-center gap-1 mt-0.5">
             <Ban className="h-2.5 w-2.5 text-[#64748B]" />
@@ -175,7 +191,7 @@ const PackageCard = memo(function PackageCard({
       </div>
 
       {/* Selected Checkmark — top right */}
-      {isSelected && isAvailable && (
+      {isSelected && isAvailable && !isOutOfStock && (
         <div className="package-check-pop absolute top-1 right-1 h-3.5 w-3.5 min-[360px]:h-4 min-[360px]:w-4 rounded-full bg-[#C084FC] flex items-center justify-center text-black shadow-xs">
           <Check className="h-2 w-2 min-[360px]:h-2.5 min-[360px]:w-2.5 text-black" strokeWidth={3} />
         </div>
@@ -244,7 +260,9 @@ export const PackageOptions = memo(function PackageOptions({
     : currencyName || "Currency";
 
   const { validPackages, specialPackages, currencyPackages } = useMemo(() => {
-    const validPackages = packages.filter(p => p.isAvailable && p.sellingPrice !== null && p.sellingPrice > 0);
+    const validPackages = packages.filter(
+      p => p.isActive !== false && (p.isAvailable || p.isOutOfStock) && p.sellingPrice !== null && p.sellingPrice > 0
+    );
     const specialPackages: ClientPackage[] = [];
     const currencyPackages: ClientPackage[] = [];
 

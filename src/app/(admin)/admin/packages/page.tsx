@@ -94,7 +94,7 @@ function PackagesManagerContent() {
   const debouncedSearch = useDebouncedValue(search);
   const [supplierFilter, setSupplierFilter] = useState<string>(urlSupplier || "all");
   const [gameFilter, setGameFilter] = useState<string>(urlGame || "all");
-  const [supplierAvailability, setSupplierAvailability] = useState("available");
+  const [supplierAvailability, setSupplierAvailability] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState("50");
@@ -872,9 +872,9 @@ function PackagesManagerContent() {
             }}
             className="rounded-lg border border-[#243047] bg-[#151F31] px-3 py-1.5 text-xs font-medium text-[#F8FAFC] focus:border-[#22C55E] focus:outline-none"
           >
+            <option value="all">All statuses</option>
             <option value="available">Supplier available</option>
             <option value="unavailable">Supplier unavailable</option>
-            <option value="all">All statuses</option>
           </select>
 
           {/* Price Configuration Filter */}

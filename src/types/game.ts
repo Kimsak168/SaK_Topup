@@ -33,6 +33,8 @@ export interface ClientPackage {
   badge?: string;
   isFeatured: boolean;
   isAvailable: boolean;
+  isOutOfStock?: boolean;
+  isActive?: boolean;
   category?: "diamonds" | "special" | string;
   group?: "diamonds" | "special" | string;
   customImage?: string | null;

@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { reconcilePendingPaymentsBatch } from "@/lib/services/cronPaymentWorker";
 import { reconcileSupplierOrdersBatch } from "@/lib/services/cronSupplierWorker";
 import { dispatchPendingTelegramNotifications } from "@/lib/services/telegramOutboxService";
+import { reconcileActiveSupplierStock } from "@/lib/services/syncService";
 import { logCronEvent } from "@/lib/cronLogger";
 
 export const dynamic = "force-dynamic";
@@ -35,6 +36,9 @@ export async function GET(req: NextRequest) {
     // Step 3: Dispatch / retry pending Telegram outbox notifications (10s budget)
     const telegram = await dispatchPendingTelegramNotifications(20);
 
+    // Step 4: Auto-sync supplier stock availability for active games (10s budget)
+    const stock = await reconcileActiveSupplierStock(10000);
+
     const durationMs = Date.now() - started;
 
     logCronEvent({
@@ -45,6 +49,7 @@ export async function GET(req: NextRequest) {
         payments,
         supplierOrders,
         telegram,
+        stock,
       },
     });
 
@@ -56,6 +61,7 @@ export async function GET(req: NextRequest) {
       payments,
       supplierOrders,
       telegram,
+      stock,
     });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : "Master cron worker failed";

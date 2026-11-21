@@ -5,7 +5,7 @@ import { GamePackage } from "@/models/GamePackage";
 import { syncWebBuilderCatalogue } from "./webbuilderSyncService";
 export { WEBBUILDER_GAMES } from "@/lib/suppliers/webbuilderCatalogue";
 import { invalidateCatalogueCache } from "@/lib/services/cacheService";
-import { isVngzzGameConfigured } from "@/lib/suppliers/vngzz2";
+import { isVngzzGameConfigured, getVngzzProducts } from "@/lib/suppliers/vngzz2";
 import { syncVngzzCatalogue, emptyVngzzStats } from "./vngzzSyncService";
 import { getG2BulkRobloxProducts } from "@/lib/suppliers/g2bulk";
 
@@ -285,17 +285,174 @@ export async function syncPackagesFromSuppliers(options: {
   let vngzzStats = emptyVngzzStats();
   const g2bulkStats = emptyG2BulkStats();
 
-  if (options.supplier !== "vngzz2" && options.supplier !== "g2bulk") {
+  if (!options.supplier || options.supplier === "webbuilder") {
     const res = await syncWebBuilderCatalogue({ ...options, packages: true });
     webbuilderStats = res.packages;
   }
-  if (options.supplier === "vngzz2" && isVngzzGameConfigured()) {
+  if ((!options.supplier || options.supplier === "vngzz2") && isVngzzGameConfigured()) {
     const res = await syncVngzzCatalogue({ packages: true, gameCode: options.gameCode, onlyActiveGames: options.onlyActiveGames });
     vngzzStats = res.packages;
+  }
+  if ((!options.supplier || options.supplier === "g2bulk") && (!options.gameCode || options.gameCode === "roblox")) {
+    const res = await syncG2BulkRobloxPackages();
+    g2bulkStats.imported += res.imported;
+    g2bulkStats.updated += res.updated;
+    g2bulkStats.skipped += res.skipped;
+    g2bulkStats.failed += res.failed;
+    g2bulkStats.total += res.total;
+    g2bulkStats.errors.push(...res.errors);
   }
 
   invalidateCatalogueCache();
   return combinedStats(webbuilderStats, vngzzStats, g2bulkStats);
+}
+
+export interface StockSyncResult {
+  checkedGames: number;
+  updatedPackages: number;
+  outOfStockPackages: number;
+  inStockPackages: number;
+  durationMs: number;
+  errors: string[];
+}
+
+/**
+ * Periodically verifies supplier stock/availability for active games.
+ * Marks out-of-stock items supplierAvailable: false so storefront displays them as out of stock.
+ */
+export async function reconcileActiveSupplierStock(maxDurationMs = 15000): Promise<StockSyncResult> {
+  const started = Date.now();
+  const summary: StockSyncResult = {
+    checkedGames: 0,
+    updatedPackages: 0,
+    outOfStockPackages: 0,
+    inStockPackages: 0,
+    durationMs: 0,
+    errors: [],
+  };
+
+  try {
+    await connectDB();
+
+    // 1. Reconcile active VNGZZ2 games stock
+    if (isVngzzGameConfigured()) {
+      const activeVngzzGames = await Game.find({
+        supplier: "vngzz2",
+        isActive: true,
+      }).select("supplierGameCode slug").lean();
+
+      for (const game of activeVngzzGames) {
+        if (Date.now() - started > maxDurationMs) break;
+        summary.checkedGames++;
+        try {
+          const products = await getVngzzProducts(game.supplierGameCode);
+          if (Array.isArray(products) && products.length > 0) {
+            const bulkOps = products.map((prod) => {
+              const isAvailable = Boolean(prod.available && prod.currency === "USD");
+              if (isAvailable) {
+                summary.inStockPackages++;
+              } else {
+                summary.outOfStockPackages++;
+              }
+              return {
+                updateOne: {
+                  filter: {
+                    supplier: "vngzz2" as const,
+                    gameCode: game.supplierGameCode,
+                    supplierProductCode: prod.product_code,
+                  },
+                  update: {
+                    $set: {
+                      supplierAvailable: isAvailable,
+                      buyingPrice: prod.price,
+                      priceCents: Math.round(prod.price * 100),
+                      syncedAt: new Date(),
+                    },
+                  },
+                },
+              };
+            });
+
+            const res = await GamePackage.bulkWrite(bulkOps);
+            summary.updatedPackages += (res.modifiedCount || 0);
+
+            // Mark any package not in supplier's active product list as supplierAvailable: false
+            const productCodes = products.map((p) => p.product_code);
+            const staleRes = await GamePackage.updateMany(
+              {
+                supplier: "vngzz2",
+                gameCode: game.supplierGameCode,
+                supplierProductCode: { $nin: productCodes },
+                supplierAvailable: { $ne: false },
+              },
+              {
+                $set: { supplierAvailable: false, syncedAt: new Date() },
+              }
+            );
+            if (staleRes.modifiedCount > 0) {
+              summary.updatedPackages += staleRes.modifiedCount;
+              summary.outOfStockPackages += staleRes.modifiedCount;
+            }
+          }
+        } catch (gameErr) {
+          summary.errors.push(`VNGZZ2 ${game.supplierGameCode}: ${gameErr instanceof Error ? gameErr.message : String(gameErr)}`);
+        }
+      }
+    }
+
+    // 2. Reconcile active G2Bulk Roblox stock
+    if (Date.now() - started <= maxDurationMs) {
+      const activeRoblox = await Game.findOne({
+        supplier: "g2bulk",
+        isActive: true,
+      }).lean();
+
+      if (activeRoblox) {
+        summary.checkedGames++;
+        try {
+          const robloxProducts = await getG2BulkRobloxProducts();
+          if (Array.isArray(robloxProducts) && robloxProducts.length > 0) {
+            const bulkOps = robloxProducts.map((prod) => {
+              const isAvailable = Boolean(prod.stock !== 0);
+              if (isAvailable) {
+                summary.inStockPackages++;
+              } else {
+                summary.outOfStockPackages++;
+              }
+              return {
+                updateOne: {
+                  filter: {
+                    supplier: "g2bulk" as const,
+                    supplierProductCode: String(prod.id),
+                  },
+                  update: {
+                    $set: {
+                      supplierAvailable: isAvailable,
+                      buyingPrice: Number(prod.unit_price) || 0,
+                      updatedAt: new Date(),
+                    },
+                  },
+                },
+              };
+            });
+            const res = await GamePackage.bulkWrite(bulkOps);
+            summary.updatedPackages += (res.modifiedCount || 0);
+          }
+        } catch (robloxErr) {
+          summary.errors.push(`G2Bulk Roblox: ${robloxErr instanceof Error ? robloxErr.message : String(robloxErr)}`);
+        }
+      }
+    }
+
+    if (summary.updatedPackages > 0) {
+      invalidateCatalogueCache();
+    }
+  } catch (err) {
+    summary.errors.push(`reconcileActiveSupplierStock: ${err instanceof Error ? err.message : String(err)}`);
+  }
+
+  summary.durationMs = Date.now() - started;
+  return summary;
 }
 
 function combinedStats(webbuilder: SyncStats, vngzz2: SyncStats, g2bulk?: SyncStats) {
