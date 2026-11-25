@@ -30,8 +30,8 @@ const PackageCard = memo(function PackageCard({
   artworkCache,
   onSelect,
 }: PackageCardProps) {
-  const isOutOfStock = Boolean(pkg.isOutOfStock || (!pkg.isAvailable && pkg.sellingPrice !== null && pkg.sellingPrice > 0));
-  const isAvailable = pkg.isAvailable && !isOutOfStock && pkg.sellingPrice !== null && pkg.sellingPrice > 0;
+  const isOutOfStock = Boolean(pkg.isOutOfStock);
+  const isAvailable = Boolean(pkg.isAvailable && !isOutOfStock && pkg.sellingPrice !== null && pkg.sellingPrice > 0);
   const discountPercent = isAvailable && pkg.originalPrice !== null && pkg.originalPrice > (pkg.sellingPrice ?? 0)
     ? Math.round(((pkg.originalPrice - (pkg.sellingPrice ?? 0)) / pkg.originalPrice) * 100)
     : 0;

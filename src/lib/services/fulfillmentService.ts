@@ -12,6 +12,7 @@ import { placeG2BulkOrder, checkG2BulkOrderStatus } from "@/lib/suppliers/g2bulk
 import { createVngzzOrder, checkVngzzOrder, createVngzzSmmOrder, checkVngzzSmmOrder } from "@/lib/suppliers/vngzz2";
 import { sendTelegramManualFulfillmentAlert } from "@/lib/services/telegramNotificationService";
 import { cleanFulfillmentErrorReason } from "@/lib/notifications/telegramFormat";
+import { dispatchOrderNotifications } from "@/lib/services/telegramOutboxService";
 
 async function notifyManualFulfillmentNeeded(order: IOrder, rawReason: string): Promise<void> {
   try {
@@ -231,11 +232,24 @@ export async function triggerAutomaticFulfillment(
       // through check_order; it must never trigger a second purchase.
       await Order.findByIdAndUpdate(order._id, { $set: { supplierOrderId: order.orderNumber } });
       const result = await createVngzzOrder({ productCode: order.supplierProductCode, playerId: order.playerId || "GUEST", serverId: order.serverId, reference: order.orderNumber });
+      const isCompleted = result.status === "completed";
+      const isFailed = result.status === "failed";
+      const newStatus = isCompleted ? "completed" : isFailed ? "failed" : "processing";
       await Order.findByIdAndUpdate(order._id, { $set: {
-        supplierOrderId: result.id, fulfillmentStatus: "processing", lastSupplierStatus: result.supplierStatus,
-        supplierNextPollAt: new Date(Date.now() + 60_000),
+        supplierOrderId: result.id,
+        fulfillmentStatus: newStatus,
+        lastSupplierStatus: result.supplierStatus,
+        fulfilledAt: isCompleted ? new Date() : undefined,
+        errorLog: isFailed ? result.message : undefined,
+        supplierNextPollAt: isCompleted ? undefined : new Date(Date.now() + 60_000),
+        updatedAt: new Date(),
       } });
-      return { success: true, orderNumber, fulfillmentStatus: "processing", supplierOrderId: result.id, message: result.message };
+      if (isCompleted) {
+        await dispatchOrderNotifications(orderNumber).catch(() => {});
+      } else if (isFailed) {
+        await notifyManualFulfillmentNeeded(order, result.message || "VngZz2 order failed");
+      }
+      return { success: !isFailed, orderNumber, fulfillmentStatus: newStatus, supplierOrderId: result.id, message: result.message };
     }
 
     // G2Bulk Fulfillment (Roblox product purchase & SMM protocol)
@@ -268,7 +282,9 @@ export async function triggerAutomaticFulfillment(
         },
       });
 
-      if (isFailed) {
+      if (isCompleted) {
+        await dispatchOrderNotifications(orderNumber).catch(() => {});
+      } else if (isFailed) {
         await notifyManualFulfillmentNeeded(order, g2Res.message || "G2Bulk fulfillment failed");
       }
 
@@ -328,6 +344,7 @@ export async function triggerAutomaticFulfillment(
           adminNotes: "Delivered instantly via WebBuilder official Reseller API",
         },
       });
+      await dispatchOrderNotifications(order.orderNumber).catch(() => {});
       return {
         success: true,
         orderNumber: order.orderNumber,
@@ -503,7 +520,9 @@ export async function reconcileSupplierFulfillment(
       if (result.status === "completed") order.fulfilledAt = new Date();
       if (result.status === "failed") order.errorLog = result.message;
       await order.save();
-      if (result.status === "failed") {
+      if (result.status === "completed") {
+        await dispatchOrderNotifications(order.orderNumber).catch(() => {});
+      } else if (result.status === "failed") {
         await notifyManualFulfillmentNeeded(order, result.message || "VngZz2 order failed");
       }
     }
@@ -528,6 +547,7 @@ export async function reconcileSupplierFulfillment(
         order.fulfilledAt = new Date();
         order.lastSupplierStatus = "completed";
         await order.save();
+        await dispatchOrderNotifications(order.orderNumber).catch(() => {});
         return {
           success: true,
           orderNumber,
@@ -580,6 +600,7 @@ export async function reconcileSupplierFulfillment(
         order.fulfilledAt = new Date();
         order.adminNotes = "Delivered via WebBuilder official Reseller API (reconcile retry)";
         await order.save();
+        await dispatchOrderNotifications(order.orderNumber).catch(() => {});
         return {
           success: true,
           orderNumber,
@@ -610,6 +631,7 @@ export async function reconcileSupplierFulfillment(
       order.fulfilledAt = new Date();
       order.lastSupplierStatus = "succeeded";
       await order.save();
+      await dispatchOrderNotifications(order.orderNumber).catch(() => {});
       return {
         success: true,
         orderNumber,

@@ -342,7 +342,16 @@ export async function reconcileActiveSupplierStock(maxDurationMs = 15000): Promi
       }).select("supplierGameCode slug").lean();
 
       for (const game of activeVngzzGames) {
-        if (!game.supplierGameCode || game.slug === "roblox" || game.supplierGameCode === "roblox") continue;
+        if (
+          !game.supplierGameCode ||
+          game.slug === "roblox" ||
+          game.supplierGameCode === "roblox" ||
+          game.slug === "free-fire-likes" ||
+          game.supplierGameCode === "free-fire-likes" ||
+          game.supplierGameCode === "freefire-likes"
+        ) {
+          continue;
+        }
         if (Date.now() - started > maxDurationMs) break;
         summary.checkedGames++;
         try {
@@ -397,7 +406,8 @@ export async function reconcileActiveSupplierStock(maxDurationMs = 15000): Promi
           }
         } catch (gameErr) {
           const msg = gameErr instanceof Error ? gameErr.message : String(gameErr);
-          if (!msg.toLowerCase().includes("game not found") && !msg.includes("404")) {
+          const lower = msg.toLowerCase();
+          if (!lower.includes("not found") && !lower.includes("game not found") && !msg.includes("404")) {
             summary.errors.push(`VNGZZ2 ${game.supplierGameCode}: ${msg}`);
           }
         }

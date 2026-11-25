@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { requireAdminAuth } from "@/lib/auth";
 import { getAdminPagination, escapeSearchRegex } from "@/lib/adminQuery";
+import { dispatchOrderNotifications } from "@/lib/services/telegramOutboxService";
 
 export const dynamic = "force-dynamic";
 const COMPLETED = { fulfillmentStatus: { $in: ["completed", "COMPLETED", "delivered", "DELIVERED"] as const } };
@@ -203,6 +204,10 @@ export async function PATCH(req: NextRequest) {
         { success: false, error: "Order not found" },
         { status: 404 }
       );
+    }
+
+    if (changedDelivery && ["completed", "delivered", "failed"].includes(nextDelivery)) {
+      await dispatchOrderNotifications(updated.orderNumber).catch(() => {});
     }
 
     return NextResponse.json({

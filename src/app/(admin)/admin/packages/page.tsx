@@ -844,18 +844,40 @@ function PackagesManagerContent() {
             </option>
 
             {supplierFilter === "all" ? (
-              <optgroup label="WebBuilder Wholesale Games">
-                {availableGames
-                  .filter((g) => g.supplier === "webbuilder")
-                  .map((g) => (
-                    <option key={`wb:${g.code || g.slug}`} value={g.slug}>
-                      {g.name}
-                    </option>
-                  ))}
-              </optgroup>
+              <>
+                <optgroup label="VngZz2 Games">
+                  {availableGames
+                    .filter((g) => g.supplier === "vngzz2")
+                    .map((g) => (
+                      <option key={`vngzz:${g.slug || g.code}`} value={g.slug || g.code}>
+                        {g.name}
+                      </option>
+                    ))}
+                </optgroup>
+                <optgroup label="WebBuilder Wholesale Games">
+                  {availableGames
+                    .filter((g) => g.supplier === "webbuilder")
+                    .map((g) => (
+                      <option key={`wb:${g.slug || g.code}`} value={g.slug || g.code}>
+                        {g.name}
+                      </option>
+                    ))}
+                </optgroup>
+                {availableGames.some((g) => g.supplier === "g2bulk") && (
+                  <optgroup label="G2Bulk Games">
+                    {availableGames
+                      .filter((g) => g.supplier === "g2bulk")
+                      .map((g) => (
+                        <option key={`g2:${g.slug || g.code}`} value={g.slug || g.code}>
+                          {g.name}
+                        </option>
+                      ))}
+                  </optgroup>
+                )}
+              </>
             ) : (
               filteredGames.map((g) => (
-                <option key={`${g.supplier}:${g.code || g.slug}`} value={g.code || g.slug}>
+                <option key={`${g.supplier}:${g.slug || g.code}`} value={g.slug || g.code}>
                   {g.name}
                 </option>
               ))

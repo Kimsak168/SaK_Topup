@@ -216,9 +216,11 @@ function normalizeOrder(data: JsonObject, reference: string): VngzzOrderResult {
   const order = object(data.data ?? data.order ?? data);
   if (order.reference !== undefined && order.reference !== reference) throw new VngzzGameError("Supplier order reference mismatch.", 502, "ORDER_MISMATCH");
   const supplierStatus = String(order.order_status ?? order.status ?? "pending").toLowerCase();
+  const isCompleted = ["completed", "complete", "delivered", "succeeded", "success", "successful", "done", "finished"].includes(supplierStatus);
+  const isFailed = ["failed", "cancelled", "canceled", "refunded", "error", "rejected"].includes(supplierStatus);
   return {
     id: String(order.order_id ?? order.id ?? reference),
-    status: ["completed", "delivered", "succeeded"].includes(supplierStatus) ? "completed" : ["failed", "cancelled", "canceled", "refunded"].includes(supplierStatus) ? "failed" : "processing",
+    status: isCompleted ? "completed" : isFailed ? "failed" : "processing",
     supplierStatus,
     message: typeof order.message === "string" ? order.message : `VNGZZ2 order status: ${supplierStatus}`,
   };
