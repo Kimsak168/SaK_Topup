@@ -61,7 +61,7 @@
 }
 
 :root[data-storefront-theme="dark"] .public-theme .game-card,
-:root[data-storefront-theme="dark"] .public-theme .game-card-title:not(.game-card-overlay-title),
+:root[data-storefront-theme="dark"] .public-theme .game-card-title,
 :root[data-storefront-theme="dark"] .public-theme .game-card > div:first-child {
   background-color: var(--storefront-soft, var(--secondary));
 }

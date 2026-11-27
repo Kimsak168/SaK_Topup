@@ -69,7 +69,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
         }
       }}
       aria-current={onSelect && isSelected ? "true" : undefined}
-      className={`game-card group relative flex aspect-square sm:aspect-auto sm:h-full w-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
+      className={`game-card group relative flex h-full w-full min-w-0 flex-col overflow-hidden rounded-[14px] p-[2px] bg-rose-500/10 outline-none transition-[translate,box-shadow] duration-200 ease-out focus-visible:ring-2 focus-visible:ring-[#C084FC] focus-visible:ring-offset-2 motion-safe:pointer-fine:hover:shadow-[0_8px_24px_-4px_rgba(244,63,94,0.35)] motion-reduce:transition-none sm:rounded-[16px] ${isSelected ? "game-card-selected" : ""}`}
     >
       {/* Subtle base border ring */}
       <span
@@ -85,7 +85,7 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
 
       {/* Inner Card Container */}
       <div className="game-card-inner relative z-10 flex h-full w-full flex-col overflow-hidden rounded-[12px] bg-[#FDF2F8] sm:rounded-[14px]">
-        <div className="relative h-full w-full sm:h-auto sm:aspect-square sm:shrink-0 overflow-hidden bg-[#FDF2F8]">
+        <div className="relative aspect-square w-full shrink-0 overflow-hidden bg-[#FDF2F8]">
           {!isLoaded && (
             <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-tr from-pink-100 via-rose-50 to-purple-100" />
           )}
@@ -107,9 +107,9 @@ export const GameCard = memo(function GameCard({ game, onSelect, isSelected = fa
           />
         </div>
 
-        {/* Mobile (<640px): Floating inside card | Desktop (>=640px): Under card image */}
-        <div className={`game-card-title game-card-overlay-title pointer-events-none absolute inset-x-0 bottom-0 z-20 flex sm:static sm:inset-auto sm:min-h-[46px] sm:h-auto sm:min-w-0 sm:shrink-0 flex-col items-center justify-end sm:justify-center px-1.5 pb-1.5 min-[380px]:px-2 min-[380px]:pb-2 sm:bg-[#FDF2F8] sm:px-2.5 sm:py-1.5`}>
-          <h3 className="line-clamp-1 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-extrabold sm:font-bold tracking-[-0.01em] wrap-anywhere text-black">
+        {/* Title under card image on all viewports */}
+        <div className="game-card-title relative z-20 flex min-h-[38px] min-[380px]:min-h-[42px] sm:min-h-[46px] w-full min-w-0 shrink-0 flex-col items-center justify-center bg-[#FDF2F8] px-1.5 py-1 min-[380px]:px-2 sm:px-2.5 sm:py-1.5">
+          <h3 className="line-clamp-1 w-full min-w-0 text-center text-[10.5px] leading-[13px] min-[380px]:text-[11.5px] min-[380px]:leading-[14.5px] sm:text-[13px] sm:leading-[16px] font-bold tracking-[-0.01em] wrap-anywhere text-black">
             {game.name}
           </h3>
           {isComingSoon && (

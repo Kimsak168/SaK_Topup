@@ -219,23 +219,10 @@
   .home-checkout-link { transition: none; }
 }
 .public-theme .game-card-inner,
-.public-theme .game-card-title:not(.game-card-overlay-title),
+.public-theme .game-card-title,
 .public-theme .game-card-inner > div:first-child { background-color: var(--storefront-soft); }
 
-.public-theme .game-card-overlay-title {
-  background: transparent !important;
-  border: 0 !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-}
-
-@media (min-width: 640px) {
-  .public-theme .game-card-overlay-title {
-    background-color: var(--storefront-soft) !important;
-  }
-}
-
-.public-theme .game-card-overlay-title h3 {
+.public-theme .game-card-title h3 {
   color: #000000 !important;
   text-shadow: none !important;
   letter-spacing: -0.01em;
@@ -247,10 +234,6 @@
 .public-theme .game-card-image {
   transform: scale(1);
   transition: transform 320ms cubic-bezier(.2, .7, .2, 1), opacity 300ms ease;
-}
-.public-theme .game-card-title:not(.game-card-overlay-title) h3 {
-  color: #000000 !important;
-  letter-spacing: -0.01em;
 }
 .public-theme .game-card:active .game-card-image { transform: scale(.985); }
 .public-theme .ticker-wrapper { border: 1px solid var(--storefront-border); background: var(--storefront-card); }
